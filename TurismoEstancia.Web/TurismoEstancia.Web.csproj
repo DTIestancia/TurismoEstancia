@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\TurismoEstancia.Domain\TurismoEstancia.Domain.csproj" />
+    <ProjectReference Include="..\TurismoEstancia.Services\TurismoEstancia.Services.csproj" />
+    <ProjectReference Include="..\TurismoEstancia.Authorization\TurismoEstancia.Authorization.csproj" />
+    <ProjectReference Include="..\TurismoEstancia.Mail\TurismoEstancia.Mail.csproj" />
+    <ProjectReference Include="..\TurismoEstancia.Identity\TurismoEstancia.Identity.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.SassCompiler" Version="1.102.0" />
+    <PackageReference Include="ReflectionIT.Mvc.Paging" Version="10.0.1" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>
