@@ -1,0 +1,39 @@
+# ===== Ferramentas locais (Freebuff) =====
+.freebuff/
+*.db
+*.db-shm
+*.db-wal
+
+# ===== .NET (build) =====
+bin/
+obj/
+artifacts/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild/
+
+# ===== IDE =====
+.vs/
+.idea/
+*.user
+*.suo
+*.sln.docstates
+*.sln.iml
+
+# ===== NuGet =====
+*.nupkg
+*.snupkg
+packages/
+*.nuget.g.props
+*.nuget.g.targets
+.nuget/
+
+# ===== Segredos / config local =====
+appsettings.*.local.json
+appsettings.Development.json
+secrets.json
+
+# ===== Mídia gerada =====
+wwwroot/lib/
