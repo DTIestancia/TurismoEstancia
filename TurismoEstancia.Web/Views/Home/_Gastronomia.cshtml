@@ -36,9 +36,11 @@
             <div class="gastronomy-card-main">
                 <div class="gastronomy-card">
                     <div class="gastronomy-card-img-wrap">
-                        @if (Model.Slides.Count >= 3)
+                        @if (Model.Slides.Count > 0)
                         {
-                            <img src="/arquivo/@Model.Slides[3].ImagemArquivoId" alt="Sabores do litoral sergipano" loading="lazy" />
+                            // Usa o último slide disponível como imagem de fundo da gastronomia.
+                            var slideGastro = Model.Slides[Math.Min(3, Model.Slides.Count - 1)];
+                            <img src="/arquivo/@(slideGastro.ImagemArquivoId is long gId ? gId.ToString() : "")" alt="Sabores do litoral sergipano" loading="lazy" />
                         }
                         <div class="gastronomy-card-overlay"></div>
                         <div class="gastronomy-card-content">

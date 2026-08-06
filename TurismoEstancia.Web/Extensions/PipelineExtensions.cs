@@ -58,7 +58,12 @@ public static class PipelineExtensions
 
     public static async Task RunWithSeedSupportAsync(this WebApplication app, string[] args)
     {
-        // Suporte a --seed: implementado na Fase 7.
+        if (args.Contains("--seed"))
+        {
+            await DatabaseSeeder.SeedAsync(app);
+            return;
+        }
+
         await app.RunAsync();
     }
 }
