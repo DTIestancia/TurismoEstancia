@@ -462,9 +462,13 @@ public static class DatabaseSeeder
 
         var arquivo = new Arquivo
         {
+            UID = Guid.NewGuid(),
             Nome = nomeArquivo,
             ContentType = contentType,
-            Bytes = await File.ReadAllBytesAsync(caminho)
+            Size = new FileInfo(caminho).Length,
+            Bytes = await File.ReadAllBytesAsync(caminho),
+            Origem = "seed",
+            Ativo = true
         };
         db.Arquivos.Add(arquivo);
 
