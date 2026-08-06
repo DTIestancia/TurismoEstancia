@@ -48,6 +48,9 @@ public static class DatabaseSeeder
         // ---------- Mídias (arquivos do protótipo) ----------
         var capas = await SalvarCapasAsync(db);
         var pictos = await SalvarPictogramasAsync(db);
+        var slide1 = await SalvarArquivoAsync(db, "CAPITAL BRASILEIRA DO BARCO DE FOGO.png", "image/png");
+        var slide2 = await SalvarArquivoAsync(db, "praia do saco.jpeg", "image/jpeg");
+        var slide3 = await SalvarArquivoAsync(db, "barcos de fogo.jpeg", "image/jpeg");
         var logo = await SalvarArquivoAsync(db, "ASSINATURA-CAPITAL-MARAVILHAS-AZUL.png", "image/png");
         var video = await SalvarArquivoAsync(db, "video_institucional.mp4", "video/mp4");
         // TODO: trocar por um PDF real do guia do turista (placeholder usa uma imagem).
@@ -149,15 +152,11 @@ public static class DatabaseSeeder
             "Ao lado da Catedral, no centro da cidade. Funciona de segunda a sábado, das 8h às 18h.",
             null, null, exibirMapa: true);
 
-        // ---------- Slides do hero (as 7 imagens do protótipo) ----------
+        // ---------- Slides do hero ----------
         db.Slides.AddRange(
-            new Slide { ImagemArquivoId = capas["saco"], Titulo = "Praia do Saco", Ordem = 1 },
-            new Slide { ImagemArquivoId = capas["barco"], Titulo = "Barcos de Fogo", Ordem = 2 },
-            new Slide { ImagemArquivoId = capas["igreja"], Titulo = "Catedral Nossa Senhora de Guadalupe", Ordem = 3 },
-            new Slide { ImagemArquivoId = capas["lagoa"], Titulo = "Lagoa dos Tambaquis", Ordem = 4 },
-            new Slide { ImagemArquivoId = capas["fabrica"], Titulo = "Fábrica Santa Cruz", Ordem = 5 },
-            new Slide { ImagemArquivoId = capas["lira"], Titulo = "Lira Carlos Gomes", Ordem = 6 },
-            new Slide { ImagemArquivoId = capas["cristo"], Titulo = "Porto D'Areia", Ordem = 7 });
+            new Slide { ImagemArquivoId = slide1, Titulo = "Capital Brasileira do Barco de Fogo", Ordem = 1 },
+            new Slide { ImagemArquivoId = slide2, Titulo = "Praia do Saco", Ordem = 2 },
+            new Slide { ImagemArquivoId = slide3, Titulo = "Barcos de Fogo", Ordem = 3 });
 
         // ---------- Estatísticas ----------
         db.Estatisticas.AddRange(
@@ -259,7 +258,7 @@ public static class DatabaseSeeder
             new ConteudoSite
             {
                 Chave = "historia-texto", Nome = "Texto da história",
-                Texto = "Estância, a Princesinha do Sul Sergipano, é berço de uma história que atravessa quase dois séculos. Casarões coloniais, ruas arborizadas e a religiosidade vibrante compõem o cenário de uma cidade que preserva sua alma enquanto recebe o mundo.\n\nBerço de artistas e de uma das mais ricas tradições culturais de Sergipe, a cidade é a Capital Nacional do Barco de Fogo e Capital Sergipana da Cultura. Suas filarmônicas centenárias, as manifestações populares e as belezas naturais — da Praia do Saco à Lagoa dos Tambaquis — encantam quem chega e apaixonam quem fica."
+                Texto = "Sente o vento salgado da Praia do Saco, escuta o estalar dos Barcos de Fogo no céu. Aqui, cada esquina é uma descoberta, cada sorriso é um convite. Vem viver Estância."
             },
             new ConteudoSite
             {

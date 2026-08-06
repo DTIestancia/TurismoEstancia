@@ -4,10 +4,9 @@
     var historiaTexto = Model.Conteudos.GetValueOrDefault("historia-texto",
         "Estância, a <strong>Princesinha do Sul Sergipano</strong>, é berço de uma história que atravessa quase dois séculos. Casarões coloniais, ruas arborizadas e a religiosidade vibrante compõem o cenário de uma cidade que preserva sua alma enquanto recebe o mundo.");
     var historiaCitar = Model.Conteudos.GetValueOrDefault("historia-citacao", "“Estância. Conheça, viva, explore.”");
+    var historiaDescricao = Model.Conteudos.GetValueOrDefault("historia-descricao",
+        "Sente o vento salgado da <strong>Praia do Saco</strong>, escuta o estalar dos Barcos de Fogo no céu. Aqui, cada esquina é uma descoberta, cada sorriso é um convite. <strong>Vem viver Estância.</strong>");
     var historiaImagem = Model.Conteudos.GetValueOrDefault("historia-imagem");
-    var imagemPrincipal = (historiaImagem is not null && !historiaImagem.StartsWith("{{"))
-        ? $"/arquivo/{historiaImagem}"
-        : null;
 }
 <main class="paginas-page page-public">
     @await Html.PartialAsync("_PaginasHeader")
@@ -23,38 +22,61 @@
         </div>
     </section>
 
-    <div class="paginas-container paginas-container--vitrine">
-        <div class="vitrine-painel">
-            @await Html.PartialAsync("_VitrineCidade", new CidadeVitrineViewModel
-            {
-                Slides = Model.Slides,
-                Texto = historiaTexto,
-                Citacao = historiaCitar,
-                ImagemPrincipal = imagemPrincipal,
-                ExibirTitulo = false,
-                BotaoHref = "/lugares",
-                BotaoTexto = "Explorar as 7 Maravilhas",
-                EventoRastreio = "ver-maravilhas"
-            })
-        </div>
-
-        <div class="stats-row cidade-stats reveal">
-            @if (Model.Estatisticas.Count == 0)
-            {
-                <div class="stat-card"><div class="stat-value">192</div><div class="stat-label">anos</div></div>
-                <div class="stat-card"><div class="stat-value">68k</div><div class="stat-label">habitantes</div></div>
-                <div class="stat-card"><div class="stat-value">7</div><div class="stat-label">maravilhas</div></div>
-            }
-            else
-            {
-                @foreach (var stat in Model.Estatisticas)
+    <div class="paginas-container">
+        <div class="paginas-cidade-layout">
+            <div class="paginas-cidade-card">
+                <div class="paginas-cidade-card-header">
+                    <span class="cursive">nossa</span>
+                    <span class="big">cidade</span>
+                    <span class="stars">✦✦✦</span>
+                </div>
+                @if (historiaImagem is not null && !historiaImagem.StartsWith("{{"))
                 {
-                    <div class="stat-card">
-                        <div class="stat-value">@stat.Valor</div>
-                        <div class="stat-label">@stat.Legenda</div>
-                    </div>
+                    <img class="paginas-cidade-card-img" src="/arquivo/@historiaImagem" alt="Vista de Estância" loading="lazy" />
                 }
-            }
+                else if (Model.Slides.Count > 0)
+                {
+                    <img class="paginas-cidade-card-img" src="/arquivo/@Model.Slides[0].ImagemArquivoId" alt="Vista de Estância" loading="lazy" />
+                }
+                <div class="paginas-cidade-card-text">
+                    @Html.Raw(historiaTexto)
+                </div>
+                <div class="paginas-cidade-card-quote">@historiaCitar</div>
+            </div>
+
+            <div class="paginas-cidade-text">
+                <div class="cursive">descubra</div>
+                <h2 class="paginas-cidade-title">
+                    Onde a história <span class="highlight-red">acende</span> a <span class="serif-bold">tradição.</span>
+                </h2>
+                <p class="paginas-cidade-desc">@Html.Raw(historiaDescricao)</p>
+
+                <div class="stats-row">
+                    @if (Model.Estatisticas.Count == 0)
+                    {
+                        <div class="stat-card"><div class="stat-value">192</div><div class="stat-label">anos</div></div>
+                        <div class="stat-card"><div class="stat-value">68k</div><div class="stat-label">habitantes</div></div>
+                        <div class="stat-card"><div class="stat-value">7</div><div class="stat-label">maravilhas</div></div>
+                    }
+                    else
+                    {
+                        @foreach (var stat in Model.Estatisticas)
+                        {
+                            <div class="stat-card">
+                                <div class="stat-value">@stat.Valor</div>
+                                <div class="stat-label">@stat.Legenda</div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="paginas-cta-row">
+                    <a href="/lugares" class="btn-primary">
+                        Explorar as 7 Maravilhas <i data-lucide="arrow-right" class="icon-lg"></i>
+                    </a>
+                    <a href="/cultura" class="btn-secondary"><i data-lucide="sparkles" class="icon-lg"></i> Nossa Cultura</a>
+                </div>
+            </div>
         </div>
 
         @if (Model.Slides.Count >= 2)
