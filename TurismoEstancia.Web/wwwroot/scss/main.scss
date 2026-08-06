@@ -189,7 +189,67 @@
   }
 }
 
-// --- Newsletter LGPD ---
+// --- Newsletter "Fique por dentro" ---
+// O _portal.scss põe os filhos do form em linha única (row nowrap), o que
+// espremia o checkbox LGPD entre o e-mail e o botão. Aqui o form quebra
+// linha: e-mail + botão ficam na primeira linha e a LGPD ocupa a linha
+// inteira embaixo.
+.newsletter-form {
+  flex-wrap: wrap;
+
+  // No desktop: e-mail + botão na 1ª linha e a LGPD na linha inteira
+  // embaixo. O `order` é necessário porque o flex-wrap NÃO faz backfill:
+  // sem ele, o botão (que vem depois da LGPD no DOM) iria para a 3ª linha.
+  .newsletter-input-wrapper {
+    order: 1;
+    flex: 1 1 180px;
+    min-width: 0;
+  }
+
+  .newsletter-btn {
+    order: 2;
+    flex-shrink: 0;
+  }
+
+  // width: 100% (e não flex-basis) força a própria linha no desktop sem
+  // interferir na direção coluna do mobile (flex-basis 100% em coluna
+  // viraria 100% da altura do form).
+  .newsletter-lgpd {
+    order: 3;
+    width: 100%;
+  }
+}
+
+// No mobile (coluna) a ordem natural retorna: e-mail, LGPD, botão — e o
+// botão ocupa a largura toda (touch target, padrão hero-actions).
+@media (max-width: 640px) {
+  .newsletter-input-wrapper { order: 1; }
+  .newsletter-lgpd { order: 2; }
+  .newsletter-btn { order: 3; width: 100%; }
+}
+
+// Feedback do formulário (TempData do NewsletterController)
+.newsletter-feedback {
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+
+  &--ok {
+    background: rgba(0, 150, 98, 0.12);
+    border: 1px solid rgba(0, 150, 98, 0.45);
+    color: #7be0b4;
+  }
+
+  &--erro {
+    background: rgba(230, 57, 70, 0.12);
+    border: 1px solid rgba(230, 57, 70, 0.45);
+    color: #ff9a9f;
+  }
+}
+
 .newsletter-lgpd {
   display: flex;
   align-items: flex-start;
