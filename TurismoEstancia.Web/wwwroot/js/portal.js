@@ -120,6 +120,25 @@ document.addEventListener('DOMContentLoaded', function () {
     updateProgress();
   })();
 
+  // ===== Botão voltar ao topo =====
+  (function initScrollTop() {
+    const btn = document.getElementById('scrollTop');
+    if (!btn) return;
+    let tickingTop = false;
+    function updateScrollTop() {
+      const y = window.scrollY || window.pageYOffset;
+      btn.classList.toggle('visible', y > 480);
+      tickingTop = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!tickingTop) { requestAnimationFrame(updateScrollTop); tickingTop = true; }
+    }, { passive: true });
+    btn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    updateScrollTop();
+  })();
+
   // ===== Navbar scroll + mobile menu =====
   const navbar = document.getElementById('navbar');
   let lastScrollY = 0;
