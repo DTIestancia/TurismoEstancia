@@ -1316,6 +1316,67 @@
   .vitrine-foto { border-width: 4px; }
 }
 
+// ===== Ajustes mobile (celular primeiro — público principal) =====
+@media (max-width: 640px) {
+  // Grids das páginas internas viram coluna única: nunca estouram a largura
+  // (o minmax(320px, 1fr) original transbordava em telas <= ~368px).
+  .paginas-grid,
+  .news-grid,
+  .roteiros-grid,
+  .paginas-galeria-grid { grid-template-columns: 1fr; }
+
+  // Paddings compactos nas páginas internas
+  .paginas-nav-inner { padding: 12px 16px; gap: 12px; }
+  .paginas-hero { padding: 72px 16px 40px; }
+  .paginas-container { padding: 28px 16px 72px; }
+  .news-hero { padding: 96px 16px 36px; }
+  .news-container { padding: 28px 16px 72px; }
+  .news-article { padding: 28px 16px 72px; }
+  .section-roteiros { padding: 64px 0; }
+  .section-roteiros-inner { padding: 0 16px; }
+
+  // Layouts em grid: mais respiro vertical entre os blocos
+  .paginas-cidade-layout,
+  .paginas-cultura-intro,
+  .lugar-layout { gap: 28px; }
+
+  // Card da cidade: cabeçalho quebra linha e textos respiram
+  .paginas-cidade-card-header { flex-wrap: wrap; gap: 8px; }
+  .paginas-cidade-card-text,
+  .paginas-cidade-card-quote { padding-left: 18px; padding-right: 18px; }
+  .paginas-cultura-quote { padding-left: 14px; }
+
+  // Galeria: fotos mais baixas em telas pequenas
+  .paginas-galeria-grid img { height: 160px; }
+}
+
+@media (max-width: 480px) {
+  // Navbar: padding menor e CTA escondido (o "Baixe o Guia" já existe
+  // dentro do menu hambúrguer via .navbar-cta-mobile) — evita overflow
+  // com o logo em telas <= 360px.
+  .navbar { padding: 0 16px; }
+  .navbar-cta { display: none; }
+
+  // Hero: mais espaço útil para o título
+  .hero-content { padding: 0 20px; }
+
+  // Vitrine das maravilhas: painel e controles mais compactos
+  .vitrine-painel { padding: 20px 14px 16px; border-radius: 18px; }
+  .vitrine-card { padding: 16px; }
+  .vitrine-postais { gap: 8px; }
+  .vitrine-seta { width: 42px; height: 42px; }
+  .vitrine-hint { font-size: 11px; }
+  .vitrine-foto { border-radius: 18px; }
+
+  // Página de erro: ações empilham
+  .error-actions { flex-direction: column; align-items: stretch; }
+  .error-actions .btn-primary,
+  .error-actions .btn-secondary { width: 100%; justify-content: center; }
+
+  // Mapa um pouco mais baixo em telas pequenas
+  .map-container { height: 280px; }
+}
+
 // --- Página de erro (404/500) ---
 .error-page {
   min-height: 100vh;
