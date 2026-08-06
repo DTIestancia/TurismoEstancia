@@ -1,0 +1,59 @@
+using TurismoEstancia.Domain.DTOs;
+
+namespace TurismoEstancia.Web.Models;
+
+/// <summary>
+/// Agrega todos os dados dinâmicos exibidos na página inicial do portal
+/// (a antiga index.html do protótipo, agora com conteúdo do banco).
+/// </summary>
+public class HomeViewModel
+{
+    // Conteúdos por chave (textos das seções)
+    public Dictionary<string, string?> Conteudos { get; set; } = new();
+
+    // Configurações (guia, vídeo, SEO)
+    public ConfiguracaoSiteDto? Guia { get; set; }
+    public ConfiguracaoSiteDto? VideoInstitucional { get; set; }
+    public ConfiguracaoSiteDto? TituloSite { get; set; }
+
+    // Hero
+    public IReadOnlyList<SlideDto> Slides { get; set; } = Array.Empty<SlideDto>();
+
+    // Estatísticas (história)
+    public IReadOnlyList<EstatisticaDto> Estatisticas { get; set; } = Array.Empty<EstatisticaDto>();
+
+    // Cultura & Gastronomia
+    public IReadOnlyList<GrupoCulturalDto> GruposCulturais { get; set; } = Array.Empty<GrupoCulturalDto>();
+    public IReadOnlyList<PratoTuristicoDto> PratosTuristicos { get; set; } = Array.Empty<PratoTuristicoDto>();
+    public IReadOnlyList<TagCulturalDto> TagsCulturais { get; set; } = Array.Empty<TagCulturalDto>();
+
+    // Maravilhas (agrupadas por categoria que apresenta em Maravilhas)
+    public IReadOnlyList<CategoriaMaravilhasViewModel> CategoriasMaravilhas { get; set; } = Array.Empty<CategoriaMaravilhasViewModel>();
+
+    // Mapa: POIs + categorias
+    public IReadOnlyList<PontoTuristicoDto> PontosParaMapa { get; set; } = Array.Empty<PontoTuristicoDto>();
+    public IReadOnlyList<CategoriaPontoTuristicoDto> CategoriasMapa { get; set; } = Array.Empty<CategoriaPontoTuristicoDto>();
+
+    // Agenda (eventos futuros)
+    public IReadOnlyList<EventoDto> EventosProximos { get; set; } = Array.Empty<EventoDto>();
+
+    // Roteiros
+    public IReadOnlyList<RoteiroDto> Roteiros { get; set; } = Array.Empty<RoteiroDto>();
+
+    // Contatos do rodapé
+    public IReadOnlyList<ContatoDto> Contatos { get; set; } = Array.Empty<ContatoDto>();
+
+    // Acessórios
+    public bool GuiaDisponivel => Guia?.ArquivoId is > 0;
+    public long? VideoArquivoId => VideoInstitucional?.ArquivoId;
+
+    /// <summary>JSON do mapa (categorias + POIs) serializado no controller.</summary>
+    public string MapaJson { get; set; } = "{}";
+}
+
+/// <summary>Uma categoria + seus pontos (seção 7 Maravilhas).</summary>
+public class CategoriaMaravilhasViewModel
+{
+    public CategoriaPontoTuristicoDto Categoria { get; set; } = null!;
+    public IReadOnlyList<PontoTuristicoDto> Pontos { get; set; } = Array.Empty<PontoTuristicoDto>();
+}

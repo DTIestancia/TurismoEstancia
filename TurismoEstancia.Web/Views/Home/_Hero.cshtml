@@ -1,0 +1,114 @@
+@model HomeViewModel
+@{
+    var heroTitulo = Model.Conteudos.GetValueOrDefault("hero-titulo", "Explore as Cores, a História e a Tradição de Estância");
+    var heroSubtitulo = Model.Conteudos.GetValueOrDefault("hero-subtitulo",
+        "Entre dunas douradas e céus que viram arte, Estância te chama pra viver uma experiência que acende todos os sentidos. O Nordeste está aqui, mais vibrante do que nunca.") ?? "";
+    var slides = Model.Slides.Any() ? Model.Slides : null;
+}
+
+<!-- ===== Reading Progress Bar ===== -->
+<div class="progress-bar" id="progressBar" aria-hidden="true"></div>
+
+<!-- ===== Page Preloader ===== -->
+<div id="pageLoader" class="page-loader" aria-hidden="true">
+    <div class="page-loader-content">
+        <div class="loader-picto-container">
+            @foreach (var i in Enumerable.Range(1, 7))
+            {
+                <img src="" alt="" class="loader-picto loader-picto--@i" aria-hidden="true" />
+            }
+        </div>
+        <h1 class="page-loader-title">Descubra <span class="page-loader-highlight">Estância</span></h1>
+        <p class="page-loader-subtitle">Capital Sergipana da Cultura</p>
+        <div class="page-loader-bar-track">
+            <div class="page-loader-bar-fill"></div>
+        </div>
+    </div>
+</div>
+<noscript><style>.page-loader { display: none !important; }</style></noscript>
+
+<!-- ===== Navbar ===== -->
+<nav class="navbar" id="navbar">
+    <div class="navbar-inner">
+        <a href="#section-cidade" class="navbar-brand">
+            <img src="~/img/ASSINATURA-CAPITAL-MARAVILHAS-AZUL.png" alt="Logo Descubra Estância" style="height:36px;width:auto;" />
+        </a>
+        <button class="navbar-toggle" id="navToggle" aria-label="Abrir menu"><i data-lucide="menu" class="icon-lg"></i></button>
+        <div class="navbar-links" id="navLinks">
+            <a href="#section-cidade" class="navbar-link" data-section="cidade">Nossa Cidade</a>
+            <a href="#section-cultura" class="navbar-link" data-section="cultura">Cultura</a>
+            <a href="#section-gastronomia" class="navbar-link" data-section="gastronomia">Gastronomia</a>
+            <a href="#section-maravilhas" class="navbar-link" data-section="maravilhas">7 Maravilhas</a>
+            <a href="#section-servicos" class="navbar-link" data-section="servicos">Serviços ao Turista</a>
+            <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema claro/escuro" title="Alternar tema">
+                <i data-lucide="moon" class="icon-lg" id="themeToggleIcon"></i>
+            </button>
+            @if (Model.GuiaDisponivel)
+            {
+                <a asp-controller="Arquivo" asp-action="Index" asp-route-id="@Model.Guia!.ArquivoId" class="navbar-cta-mobile">
+                    <i data-lucide="download" class="icon-lg"></i> Baixe o Guia
+                </a>
+            }
+        </div>
+        @if (Model.GuiaDisponivel)
+        {
+            <a asp-controller="Arquivo" asp-action="Index" asp-route-id="@Model.Guia!.ArquivoId" class="navbar-cta">
+                <i data-lucide="download" class="icon-lg"></i> Baixe o Guia
+            </a>
+        }
+    </div>
+</nav>
+
+<!-- ===== Hero Section ===== -->
+<section class="hero section-blend" id="section-cidade" data-section="cidade">
+    @if (slides is not null)
+    {
+        var i = 0;
+        foreach (var slide in slides)
+        {
+            <img class="hero-slide@(i == 0 ? " active" : "")" src="/arquivo/@(slide.ImagemArquivoId is long imgId ? imgId.ToString() : "")" alt="@(slide.Titulo ?? "Estância")" data-index="@i" />
+            i++;
+        }
+    }
+    <div class="hero-overlay"></div>
+    <div class="hero-vignette"></div>
+    <div class="hero-content">
+        <div class="hero-text">
+            <div class="hero-badge" style="margin-bottom:20px;">
+                <div class="pill pill-white">
+                    <i data-lucide="star" class="icon-lg" style="color:var(--color-white-solid);"></i>
+                    <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;line-height:16px;">Capital Sergipana da Cultura</span>
+                </div>
+            </div>
+            <div class="hero-particles" id="heroParticles"></div>
+            <h1 class="hero-title">
+                <span class="animate-text">Explore as</span><br />
+                <span class="animate-text highlight-orange">Cores</span><span class="animate-text">, a</span><br />
+                <span class="animate-text highlight-green">História </span><span class="animate-text">  e a</span><br />
+                <span class="animate-text highlight-coral">Tradição </span><span class="animate-text">  de Estância</span>
+            </h1>
+            <p class="hero-subtitle">
+                @Html.Raw(heroSubtitulo.Replace("\n", "<br />"))
+            </p>
+            <div class="hero-actions">
+                <a href="#section-maravilhas" class="btn-primary">Explorar as 7 Maravilhas <i data-lucide="arrow-right" class="icon-lg"></i></a>
+                <a href="#institutionalVideo" class="btn-secondary"><i data-lucide="play" class="icon-lg"></i> Ver Estância em Movimento</a>
+            </div>
+        </div>
+    </div>
+    <div class="hero-scroll-indicator">
+        <span>Role para explorar</span>
+        <i data-lucide="chevron-down" class="icon-lg"></i>
+    </div>
+    @if (slides is not null)
+    {
+        <div class="hero-carousel" id="heroCarousel">
+            <button class="carousel-btn" id="carouselPrev" aria-label="Anterior">‹</button>
+            @for (var i = 0; i < slides.Count; i++)
+            {
+                <span class="carousel-dot@(i == 0 ? " active" : "")" data-slide="@i"></span>
+            }
+            <button class="carousel-btn" id="carouselNext" aria-label="Próximo">›</button>
+        </div>
+    }
+</section>

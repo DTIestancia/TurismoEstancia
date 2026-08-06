@@ -1,0 +1,39 @@
+@page "{slug}"
+@model TurismoEstancia.Web.Pages.Noticias.DetalheModel
+@{
+    ViewData["Title"] = Model.Noticia?.Titulo ?? "Notícia não encontrada";
+}
+<main class="news-detail page-public">
+    @if (Model.Noticia is null)
+    {
+        <div class="news-container">
+            <div class="news-empty">Notícia não encontrada ou não publicada.</div>
+            <p style="text-align:center;margin-top:16px;"><a class="btn-primary" asp-page="Index">← Voltar às notícias</a></p>
+        </div>
+    }
+    else
+    {
+        <article class="news-article">
+            <header class="news-article-header">
+                <div class="pill pill-white" style="background:var(--color-white--15);">
+                    <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">@Model.Noticia.DataPublicacao.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"))</span>
+                </div>
+                <h1 class="news-article-title">@Model.Noticia.Titulo</h1>
+                @if (!string.IsNullOrWhiteSpace(Model.Noticia.Resumo))
+                {
+                    <p class="news-article-resumo">@Model.Noticia.Resumo</p>
+                }
+            </header>
+            @if (Model.Noticia.ImagemArquivoId is long imgId)
+            {
+                <img class="news-article-img" src="/arquivo/@imgId" alt="@Model.Noticia.Titulo" />
+            }
+            <div class="news-article-body">
+                @Html.Raw(Model.Noticia.Corpo)
+            </div>
+            <footer class="news-article-footer">
+                <a class="btn-primary" asp-page="Index"><i data-lucide="arrow-left" class="icon-lg"></i> Voltar às notícias</a>
+            </footer>
+        </article>
+    }
+</main>

@@ -33,6 +33,9 @@ public static class PipelineExtensions
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
+
+        // 404/500 no visual do portal (sem redirecionamento de status).
+        app.UseStatusCodePagesWithReExecute("/Home/Error");
     }
 
     public static void MapAllRoutes(this WebApplication app)

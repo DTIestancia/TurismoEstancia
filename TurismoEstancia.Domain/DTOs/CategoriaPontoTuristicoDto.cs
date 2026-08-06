@@ -6,6 +6,7 @@ namespace TurismoEstancia.Domain.DTOs;
 public class CategoriaPontoTuristicoDto
 {
     public int Id { get; set; }
+    public string Chave { get; set; } = null!;
     public string Nome { get; set; } = null!;
     public string? SubTitulo { get; set; }
     public string? Cor { get; set; }

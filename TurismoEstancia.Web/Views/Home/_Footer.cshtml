@@ -1,0 +1,99 @@
+@model HomeViewModel
+@{
+    var telefones = Model.Contatos.Where(c => c.Tipo == TurismoEstancia.Domain.Models.TipoContato.Telefone).ToList();
+    var enderecos = Model.Contatos.Where(c => c.Tipo == TurismoEstancia.Domain.Models.TipoContato.Endereco).ToList();
+    var redes = Model.Contatos.Where(c => c.Tipo == TurismoEstancia.Domain.Models.TipoContato.RedesSocial).ToList();
+    var newsletterTitulo = Model.Conteudos.GetValueOrDefault("newsletter-titulo", "Receba a programação cultural, eventos e novidades direto no seu e-mail.");
+}
+
+<footer class="site-footer" data-section="servicos">
+    <div class="footer-inner">
+        <div class="reveal reveal-delay-1">
+            <div class="footer-brand">
+                <img src="~/img/ASSINATURA-CAPITAL-MARAVILHAS-AZUL.png" alt="Logo Descubra Estância" style="height:36px;width:auto;" />
+            </div>
+            <div class="footer-org">
+                <strong>Prefeitura Municipal de Estância</strong><br />
+                Secretaria de Turismo, Cultura e Eventos
+            </div>
+            @if (enderecos.Count > 0)
+            {
+                <div class="footer-address">
+                    @foreach (var end in enderecos)
+                    {
+                        @Html.Raw(end.Valor.Replace("\n", "<br />"))
+                    }
+                </div>
+            }
+
+            <!-- Social Media -->
+            @if (redes.Count > 0)
+            {
+                <div class="footer-social">
+                    @foreach (var rede in redes)
+                    {
+                        <a href="@rede.Valor" target="_blank" rel="noopener" class="footer-social-link" aria-label="@rede.Rotulo">
+                            <i data-lucide="@(rede.Icone ?? "globe")" class="icon-lg"></i>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="reveal reveal-delay-2">
+            <div class="footer-links-title"><i data-lucide="map-pin" class="icon-lg"></i> 7 Maravilhas no Mapa</div>
+            <div class="footer-links-grid">
+                @foreach (var ponto in Model.PontosParaMapa.Take(7))
+                {
+                    <a href="https://www.google.com/maps/search/?api=1&query=@Uri.EscapeDataString(ponto.Nome + " Estancia SE")" target="_blank" rel="noopener" class="footer-link">
+                        <i data-lucide="@(ponto.Icone ?? "map-pin")"></i> @ponto.Nome
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="reveal reveal-delay-3">
+            <div class="footer-contact-title"><i data-lucide="phone" class="icon-lg"></i> Serviços ao Turista</div>
+            @if (telefones.Count == 0)
+            {
+                <div class="footer-contact-item"><i data-lucide="phone" class="icon-lg"></i> Emergência: <strong><a href="tel:190" style="color:inherit;text-decoration:none;">190</a></strong></div>
+            }
+            else
+            {
+                @foreach (var tel in telefones)
+                {
+                    var telLimpo = tel.Valor.Replace(" ", "").Replace("(", "").Replace(")", "").Replace("-", "");
+                    <div class="footer-contact-item">
+                        <i data-lucide="@(tel.Icone ?? "phone")" class="icon-lg"></i> @tel.Rotulo:
+                        <strong><a href="tel:@telLimpo" style="color:inherit;text-decoration:none;">@tel.Valor</a></strong>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="reveal reveal-delay-4">
+            <div class="footer-contact-title"><i data-lucide="mail" class="icon-lg"></i> Fique por dentro</div>
+            <p>@newsletterTitulo</p>
+            <form class="newsletter-form" method="post" asp-controller="Newsletter" asp-action="Inscrever" id="newsletterForm">
+                @Html.AntiForgeryToken()
+                <div class="newsletter-input-wrapper">
+                    <i data-lucide="mail" class="newsletter-input-icon icon-lg"></i>
+                    <input type="email" name="email" class="newsletter-input" placeholder="Seu melhor e-mail" required autocomplete="email" aria-label="Email para newsletter" />
+                </div>
+                <label class="newsletter-lgpd">
+                    <input type="checkbox" name="consentimentoLgpd" value="true" required />
+                    <span>Aceito receber e-mails e concordo com a <strong>LGPD</strong>.</span>
+                </label>
+                <button type="submit" class="newsletter-btn">Quero receber</button>
+            </form>
+            <a href="https://www.estancia.se.gov.br" target="_blank" rel="noopener" class="footer-back-link">← Voltar ao Portal de Serviços</a>
+        </div>
+    </div>
+
+    <div style="max-width:1280px;margin:0 auto;">
+        <div class="footer-bottom">
+            <span class="footer-copyright">© @DateTime.Now.Year Prefeitura Municipal de Estância/SE — Todos os direitos reservados</span>
+            <span class="footer-badge"><i data-lucide="globe" class="icon-lg"></i> Portal Oficial de Turismo</span>
+        </div>
+    </div>
+</footer>

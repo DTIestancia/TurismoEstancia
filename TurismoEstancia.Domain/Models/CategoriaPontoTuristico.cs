@@ -8,6 +8,12 @@ public class CategoriaPontoTuristico
 {
     public int Id { get; set; }
 
+    /// <summary>
+    /// Chave estável da categoria (ex.: "heritage", "nature", "hotel", "food", "service").
+    /// Usada no mapa (classes CSS, filtros e legenda) e no agrupamento das Maravilhas.
+    /// </summary>
+    public string Chave { get; set; } = null!;
+
     public string Nome { get; set; } = null!;
 
     /// <summary>Subtítulo exibido no cabeçalho da categoria (ex.: "A história viva de Estância").</summary>

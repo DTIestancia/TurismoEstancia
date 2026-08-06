@@ -1,8 +1,25 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Início";
+    Layout = "_Layout";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@await Html.PartialAsync("_Hero", Model)
+@await Html.PartialAsync("_Video", Model)
+@await Html.PartialAsync("_Historia", Model)
+@await Html.PartialAsync("_Cultura", Model)
+@await Html.PartialAsync("_Gastronomia", Model)
+@await Html.PartialAsync("_Maravilhas", Model)
+@await Html.PartialAsync("_Agenda", Model)
+@await Html.PartialAsync("_Mapa", Model)
+@await Html.PartialAsync("_Roteiros", Model)
+@await Html.PartialAsync("_Footer", Model)
+
+@section Scripts {
+    <script>
+        // Dados do mapa injetados no Razor para o portal.js
+        window.turismoEstancia = {
+            mapa: @Html.Raw(Model.MapaJson)
+        };
+    </script>
+}

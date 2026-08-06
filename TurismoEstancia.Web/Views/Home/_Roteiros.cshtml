@@ -1,0 +1,41 @@
+@model HomeViewModel
+@{
+    var roteirosDesc = Model.Conteudos.GetValueOrDefault("roteiros-descricao",
+        "Itinerários prontos para você viver o melhor de Estância — da história ao litoral.");
+}
+
+@if (Model.Roteiros.Count > 0)
+{
+    <section class="section-roteiros section-3d section-divider" id="section-roteiros" data-section="servicos">
+        <div class="section-roteiros-inner">
+            <div class="section-tag">
+                <div class="pill pill-white">
+                    <i data-lucide="map" class="icon-lg" style="color:var(--color-white-solid);"></i>
+                    <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;line-height:16px;">Roteiros Turísticos</span>
+                </div>
+            </div>
+            <h2 class="section-title reveal" style="color:var(--color-white-solid);">
+                Trilhas para <span style="color:#FFC200;">explorar</span>
+            </h2>
+            <p class="section-desc reveal reveal-delay-1" style="color:var(--color-white--70);max-width:640px;">
+                @roteirosDesc
+            </p>
+            <div class="roteiros-grid">
+                @foreach (var roteiro in Model.Roteiros)
+                {
+                    <a class="roteiro-card reveal" href="/Roteiros/@roteiro.Id">
+                        @if (roteiro.ImagemArquivoId is long imgId)
+                        {
+                            <img class="roteiro-card-img" src="/arquivo/@imgId" alt="@roteiro.Titulo" loading="lazy" />
+                        }
+                        <div class="roteiro-card-body">
+                            <h3 class="roteiro-card-title">@roteiro.Titulo</h3>
+                            <p class="roteiro-card-desc">@roteiro.Descricao</p>
+                            <span class="roteiro-card-dias">@roteiro.Itens.Count @(roteiro.Itens.Count == 1 ? "dia" : "dias") de roteiro →</span>
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+}

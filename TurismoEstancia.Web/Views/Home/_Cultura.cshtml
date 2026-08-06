@@ -1,0 +1,68 @@
+@model HomeViewModel
+@{
+    var culturaDescricao = Model.Conteudos.GetValueOrDefault("cultura-descricao",
+        "<strong>Capital Mundial do Barco de Fogo</strong> — é aqui que o céu vira palco e a pólvora vira poesia. A Lira Carlos Gomes toca desde 1879, e o São João da cidade é daqueles de parar o coração.");
+    var culturaExtra = Model.Conteudos.GetValueOrDefault("cultura-extra",
+        "Quadrilhas que arrastam multidões, batucadas que ecoam no peito, forró que dura até o sol raiar — cada festa é um pedaço da alma estanciana. <em>Patrimônio que se sente na pele.</em>");
+    var culturaCitacao = Model.Conteudos.GetValueOrDefault("cultura-citacao",
+        "<strong>“Estância respira cultura.</strong> Cada festa é um encontro de gerações, cada tradição é um elo com o passado e um abraço no futuro.”");
+}
+
+<section class="section-culture section-3d section-divider" id="section-cultura" data-section="cultura">
+    <div class="bg-deco bg-deco-3"></div>
+    <div class="bg-deco bg-deco-4" style="overflow:hidden;">
+        <div style="width:246.56px;height:220.05px;margin:75px auto 0;background:var(--color-orange-57);border-radius:4px;transform:rotate(45deg);"></div>
+    </div>
+
+    <div class="section-culture-inner">
+        <div class="culture-layout">
+            <div class="culture-text-content">
+                <div class="cursive reveal reveal-delay-1">a alma</div>
+                <div>
+                    <div class="headline-white reveal reveal-delay-2">Nossa</div>
+                    <div class="headline-yellow reveal reveal-delay-3">cultura</div>
+                    <div class="cursive-small reveal reveal-delay-4">arde alto.</div>
+                </div>
+                <div class="description">
+                    @Html.Raw(culturaDescricao)
+                </div>
+                <div class="extra-text">
+                    @Html.Raw(culturaExtra)
+                </div>
+                <div class="culture-tags">
+                    @if (Model.TagsCulturais.Count == 0)
+                    {
+                        <span class="culture-tag">🔥 Barco de Fogo</span>
+                        <span class="culture-tag">🎺 Filarmônicas</span>
+                        <span class="culture-tag">🪗 São João</span>
+                        <span class="culture-tag">✝ Procissões</span>
+                        <span class="culture-tag">💃 Quadrilhas</span>
+                        <span class="culture-tag">🥁 Batucadas</span>
+                    }
+                    else
+                    {
+                        @foreach (var tag in Model.TagsCulturais)
+                        {
+                            <span class="culture-tag">@tag.Nome</span>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="culture-card-wrapper">
+                <div class="culture-card">
+                    <div class="culture-card-img-wrapper">
+                        @if (Model.Slides.Count >= 1)
+                        {
+                            <img src="/arquivo/@Model.Slides[0].ImagemArquivoId" alt="Estância — símbolo cultural" loading="lazy" />
+                        }
+                        <div class="culture-card-overlay"></div>
+                    </div>
+                    <div class="culture-card-quote">
+                        <p>@Html.Raw(culturaCitacao)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

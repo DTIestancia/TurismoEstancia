@@ -18,6 +18,7 @@ public class CategoriaPontoTuristicoService : ICategoriaPontoTuristicoService
         c => new CategoriaPontoTuristicoDto
         {
             Id = c.Id,
+            Chave = c.Chave,
             Nome = c.Nome,
             SubTitulo = c.SubTitulo,
             Cor = c.Cor,
@@ -48,6 +49,7 @@ public class CategoriaPontoTuristicoService : ICategoriaPontoTuristicoService
         {
             _db.CategoriasPontosTuristicos.Add(new CategoriaPontoTuristico
             {
+                Chave = dto.Chave,
                 Nome = dto.Nome,
                 SubTitulo = dto.SubTitulo,
                 Cor = dto.Cor,
@@ -62,6 +64,7 @@ public class CategoriaPontoTuristicoService : ICategoriaPontoTuristicoService
         {
             var entidade = await _db.CategoriasPontosTuristicos.FirstOrDefaultAsync(c => c.Id == dto.Id, ct)
                 ?? throw new InvalidOperationException("Categoria não encontrada.");
+            entidade.Chave = dto.Chave;
             entidade.Nome = dto.Nome;
             entidade.SubTitulo = dto.SubTitulo;
             entidade.Cor = dto.Cor;

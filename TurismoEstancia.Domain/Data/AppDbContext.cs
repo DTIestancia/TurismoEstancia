@@ -74,10 +74,13 @@ public class AppDbContext : DbContext
     {
         modelBuilder.Entity<CategoriaPontoTuristico>(entity =>
         {
+            entity.Property(e => e.Chave).HasMaxLength(50).IsRequired();
             entity.Property(e => e.Nome).HasMaxLength(150).IsRequired();
             entity.Property(e => e.SubTitulo).HasMaxLength(255);
             entity.Property(e => e.Cor).HasMaxLength(20);
             entity.Property(e => e.Icone).HasMaxLength(50);
+
+            entity.HasIndex(e => e.Chave).IsUnique();
             entity.Property(e => e.ApresentarEmMaravilhas).HasDefaultValue(true);
             entity.Property(e => e.ExibirNoMapa).HasDefaultValue(true);
             entity.Property(e => e.Ativo).HasDefaultValue(true);

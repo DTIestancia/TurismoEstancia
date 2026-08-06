@@ -1,0 +1,72 @@
+@model HomeViewModel
+@{
+    var maravilhasDesc = Model.Conteudos.GetValueOrDefault("maravilhas-descricao",
+        "De filarmônicas centenárias a praias de tirar o fôlego — cada cantinho de Estância tem uma história esperando por você.") ?? "";
+}
+
+<section class="section-wonders section-3d section-divider" id="section-maravilhas" data-section="maravilhas">
+    <div class="section-wonders-inner">
+        <div class="section-tag">
+            <div class="pill pill-white">
+                <span style="font-size:12px;">✦</span>
+                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;line-height:16px;">7 Maravilhas de Estância</span>
+            </div>
+        </div>
+        <h2 class="section-title reveal" style="color:var(--color-white-solid);">
+            Lugares que <span style="color:#FFC200;">encantam</span>
+        </h2>
+        <p class="section-desc reveal reveal-delay-1" style="color:var(--color-white--70);max-width:640px;">
+            @Html.Raw(maravilhasDesc.Replace("\n", "<br />"))
+        </p>
+
+        @foreach (var grupo in Model.CategoriasMaravilhas)
+        {
+            <div class="wonders-category">
+                <div class="wonders-category-header">
+                    <div class="wonders-category-icon @grupo.Categoria.Chave">
+                        <i data-lucide="@(grupo.Categoria.Icone ?? "star")" class="icon-lg"></i>
+                    </div>
+                    <div>
+                        <div class="wonders-category-title">@grupo.Categoria.Nome</div>
+                        <div class="wonders-category-subtitle">@grupo.Categoria.SubTitulo</div>
+                    </div>
+                </div>
+                <div class="wonders-grid">
+                    @foreach (var ponto in grupo.Pontos)
+                    {
+                        <div class="wonder-card reveal"
+                             role="button"
+                             tabindex="0"
+                             data-wonder-icon="@(ponto.Icone ?? "star")"
+                             data-wonder-title="@ponto.Nome"
+                             data-wonder-desc="@ponto.Descricao"
+                             data-wonder-detail="@ponto.Detalhe"
+                             data-wonder-img="@(ponto.CapaArquivoId is long capaId ? $"/arquivo/{capaId}" : "")"
+                             data-wonder-tag="@ponto.Tag"
+                             data-wonder-category="@grupo.Categoria.Nome"
+                             data-wonder-categoria-chave="@grupo.Categoria.Chave"
+                             data-wonder-point-id="@ponto.Id">
+                            @if (ponto.CapaArquivoId is long capa)
+                            {
+                                <img class="wonder-card-img" src="/arquivo/@capa" alt="@ponto.Nome" loading="lazy" />
+                            }
+                            <div class="wonder-card-overlay"></div>
+                            <div class="wonder-card-content">
+                                @if (ponto.PictogramaArquivoId is long picto)
+                                {
+                                    <img src="/arquivo/@picto" alt="Ícone @ponto.Nome" class="wonder-card-picto" loading="lazy" />
+                                }
+                                <h3>@ponto.Nome</h3>
+                                <p>@ponto.Descricao</p>
+                                @if (!string.IsNullOrWhiteSpace(ponto.Tag))
+                                {
+                                    <span class="wonder-tag">@ponto.Tag</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</section>

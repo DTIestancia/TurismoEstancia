@@ -1,0 +1,101 @@
+@model HomeViewModel
+@{
+    var mapaDesc = Model.Conteudos.GetValueOrDefault("mapa-descricao",
+        "Clique nos marcadores e descubra onde cada maravilha está esperando por você, com endereço e dicas de como chegar. <strong>Bora explorar?</strong>") ?? "";
+}
+
+<section class="section-map section-3d section-divider" data-section="servicos">
+    <div class="section-map-inner">
+        <div class="section-tag">
+            <div class="pill pill-white" style="background:rgba(255,255,255,0.10);">
+                <i data-lucide="map" class="icon-lg" style="color:var(--color-white-solid);"></i>
+                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;line-height:16px;">Explore o Mapa</span>
+            </div>
+        </div>
+        <h2 class="section-title reveal" style="color:var(--color-white-solid);">
+            Encontre as <span style="color:#FF8D00;">7 Maravilhas</span>
+        </h2>
+        <p class="section-desc reveal reveal-delay-1" style="color:var(--color-white--70);max-width:640px;">
+            @Html.Raw(mapaDesc.Replace("\n", "<br />"))
+        </p>
+
+        <div class="map-filter-bar reveal reveal-delay-1" id="mapFilterBar">
+            <!-- Filter buttons generated dynamically from JS -->
+        </div>
+
+        <div class="custom-map reveal-scale" id="estanciaMap" aria-label="Mapa Interativo de Estância com as 7 Maravilhas">
+            <div class="custom-map-terrain" aria-hidden="true">
+                <div class="terrain-circle" style="width:300px;height:300px;top:10%;left:5%;"></div>
+                <div class="terrain-circle" style="width:200px;height:200px;top:25%;left:15%;"></div>
+                <div class="terrain-circle" style="width:400px;height:400px;top:40%;left:50%;"></div>
+                <div class="terrain-circle" style="width:250px;height:250px;top:60%;left:20%;"></div>
+                <div class="terrain-circle" style="width:350px;height:350px;top:30%;left:70%;"></div>
+                <div class="terrain-circle" style="width:180px;height:180px;top:70%;left:65%;"></div>
+                <div class="terrain-circle" style="width:280px;height:280px;top:75%;left:40%;"></div>
+            </div>
+            <div class="custom-map-grid" aria-hidden="true"></div>
+            <div class="custom-map-river" aria-hidden="true"></div>
+        </div>
+
+        <div class="map-legend reveal reveal-delay-2" id="mapLegend">
+            <!-- Legend items generated dynamically from JS -->
+        </div>
+    </div>
+</section>
+
+<!-- ===== Modal de Detalhes (com avaliações) ===== -->
+<div class="modal-overlay" id="wonderModal">
+    <div class="modal">
+        <button class="modal-close" id="modalClose" aria-label="Fechar">
+            <i data-lucide="x" class="icon-lg"></i>
+        </button>
+        <img class="modal-img" id="modalImg" src="" alt="" />
+        <div class="modal-body">
+            <div class="modal-icon-wrap" id="modalIconWrap">
+                <i data-lucide="star" class="icon-2xl" id="modalIcon"></i>
+            </div>
+            <div class="modal-category" id="modalCategory"></div>
+            <h3 class="modal-title" id="modalTitle"></h3>
+            <p class="modal-desc" id="modalDesc"></p>
+            <div class="modal-detail" id="modalDetail"></div>
+            <div class="modal-address" id="modalAddress">
+                <i data-lucide="map-pin" class="icon-lg"></i>
+                <div>
+                    <span class="modal-address-title">Endereço</span>
+                    <span id="modalAddressText"></span>
+                </div>
+            </div>
+            <div class="modal-directions" id="modalDirections">
+                <i data-lucide="compass" class="icon-lg"></i>
+                <div>
+                    <span class="modal-directions-title">Como Chegar</span>
+                    <span id="modalDirectionsText"></span>
+                </div>
+            </div>
+            <div class="modal-tag" id="modalTag"></div>
+
+            <!-- Avaliações (dinâmicas) -->
+            <div class="modal-avaliacoes" id="modalAvaliacoes" hidden>
+                <div class="modal-avaliacoes-title"><i data-lucide="star" class="icon-lg"></i> O que dizem os visitantes</div>
+                <div class="modal-avaliacoes-list" id="modalAvaliacoesList"></div>
+            </div>
+
+            <!-- Formulário de avaliação -->
+            <form class="avaliacao-form" method="post" asp-controller="Avaliacao" asp-action="Submeter" asp-route-anchor="section-maravilhas">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="PontoTuristicoId" id="avaliacaoPontoId" value="" />
+                <div class="avaliacao-form-title"><i data-lucide="message-square-heart" class="icon-lg"></i> Deixe sua avaliação</div>
+                <input type="text" name="Nome" class="avaliacao-input" placeholder="Seu nome" maxlength="150" required />
+                <div class="avaliacao-notas" id="avaliacaoNotas">
+                    @for (var n = 1; n <= 5; n++)
+                    {
+                        <button type="button" class="avaliacao-nota" data-nota="@n" aria-label="@n estrelas">★</button>
+                    }
+                    <input type="hidden" name="Nota" id="avaliacaoNotaInput" value="5" />
+                </div>
+                <textarea name="Comentario" class="avaliacao-textarea" placeholder="Conte sua experiência..." maxlength="1000"></textarea>
+                <button type="submit" class="avaliacao-submit">Enviar avaliação</button>
+            </form>
+        </div>
+    </div>
+</div>
