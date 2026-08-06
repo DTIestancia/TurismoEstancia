@@ -32,7 +32,10 @@ public static class DatabaseSeeder
         await db.Database.MigrateAsync();
         await identity.Database.MigrateAsync();
 
-        if (await db.CategoriasPontosTuristicos.AnyAsync())
+        // Admin sempre garantido (mesmo se o banco de negócio já estiver populado).
+        await GarantirAdminAsync(userManager);
+
+        if (await db.CategoriasPontosTuristicos.AnyAsync() && await db.Arquivos.AnyAsync())
         {
             Console.WriteLine("[seed] Banco já populado — nada a fazer.");
             return;
@@ -46,6 +49,7 @@ public static class DatabaseSeeder
         var slide3 = await SalvarArquivoAsync(db, "barcos de fogo.jpeg", "image/jpeg");
         var logo = await SalvarArquivoAsync(db, "ASSINATURA-CAPITAL-MARAVILHAS-AZUL.png", "image/png");
         var video = await SalvarArquivoAsync(db, "video_institucional.mp4", "video/mp4");
+        // TODO: trocar por um PDF real do guia do turista (placeholder usa uma imagem).
         var guia = await SalvarArquivoAsync(db, "CAPITAL BRASILEIRA DO BARCO DE FOGO.png", "image/png");
 
         // ---------- Categorias ----------
@@ -230,15 +234,17 @@ public static class DatabaseSeeder
             new Contato { Tipo = TipoContato.RedesSocial, Rotulo = "YouTube", Valor = "https://www.youtube.com/@prefeituraestancia", Icone = "youtube", Ordem = 8 },
             new Contato { Tipo = TipoContato.RedesSocial, Rotulo = "WhatsApp", Valor = "https://wa.me/5579998765432", Icone = "message-circle", Ordem = 9 });
 
-        // ---------- Eventos ----------
+        // ---------- Eventos (datas relativas a hoje: a agenda do portal só
+        // exibe eventos futuros, então tudo é ancorado em AddDays para o
+        // seed demonstrar a seção com conteúdo). ----------
         db.Eventos.AddRange(
             new Evento
             {
                 Titulo = "Festival do Barco de Fogo",
                 Descricao = "A tradicional queima dos barcos de fogo ilumina o céu de Estância. Uma das festas mais aguardadas do Nordeste!",
                 Local = "Orla da cidade, Estância/SE",
-                DataInicio = new DateTime(DateTime.Today.Year, 6, 24, 19, 0, 0),
-                DataFim = new DateTime(DateTime.Today.Year, 6, 24, 23, 59, 0),
+                DataInicio = DateTime.Today.AddDays(20).Date.AddHours(19),
+                DataFim = DateTime.Today.AddDays(20).Date.AddHours(23).AddMinutes(59),
                 Ordem = 1
             },
             new Evento
@@ -255,8 +261,8 @@ public static class DatabaseSeeder
                 Titulo = "São João de Estância",
                 Descricao = "Forró, quadrilhas e comidas típicas na maior festa junina do litoral sergipano.",
                 Local = "Praça de Eventos, Estância/SE",
-                DataInicio = new DateTime(DateTime.Today.Year, 6, 20, 18, 0, 0),
-                DataFim = new DateTime(DateTime.Today.Year, 6, 30, 23, 59, 0),
+                DataInicio = DateTime.Today.AddDays(45),
+                DataFim = DateTime.Today.AddDays(45).AddDays(10),
                 Ordem = 3
             });
 
@@ -321,32 +327,33 @@ public static class DatabaseSeeder
             new Avaliacao { PontoTuristicoId = lagoa.Id, Nome = "Ana Clara", Nota = 4, Comentario = "Experiência única com os tambaquis. Leve chinelo e protetor solar.", Aprovada = true },
             new Avaliacao { PontoTuristicoId = saco.Id, Nome = "Carlos Andrade", Nota = 5, Comentario = "Melhor praia de Sergipe! Água cristalina e infraestrutura boa.", Aprovada = false });
 
-        // ---------- Usuário admin (Gerenciador) ----------
-        if (!await userManager.Users.AnyAsync())
-        {
-            var admin = new Usuario
-            {
-                UserName = "admin@estancia.se.gov.br",
-                Email = "admin@estancia.se.gov.br",
-                NomeCompleto = "Administrador do Portal",
-                EmailConfirmed = true
-            };
-
-            var senha = "Estancia@2026";
-            var resultado = await userManager.CreateAsync(admin, senha);
-            if (resultado.Succeeded)
-            {
-                await userManager.AddClaimAsync(admin, new System.Security.Claims.Claim("Perfil", "Gerenciador"));
-                Console.WriteLine($"[seed] Usuário admin criado: admin@estancia.se.gov.br / {senha}");
-            }
-            else
-            {
-                Console.WriteLine($"[seed] Falha ao criar admin: {string.Join("; ", resultado.Errors.Select(e => e.Description))}");
-            }
-        }
-
         await db.SaveChangesAsync();
         Console.WriteLine("[seed] Dados do protótipo importados com sucesso.");
+    }
+
+    private static async Task GarantirAdminAsync(UserManager<Usuario> userManager)
+    {
+        if (await userManager.Users.AnyAsync()) return;
+
+        var admin = new Usuario
+        {
+            UserName = "admin@estancia.se.gov.br",
+            Email = "admin@estancia.se.gov.br",
+            NomeCompleto = "Administrador do Portal",
+            EmailConfirmed = true
+        };
+
+        var senha = "Estancia@2026";
+        var resultado = await userManager.CreateAsync(admin, senha);
+        if (resultado.Succeeded)
+        {
+            await userManager.AddClaimAsync(admin, new System.Security.Claims.Claim("Perfil", "Gerenciador"));
+            Console.WriteLine($"[seed] Usuário admin criado: admin@estancia.se.gov.br / {senha}");
+        }
+        else
+        {
+            Console.WriteLine($"[seed] Falha ao criar admin: {string.Join("; ", resultado.Errors.Select(e => e.Description))}");
+        }
     }
 
     // ---------- Helpers ----------
