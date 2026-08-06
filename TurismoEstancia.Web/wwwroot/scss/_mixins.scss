@@ -1,0 +1,35 @@
+// ===== Mixins SCSS (compartilhados entre portal e painel) =====
+
+// Centralização absoluta.
+@mixin centralizar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Truncar texto em uma linha.
+@mixin truncar {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Esconder visualmente mantendo acessibilidade (sr-only).
+@mixin sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Media query para telas menores.
+@mixin ate($largura) {
+  @media (max-width: $largura) {
+    @content;
+  }
+}

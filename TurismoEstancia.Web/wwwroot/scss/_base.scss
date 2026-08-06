@@ -1,4 +1,6 @@
 // ===== Reset & Base (compartilhado) =====
+@use 'tokens' as *;
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
