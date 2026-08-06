@@ -8,6 +8,25 @@
 
 // ===== Ajustes do portal dinâmico =====
 
+// --- Preloader personalizado (pictogramas reais das 7 maravilhas) ---
+// O _portal.scss traz os pictogramas como silhuetas brancas
+// (brightness(0) invert(1)); aqui mostramos as imagens reais do banco,
+// em cor, com leve brilho para destacar no fundo azul-marinho.
+// O ciclo comprimido (1s por pictograma) garante que o visitante veja
+// os 7 antes do loader sumir (o _portal.scss usava 2s cada = 14s, invisível).
+.loader-picto {
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.45));
+  animation-duration: 7s;
+}
+
+.loader-picto--1 { animation-delay: 0s; }
+.loader-picto--2 { animation-delay: 1s; }
+.loader-picto--3 { animation-delay: 2s; }
+.loader-picto--4 { animation-delay: 3s; }
+.loader-picto--5 { animation-delay: 4s; }
+.loader-picto--6 { animation-delay: 5s; }
+.loader-picto--7 { animation-delay: 6s; }
+
 // --- Avaliações no modal ---
 .modal-avaliacoes {
   margin-top: 24px;
