@@ -59,14 +59,27 @@ public class AppDbContext : DbContext
         ConfigureRoteiroItem(modelBuilder);
     }
 
+    /// <summary>
+    /// Arquivo segue o padrão PrefeituraDigital: colunas Arqu*. O ArquUID é
+    /// uniqueidentifier com default NEWID() e será o ROWGUIDCOL (aplicado via
+    /// SQL na migração), pré-requisito para o ArquBytes virar FILESTREAM.
+    /// </summary>
     private static void ConfigureArquivo(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Arquivo>(entity =>
         {
-            entity.Property(e => e.Nome).HasMaxLength(255).IsRequired();
-            entity.Property(e => e.ContentType).HasMaxLength(100).IsRequired();
-            entity.Property(e => e.Bytes).IsRequired();
-            entity.Property(e => e.CriadoEm).HasDefaultValueSql("GETDATE()");
+            entity.Property(e => e.Id).HasColumnName("ArquId");
+            entity.Property(e => e.UID).HasColumnName("ArquUID")
+                  .HasColumnType("uniqueidentifier")
+                  .HasDefaultValueSql("NEWID()");
+            entity.Property(e => e.Nome).HasColumnName("ArquFileName").HasMaxLength(255).IsRequired();
+            entity.Property(e => e.ContentType).HasColumnName("ArquContentType").HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Size).HasColumnName("ArquSize");
+            entity.Property(e => e.Bytes).HasColumnName("ArquBytes").IsRequired();
+            entity.Property(e => e.Autor).HasColumnName("ArquAutor").HasMaxLength(150);
+            entity.Property(e => e.Origem).HasColumnName("ArquOrigem").HasMaxLength(50);
+            entity.Property(e => e.Ativo).HasColumnName("ArquAtivo").HasDefaultValue(true);
+            entity.Property(e => e.CriadoEm).HasColumnName("ArquMomento").HasDefaultValueSql("GETDATE()");
         });
     }
 

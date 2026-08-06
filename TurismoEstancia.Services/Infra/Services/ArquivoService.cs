@@ -9,8 +9,13 @@ namespace TurismoEstancia.Services.Infra.Services;
 public class ArquivoService : IArquivoService
 {
     private readonly AppDbContext _db;
+    private readonly IHttpContextAccessor _http;
 
-    public ArquivoService(AppDbContext db) => _db = db;
+    public ArquivoService(AppDbContext db, IHttpContextAccessor http)
+    {
+        _db = db;
+        _http = http;
+    }
 
     public async Task<long> SalvarAsync(IFormFile arquivo, CancellationToken ct = default)
     {
@@ -26,9 +31,15 @@ public class ArquivoService : IArquivoService
     {
         var novo = new Arquivo
         {
+            UID = Guid.NewGuid(),
             Nome = nome,
             ContentType = contentType,
-            Bytes = bytes
+            Size = bytes.LongLength,
+            Bytes = bytes,
+            // Padrão Arqu*: autor = usuário logado; origem = canal que gravou.
+            Autor = _http.HttpContext?.User?.Identity?.Name,
+            Origem = _http.HttpContext is not null ? "cms" : null,
+            Ativo = true
         };
 
         _db.Arquivos.Add(novo);

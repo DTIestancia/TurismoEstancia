@@ -50,6 +50,13 @@ dotnet run --project TurismoEstancia.Web
 | `TurismoEstanciaIdentityDb` | `TurismoEstanciaIdentity`              | ASP.NET Identity (usuários) |
 
 Mídias (imagens, vídeo, guia) ficam em **byte[] no banco**, servidas por `GET /arquivo/{id}`.
+A tabela `Arquivos` segue o padrão **`PrefeituraDigital.Arquivo`** (colunas `ArquId`,
+`ArquUID` ROWGUIDCOL, `ArquFileName`, `ArquContentType`, `ArquSize`, `ArquBytes`
+`varbinary(max)`, `ArquMomento`, `ArquAutor`, `ArquAtivo`, `ArquOrigem`) e está **pronta
+para FILESTREAM**: quando o filegroup for criado no servidor, basta executar
+[`Deploy/01-Filestream-Config.sql`](./Deploy/01-Filestream-Config.sql) para converter o
+`ArquBytes` em `varbinary(max) FILESTREAM` — sem nenhuma mudança de código (o EF já
+lê/grava o binário da mesma forma).
 
 ## 🏗️ Arquitetura
 
