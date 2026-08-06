@@ -3,88 +3,36 @@
     var historiaTexto = Model.Conteudos.GetValueOrDefault("historia-texto",
         "Estância, a <strong>Princesinha do Sul Sergipano</strong>, é berço de uma história que atravessa quase dois séculos. Casarões coloniais, ruas arborizadas e a religiosidade vibrante compõem o cenário de uma cidade que preserva sua alma enquanto recebe o mundo.");
     var historiaCitar = Model.Conteudos.GetValueOrDefault("historia-citacao", "“Estância. Conheça, viva, explore.”");
-    var historiaDescricao = Model.Conteudos.GetValueOrDefault("historia-descricao",
-        "Sente o vento salgado da <strong>Praia do Saco</strong>, escuta o estalar dos Barcos de Fogo no céu. Aqui, cada esquina é uma descoberta, cada sorriso é um convite. <strong>Vem viver Estância.</strong>");
     var historiaImagem = Model.Conteudos.GetValueOrDefault("historia-imagem");
+    var imagemPrincipal = (historiaImagem is not null && !historiaImagem.StartsWith("{{"))
+        ? $"/arquivo/{historiaImagem}"
+        : null;
 }
 
-<section class="section-history section-3d section-divider" data-section="cidade">
-    <div class="bg-deco bg-deco-1" style="opacity:0.90;overflow:hidden;">
-        <div style="width:288.89px;height:288.99px;margin:61.8px auto 0;background:var(--color-orange-51);border-radius:4px;transform:rotate(45deg);"></div>
-    </div>
-    <div class="bg-deco bg-deco-2" style="overflow:hidden;">
-        <div style="width:256.34px;height:252.14px;margin:51px auto 0;background:var(--color-rose-46);border-radius:4px;transform:rotate(45deg);"></div>
-    </div>
-    <div class="bg-dot" style="width:12px;height:12px;right:400px;top:313px;"></div>
-    <div class="bg-dot" style="width:8px;height:8px;right:200px;bottom:200px;"></div>
+<section class="section-cidade section-divider" id="section-nossa-cidade" data-section="cidade">
+    <div class="section-cidade-inner">
+        @await Html.PartialAsync("_VitrineCidade", new CidadeVitrineViewModel
+        {
+            Slides = Model.Slides,
+            Texto = historiaTexto,
+            Citacao = historiaCitar,
+            ImagemPrincipal = imagemPrincipal,
+            ExibirTitulo = true,
+            BotaoHref = "/cidade",
+            BotaoTexto = "Conheça nossa cidade"
+        })
 
-    <div class="section-history-inner">
-        <div class="history-layout">
-            <div class="history-card-wrapper">
-                <div class="history-card">
-                    <div class="history-card-header">
-                        <span class="cursive">nossa</span>
-                        <span class="big">cidade</span>
-                        <span class="stars">✦✦✦</span>
+        @if (Model.Estatisticas.Count > 0)
+        {
+            <div class="stats-row cidade-stats reveal">
+                @foreach (var stat in Model.Estatisticas)
+                {
+                    <div class="stat-card">
+                        <div class="stat-value">@stat.Valor</div>
+                        <div class="stat-label">@stat.Legenda</div>
                     </div>
-                    @if (historiaImagem is not null && !historiaImagem.StartsWith("{{"))
-                    {
-                        <img src="/arquivo/@historiaImagem" alt="Vista da Catedral de Estância" loading="lazy" />
-                    }
-                    <div class="history-card-text">
-                        @Html.Raw(historiaTexto)
-                    </div>
-                    <div class="history-card-quote">@historiaCitar</div>
-                </div>
-                <div class="history-photos">
-                    @if (Model.Slides.Count >= 2)
-                    {
-                        <div class="history-photo">
-                            <img src="/arquivo/@Model.Slides[1].ImagemArquivoId" alt="Estância" loading="lazy" />
-                        </div>
-                        <div class="history-photo">
-                            <img src="/arquivo/@Model.Slides[2].ImagemArquivoId" alt="Estância" loading="lazy" />
-                        </div>
-                    }
-                </div>
+                }
             </div>
-
-            <div class="history-text-content">
-                <div class="cursive reveal reveal-delay-1">descubra</div>
-                <div class="headline reveal reveal-delay-2">
-                    Onde a história<br />
-                    <span class="highlight-red">acende</span> a
-                </div>
-                <div class="headline reveal reveal-delay-3">
-                    <span class="serif-bold">tradição.</span>
-                </div>
-                <div class="description reveal reveal-delay-2">
-                    @Html.Raw(historiaDescricao)
-                </div>
-
-                <a href="/cidade" class="btn-primary reveal reveal-delay-2" style="margin-top:26px;align-self:flex-start;">
-                    Conheça nossa cidade <i data-lucide="arrow-right" class="icon-lg"></i>
-                </a>
-
-                <div class="stats-row reveal reveal-delay-3">
-                    @if (Model.Estatisticas.Count == 0)
-                    {
-                        <div class="stat-card"><div class="stat-value">192</div><div class="stat-label">anos</div></div>
-                        <div class="stat-card"><div class="stat-value">68k</div><div class="stat-label">habitantes</div></div>
-                        <div class="stat-card"><div class="stat-value">7</div><div class="stat-label">maravilhas</div></div>
-                    }
-                    else
-                    {
-                        @foreach (var stat in Model.Estatisticas)
-                        {
-                            <div class="stat-card">
-                                <div class="stat-value">@stat.Valor</div>
-                                <div class="stat-label">@stat.Legenda</div>
-                            </div>
-                        }
-                    }
-                </div>
-            </div>
-        </div>
+        }
     </div>
 </section>

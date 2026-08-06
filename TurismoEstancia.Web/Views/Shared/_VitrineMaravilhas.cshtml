@@ -1,0 +1,80 @@
+@model IReadOnlyList<PontoTuristicoDto>
+@if (Model.Count == 0)
+{
+    <div class="vitrine-empty">Em breve, as maravilhas de Estância estarão aqui.</div>
+}
+else
+{
+    <div class="vitrine" id="wondersVitrine" data-total="@Model.Count">
+        <div class="vitrine-blob" aria-hidden="true"></div>
+
+        <div class="vitrine-stage">
+            <figure class="vitrine-foto">
+                @if (Model[0].CapaArquivoId is long capaInicial)
+                {
+                    <img id="vitrineImg" src="/arquivo/@capaInicial" alt="@Model[0].Nome" />
+                }
+                else
+                {
+                    <img id="vitrineImg" src="" alt="@Model[0].Nome" />
+                }
+                <span class="vitrine-foto-num" id="vitrineNum">01</span>
+            </figure>
+
+            <div class="vitrine-info">
+                <span class="vitrine-cat" id="vitrineCat">@Model[0].CategoriaNome</span>
+                <h3 class="vitrine-titulo" id="vitrineTitulo">@Model[0].Nome</h3>
+                <div class="vitrine-card">
+                    <p class="vitrine-desc" id="vitrineDesc">@Model[0].Descricao</p>
+                    <div class="vitrine-card-foot">
+                        @if (!string.IsNullOrWhiteSpace(Model[0].Tag))
+                        {
+                            <span class="vitrine-tag" id="vitrineTag">@Model[0].Tag</span>
+                        }
+                        <a class="btn-primary vitrine-btn" id="vitrineBtn"
+                           href="/lugares/@Model[0].Id/@Slug.De(Model[0].Nome)"
+                           data-track="ver-maravilha" data-track-id="@Model[0].Id" data-track-nome="@Model[0].Nome">
+                            Ver detalhes <i data-lucide="arrow-right" class="icon-lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="vitrine-postais">
+            <button type="button" class="vitrine-seta" id="vitrinePrev" aria-label="Postal anterior">
+                <i data-lucide="chevron-left" class="icon-lg"></i>
+            </button>
+            <div class="vitrine-postais-track" id="vitrineTrack" role="tablist" aria-label="As 7 maravilhas de Estância">
+                @for (var i = 0; i < Model.Count; i++)
+                {
+                    var ponto = Model[i];
+                    <button type="button"
+                            class="vitrine-postal@(i == 0 ? " is-active" : "")"
+                            role="tab"
+                            aria-selected="@(i == 0 ? "true" : "false")"
+                            data-index="@i"
+                            data-nome="@ponto.Nome"
+                            data-categoria="@ponto.CategoriaNome"
+                            data-desc="@ponto.Descricao"
+                            data-tag="@ponto.Tag"
+                            data-img="@(ponto.CapaArquivoId is long c ? $"/arquivo/{c}" : "")"
+                            data-href="/lugares/@ponto.Id/@Slug.De(ponto.Nome)"
+                            data-id="@ponto.Id">
+                        @if (ponto.CapaArquivoId is long capa)
+                        {
+                            <img src="/arquivo/@capa" alt="" loading="lazy" />
+                        }
+                        <span class="vitrine-postal-num">@((i + 1).ToString("00"))</span>
+                        <span class="vitrine-postal-nome">@ponto.Nome</span>
+                    </button>
+                }
+            </div>
+            <button type="button" class="vitrine-seta" id="vitrineNext" aria-label="Próximo postal">
+                <i data-lucide="chevron-right" class="icon-lg"></i>
+            </button>
+        </div>
+
+        <p class="vitrine-hint" id="vitrineCounter">Postal 1 de @Model.Count — passe para conhecer as maravilhas</p>
+    </div>
+}
