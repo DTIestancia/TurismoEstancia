@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Services.Roteiro.Interfaces;
+using TurismoEstancia.Web.Models;
 
 namespace TurismoEstancia.Web.Pages.Roteiros;
 
@@ -27,6 +28,13 @@ public class DetalheModel : PageModel
             .GroupBy(i => i.Dia)
             .ToList();
 
+        ViewData["Seo"] = new SeoMeta
+        {
+            Titulo = Roteiro.Titulo,
+            Descricao = Roteiro.Descricao,
+            ImagemUrl = Roteiro.ImagemArquivoId is long img ? $"/arquivo/{img}" : null,
+            Tipo = "article"
+        };
         return Page();
     }
 }

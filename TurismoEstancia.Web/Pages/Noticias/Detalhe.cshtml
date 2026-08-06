@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = Model.Noticia?.Titulo ?? "Notícia não encontrada";
 }
+@await Html.PartialAsync("_PaginasHeader")
 <main class="news-detail page-public">
     @if (Model.Noticia is null)
     {
@@ -37,3 +38,4 @@
         </article>
     }
 </main>
+@await Html.PartialAsync("_PaginasFooter")

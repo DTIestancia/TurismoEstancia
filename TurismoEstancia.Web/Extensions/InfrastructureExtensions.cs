@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using TurismoEstancia.Web.Infrastructure;
 
 namespace TurismoEstancia.Web.Extensions;
 
@@ -14,6 +15,9 @@ public static class InfrastructureExtensions
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();
         builder.Services.AddHttpContextAccessor();
+
+        // Metadados SEO do portal (defaults das configurações + override por página).
+        builder.Services.AddScoped<SeoService>();
 
         // Upload limit: ~60 MB no Kestrel e IIS
         builder.Services.Configure<KestrelServerOptions>(o =>

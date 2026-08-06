@@ -54,6 +54,8 @@ public class PaginasController : Controller
     [Route("cidade")]
     public async Task<IActionResult> Cidade(CancellationToken ct)
     {
+        DefinirSeo("Nossa Cidade",
+            "História, patrimônio, praias e cultura: conheça Estância, a Capital Sergipana da Cultura.");
         var vm = new SecaoCidadeViewModel
         {
             Conteudos = await _conteudos.ObterDicionarioAsync(ct),
@@ -67,6 +69,8 @@ public class PaginasController : Controller
     [Route("cultura")]
     public async Task<IActionResult> Cultura(CancellationToken ct)
     {
+        DefinirSeo("Nossa Cultura",
+            "Filarmônicas, Barco de Fogo, São João e as tradições que fazem de Estância a Capital Sergipana da Cultura.");
         var vm = new SecaoCulturaViewModel
         {
             Conteudos = await _conteudos.ObterDicionarioAsync(ct),
@@ -80,6 +84,8 @@ public class PaginasController : Controller
     [Route("grupos-populares")]
     public async Task<IActionResult> GruposPopulares(CancellationToken ct)
     {
+        DefinirSeo("Grupos Populares",
+            "Reisado, Cacumbi, Batucada e quadrilhas: os grupos populares que animam as festas de Estância.");
         var vm = new SecaoGruposViewModel
         {
             Conteudos = await _conteudos.ObterDicionarioAsync(ct),
@@ -92,6 +98,8 @@ public class PaginasController : Controller
     [Route("gastronomia")]
     public async Task<IActionResult> Gastronomia(CancellationToken ct)
     {
+        DefinirSeo("Gastronomia",
+            "Ginga com tapioca, moqueca de camarão e os sabores autênticos do litoral sergipano em Estância.");
         var vm = new SecaoGastronomiaViewModel
         {
             Conteudos = await _conteudos.ObterDicionarioAsync(ct),
@@ -104,6 +112,8 @@ public class PaginasController : Controller
     [Route("lugares")]
     public async Task<IActionResult> Lugares(CancellationToken ct)
     {
+        DefinirSeo("Lugares que Encantam",
+            "As 7 maravilhas de Estância: praias, história e natureza de tirar o fôlego.");
         var categorias = await _categorias.ListarAsync(false, ct);
         var pontos = await _pontos.ListarAsync(true, ct);
 
@@ -139,6 +149,9 @@ public class PaginasController : Controller
 
         var roteiros = await _roteiros.ListarAsync(ct);
 
+        DefinirSeo(lugar.Nome, lugar.Descricao,
+            lugar.CapaArquivoId is long capaId ? $"/arquivo/{capaId}" : null);
+
         var vm = new DetalheLugarViewModel
         {
             Lugar = lugar,
@@ -162,6 +175,8 @@ public class PaginasController : Controller
         if (!string.Equals(slug, slugCorreto, StringComparison.OrdinalIgnoreCase))
             return RedirectToAction(nameof(DetalheGrupo), "Paginas", new { id, slug = slugCorreto });
 
+        DefinirSeo(grupo.Nome, grupo.Descricao,
+            grupo.ImagemArquivoId is long imgId ? $"/arquivo/{imgId}" : null);
         return View(grupo);
     }
 
@@ -177,6 +192,8 @@ public class PaginasController : Controller
         if (!string.Equals(slug, slugCorreto, StringComparison.OrdinalIgnoreCase))
             return RedirectToAction(nameof(DetalhePrato), "Paginas", new { id, slug = slugCorreto });
 
+        DefinirSeo(prato.Nome, prato.Descricao,
+            prato.ImagemArquivoId is long imgId ? $"/arquivo/{imgId}" : null);
         return View(prato);
     }
 
@@ -192,6 +209,19 @@ public class PaginasController : Controller
         if (!string.Equals(slug, slugCorreto, StringComparison.OrdinalIgnoreCase))
             return RedirectToAction(nameof(DetalheTag), "Paginas", new { id, slug = slugCorreto });
 
+        DefinirSeo(tag.Nome, tag.Descricao,
+            tag.ImagemArquivoId is long imgId ? $"/arquivo/{imgId}" : null);
         return View(tag);
+    }
+
+    /// <summary>Preenche ViewData["Seo"] com os metadados da página atual.</summary>
+    private void DefinirSeo(string titulo, string? descricao = null, string? imagem = null)
+    {
+        ViewData["Seo"] = new SeoMeta
+        {
+            Titulo = titulo,
+            Descricao = descricao,
+            ImagemUrl = imagem
+        };
     }
 }

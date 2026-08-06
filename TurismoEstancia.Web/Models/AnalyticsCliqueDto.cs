@@ -9,8 +9,9 @@ namespace TurismoEstancia.Web.Models;
 /// </summary>
 public class AnalyticsCliqueDto
 {
-    /// <summary>Chave do clique (ex.: "ver-maravilha", "mapa-poi", "noticia").</summary>
-    [MaxLength(60)]
+    /// <summary>Chave do clique (ex.: "ver-maravilha", "mapa-poi", "noticia").
+    /// Máx. 50 — mesmo limite da coluna AnalyticsEventos.Evento.</summary>
+    [MaxLength(50)]
     public string? Evento { get; set; }
 
     /// <summary>Id da entidade clicada (ponto, notícia, roteiro...).</summary>

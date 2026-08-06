@@ -1,10 +1,67 @@
+@inject SeoService SeoService
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Descubra Estância</title>
-    <meta name="description" content="Portal oficial de turismo de Estância/SE — Capital Sergipana da Cultura." />
+    @{
+        var seo = await SeoService.ObterMetaAsync(ViewData["Seo"] as SeoMeta);
+        var baseUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
+        var canonical = baseUrl + Context.Request.Path;
+        var tituloPagina = !string.IsNullOrWhiteSpace(seo.Titulo) ? seo.Titulo : ViewData["Title"]?.ToString();
+        var tituloFinal = string.IsNullOrWhiteSpace(tituloPagina) ? seo.NomeSite : $"{tituloPagina} — {seo.NomeSite}";
+        // og:title/twitter:title curtos (sem o sufixo do site) — recomendado até ~70 caracteres.
+        var tituloOg = string.IsNullOrWhiteSpace(tituloPagina) ? seo.NomeSite : tituloPagina;
+        var descricao = Cortar(seo.Descricao ?? seo.SiteDescricao, 160);
+        var imagem = string.IsNullOrWhiteSpace(seo.ImagemUrl) ? null
+            : seo.ImagemUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? seo.ImagemUrl : baseUrl + seo.ImagemUrl;
+    }
+    <title>@tituloFinal</title>
+    @if (!string.IsNullOrWhiteSpace(descricao))
+    {
+        <meta name="description" content="@descricao" />
+    }
+    @if (seo.NoIndex)
+    {
+        <meta name="robots" content="noindex, nofollow" />
+    }
+    <link rel="canonical" href="@canonical" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="@seo.NomeSite" />
+    <meta property="og:type" content="@seo.Tipo" />
+    <meta property="og:title" content="@tituloOg" />
+    @if (!string.IsNullOrWhiteSpace(descricao))
+    {
+        <meta property="og:description" content="@descricao" />
+    }
+    <meta property="og:url" content="@canonical" />
+    <meta property="og:locale" content="pt_BR" />
+    @if (imagem is not null)
+    {
+        <meta property="og:image" content="@imagem" />
+    }
+    @if (seo.Tipo == "article" && !string.IsNullOrWhiteSpace(seo.DataPublicacao))
+    {
+        <meta property="article:published_time" content="@seo.DataPublicacao" />
+    }
+
+    <!-- Twitter Cards -->
+    @if (imagem is not null)
+    {
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="@tituloOg" />
+        @if (!string.IsNullOrWhiteSpace(descricao))
+        {
+            <meta name="twitter:description" content="@descricao" />
+        }
+        <meta name="twitter:image" content="@imagem" />
+    }
+    else
+    {
+        <meta name="twitter:card" content="summary" />
+    }
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
@@ -20,3 +77,15 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+@functions {
+    /// <summary>Corta o texto para meta description, sem quebrar no meio de uma palavra.</summary>
+    private static string Cortar(string? texto, int max)
+    {
+        if (string.IsNullOrWhiteSpace(texto)) return "";
+        var t = texto.Trim();
+        if (t.Length <= max) return t;
+        var corte = t.LastIndexOf(' ', max);
+        return (corte > max / 2 ? t[..corte] : t[..max]) + "…";
+    }
+}

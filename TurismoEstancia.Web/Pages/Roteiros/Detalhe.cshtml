@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = Model.Roteiro?.Titulo ?? "Roteiro não encontrado";
 }
+@await Html.PartialAsync("_PaginasHeader")
 <main class="news-detail page-public">
     @if (Model.Roteiro is null)
     {
@@ -60,3 +61,4 @@
         </article>
     }
 </main>
+@await Html.PartialAsync("_PaginasFooter")

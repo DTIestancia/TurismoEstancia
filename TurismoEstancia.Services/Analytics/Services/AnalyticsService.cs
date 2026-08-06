@@ -25,20 +25,26 @@ public class AnalyticsService : IAnalyticsService
             return;
 
         // DropWrite: se a fila estiver cheia, descarta (o request nunca espera).
+        // Valores cortados no limite da coluna: um campo longo demais faria o
+        // SaveChanges em lote falhar inteiro (e perder todos os eventos da rajada).
         _canal.Writer.TryWrite(new AnalyticsEvento
         {
             Data = dto.Data,
-            Tipo = dto.Tipo,
-            Rota = dto.Rota,
-            Titulo = dto.Titulo,
-            RefererHost = dto.RefererHost,
-            SessaoId = dto.SessaoId,
-            Dispositivo = dto.Dispositivo,
-            Evento = dto.Evento,
+            Tipo = Curto(dto.Tipo, 20) ?? "Visita",
+            Rota = Curto(dto.Rota, 300) ?? "",
+            Titulo = Curto(dto.Titulo, 200),
+            RefererHost = Curto(dto.RefererHost, 150),
+            SessaoId = Curto(dto.SessaoId, 50) ?? "",
+            Dispositivo = Curto(dto.Dispositivo, 20) ?? "Desktop",
+            Evento = Curto(dto.Evento, 50),
             EntidadeId = dto.EntidadeId,
-            EntidadeNome = dto.EntidadeNome
+            EntidadeNome = Curto(dto.EntidadeNome, 150)
         });
     }
+
+    /// <summary>Corta o texto no limite da coluna (null preservado).</summary>
+    private static string? Curto(string? valor, int max)
+        => string.IsNullOrEmpty(valor) ? valor : valor.Length <= max ? valor : valor[..max];
 
     public async Task<AnalyticsResumoDto> ObterResumoAsync(DateTime de, DateTime ate, CancellationToken ct = default)
     {
