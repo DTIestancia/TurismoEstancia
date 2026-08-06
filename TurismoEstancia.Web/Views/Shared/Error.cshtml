@@ -1,0 +1,25 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Erro";
+    Layout = "_Layout";
+    var statusCode = Context.Response.StatusCode;
+    var codigo = statusCode == 404 ? "404" : (statusCode == 500 ? "500" : "Ops!");
+    var titulo = statusCode == 404 ? "Página não encontrada" : (statusCode == 500 ? "Algo deu errado" : "Erro inesperado");
+    var mensagem = statusCode == 404
+        ? "O endereço que você procura não existe ou foi movido. Que tal voltar para a página inicial e explorar as maravilhas de Estância?"
+        : "Não foi possível concluir sua solicitação. Tente novamente em instantes.";
+}
+
+<main class="error-page">
+    <div class="error-code">@codigo</div>
+    <div class="error-title">@titulo</div>
+    <p class="error-message">@mensagem</p>
+    @if (Model.ShowRequestId)
+    {
+        <p class="error-message" style="font-size:12px;color:var(--color-white--30);">Request ID: @Model.RequestId</p>
+    }
+    <div class="error-actions">
+        <a asp-controller="Home" asp-action="Index" class="btn-primary"><i data-lucide="home" class="icon-lg"></i> Voltar ao início</a>
+        <a href="javascript:history.back()" class="btn-secondary"><i data-lucide="arrow-left" class="icon-lg"></i> Voltar</a>
+    </div>
+</main>

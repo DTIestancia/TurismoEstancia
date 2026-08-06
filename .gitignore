@@ -37,3 +37,12 @@ secrets.json
 
 # ===== Mídia gerada =====
 wwwroot/lib/
+
+# ===== CSS/JS compilados pelo SassCompiler no build =====
+TurismoEstancia.Web/wwwroot/css/main.css
+TurismoEstancia.Web/wwwroot/css/main.css.map
+TurismoEstancia.Web/wwwroot/css/painel.css
+TurismoEstancia.Web/wwwroot/css/painel.css.map
+
+# ===== Mídias locais de dev (seed grava os binários no banco) =====
+TurismoEstancia.Web/wwwroot/img/

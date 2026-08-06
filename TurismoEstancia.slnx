@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="TurismoEstancia.Authorization/TurismoEstancia.Authorization.csproj" />
+  <Project Path="TurismoEstancia.Domain/TurismoEstancia.Domain.csproj" />
+  <Project Path="TurismoEstancia.Identity/TurismoEstancia.Identity.csproj" />
+  <Project Path="TurismoEstancia.Mail/TurismoEstancia.Mail.csproj" />
+  <Project Path="TurismoEstancia.Services/TurismoEstancia.Services.csproj" />
+  <Project Path="TurismoEstancia.Web/TurismoEstancia.Web.csproj" />
+</Solution>

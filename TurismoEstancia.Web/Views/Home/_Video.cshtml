@@ -1,0 +1,37 @@
+@model HomeViewModel
+<section class="section-video section-divider" id="institutionalVideo" data-section="cidade">
+    <div class="video-full" id="videoFull">
+        @if (Model.VideoArquivoId is long videoId)
+        {
+            <video preload="metadata" playsinline id="heroVideo">
+                <source src="/arquivo/@videoId" type="video/mp4" />
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+        }
+        else
+        {
+            <video preload="metadata" playsinline id="heroVideo">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+        }
+        <div class="video-full-gradient"></div>
+
+        <!-- Cinematic Play Button -->
+        <div class="video-play-cinema reveal reveal-delay-1" id="cinemaPlayBtn">
+            <div class="video-play-btn">
+                <div class="video-play-ring"></div>
+                <div class="video-play-ring"></div>
+                <div class="video-play-core">
+                    <div class="video-play-triangle"></div>
+                </div>
+                <span class="video-play-label">Assistir</span>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="video-scroll-indicator reveal reveal-delay-2">
+            <span>Role para explorar</span>
+            <i data-lucide="chevron-down" class="icon-lg"></i>
+        </div>
+    </div>
+</section>

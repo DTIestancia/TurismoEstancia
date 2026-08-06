@@ -1,0 +1,36 @@
+@model ConteudoSiteDto
+@{ ViewData["Title"] = "Novo texto"; }
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Novo texto</h1>
+        <p class="painel-page-desc">Chaves usadas pelo portal: hero-titulo, hero-subtitulo, mapa-descricao, maravilhas-descricao, newsletter-titulo etc.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Criar" method="post">
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Chave"></label>
+            <input asp-for="Chave" class="painel-input" maxlength="60" placeholder="hero-titulo" />
+            <span asp-validation-for="Chave" class="field-validation-error"></span>
+        </div>
+        <div class="painel-field">
+            <label asp-for="Nome"></label>
+            <input asp-for="Nome" class="painel-input" maxlength="120" placeholder="Título do hero" />
+            <span asp-validation-for="Nome" class="field-validation-error"></span>
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Texto"></label>
+        <textarea asp-for="Texto" class="painel-textarea"></textarea>
+        <span class="painel-hint">Quebras de linha viram quebras no portal.</span>
+    </div>
+
+    <div class="painel-form-actions">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>

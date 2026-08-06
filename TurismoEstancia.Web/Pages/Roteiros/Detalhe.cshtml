@@ -1,0 +1,62 @@
+@page "{id:int}"
+@model TurismoEstancia.Web.Pages.Roteiros.DetalheModel
+@{
+    ViewData["Title"] = Model.Roteiro?.Titulo ?? "Roteiro não encontrado";
+}
+<main class="news-detail page-public">
+    @if (Model.Roteiro is null)
+    {
+        <div class="news-container">
+            <div class="news-empty">Roteiro não encontrado.</div>
+            <p style="text-align:center;margin-top:16px;"><a class="btn-primary" asp-page="Index">← Voltar aos roteiros</a></p>
+        </div>
+    }
+    else
+    {
+        <article class="news-article">
+            <header class="news-article-header">
+                <div class="pill pill-white" style="background:var(--color-white--15);">
+                    <i data-lucide="map" class="icon-lg"></i>
+                    <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">Roteiro</span>
+                </div>
+                <h1 class="news-article-title">@Model.Roteiro.Titulo</h1>
+                @if (!string.IsNullOrWhiteSpace(Model.Roteiro.Descricao))
+                {
+                    <p class="news-article-resumo">@Model.Roteiro.Descricao</p>
+                }
+            </header>
+            @if (Model.Roteiro.ImagemArquivoId is long imgId)
+            {
+                <img class="news-article-img" src="/arquivo/@imgId" alt="@Model.Roteiro.Titulo" />
+            }
+
+            <div class="roteiro-itens">
+                @foreach (var dia in Model.Dias)
+                {
+                    <section class="roteiro-dia">
+                        <h2 class="roteiro-dia-title">Dia @dia.Key</h2>
+                        <div class="roteiro-dia-list">
+                            @foreach (var item in dia)
+                            {
+                                <div class="roteiro-item">
+                                    <span class="roteiro-item-pos">@item.Ordem</span>
+                                    <div class="roteiro-item-info">
+                                        <strong>@(item.PontoTuristicoNome ?? $"Ponto #{item.PontoTuristicoId}")</strong>
+                                        @if (!string.IsNullOrWhiteSpace(item.Observacao))
+                                        {
+                                            <p>@item.Observacao</p>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </section>
+                }
+            </div>
+
+            <footer class="news-article-footer">
+                <a class="btn-primary" asp-page="Index"><i data-lucide="arrow-left" class="icon-lg"></i> Voltar aos roteiros</a>
+            </footer>
+        </article>
+    }
+</main>

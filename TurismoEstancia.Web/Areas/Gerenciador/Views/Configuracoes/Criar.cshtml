@@ -1,0 +1,67 @@
+@model ConfiguracaoSiteDto
+@{
+    ViewData["Title"] = "Nova configuração";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Nova configuração</h1>
+        <p class="painel-page-desc">Chaves: guia-pdf, video-institucional, site-titulo, meta-descricao.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Criar" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Chave"></label>
+            <input asp-for="Chave" class="painel-input" maxlength="60" placeholder="guia-pdf" />
+            <span asp-validation-for="Chave" class="field-validation-error"></span>
+        </div>
+        <div class="painel-field">
+            <label asp-for="Nome"></label>
+            <input asp-for="Nome" class="painel-input" maxlength="120" placeholder="Guia do turista" />
+            <span asp-validation-for="Nome" class="field-validation-error"></span>
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Tipo"></label>
+        <select asp-for="Tipo" class="painel-select" id="tipoConfig">
+            <option value="@((int)TipoConfiguracao.Texto)">Texto</option>
+            <option value="@((int)TipoConfiguracao.Arquivo)">Arquivo (PDF/vídeo)</option>
+        </select>
+    </div>
+
+    <div class="painel-field" id="campoTexto">
+        <label asp-for="ValorTexto"></label>
+        <input asp-for="ValorTexto" class="painel-input" maxlength="500" />
+    </div>
+
+    <div class="painel-field" id="campoArquivo" style="display:none;">
+        <label>Arquivo (PDF, MP4...)</label>
+        <input type="file" name="arquivo" class="painel-input" />
+    </div>
+
+    <div class="painel-form-actions">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        (function () {
+            var tipo = document.getElementById('tipoConfig');
+            var texto = document.getElementById('campoTexto');
+            var arquivo = document.getElementById('campoArquivo');
+            function alternar() {
+                var eArquivo = tipo.value === '@((int)TipoConfiguracao.Arquivo)';
+                texto.style.display = eArquivo ? 'none' : '';
+                arquivo.style.display = eArquivo ? '' : 'none';
+            }
+            tipo.addEventListener('change', alternar);
+            alternar();
+        })();
+    </script>
+}

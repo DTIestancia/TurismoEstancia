@@ -1,0 +1,13 @@
+{
+  "Source": "wwwroot/scss",
+  "Target": "wwwroot/css",
+  "GenerateScopedCss": false,
+  "Configurations": {
+    "Debug": {
+      "Arguments": "--style=expanded --error-css --load-path=wwwroot/scss"
+    },
+    "Release": {
+      "Arguments": "--style=compressed --error-css --load-path=wwwroot/scss"
+    }
+  }
+}

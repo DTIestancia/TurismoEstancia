@@ -1,0 +1,46 @@
+@page
+@model TurismoEstancia.Web.Pages.Noticias.IndexModel
+@{
+    ViewData["Title"] = "Notícias";
+}
+<main class="news-index page-public">
+    <section class="news-hero">
+        <div class="news-hero-inner">
+            <div class="pill pill-white" style="background:var(--color-white--15);">
+                <i data-lucide="newspaper" class="icon-lg"></i>
+                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">Fique por dentro</span>
+            </div>
+            <h1 class="news-hero-title">Notícias de <span style="color:#FFC200;">Estância</span></h1>
+            <p class="news-hero-subtitle">Cultura, eventos e novidades da Capital Sergipana da Cultura.</p>
+        </div>
+    </section>
+
+    <div class="news-container">
+        @if (Model.Noticias.Count == 0)
+        {
+            <div class="news-empty">Nenhuma notícia publicada ainda.</div>
+        }
+        else
+        {
+            <div class="news-grid">
+                @foreach (var noticia in Model.Noticias)
+                {
+                    <a class="news-card" asp-page="Detalhe" asp-route-slug="@noticia.Slug">
+                        @if (noticia.ImagemArquivoId is long imgId)
+                        {
+                            <img class="news-card-img" src="/arquivo/@imgId" alt="@noticia.Titulo" loading="lazy" />
+                        }
+                        <div class="news-card-body">
+                            <div class="news-card-date">@noticia.DataPublicacao.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"))</div>
+                            <h2 class="news-card-title">@noticia.Titulo</h2>
+                            @if (!string.IsNullOrWhiteSpace(noticia.Resumo))
+                            {
+                                <p class="news-card-resumo">@noticia.Resumo</p>
+                            }
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</main>

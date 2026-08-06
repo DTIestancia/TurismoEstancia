@@ -1,0 +1,75 @@
+@model IReadOnlyList<CategoriaPontoTuristicoDto>
+@{
+    ViewData["Title"] = "Categorias";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Categorias</h1>
+        <p class="painel-page-desc">Categorias de pontos turísticos — usadas no mapa, nas maravilhas e nos cards do portal.</p>
+    </div>
+    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Nova categoria</a>
+</div>
+
+<div class="painel-card">
+    <div class="painel-table-wrap">
+        <table class="painel-table">
+            <thead>
+                <tr>
+                    <th>Chave</th>
+                    <th>Nome</th>
+                    <th>Pontos</th>
+                    <th>Maravilhas</th>
+                    <th>Mapa</th>
+                    <th>Ordem</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><code>@item.Chave</code></td>
+                        <td>
+                            <strong>@item.Nome</strong>
+                            @if (!string.IsNullOrWhiteSpace(item.Cor))
+                            {
+                                <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:@item.Cor;margin-left:8px;vertical-align:middle;"></span>
+                            }
+                        </td>
+                        <td>@item.QuantidadePontos</td>
+                        <td>
+                            <span class="painel-badge @(item.ApresentarEmMaravilhas ? "painel-badge--yellow" : "painel-badge--grey")">
+                                @(item.ApresentarEmMaravilhas ? "Sim" : "Não")
+                            </span>
+                        </td>
+                        <td>
+                            <span class="painel-badge @(item.ExibirNoMapa ? "painel-badge--cyan" : "painel-badge--grey")">
+                                @(item.ExibirNoMapa ? "Sim" : "Não")
+                            </span>
+                        </td>
+                        <td>@item.Ordem</td>
+                        <td>
+                            <span class="painel-badge @(item.Ativo ? "painel-badge--green" : "painel-badge--grey")">
+                                @(item.Ativo ? "Ativo" : "Inativo")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="painel-actions" style="justify-content:flex-end;">
+                                <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Editar" asp-route-id="@item.Id"><i data-lucide="pencil"></i> Editar</a>
+                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir a categoria '@item.Nome'? Pontos vinculados impedem a exclusão.">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Count == 0)
+    {
+        <div class="painel-empty">Nenhuma categoria cadastrada.</div>
+    }
+</div>

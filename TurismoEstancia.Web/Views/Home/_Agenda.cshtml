@@ -1,0 +1,64 @@
+@model HomeViewModel
+@{
+    var agendaTitulo = Model.Conteudos.GetValueOrDefault("agenda-titulo", "Capital Mundial do<br />Barco de Fogo");
+    var agendaSubtitulo = Model.Conteudos.GetValueOrDefault("agenda-subtitulo",
+        "Há mais de um século, Estância colore o céu do Nordeste com o maior espetáculo pirotécnico do Brasil. Junho chegou — <strong>vem com a gente</strong>.");
+    var agendaPill = Model.Conteudos.GetValueOrDefault("agenda-pill", "Programação Oficial");
+}
+
+<section class="section-agenda section-3d section-divider" id="section-servicos" data-section="servicos">
+    <div class="section-agenda-bg">
+        @if (Model.Slides.Count >= 1)
+        {
+            <img src="/arquivo/@Model.Slides[0].ImagemArquivoId" alt="" aria-hidden="true" loading="lazy" />
+        }
+    </div>
+    <div class="section-agenda-inner">
+        <div class="agenda-header reveal">
+            <div class="agenda-pill">
+                <i data-lucide="calendar" class="icon-lg"></i>
+                <span>@agendaPill</span>
+            </div>
+            <h2 class="agenda-title">
+                @Html.Raw(agendaTitulo)
+            </h2>
+            <p class="agenda-subtitle">
+                @Html.Raw(agendaSubtitulo)
+            </p>
+        </div>
+
+        <div class="agenda-grid">
+            @if (Model.EventosProximos.Count == 0)
+            {
+                <p class="agenda-subtitle" style="grid-column:1/-1;text-align:center;">
+                    Nenhum evento próximo por enquanto — volte em breve!
+                </p>
+            }
+            else
+            {
+                var i = 1;
+                foreach (var evento in Model.EventosProximos)
+                {
+                    <div class="agenda-card reveal reveal-delay-@i">
+                        <div class="agenda-card-row">
+                            <span class="agenda-card-date">@evento.DataInicio.ToString("dd/MM")</span>
+                            <span class="agenda-card-time"><i data-lucide="clock" class="icon-lg"></i> @evento.DataInicio.ToString("HH'h'")</span>
+                        </div>
+                        <h3 class="agenda-card-title">@evento.Titulo</h3>
+                        <p class="agenda-card-desc">@evento.Descricao</p>
+                        @if (!string.IsNullOrWhiteSpace(evento.Local))
+                        {
+                            <div class="agenda-card-location">
+                                <i data-lucide="map-pin" class="icon-lg"></i> @evento.Local
+                            </div>
+                        }
+                        <a class="agenda-card-btn" href="/Evento/@evento.Id/ics" title="Adicionar à sua agenda (arquivo .ics)">
+                            <i data-lucide="calendar-plus" class="icon-lg"></i> Adicionar à Agenda
+                        </a>
+                    </div>
+                    i = i < 4 ? i + 1 : 4;
+                }
+            }
+        </div>
+    </div>
+</section>

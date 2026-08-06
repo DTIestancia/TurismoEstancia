@@ -1,0 +1,61 @@
+@model IReadOnlyList<ContatoDto>
+@{
+    ViewData["Title"] = "Contatos do rodapé";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Contatos do rodapé</h1>
+        <p class="painel-page-desc">Endereço, telefones de emergência e redes sociais exibidos no rodapé do portal.</p>
+    </div>
+    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Novo contato</a>
+</div>
+
+<div class="painel-card">
+    <div class="painel-table-wrap">
+        <table class="painel-table">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Rótulo</th>
+                    <th>Valor</th>
+                    <th>Ordem</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <span class="painel-badge @(item.Tipo == TipoContato.Telefone ? "painel-badge--green" : item.Tipo == TipoContato.RedesSocial ? "painel-badge--cyan" : "painel-badge--orange")">
+                                @(item.Tipo == TipoContato.Telefone ? "Telefone" : item.Tipo == TipoContato.RedesSocial ? "Rede social" : "Endereço")
+                            </span>
+                        </td>
+                        <td><strong>@(item.Rotulo ?? "—")</strong></td>
+                        <td>@item.Valor</td>
+                        <td>@item.Ordem</td>
+                        <td>
+                            <span class="painel-badge @(item.Ativo ? "painel-badge--green" : "painel-badge--grey")">
+                                @(item.Ativo ? "Ativo" : "Inativo")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="painel-actions" style="justify-content:flex-end;">
+                                <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Editar" asp-route-id="@item.Id"><i data-lucide="pencil"></i> Editar</a>
+                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir o contato '@(item.Rotulo ?? item.Valor)'?">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Count == 0)
+    {
+        <div class="painel-empty">Nenhum contato cadastrado.</div>
+    }
+</div>

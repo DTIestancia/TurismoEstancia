@@ -1,0 +1,157 @@
+@model PontoTuristicoDto
+@{
+    ViewData["Title"] = "Novo ponto turístico";
+    var categorias = (IReadOnlyList<CategoriaPontoTuristicoDto>)ViewBag.Categorias;
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Novo ponto turístico</h1>
+        <p class="painel-page-desc">Capa, pictograma, galeria e horários de funcionamento no mesmo formulário.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Criar" method="post" enctype="multipart/form-data" style="max-width:920px;">
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Nome"></label>
+            <input asp-for="Nome" class="painel-input" maxlength="150" />
+            <span asp-validation-for="Nome" class="field-validation-error"></span>
+        </div>
+        <div class="painel-field">
+            <label asp-for="CategoriaId"></label>
+            <select asp-for="CategoriaId" class="painel-select">
+                <option value="">— Selecione —</option>
+                @foreach (var c in categorias)
+                {
+                    <option value="@c.Id">@c.Nome</option>
+                }
+            </select>
+            <span asp-validation-for="CategoriaId" class="field-validation-error"></span>
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Descricao"></label>
+        <textarea asp-for="Descricao" class="painel-textarea"></textarea>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Detalhe"></label>
+        <textarea asp-for="Detalhe" class="painel-textarea"></textarea>
+        <span class="painel-hint">Texto detalhado exibido no modal do mapa.</span>
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Tag"></label>
+            <input asp-for="Tag" class="painel-input" maxlength="60" placeholder="Ex.: Praia" />
+        </div>
+        <div class="painel-field">
+            <label asp-for="Icone"></label>
+            <input asp-for="Icone" class="painel-input" maxlength="40" placeholder="landmark, tree-pine..." />
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Endereco"></label>
+        <input asp-for="Endereco" class="painel-input" maxlength="300" />
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="ComoChegar"></label>
+        <textarea asp-for="ComoChegar" class="painel-textarea"></textarea>
+        <span class="painel-hint">Dicas de como chegar exibidas no modal do mapa.</span>
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="LeftPercent"></label>
+            <input asp-for="LeftPercent" class="painel-input" type="number" min="0" max="100" />
+            <span class="painel-hint">Posição X no mapa (0–100).</span>
+        </div>
+        <div class="painel-field">
+            <label asp-for="TopPercent"></label>
+            <input asp-for="TopPercent" class="painel-input" type="number" min="0" max="100" />
+            <span class="painel-hint">Posição Y no mapa (0–100).</span>
+        </div>
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Ordem"></label>
+            <input asp-for="Ordem" class="painel-input" type="number" />
+        </div>
+        <div class="painel-field">
+            <label class="painel-checkbox">
+                <input asp-for="ExibirNoMapa" /> Exibir no mapa
+            </label>
+        </div>
+        <div class="painel-field">
+            <label class="painel-checkbox">
+                <input asp-for="Ativo" /> Ativo no portal
+            </label>
+        </div>
+    </div>
+
+    <div class="painel-card-title"><i data-lucide="image"></i> Mídias</div>
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label>Capa</label>
+            <input type="file" name="capa" accept="image/*" class="painel-input" />
+        </div>
+        <div class="painel-field">
+            <label>Pictograma (ícone)</label>
+            <input type="file" name="pictograma" accept="image/*" class="painel-input" />
+        </div>
+    </div>
+    <div class="painel-field">
+        <label>Galeria (várias fotos)</label>
+        <input type="file" name="galeria" accept="image/*" class="painel-input" multiple />
+    </div>
+
+    <div class="painel-card-title"><i data-lucide="clock"></i> Horários de funcionamento</div>
+    @{
+        var dias = new[] { "Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado" };
+        for (var d = 0; d < 7; d++)
+        {
+            var dia = (DiaSemana)d;
+            var horario = Model.Horarios.FirstOrDefault(h => h.DiaSemana == dia);
+            var fechado = horario?.Fechado == true;
+            var inicio = horario?.HoraInicio?.ToString("HH:mm") ?? "08:00";
+            var fim = horario?.HoraFim?.ToString("HH:mm") ?? "18:00";
+            <div class="painel-form-grid" style="align-items:center;border:1px solid var(--color-white--8);border-radius:10px;padding:10px 12px;">
+                <div class="painel-field" style="flex-direction:row;align-items:center;gap:10px;">
+                    <label style="margin:0;width:110px;">@dias[d]</label>
+                    <label class="painel-checkbox" style="margin:0;">
+                        <input type="checkbox" id="fechado-@d" data-dia="@d" name="horarios[@d].Fechado" value="true" @(fechado ? "checked" : "") /> Fechado
+                    </label>
+                </div>
+                <div class="painel-field" id="horario-@d" @(fechado ? "style=display:none;" : "")>
+                    <div style="display:flex;gap:8px;">
+                        <input type="time" name="horarios[@d].HoraInicio" value="@inicio" class="painel-input" />
+                        <input type="time" name="horarios[@d].HoraFim" value="@fim" class="painel-input" />
+                    </div>
+                    <input type="hidden" name="horarios[@d].DiaSemana" value="@((int)dia)" />
+                </div>
+            </div>
+        }
+    }
+
+    <div class="painel-form-actions">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('[id^="fechado-"]').forEach(function (chk) {
+            chk.addEventListener('change', function () {
+                var campo = document.getElementById('horario-' + chk.getAttribute('data-dia'));
+                campo.style.display = chk.checked ? 'none' : '';
+            });
+        });
+    </script>
+}

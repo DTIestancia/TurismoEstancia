@@ -1,0 +1,72 @@
+@model IReadOnlyList<InscricaoNewsletterDto>
+@{
+    ViewData["Title"] = "Newsletter";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Newsletter</h1>
+        <p class="painel-page-desc">Inscrições com consentimento LGPD. Exporte em CSV para abrir no Excel.</p>
+    </div>
+    <div class="painel-actions">
+        <a class="btn-painel btn-painel--ghost" asp-action="ExportarCsv"><i data-lucide="download"></i> Exportar CSV</a>
+    </div>
+</div>
+
+<div class="painel-card">
+    <div class="painel-table-wrap">
+        <table class="painel-table">
+            <thead>
+                <tr>
+                    <th>E-mail</th>
+                    <th>Origem</th>
+                    <th>LGPD</th>
+                    <th>Inscrição</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>@item.Email</strong></td>
+                        <td>@(item.Origem ?? "—")</td>
+                        <td>
+                            <span class="painel-badge @(item.ConsentimentoLgpd ? "painel-badge--green" : "painel-badge--red")">
+                                @(item.ConsentimentoLgpd ? "Consentiu" : "Sem consentimento")
+                            </span>
+                        </td>
+                        <td>@item.DataInscricao.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <span class="painel-badge @(item.Ativo ? "painel-badge--green" : "painel-badge--grey")">
+                                @(item.Ativo ? "Ativa" : "Inativa")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="painel-actions" style="justify-content:flex-end;">
+                                @if (item.Ativo)
+                                {
+                                    <form asp-action="Inativar" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Inativar a inscrição de @item.Email?">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="user-x"></i> Inativar</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="Reativar" asp-route-id="@item.Id" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-painel btn-painel--ghost btn-painel--xs"><i data-lucide="user-check"></i> Reativar</button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Count == 0)
+    {
+        <div class="painel-empty">Nenhuma inscrição recebida ainda.</div>
+    }
+</div>

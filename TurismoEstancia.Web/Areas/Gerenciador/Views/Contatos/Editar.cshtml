@@ -1,0 +1,57 @@
+@model ContatoDto
+@{ ViewData["Title"] = "Editar contato"; }
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Editar contato</h1>
+        <p class="painel-page-desc">Ajuste os dados do contato.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Editar" method="post">
+    <input asp-for="Id" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Tipo"></label>
+            <select asp-for="Tipo" class="painel-select">
+                <option value="@((int)TipoContato.Endereco)">Endereço</option>
+                <option value="@((int)TipoContato.Telefone)">Telefone</option>
+                <option value="@((int)TipoContato.RedesSocial)">Rede social</option>
+            </select>
+        </div>
+        <div class="painel-field">
+            <label asp-for="Rotulo"></label>
+            <input asp-for="Rotulo" class="painel-input" maxlength="80" />
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Valor"></label>
+        <input asp-for="Valor" class="painel-input" maxlength="500" />
+        <span asp-validation-for="Valor" class="field-validation-error"></span>
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Icone"></label>
+            <input asp-for="Icone" class="painel-input" maxlength="40" />
+            <span class="painel-hint">Ícone Lucide exibido ao lado do contato.</span>
+        </div>
+        <div class="painel-field">
+            <label asp-for="Ordem"></label>
+            <input asp-for="Ordem" class="painel-input" type="number" />
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label class="painel-checkbox">
+            <input asp-for="Ativo" /> Ativo no portal
+        </label>
+    </div>
+
+    <div class="painel-form-actions">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar alterações</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>
