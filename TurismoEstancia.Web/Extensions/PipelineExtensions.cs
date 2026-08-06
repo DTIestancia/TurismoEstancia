@@ -1,5 +1,6 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using TurismoEstancia.Web.Middleware;
 
 namespace TurismoEstancia.Web.Extensions;
 
@@ -33,6 +34,9 @@ public static class PipelineExtensions
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
+
+        // Rastreio de visitas das páginas públicas (anônimo, fila em background).
+        app.UseMiddleware<AnalyticsVisitTrackingMiddleware>();
 
         // 404/500 no visual do portal (sem redirecionamento de status).
         app.UseStatusCodePagesWithReExecute("/Home/Error");

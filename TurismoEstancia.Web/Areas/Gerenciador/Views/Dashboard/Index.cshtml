@@ -1,19 +1,190 @@
-@model IReadOnlyList<PainelStatViewModel>
+@model DashboardAnalyticsViewModel
 @{
     ViewData["Title"] = "Dashboard";
+    var serie = Model.Resumo.VisitasPorDia;
+    var labelsLinha = serie.Select(s => s.Data.ToString("dd/MM")).ToList();
+    var dadosLinha = serie.Select(s => s.Quantidade).ToList();
+    var labelsPaginas = Model.Resumo.TopPaginas.Select(p => string.IsNullOrWhiteSpace(p.Rotulo) ? "/" : p.Rotulo).ToList();
+    var dadosPaginas = Model.Resumo.TopPaginas.Select(p => p.Quantidade).ToList();
+    var labelsDispositivos = Model.Resumo.Dispositivos.Select(d => d.Rotulo).ToList();
+    var dadosDispositivos = Model.Resumo.Dispositivos.Select(d => d.Quantidade).ToList();
+    var labelsFontes = Model.Resumo.Fontes.Select(f => f.Rotulo).ToList();
+    var dadosFontes = Model.Resumo.Fontes.Select(f => f.Quantidade).ToList();
+    var labelsMaravilhas = Model.Resumo.TopMaravilhas.Select(m => m.Rotulo).ToList();
+    var dadosMaravilhas = Model.Resumo.TopMaravilhas.Select(m => m.Quantidade).ToList();
 }
 <div class="painel-page-header">
     <div>
-        <h1 class="painel-page-title">Visão geral</h1>
-        <p class="painel-page-desc">Resumo do conteúdo publicado no portal de turismo de Estância.</p>
+        <h1 class="painel-page-title">Dashboard de análises</h1>
+        <p class="painel-page-desc">
+            Audiência do portal nos últimos @Model.PeriodoDias dias — dados anônimos (LGPD-safe, sem IP),
+            coletados de visitas e cliques nas páginas públicas.
+        </p>
     </div>
-    <a class="btn-painel btn-painel--ghost" asp-controller="Home" asp-action="Index" target="_blank">
-        <i data-lucide="external-link"></i> Ver portal
-    </a>
+    <div class="painel-periodo" role="group" aria-label="Período">
+        <a class="@(Model.PeriodoDias == 7 ? "active" : "")" asp-action="Index" asp-route-dias="7">7 dias</a>
+        <a class="@(Model.PeriodoDias == 30 ? "active" : "")" asp-action="Index" asp-route-dias="30">30 dias</a>
+        <a class="@(Model.PeriodoDias == 90 ? "active" : "")" asp-action="Index" asp-route-dias="90">90 dias</a>
+    </div>
 </div>
 
+<!-- ===== KPIs de audiência ===== -->
+<div class="painel-kpis">
+    <div class="painel-stat painel-kpi">
+        <div class="painel-stat-value">@Model.Resumo.Visitas</div>
+        <div class="painel-stat-label">Visitas no período</div>
+        <div class="painel-stat-icon"><i data-lucide="eye" width="22" height="22"></i></div>
+    </div>
+    <div class="painel-stat painel-kpi">
+        <div class="painel-stat-value">@Model.Resumo.VisitasHoje</div>
+        <div class="painel-stat-label">Visitas hoje</div>
+        <div class="painel-stat-icon"><i data-lucide="zap" width="22" height="22"></i></div>
+    </div>
+    <div class="painel-stat painel-kpi">
+        <div class="painel-stat-value">@Model.Resumo.VisitantesUnicos</div>
+        <div class="painel-stat-label">Visitantes únicos</div>
+        <div class="painel-stat-icon"><i data-lucide="users" width="22" height="22"></i></div>
+    </div>
+    <div class="painel-stat painel-kpi">
+        <div class="painel-stat-value">@Model.Resumo.Cliques</div>
+        <div class="painel-stat-label">Cliques rastreados</div>
+        <div class="painel-stat-icon"><i data-lucide="mouse-pointer-click" width="22" height="22"></i></div>
+    </div>
+</div>
+
+<!-- ===== Gráficos ===== -->
+<div class="painel-charts-grid">
+    <div class="painel-card painel-chart painel-chart--wide">
+        <div class="painel-card-title"><i data-lucide="trending-up"></i> Visitas por dia</div>
+        <div class="painel-chart-canvas"><canvas id="chartVisitas" height="120"></canvas></div>
+    </div>
+    <div class="painel-card painel-chart">
+        <div class="painel-card-title"><i data-lucide="smartphone"></i> Dispositivos</div>
+        <div class="painel-chart-canvas"><canvas id="chartDispositivos" height="150"></canvas></div>
+    </div>
+
+    <div class="painel-card painel-chart painel-chart--wide">
+        <div class="painel-card-title"><i data-lucide="bar-chart-3"></i> Top páginas mais visitadas</div>
+        <div class="painel-chart-canvas"><canvas id="chartPaginas" height="150"></canvas></div>
+    </div>
+    <div class="painel-card painel-chart">
+        <div class="painel-card-title"><i data-lucide="share-2"></i> Fontes de tráfego</div>
+        <div class="painel-chart-canvas"><canvas id="chartFontes" height="150"></canvas></div>
+    </div>
+
+    <div class="painel-card painel-chart painel-chart--wide">
+        <div class="painel-card-title"><i data-lucide="sparkles"></i> Maravilhas mais clicadas ("Ver detalhes")</div>
+        <div class="painel-chart-canvas"><canvas id="chartMaravilhas" height="150"></canvas></div>
+    </div>
+    <div class="painel-card painel-chart">
+        <div class="painel-card-title"><i data-lucide="mouse-pointer-click"></i> Cliques por evento</div>
+        <div class="painel-chart-canvas"><canvas id="chartEventos" height="150"></canvas></div>
+    </div>
+</div>
+
+<!-- ===== Rankings + Newsletter + SEO ===== -->
+<div class="painel-charts-grid">
+    <div class="painel-card">
+        <div class="painel-card-title"><i data-lucide="trophy"></i> Top páginas</div>
+        <div class="painel-table-wrap">
+            <table class="painel-table">
+                <thead><tr><th>#</th><th>Página</th><th>Visitas</th></tr></thead>
+                <tbody>
+                    @if (Model.Resumo.TopPaginas.Count == 0)
+                    {
+                        <tr><td colspan="3" class="painel-empty">Sem dados no período.</td></tr>
+                    }
+                    @for (var i = 0; i < Model.Resumo.TopPaginas.Count; i++)
+                    {
+                        var p = Model.Resumo.TopPaginas[i];
+                        <tr>
+                            <td>@(i + 1)</td>
+                            <td><strong>@(string.IsNullOrWhiteSpace(p.Rotulo) ? "/" : p.Rotulo)</strong></td>
+                            <td>@p.Quantidade</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="painel-card">
+        <div class="painel-card-title"><i data-lucide="globe"></i> Origens (referrers)</div>
+        <div class="painel-table-wrap">
+            <table class="painel-table">
+                <thead><tr><th>#</th><th>Domínio</th><th>Visitas</th></tr></thead>
+                <tbody>
+                    @if (Model.Resumo.TopReferrers.Count == 0)
+                    {
+                        <tr><td colspan="3" class="painel-empty">Ainda não há tráfego externo.</td></tr>
+                    }
+                    @for (var i = 0; i < Model.Resumo.TopReferrers.Count; i++)
+                    {
+                        var r = Model.Resumo.TopReferrers[i];
+                        <tr>
+                            <td>@(i + 1)</td>
+                            <td><strong>@r.Rotulo</strong></td>
+                            <td>@r.Quantidade</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="painel-charts-grid">
+    <div class="painel-card">
+        <div class="painel-card-title"><i data-lucide="mail"></i> Newsletter</div>
+        <div class="painel-newsletter-stats">
+            <div class="painel-newsletter-stat">
+                <div class="painel-newsletter-value">+@Model.NewsletterNoPeriodo</div>
+                <div class="painel-newsletter-label">novas inscrições no período</div>
+            </div>
+            <div class="painel-newsletter-stat">
+                <div class="painel-newsletter-value">@Model.NewsletterAtivas</div>
+                <div class="painel-newsletter-label">inscrições ativas hoje</div>
+            </div>
+        </div>
+        <div class="painel-actions" style="margin-top:14px;">
+            <a class="btn-painel btn-painel--ghost btn-painel--sm" asp-controller="Newsletter" asp-action="Index">
+                <i data-lucide="users"></i> Gerenciar inscrições
+            </a>
+        </div>
+    </div>
+
+    <div class="painel-card">
+        <div class="painel-card-title"><i data-lucide="search"></i> SEO do portal</div>
+        <div class="painel-seo-item">
+            <span class="painel-seo-label">Título</span>
+            <strong>@(string.IsNullOrWhiteSpace(Model.SeoTitulo) ? "—" : Model.SeoTitulo)</strong>
+        </div>
+        <div class="painel-seo-item">
+            <span class="painel-seo-label">Meta descrição</span>
+            <span>@(string.IsNullOrWhiteSpace(Model.SeoDescricao) ? "—" : Model.SeoDescricao)</span>
+        </div>
+        <div class="painel-seo-item">
+            <span class="painel-seo-label">Rotas indexáveis</span>
+            <span>@Model.RotasIndexaveis rotas públicas no sitemap</span>
+        </div>
+        <div class="painel-actions" style="margin-top:14px;">
+            <a class="btn-painel btn-painel--ghost btn-painel--sm" href="/sitemap.xml" target="_blank">
+                <i data-lucide="file-code"></i> sitemap.xml
+            </a>
+            <a class="btn-painel btn-painel--ghost btn-painel--sm" href="/robots.txt" target="_blank">
+                <i data-lucide="file-text"></i> robots.txt
+            </a>
+            <a class="btn-painel btn-painel--ghost btn-painel--sm" asp-controller="Configuracoes" asp-action="Index">
+                <i data-lucide="settings"></i> Configurar SEO
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Contadores de conteúdo ===== -->
+<div class="painel-card-title" style="margin-top:6px;"><i data-lucide="database"></i> Conteúdo publicado</div>
 <div class="painel-stats-grid">
-    @foreach (var item in Model)
+    @foreach (var item in Model.Conteudos)
     {
         <div class="painel-stat">
             <div class="painel-stat-value">@item.Valor</div>
@@ -23,12 +194,170 @@
     }
 </div>
 
-<div class="painel-card">
-    <div class="painel-card-title"><i data-lucide="info"></i> Acesso rápido</div>
-    <div class="painel-actions">
-        <a class="btn-painel btn-painel--primary" asp-controller="PontosTuristicos" asp-action="Criar"><i data-lucide="plus"></i> Novo ponto turístico</a>
-        <a class="btn-painel btn-painel--ghost" asp-controller="Eventos" asp-action="Criar"><i data-lucide="plus"></i> Novo evento</a>
-        <a class="btn-painel btn-painel--ghost" asp-controller="Noticias" asp-action="Criar"><i data-lucide="plus"></i> Nova notícia</a>
-        <a class="btn-painel btn-painel--ghost" asp-controller="Usuarios" asp-action="Criar"><i data-lucide="user-plus"></i> Novo usuário</a>
-    </div>
-</div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script>
+        (function () {
+            if (typeof Chart === 'undefined') return;
+
+            Chart.defaults.color = 'rgba(255,255,255,0.65)';
+            Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
+            Chart.defaults.font.family = 'Inter, sans-serif';
+
+            var laranja = '#F76400', vermelho = '#E62B34', verde = '#009662',
+                ciano = '#009CCF', amarelo = '#FFC200', roxo = '#6C63FF';
+
+            // Linha: visitas por dia
+            var elVisitas = document.getElementById('chartVisitas');
+            if (elVisitas) {
+                new Chart(elVisitas, {
+                    type: 'line',
+                    data: {
+                        labels: @System.Text.Json.JsonSerializer.Serialize(labelsLinha),
+                        datasets: [{
+                            label: 'Visitas',
+                            data: @System.Text.Json.JsonSerializer.Serialize(dadosLinha),
+                            borderColor: laranja,
+                            backgroundColor: 'rgba(247,100,0,0.12)',
+                            fill: true,
+                            tension: 0.35,
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                    }
+                });
+            }
+
+            // Rosca: dispositivos
+            var elDisp = document.getElementById('chartDispositivos');
+            if (elDisp) {
+                new Chart(elDisp, {
+                    type: 'doughnut',
+                    data: {
+                        labels: @System.Text.Json.JsonSerializer.Serialize(labelsDispositivos),
+                        datasets: [{
+                            data: @System.Text.Json.JsonSerializer.Serialize(dadosDispositivos),
+                            backgroundColor: [laranja, ciano, roxo],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        cutout: '62%',
+                        plugins: {
+                            legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true, pointStyle: 'circle' } }
+                        }
+                    }
+                });
+            }
+
+            // Barras horizontais: top páginas
+            var elPaginas = document.getElementById('chartPaginas');
+            if (elPaginas) {
+                new Chart(elPaginas, {
+                    type: 'bar',
+                    data: {
+                        labels: @System.Text.Json.JsonSerializer.Serialize(labelsPaginas),
+                        datasets: [{
+                            label: 'Visitas',
+                            data: @System.Text.Json.JsonSerializer.Serialize(dadosPaginas),
+                            backgroundColor: 'rgba(247,100,0,0.75)',
+                            borderRadius: 6,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { beginAtZero: true, ticks: { precision: 0 } },
+                            y: { ticks: { font: { size: 10.5 } } }
+                        }
+                    }
+                });
+            }
+
+            // Rosca: fontes de tráfego
+            var elFontes = document.getElementById('chartFontes');
+            if (elFontes) {
+                new Chart(elFontes, {
+                    type: 'doughnut',
+                    data: {
+                        labels: @System.Text.Json.JsonSerializer.Serialize(labelsFontes),
+                        datasets: [{
+                            data: @System.Text.Json.JsonSerializer.Serialize(dadosFontes),
+                            backgroundColor: [verde, ciano, amarelo, laranja],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        cutout: '62%',
+                        plugins: {
+                            legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true, pointStyle: 'circle' } }
+                        }
+                    }
+                });
+            }
+
+            // Barras: maravilhas mais clicadas
+            var elMaravilhas = document.getElementById('chartMaravilhas');
+            if (elMaravilhas) {
+                new Chart(elMaravilhas, {
+                    type: 'bar',
+                    data: {
+                        labels: @System.Text.Json.JsonSerializer.Serialize(labelsMaravilhas),
+                        datasets: [{
+                            label: 'Cliques',
+                            data: @System.Text.Json.JsonSerializer.Serialize(dadosMaravilhas),
+                            backgroundColor: 'rgba(230,43,52,0.75)',
+                            borderRadius: 6,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { beginAtZero: true, ticks: { precision: 0 } },
+                            y: { ticks: { font: { size: 11 } } }
+                        }
+                    }
+                });
+            }
+
+            // Barras: cliques por evento
+            var elEventos = document.getElementById('chartEventos');
+            if (elEventos) {
+                var labelsEventos = @System.Text.Json.JsonSerializer.Serialize(Model.Resumo.TopEventos.Select(e => e.Rotulo).ToList());
+                var dadosEventos = @System.Text.Json.JsonSerializer.Serialize(Model.Resumo.TopEventos.Select(e => e.Quantidade).ToList());
+                new Chart(elEventos, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labelsEventos,
+                        datasets: [{
+                            data: dadosEventos,
+                            backgroundColor: [laranja, ciano, verde, amarelo, roxo, vermelho],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        cutout: '62%',
+                        plugins: {
+                            legend: { position: 'bottom', labels: { padding: 10, usePointStyle: true, pointStyle: 'circle', font: { size: 10.5 } } }
+                        }
+                    }
+                });
+            }
+        })();
+    </script>
+}

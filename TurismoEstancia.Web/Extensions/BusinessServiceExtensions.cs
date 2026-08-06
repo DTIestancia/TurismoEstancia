@@ -1,3 +1,7 @@
+using System.Threading.Channels;
+using TurismoEstancia.Domain.Models;
+using TurismoEstancia.Services.Analytics.Interfaces;
+using TurismoEstancia.Services.Analytics.Services;
 using TurismoEstancia.Services.Avaliacao.Interfaces;
 using TurismoEstancia.Services.Avaliacao.Services;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
@@ -52,6 +56,10 @@ public static class BusinessServiceExtensions
         // Módulo Avaliacao
         builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();
 
-        // Novos módulos serão adicionados aqui.
+        // Módulo Analytics: fila em memória + gravação em background (lote).
+        builder.Services.AddSingleton(Channel.CreateBounded<AnalyticsEvento>(
+            new BoundedChannelOptions(10_000) { FullMode = BoundedChannelFullMode.DropWrite }));
+        builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+        builder.Services.AddHostedService<AnalyticsWriterService>();
     }
 }

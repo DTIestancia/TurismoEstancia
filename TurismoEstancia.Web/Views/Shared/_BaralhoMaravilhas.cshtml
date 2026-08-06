@@ -29,7 +29,8 @@ else
                         {
                             <span class="wonder-tag">@ponto.Tag</span>
                         }
-                        <a class="btn-primary wonder-deck-btn" href="/lugares/@ponto.Id/@Slug.De(ponto.Nome)">
+                        <a class="btn-primary wonder-deck-btn" href="/lugares/@ponto.Id/@Slug.De(ponto.Nome)"
+                           data-track="ver-maravilha" data-track-id="@ponto.Id" data-track-nome="@ponto.Nome">
                             Ver detalhes <i data-lucide="arrow-right" class="icon-lg"></i>
                         </a>
                     </div>
