@@ -1,0 +1,63 @@
+@model NoticiaDto
+@{ ViewData["Title"] = "Nova notícia"; }
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Nova notícia</h1>
+        <p class="painel-page-desc">O slug é gerado automaticamente a partir do título.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Criar" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-field">
+        <label asp-for="Titulo"></label>
+        <input asp-for="Titulo" class="painel-input" maxlength="180" />
+        <span asp-validation-for="Titulo" class="field-validation-error"></span>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Resumo"></label>
+        <input asp-for="Resumo" class="painel-input" maxlength="300" />
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Corpo"></label>
+        <textarea asp-for="Corpo" class="painel-textarea"></textarea>
+        <span class="painel-hint">Parágrafos separados por linha em branco. Quebras de linha são preservadas.</span>
+    </div>
+
+    <div class="painel-field">
+        <label>Imagem de capa (opcional)</label>
+        <input type="file" name="imagem" accept="image/*" class="painel-input" />
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="DataPublicacao"></label>
+            <input asp-for="DataPublicacao" class="painel-input" type="datetime-local" />
+        </div>
+        <div class="painel-field">
+            <label asp-for="Ordem"></label>
+            <input asp-for="Ordem" class="painel-input" type="number" />
+        </div>
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label class="painel-checkbox">
+                <input asp-for="Publicada" /> Publicada no portal
+            </label>
+        </div>
+        <div class="painel-field">
+            <label class="painel-checkbox">
+                <input asp-for="Ativo" /> Ativo
+            </label>
+        </div>
+    </div>
+
+    <div class="painel-form-actions">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>

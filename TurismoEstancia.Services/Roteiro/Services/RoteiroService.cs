@@ -93,7 +93,11 @@ public class RoteiroService : IRoteiroService
                 entidade.ImagemArquivoId = await _arquivos.SalvarAsync(imagem, ct);
             }
 
-            await SincronizarItensAsync(dto.Id, dto.Itens, ct);
+            // A edição de itens do roteiro não é exposta no CMS (v1) — preserva
+            // os itens existentes quando a lista recebida vier vazia.
+            if (dto.Itens.Count > 0)
+                await SincronizarItensAsync(dto.Id, dto.Itens, ct);
+
             await _db.SaveChangesAsync(ct);
 
             // Remove o arquivo antigo só após o commit.

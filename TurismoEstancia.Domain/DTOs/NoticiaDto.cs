@@ -1,9 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace TurismoEstancia.Domain.DTOs;
 
 /// <summary>DTO de notícia.</summary>
 public class NoticiaDto
 {
     public int Id { get; set; }
+
+    [Required(ErrorMessage = "Informe o título.")]
+    [MaxLength(180)]
     public string Titulo { get; set; } = null!;
     public string? Resumo { get; set; }
     public string? Corpo { get; set; }

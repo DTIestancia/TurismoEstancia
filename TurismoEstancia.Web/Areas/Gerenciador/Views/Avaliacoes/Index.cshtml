@@ -1,0 +1,64 @@
+@model IReadOnlyList<AvaliacaoDto>
+@{
+    ViewData["Title"] = "Avaliações";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Avaliações</h1>
+        <p class="painel-page-desc">Avaliações enviadas pelo portal. Aprove para publicar no modal do mapa.</p>
+    </div>
+</div>
+
+<div class="painel-card">
+    <div class="painel-table-wrap">
+        <table class="painel-table">
+            <thead>
+                <tr>
+                    <th>Ponto</th>
+                    <th>Visitante</th>
+                    <th>Nota</th>
+                    <th>Comentário</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>@(item.PontoTuristicoNome ?? $"Ponto #{item.PontoTuristicoId}")</strong></td>
+                        <td>@item.Nome</td>
+                        <td style="color:#FFC200;">@(new string('★', item.Nota))<span style="color:var(--color-white--25);">@(new string('★', 5 - item.Nota))</span></td>
+                        <td style="max-width:280px;">@(item.Comentario ?? "—")</td>
+                        <td>@item.Data.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            <span class="painel-badge @(item.Aprovada ? "painel-badge--green" : "painel-badge--orange")">
+                                @(item.Aprovada ? "Aprovada" : "Pendente")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="painel-actions" style="justify-content:flex-end;">
+                                @if (!item.Aprovada)
+                                {
+                                    <form asp-action="Aprovar" asp-route-id="@item.Id" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-painel btn-painel--ghost btn-painel--xs"><i data-lucide="check"></i> Aprovar</button>
+                                    </form>
+                                }
+                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Remover esta avaliação?">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Count == 0)
+    {
+        <div class="painel-empty">Nenhuma avaliação recebida ainda.</div>
+    }
+</div>

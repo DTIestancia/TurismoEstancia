@@ -1,0 +1,45 @@
+@model RoteiroDto
+@{ ViewData["Title"] = "Novo roteiro"; }
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Novo roteiro</h1>
+        <p class="painel-page-desc">Os itens do roteiro (dias e pontos) são gerenciados pelo Portal? Não — cadastre o roteiro aqui; os itens entram na edição avançada.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Criar" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-field">
+        <label asp-for="Titulo"></label>
+        <input asp-for="Titulo" class="painel-input" maxlength="180" />
+        <span asp-validation-for="Titulo" class="field-validation-error"></span>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Descricao"></label>
+        <textarea asp-for="Descricao" class="painel-textarea"></textarea>
+    </div>
+
+    <div class="painel-field">
+        <label>Imagem de capa (opcional)</label>
+        <input type="file" name="imagem" accept="image/*" class="painel-input" />
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Ordem"></label>
+            <input asp-for="Ordem" class="painel-input" type="number" />
+        </div>
+        <div class="painel-field">
+            <label class="painel-checkbox">
+                <input asp-for="Ativo" /> Ativo no portal
+            </label>
+        </div>
+    </div>
+
+    <div class="painel-form-actions">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>

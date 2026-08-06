@@ -1,0 +1,55 @@
+@model IReadOnlyList<EstatisticaDto>
+@{
+    ViewData["Title"] = "Estatísticas";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Estatísticas</h1>
+        <p class="painel-page-desc">Números exibidos na seção de história do portal.</p>
+    </div>
+    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Nova estatística</a>
+</div>
+
+<div class="painel-card">
+    <div class="painel-table-wrap">
+        <table class="painel-table">
+            <thead>
+                <tr>
+                    <th>Valor</th>
+                    <th>Legenda</th>
+                    <th>Ordem</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>@item.Valor</strong></td>
+                        <td>@item.Legenda</td>
+                        <td>@item.Ordem</td>
+                        <td>
+                            <span class="painel-badge @(item.Ativo ? "painel-badge--green" : "painel-badge--grey")">
+                                @(item.Ativo ? "Ativo" : "Inativo")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="painel-actions" style="justify-content:flex-end;">
+                                <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Editar" asp-route-id="@item.Id"><i data-lucide="pencil"></i> Editar</a>
+                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir a estatística '@item.Valor'?">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Count == 0)
+    {
+        <div class="painel-empty">Nenhuma estatística cadastrada.</div>
+    }
+</div>

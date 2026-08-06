@@ -40,7 +40,18 @@ public static class PipelineExtensions
 
     public static void MapAllRoutes(this WebApplication app)
     {
-        // Novas áreas serão adicionadas aqui (Fase 6).
+        // Área do Gerenciador (CMS completo)
+        app.MapAreaControllerRoute(
+            name: "Gerenciador",
+            areaName: "Gerenciador",
+            pattern: "Gerenciador/{controller=Dashboard}/{action=Index}/{id?}");
+
+        // Área do Operador (Evento + Newsletter)
+        app.MapAreaControllerRoute(
+            name: "Operador",
+            areaName: "Operador",
+            pattern: "Operador/{controller=Dashboard}/{action=Index}/{id?}");
+
         app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
         app.MapRazorPages();
     }

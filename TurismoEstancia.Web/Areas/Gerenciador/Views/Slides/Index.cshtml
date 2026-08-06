@@ -1,0 +1,55 @@
+@model IReadOnlyList<SlideDto>
+@{
+    ViewData["Title"] = "Slides do hero";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Slides do hero</h1>
+        <p class="painel-page-desc">Imagens de fundo do carrossel da página inicial. A primeira é exibida por padrão.</p>
+    </div>
+    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Novo slide</a>
+</div>
+
+<div class="painel-card">
+    <div class="painel-table-wrap">
+        <table class="painel-table">
+            <thead>
+                <tr>
+                    <th>Imagem</th>
+                    <th>Título</th>
+                    <th>Ordem</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><img class="painel-item-thumb" src="/arquivo/@item.ImagemArquivoId" alt="" /></td>
+                        <td><strong>@(item.Titulo ?? "Sem título")</strong></td>
+                        <td>@item.Ordem</td>
+                        <td>
+                            <span class="painel-badge @(item.Ativo ? "painel-badge--green" : "painel-badge--grey")">
+                                @(item.Ativo ? "Ativo" : "Inativo")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="painel-actions" style="justify-content:flex-end;">
+                                <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Editar" asp-route-id="@item.Id"><i data-lucide="pencil"></i> Editar</a>
+                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir este slide?">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Count == 0)
+    {
+        <div class="painel-empty">Nenhum slide cadastrado. Sem slides, o hero usa o fundo do protótipo.</div>
+    }
+</div>

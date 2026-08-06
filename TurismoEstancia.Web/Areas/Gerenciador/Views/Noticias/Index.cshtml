@@ -1,0 +1,67 @@
+@model IReadOnlyList<NoticiaDto>
+@{
+    ViewData["Title"] = "Notícias";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Notícias</h1>
+        <p class="painel-page-desc">Publicações exibidas em /Noticias no portal.</p>
+    </div>
+    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Nova notícia</a>
+</div>
+
+<div class="painel-card">
+    <div class="painel-table-wrap">
+        <table class="painel-table">
+            <thead>
+                <tr>
+                    <th>Imagem</th>
+                    <th>Título</th>
+                    <th>Data</th>
+                    <th>Publicada</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @if (item.ImagemArquivoId is long imgId)
+                            {
+                                <img class="painel-item-thumb" src="/arquivo/@imgId" alt="" />
+                            }
+                        </td>
+                        <td><strong>@item.Titulo</strong></td>
+                        <td>@item.DataPublicacao.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <span class="painel-badge @(item.Publicada ? "painel-badge--green" : "painel-badge--grey")">
+                                @(item.Publicada ? "Publicada" : "Rascunho")
+                            </span>
+                        </td>
+                        <td>
+                            <span class="painel-badge @(item.Ativo ? "painel-badge--green" : "painel-badge--red")">
+                                @(item.Ativo ? "Ativo" : "Inativo")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="painel-actions" style="justify-content:flex-end;">
+                                <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-page="/Noticias/Detalhe" asp-route-slug="@item.Slug" target="_blank" title="Ver no portal"><i data-lucide="eye"></i></a>
+                                <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Editar" asp-route-id="@item.Id"><i data-lucide="pencil"></i> Editar</a>
+                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir a notícia '@item.Titulo'?">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Count == 0)
+    {
+        <div class="painel-empty">Nenhuma notícia cadastrada.</div>
+    }
+</div>

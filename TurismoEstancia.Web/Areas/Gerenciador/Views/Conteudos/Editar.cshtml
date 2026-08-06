@@ -1,0 +1,36 @@
+@model ConteudoSiteDto
+@{ ViewData["Title"] = "Editar texto"; }
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Editar texto</h1>
+        <p class="painel-page-desc">Ajuste o conteúdo do bloco.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Editar" method="post">
+    <input asp-for="Id" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Chave"></label>
+            <input asp-for="Chave" class="painel-input" maxlength="60" />
+            <span asp-validation-for="Chave" class="field-validation-error"></span>
+        </div>
+        <div class="painel-field">
+            <label asp-for="Nome"></label>
+            <input asp-for="Nome" class="painel-input" maxlength="120" />
+            <span asp-validation-for="Nome" class="field-validation-error"></span>
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Texto"></label>
+        <textarea asp-for="Texto" class="painel-textarea"></textarea>
+    </div>
+
+    <div class="painel-form-actions">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar alterações</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>

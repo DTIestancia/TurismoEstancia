@@ -1,0 +1,72 @@
+@model CategoriaPontoTuristicoDto
+@{ ViewData["Title"] = "Nova categoria"; }
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Nova categoria</h1>
+        <p class="painel-page-desc">A chave alimenta o mapa (ex.: heritage, nature, food). Ícone e cor usam o visual do protótipo.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Criar" method="post">
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Chave"></label>
+            <input asp-for="Chave" class="painel-input" maxlength="40" placeholder="heritage" />
+            <span asp-validation-for="Chave" class="field-validation-error"></span>
+        </div>
+        <div class="painel-field">
+            <label asp-for="Nome"></label>
+            <input asp-for="Nome" class="painel-input" maxlength="100" placeholder="Patrimônio" />
+            <span asp-validation-for="Nome" class="field-validation-error"></span>
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="SubTitulo"></label>
+        <input asp-for="SubTitulo" class="painel-input" maxlength="160" />
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Cor"></label>
+            <input asp-for="Cor" class="painel-input" type="color" style="height:44px;padding:4px;" />
+        </div>
+        <div class="painel-field">
+            <label asp-for="Icone"></label>
+            <input asp-for="Icone" class="painel-input" maxlength="40" placeholder="landmark" />
+            <span class="painel-hint">Nome do ícone Lucide (ex.: landmark, tree-pine, utensils).</span>
+        </div>
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Ordem"></label>
+            <input asp-for="Ordem" class="painel-input" type="number" />
+        </div>
+        <div class="painel-field">
+            <label class="painel-checkbox">
+                <input asp-for="Ativo" /> Ativa no portal
+            </label>
+        </div>
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label class="painel-checkbox">
+                <input asp-for="ApresentarEmMaravilhas" /> Exibir na seção "7 Maravilhas"
+            </label>
+        </div>
+        <div class="painel-field">
+            <label class="painel-checkbox">
+                <input asp-for="ExibirNoMapa" /> Exibir no mapa interativo
+            </label>
+        </div>
+    </div>
+
+    <div class="painel-form-actions">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>

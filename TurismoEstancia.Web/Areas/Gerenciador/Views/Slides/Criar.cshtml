@@ -1,0 +1,41 @@
+@model SlideDto
+@{ ViewData["Title"] = "Novo slide"; }
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Novo slide</h1>
+        <p class="painel-page-desc">Envie uma imagem de fundo para o carrossel do hero.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Criar" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-field">
+        <label>Imagem (JPG/PNG/WebP)</label>
+        <input type="file" name="imagem" accept="image/*" class="painel-input" required />
+        <span class="painel-hint">Recomendado: 1920×1080 ou proporção larga.</span>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Titulo"></label>
+        <input asp-for="Titulo" class="painel-input" maxlength="120" />
+        <span class="painel-hint">Texto alternativo da imagem (acessibilidade).</span>
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Ordem"></label>
+            <input asp-for="Ordem" class="painel-input" type="number" />
+        </div>
+        <div class="painel-field">
+            <label class="painel-checkbox">
+                <input asp-for="Ativo" /> Ativo no portal
+            </label>
+        </div>
+    </div>
+
+    <div class="painel-form-actions">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>

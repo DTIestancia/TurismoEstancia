@@ -1,0 +1,34 @@
+@model IReadOnlyList<PainelStatViewModel>
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Visão geral</h1>
+        <p class="painel-page-desc">Resumo do conteúdo publicado no portal de turismo de Estância.</p>
+    </div>
+    <a class="btn-painel btn-painel--ghost" asp-controller="Home" asp-action="Index" target="_blank">
+        <i data-lucide="external-link"></i> Ver portal
+    </a>
+</div>
+
+<div class="painel-stats-grid">
+    @foreach (var item in Model)
+    {
+        <div class="painel-stat">
+            <div class="painel-stat-value">@item.Valor</div>
+            <div class="painel-stat-label">@item.Rotulo</div>
+            <div class="painel-stat-icon"><i data-lucide="@item.Icone" width="22" height="22"></i></div>
+        </div>
+    }
+</div>
+
+<div class="painel-card">
+    <div class="painel-card-title"><i data-lucide="info"></i> Acesso rápido</div>
+    <div class="painel-actions">
+        <a class="btn-painel btn-painel--primary" asp-controller="PontosTuristicos" asp-action="Criar"><i data-lucide="plus"></i> Novo ponto turístico</a>
+        <a class="btn-painel btn-painel--ghost" asp-controller="Eventos" asp-action="Criar"><i data-lucide="plus"></i> Novo evento</a>
+        <a class="btn-painel btn-painel--ghost" asp-controller="Noticias" asp-action="Criar"><i data-lucide="plus"></i> Nova notícia</a>
+        <a class="btn-painel btn-painel--ghost" asp-controller="Usuarios" asp-action="Criar"><i data-lucide="user-plus"></i> Novo usuário</a>
+    </div>
+</div>

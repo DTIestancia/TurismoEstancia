@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using TurismoEstancia.Domain.Models;
 
 namespace TurismoEstancia.Domain.DTOs;
@@ -6,6 +7,9 @@ namespace TurismoEstancia.Domain.DTOs;
 public class EstatisticaDto
 {
     public int Id { get; set; }
+
+    [Required(ErrorMessage = "Informe o valor (ex.: 350).")]
+    [MaxLength(20)]
     public string Valor { get; set; } = null!;
     public string? Legenda { get; set; }
     public int Ordem { get; set; }

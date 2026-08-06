@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using TurismoEstancia.Domain.Models;
 
 namespace TurismoEstancia.Domain.DTOs;
@@ -6,6 +7,9 @@ namespace TurismoEstancia.Domain.DTOs;
 public class EventoDto
 {
     public int Id { get; set; }
+
+    [Required(ErrorMessage = "Informe o título.")]
+    [MaxLength(150)]
     public string Titulo { get; set; } = null!;
     public string? Descricao { get; set; }
     public string? Local { get; set; }

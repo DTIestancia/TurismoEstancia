@@ -1,0 +1,49 @@
+@model IReadOnlyList<ConteudoSiteDto>
+@{
+    ViewData["Title"] = "Textos do portal";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Textos do portal</h1>
+        <p class="painel-page-desc">Blocos de texto por chave (títulos, descrições e avisos das seções).</p>
+    </div>
+    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Novo texto</a>
+</div>
+
+<div class="painel-card">
+    <div class="painel-table-wrap">
+        <table class="painel-table">
+            <thead>
+                <tr>
+                    <th>Chave</th>
+                    <th>Nome</th>
+                    <th>Texto</th>
+                    <th style="text-align:right;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><code>@item.Chave</code></td>
+                        <td><strong>@item.Nome</strong></td>
+                        <td style="max-width:380px;">@(item.Texto ?? "—")</td>
+                        <td>
+                            <div class="painel-actions" style="justify-content:flex-end;">
+                                <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Editar" asp-route-id="@item.Id"><i data-lucide="pencil"></i> Editar</a>
+                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir o texto '@item.Nome'?">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Count == 0)
+    {
+        <div class="painel-empty">Nenhum texto cadastrado. As seções usam os textos padrão do protótipo.</div>
+    }
+</div>

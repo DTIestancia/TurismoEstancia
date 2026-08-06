@@ -1,0 +1,170 @@
+@using TurismoEstancia.Authorization.Services
+@using TurismoEstancia.Identity.Models
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Usuario> SignInManager
+@inject UserManager<Usuario> UserManager
+@{
+    var usuario = await UserManager.GetUserAsync(User);
+    var nome = usuario?.NomeCompleto ?? User.Identity?.Name ?? "Usuário";
+    var inicial = string.IsNullOrWhiteSpace(nome) ? "?" : nome.Trim().Substring(0, 1).ToUpperInvariant();
+    var perfil = User.FindFirst(Perfis.TipoClaim)?.Value ?? "";
+    var gerenciador = perfil == Perfis.Gerenciador;
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Painel Turismo Estância</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400;1,9..144,700&family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/lucide@1.27.0/dist/umd/lucide.min.js" defer></script>
+    <link rel="stylesheet" href="~/css/painel.css" asp-append-version="true" />
+</head>
+<body class="painel-body">
+    <div class="painel">
+        <!-- ===== Sidebar ===== -->
+        <aside class="painel-sidebar">
+            <div class="painel-brand">
+                <div class="painel-brand-logo"><i data-lucide="map-pin"></i></div>
+                <div class="painel-brand-text">
+                    Turismo Estância
+                    <small>Painel de gestão</small>
+                </div>
+            </div>
+
+            <nav class="painel-nav">
+                <div class="painel-nav-title">Geral</div>
+                <a class="painel-nav-link @(IsAreaPage("Gerenciador","Dashboard") || IsAreaPage("Operador","Dashboard") ? "active" : "")"
+                   asp-area="@(gerenciador ? "Gerenciador" : "Operador")"
+                   asp-controller="Dashboard" asp-action="Index">
+                    <i data-lucide="layout-dashboard"></i> Dashboard
+                </a>
+                <a class="painel-nav-link" asp-controller="Home" asp-action="Index" target="_blank">
+                    <i data-lucide="globe"></i> Ver portal
+                </a>
+
+                @if (gerenciador)
+                {
+                    <div class="painel-nav-title">Turismo</div>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Categorias") ? "active" : "")" asp-area="Gerenciador" asp-controller="Categorias" asp-action="Index">
+                        <i data-lucide="folder-tree"></i> Categorias
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","PontosTuristicos") ? "active" : "")" asp-area="Gerenciador" asp-controller="PontosTuristicos" asp-action="Index">
+                        <i data-lucide="map-pin"></i> Pontos turísticos
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Eventos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Eventos" asp-action="Index">
+                        <i data-lucide="calendar"></i> Eventos
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Slides") ? "active" : "")" asp-area="Gerenciador" asp-controller="Slides" asp-action="Index">
+                        <i data-lucide="images"></i> Slides do hero
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Estatisticas") ? "active" : "")" asp-area="Gerenciador" asp-controller="Estatisticas" asp-action="Index">
+                        <i data-lucide="bar-chart-3"></i> Estatísticas
+                    </a>
+
+                    <div class="painel-nav-title">Cultura e Gastronomia</div>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","GruposCulturais") ? "active" : "")" asp-area="Gerenciador" asp-controller="GruposCulturais" asp-action="Index">
+                        <i data-lucide="music"></i> Grupos culturais
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","PratosTuristicos") ? "active" : "")" asp-area="Gerenciador" asp-controller="PratosTuristicos" asp-action="Index">
+                        <i data-lucide="utensils"></i> Pratos turísticos
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","TagsCulturais") ? "active" : "")" asp-area="Gerenciador" asp-controller="TagsCulturais" asp-action="Index">
+                        <i data-lucide="tags"></i> Tags culturais
+                    </a>
+
+                    <div class="painel-nav-title">Conteúdo</div>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Conteudos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Conteudos" asp-action="Index">
+                        <i data-lucide="type"></i> Textos do portal
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Configuracoes") ? "active" : "")" asp-area="Gerenciador" asp-controller="Configuracoes" asp-action="Index">
+                        <i data-lucide="settings"></i> Configurações
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Contatos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Contatos" asp-action="Index">
+                        <i data-lucide="phone"></i> Contatos do rodapé
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Noticias") ? "active" : "")" asp-area="Gerenciador" asp-controller="Noticias" asp-action="Index">
+                        <i data-lucide="newspaper"></i> Notícias
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Roteiros") ? "active" : "")" asp-area="Gerenciador" asp-controller="Roteiros" asp-action="Index">
+                        <i data-lucide="route"></i> Roteiros
+                    </a>
+
+                    <div class="painel-nav-title">Comunidade</div>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Avaliacoes") ? "active" : "")" asp-area="Gerenciador" asp-controller="Avaliacoes" asp-action="Index">
+                        <i data-lucide="star"></i> Avaliações
+                        @if (ViewData["PendentesAvaliacoes"] is int pend && pend > 0)
+                        {
+                            <span class="painel-badge">@pend</span>
+                        }
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Newsletter") ? "active" : "")" asp-area="Gerenciador" asp-controller="Newsletter" asp-action="Index">
+                        <i data-lucide="mail"></i> Newsletter
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Usuarios") ? "active" : "")" asp-area="Gerenciador" asp-controller="Usuarios" asp-action="Index">
+                        <i data-lucide="users"></i> Usuários
+                    </a>
+                }
+                else
+                {
+                    <div class="painel-nav-title">Operação</div>
+                    <a class="painel-nav-link @(IsAreaPage("Operador","Eventos") ? "active" : "")" asp-area="Operador" asp-controller="Eventos" asp-action="Index">
+                        <i data-lucide="calendar"></i> Eventos
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Operador","Newsletter") ? "active" : "")" asp-area="Operador" asp-controller="Newsletter" asp-action="Index">
+                        <i data-lucide="mail"></i> Newsletter
+                    </a>
+                }
+            </nav>
+
+            <div class="painel-sidebar-footer">
+                <i data-lucide="shield"></i> v1.0 · Secretaria de Turismo
+            </div>
+        </aside>
+
+        <!-- ===== Conteúdo ===== -->
+        <div class="painel-main">
+            <header class="painel-topbar">
+                <div class="painel-topbar-title">@ViewData["Title"]</div>
+                <div class="painel-topbar-user">
+                    <span>@nome</span>
+                    <div class="painel-avatar">@inicial</div>
+                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="painel-actions">
+                        <button type="submit" class="btn-painel btn-painel--ghost btn-painel--sm" title="Sair">
+                            <i data-lucide="log-out"></i> Sair
+                        </button>
+                    </form>
+                </div>
+            </header>
+
+            <main class="painel-content">
+                @if (TempData["PainelOk"] is string ok)
+                {
+                    <div class="painel-alert painel-alert--ok"><i data-lucide="check-circle"></i> @ok</div>
+                }
+                @if (TempData["PainelErro"] is string erro)
+                {
+                    <div class="painel-alert painel-alert--erro"><i data-lucide="alert-circle"></i> @erro</div>
+                }
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/js/painel.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+@functions {
+    // Compara área/controller atuais para destacar o link ativo.
+    private bool IsAreaPage(string area, string controller)
+    {
+        var rotaArea = ViewContext.RouteData.Values["area"]?.ToString();
+        var rotaController = ViewContext.RouteData.Values["controller"]?.ToString();
+        return string.Equals(rotaArea, area, StringComparison.OrdinalIgnoreCase)
+            && string.Equals(rotaController, controller, StringComparison.OrdinalIgnoreCase);
+    }
+}

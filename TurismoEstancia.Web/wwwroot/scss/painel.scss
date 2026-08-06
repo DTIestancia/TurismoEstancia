@@ -1,5 +1,639 @@
 // ===== Painel CMS (Gerenciador/Operador) =====
-// Estilos completos do painel na Fase 6 (mesmos tokens do portal).
+// Mesmos tokens do portal: azul-marinho escuro, laranja, serif Fraunces.
 
 @use 'tokens' as *;
 @use 'base' as *;
+
+// ===== Base do painel =====
+.painel-body {
+  background: $color-azure-5;
+  color: $color-white-solid;
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+.painel {
+  display: flex;
+  min-height: 100vh;
+
+  // ===== Sidebar =====
+  .painel-sidebar {
+    width: 264px;
+    flex-shrink: 0;
+    background: $color-azure-7;
+    border-right: 1px solid $color-white--10;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+
+    .painel-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px 22px;
+      border-bottom: 1px solid $color-white--10;
+
+      .painel-brand-logo {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, $color-orange-48 0%, $color-red-54 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: $color-white-solid;
+        flex-shrink: 0;
+      }
+
+      .painel-brand-text {
+        font-family: 'Fraunces', serif;
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.15;
+
+        small {
+          display: block;
+          font-family: 'Inter', sans-serif;
+          font-size: 11px;
+          font-weight: 400;
+          color: $color-white--50;
+        }
+      }
+    }
+
+    .painel-nav {
+      flex: 1;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .painel-nav-title {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: $color-white--40;
+        padding: 10px 12px 6px;
+      }
+
+      .painel-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        border-radius: 10px;
+        color: $color-white--65;
+        text-decoration: none;
+        font-size: 13.5px;
+        font-weight: 500;
+        transition: background 0.2s, color 0.2s;
+
+        i { width: 18px; height: 18px; flex-shrink: 0; }
+
+        &:hover {
+          background: $color-white--8;
+          color: $color-white-solid;
+        }
+
+        &.active {
+          background: linear-gradient(90deg, rgba(247, 100, 0, 0.18) 0%, rgba(230, 43, 52, 0.12) 100%);
+          color: $color-white-solid;
+          box-shadow: inset 3px 0 0 $color-orange-48;
+        }
+
+        .painel-badge {
+          margin-left: auto;
+          background: $color-red-54;
+          color: $color-white-solid;
+          font-size: 10.5px;
+          font-weight: 700;
+          min-width: 20px;
+          height: 20px;
+          border-radius: 10px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 6px;
+        }
+      }
+    }
+
+    .painel-sidebar-footer {
+      padding: 14px 16px;
+      border-top: 1px solid $color-white--10;
+      font-size: 11.5px;
+      color: $color-white--40;
+      text-align: center;
+    }
+  }
+
+  // ===== Conteúdo =====
+  .painel-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .painel-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 28px;
+    background: rgba(3, 14, 25, 0.8);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid $color-white--10;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+
+    .painel-topbar-title {
+      font-family: 'Fraunces', serif;
+      font-size: 19px;
+      font-weight: 700;
+      color: $color-white-solid;
+    }
+
+    .painel-topbar-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: $color-white--70;
+
+      .painel-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, $color-orange-48, $color-red-54);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 13px;
+        color: $color-white-solid;
+      }
+    }
+  }
+
+  .painel-content {
+    padding: 28px;
+    flex: 1;
+
+    .painel-page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+
+      .painel-page-title {
+        font-family: 'Fraunces', serif;
+        font-size: 26px;
+        font-weight: 700;
+        color: $color-white-solid;
+      }
+
+      .painel-page-desc {
+        margin-top: 4px;
+        font-size: 13.5px;
+        color: $color-white--55;
+        max-width: 620px;
+      }
+    }
+  }
+}
+
+// ===== Cards do painel =====
+.painel-card {
+  background: $color-white--5;
+  border: 1px solid $color-white--10;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.painel-card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: $color-white-solid;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// ===== Grid de cards (dashboard) =====
+.painel-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.painel-stat {
+  background: linear-gradient(160deg, rgba(247, 100, 0, 0.10) 0%, rgba(3, 14, 25, 0) 60%);
+  border: 1px solid $color-white--10;
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: rgba(247, 100, 0, 0.4);
+  }
+
+  .painel-stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: $color-white-solid;
+    line-height: 1;
+  }
+
+  .painel-stat-label {
+    font-size: 12px;
+    color: $color-white--55;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  .painel-stat-icon {
+    align-self: flex-end;
+    color: $color-orange-48;
+  }
+}
+
+// ===== Tabelas =====
+.painel-table-wrap {
+  overflow-x: auto;
+}
+
+.painel-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: $color-white--45;
+    border-bottom: 1px solid $color-white--12;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 11px 12px;
+    border-bottom: 1px solid $color-white--8;
+    color: $color-white--80;
+    vertical-align: middle;
+
+    strong { color: $color-white-solid; font-weight: 600; }
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td {
+    background: $color-white--4;
+  }
+}
+
+// ===== Badges =====
+.painel-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &--green  { background: rgba(0, 150, 98, 0.18);  color: #4AD295; }
+  &--orange { background: rgba(247, 100, 0, 0.18); color: #FF9A4D; }
+  &--red    { background: rgba(230, 43, 52, 0.18); color: #FF6B74; }
+  &--grey   { background: $color-white--10;        color: $color-white--55; }
+  &--yellow { background: rgba(255, 194, 0, 0.16); color: #FFD75E; }
+  &--cyan   { background: rgba(0, 156, 207, 0.16); color: #5BC8E8; }
+}
+
+// ===== Botões =====
+.btn-painel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s, background 0.2s;
+  color: $color-white-solid;
+  line-height: 1.2;
+
+  i { width: 16px; height: 16px; }
+
+  &:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  &--primary {
+    background: linear-gradient(90deg, $color-orange-48 0%, $color-red-54 100%);
+  }
+
+  &--ghost {
+    background: transparent;
+    border-color: $color-white--20;
+    color: $color-white--80;
+
+    &:hover { border-color: $color-white--40; color: $color-white-solid; }
+  }
+
+  &--danger {
+    background: rgba(230, 43, 52, 0.18);
+    border-color: rgba(230, 43, 52, 0.4);
+    color: #FF8A92;
+
+    &:hover { background: rgba(230, 43, 52, 0.3); }
+  }
+
+  &--sm {
+    padding: 5px 11px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  &--xs {
+    padding: 3px 9px;
+    font-size: 11.5px;
+    border-radius: 7px;
+  }
+}
+
+.painel-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+// ===== Formulários =====
+.painel-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 760px;
+
+  .painel-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .painel-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      font-size: 12px;
+      font-weight: 700;
+      color: $color-white--65;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .painel-input,
+    .painel-select,
+    .painel-textarea {
+      background: $color-white--5;
+      border: 1px solid $color-white--15;
+      border-radius: 10px;
+      padding: 10px 13px;
+      color: $color-white-solid;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s, background 0.2s;
+
+      &::placeholder { color: $color-white--40; }
+
+      &:focus {
+        border-color: $color-orange-48;
+        background: $color-white--8;
+      }
+    }
+
+    .painel-textarea { min-height: 120px; resize: vertical; }
+
+    .painel-hint {
+      font-size: 11.5px;
+      color: $color-white--40;
+    }
+
+    .painel-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: $color-white--75;
+      text-transform: none;
+      letter-spacing: 0;
+      cursor: pointer;
+
+      input { accent-color: $color-orange-48; width: 16px; height: 16px; }
+    }
+  }
+
+  .painel-form-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 6px;
+  }
+}
+
+.field-validation-error {
+  color: #FF8A92;
+  font-size: 12px;
+}
+
+.input-validation-error {
+  border-color: rgba(230, 43, 52, 0.6) !important;
+}
+
+// ===== Alertas (TempData) =====
+.painel-alert {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &--ok {
+    background: rgba(0, 150, 98, 0.15);
+    border: 1px solid rgba(0, 150, 98, 0.4);
+    color: #4AD295;
+  }
+
+  &--erro {
+    background: rgba(230, 43, 52, 0.15);
+    border: 1px solid rgba(230, 43, 52, 0.4);
+    color: #FF8A92;
+  }
+}
+
+// ===== Página de login =====
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(247, 100, 0, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(0, 150, 98, 0.10) 0%, transparent 40%),
+    $color-azure-5;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: $color-white--5;
+  border: 1px solid $color-white--12;
+  border-radius: 20px;
+  padding: 36px 32px;
+  backdrop-filter: blur(10px);
+
+  .login-logo {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, $color-orange-48 0%, $color-red-54 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+
+  .login-title {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: $color-white-solid;
+  }
+
+  .login-subtitle {
+    margin-top: 6px;
+    font-size: 13.5px;
+    color: $color-white--55;
+    margin-bottom: 24px;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    .painel-field label { text-transform: none; letter-spacing: 0; font-size: 13px; }
+  }
+
+  .login-error {
+    background: rgba(230, 43, 52, 0.15);
+    border: 1px solid rgba(230, 43, 52, 0.4);
+    color: #FF8A92;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+}
+
+// ===== Moderação / ação em linha =====
+.painel-item-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid $color-white--10;
+}
+
+.painel-empty {
+  text-align: center;
+  padding: 40px 16px;
+  color: $color-white--40;
+  font-size: 14px;
+}
+
+// ===== Paginação =====
+.painel-pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 18px;
+
+  a, span {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 13px;
+    color: $color-white--65;
+    text-decoration: none;
+    border: 1px solid $color-white--12;
+
+    &:hover { border-color: $color-white--40; color: $color-white-solid; }
+  }
+
+  .current {
+    background: linear-gradient(90deg, $color-orange-48 0%, $color-red-54 100%);
+    border-color: transparent;
+    color: $color-white-solid;
+    font-weight: 700;
+  }
+}
+
+// ===== Responsivo =====
+@media (max-width: 900px) {
+  .painel {
+    flex-direction: column;
+
+    .painel-sidebar {
+      width: 100%;
+      height: auto;
+      position: static;
+      border-right: none;
+      border-bottom: 1px solid $color-white--10;
+
+      .painel-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 10px;
+
+        .painel-nav-title { display: none; }
+      }
+    }
+
+    .painel-content { padding: 18px; }
+  }
+}
