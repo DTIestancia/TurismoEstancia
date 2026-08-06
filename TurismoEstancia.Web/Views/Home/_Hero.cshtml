@@ -32,17 +32,16 @@
 <!-- ===== Page Preloader ===== -->
 <div id="pageLoader" class="page-loader" aria-hidden="true">
     <div class="page-loader-content">
-        <div class="loader-picto-container">
+        <div class="loader-picto-row">
             @for (var i = 0; i < pictogramas.Count; i++)
             {
-                <img src="/arquivo/@pictogramas[i]" alt="" class="loader-picto loader-picto--@(i + 1)" aria-hidden="true" />
+                <img src="/arquivo/@pictogramas[i]" alt="" class="loader-picto" aria-hidden="true" />
             }
         </div>
-        <h1 class="page-loader-title">Descubra <span class="page-loader-highlight">Estância</span></h1>
-        <p class="page-loader-subtitle">Capital Sergipana da Cultura</p>
         <div class="page-loader-bar-track">
             <div class="page-loader-bar-fill"></div>
         </div>
+        <p class="page-loader-text">Carregando ...</p>
     </div>
 </div>
 <noscript><style>.page-loader { display: none !important; }</style></noscript>
