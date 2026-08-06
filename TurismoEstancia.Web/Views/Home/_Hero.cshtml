@@ -4,6 +4,26 @@
     var heroSubtitulo = Model.Conteudos.GetValueOrDefault("hero-subtitulo",
         "Entre dunas douradas e céus que viram arte, Estância te chama pra viver uma experiência que acende todos os sentidos. O Nordeste está aqui, mais vibrante do que nunca.") ?? "";
     var slides = Model.Slides.Any() ? Model.Slides : null;
+
+    // Pictogramas das 7 maravilhas para o preloader personalizado.
+    var pictogramas = Model.CategoriasMaravilhas
+        .SelectMany(g => g.Pontos)
+        .OrderBy(p => p.Ordem)
+        .Select(p => p.PictogramaArquivoId)
+        .Where(id => id is long)
+        .Select(id => id!.Value)
+        .Distinct()
+        .ToList();
+    if (pictogramas.Count == 0)
+    {
+        // Fallback: usa os pontos do mapa que possuem pictograma.
+        pictogramas = Model.PontosParaMapa
+            .Select(p => p.PictogramaArquivoId)
+            .Where(id => id is long)
+            .Select(id => id!.Value)
+            .Distinct()
+            .ToList();
+    }
 }
 
 <!-- ===== Reading Progress Bar ===== -->
@@ -13,9 +33,9 @@
 <div id="pageLoader" class="page-loader" aria-hidden="true">
     <div class="page-loader-content">
         <div class="loader-picto-container">
-            @foreach (var i in Enumerable.Range(1, 7))
+            @for (var i = 0; i < pictogramas.Count; i++)
             {
-                <img src="" alt="" class="loader-picto loader-picto--@i" aria-hidden="true" />
+                <img src="/arquivo/@pictogramas[i]" alt="" class="loader-picto loader-picto--@(i + 1)" aria-hidden="true" />
             }
         </div>
         <h1 class="page-loader-title">Descubra <span class="page-loader-highlight">Estância</span></h1>
