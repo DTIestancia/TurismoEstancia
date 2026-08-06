@@ -1,0 +1,53 @@
+@model SecaoGruposViewModel
+@{
+    ViewData["Title"] = "Grupos Populares";
+    var gruposTexto = Model.Conteudos.GetValueOrDefault("gastronomia-grupos-texto",
+        "Reisados, cacumbis, samba de coco e batucadas que mantêm vivas as raízes afro-brasileiras e nordestinas da cidade.");
+}
+<main class="paginas-page page-public">
+    @await Html.PartialAsync("_PaginasHeader")
+
+    <section class="paginas-hero">
+        <div class="paginas-hero-inner">
+            <div class="pill pill-white" style="background:var(--color-white--15);">
+                <i data-lucide="users" class="icon-lg"></i>
+                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">Na mesa &amp; na rua</span>
+            </div>
+            <h1 class="paginas-hero-title">Grupos <span style="color:#FFC200;">Populares</span></h1>
+            <p class="paginas-hero-subtitle">@Html.Raw(gruposTexto)</p>
+        </div>
+    </section>
+
+    <div class="paginas-container">
+        <div class="paginas-grid">
+            @if (Model.Grupos.Count == 0)
+            {
+                <div class="news-empty">Nenhum grupo cadastrado ainda.</div>
+            }
+            else
+            {
+                @foreach (var grupo in Model.Grupos)
+                {
+                    <a class="paginas-card" href="/grupos-populares/@grupo.Id/@Slug.De(grupo.Nome)">
+                        @if (grupo.ImagemArquivoId is long img)
+                        {
+                            <img class="paginas-card-img" src="/arquivo/@img" alt="@grupo.Nome" loading="lazy" />
+                        }
+                        <div class="paginas-card-body">
+                            <h3 class="paginas-card-title">@grupo.Nome</h3>
+                            @if (!string.IsNullOrWhiteSpace(grupo.Descricao))
+                            {
+                                <p class="paginas-card-desc">@grupo.Descricao</p>
+                            }
+                            <span class="btn-primary paginas-card-btn">
+                                Conhecer o grupo <i data-lucide="arrow-right" class="icon-lg"></i>
+                            </span>
+                        </div>
+                    </a>
+                }
+            }
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_PaginasFooter")
+</main>

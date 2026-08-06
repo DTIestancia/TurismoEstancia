@@ -1,0 +1,57 @@
+@model SecaoGastronomiaViewModel
+@{
+    ViewData["Title"] = "Gastronomia";
+    var gastroDesc = Model.Conteudos.GetValueOrDefault("gastronomia-descricao",
+        "A alma de Estância vive nas batucadas, nos tambores e na mesa farta dos seus restaurantes — receitas que <em>atravessam gerações</em>.");
+    var gastroMain = Model.Conteudos.GetValueOrDefault("gastronomia-main-texto",
+        "Moqueca de peixe, arroz de polvo, caldeirada de camarão, tapioca recheada e a inesquecível cocada puxa.");
+}
+<main class="paginas-page page-public">
+    @await Html.PartialAsync("_PaginasHeader")
+
+    <section class="paginas-hero">
+        <div class="paginas-hero-inner">
+            <div class="pill pill-white" style="background:var(--color-white--15);">
+                <i data-lucide="utensils" class="icon-lg"></i>
+                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">Sabores do Litoral</span>
+            </div>
+            <h1 class="paginas-hero-title">Gastronomia <span style="color:#FFC200;">de Estância</span></h1>
+            <p class="paginas-hero-subtitle">@Html.Raw(gastroDesc)</p>
+        </div>
+    </section>
+
+    <div class="paginas-container">
+        <p class="paginas-gastro-main">@Html.Raw(gastroMain)</p>
+
+        <div class="paginas-grid">
+            @if (Model.Pratos.Count == 0)
+            {
+                <div class="news-empty">Nenhum prato cadastrado ainda.</div>
+            }
+            else
+            {
+                @foreach (var prato in Model.Pratos)
+                {
+                    <a class="paginas-card" href="/gastronomia/@prato.Id/@Slug.De(prato.Nome)">
+                        @if (prato.ImagemArquivoId is long img)
+                        {
+                            <img class="paginas-card-img" src="/arquivo/@img" alt="@prato.Nome" loading="lazy" />
+                        }
+                        <div class="paginas-card-body">
+                            <h3 class="paginas-card-title">@prato.Nome</h3>
+                            @if (!string.IsNullOrWhiteSpace(prato.Descricao))
+                            {
+                                <p class="paginas-card-desc">@prato.Descricao</p>
+                            }
+                            <span class="btn-primary paginas-card-btn">
+                                Ver o prato <i data-lucide="arrow-right" class="icon-lg"></i>
+                            </span>
+                        </div>
+                    </a>
+                }
+            }
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_PaginasFooter")
+</main>

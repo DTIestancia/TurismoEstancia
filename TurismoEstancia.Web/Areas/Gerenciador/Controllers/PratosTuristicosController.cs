@@ -21,10 +21,10 @@ public class PratosTuristicosController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Criar(PratoTuristicoDto dto, CancellationToken ct)
+    public async Task<IActionResult> Criar(PratoTuristicoDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _pratos.SalvarAsync(dto, ct);
+        await _pratos.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Prato turístico salvo.";
         return RedirectToAction(nameof(Index));
     }
@@ -38,10 +38,10 @@ public class PratosTuristicosController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Editar(PratoTuristicoDto dto, CancellationToken ct)
+    public async Task<IActionResult> Editar(PratoTuristicoDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _pratos.SalvarAsync(dto, ct);
+        await _pratos.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Prato turístico atualizado.";
         return RedirectToAction(nameof(Index));
     }

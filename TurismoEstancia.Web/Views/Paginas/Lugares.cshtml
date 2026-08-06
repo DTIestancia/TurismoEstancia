@@ -1,0 +1,30 @@
+@model SecaoLugaresViewModel
+@{
+    ViewData["Title"] = "Lugares que Encantam";
+    var maravilhasDesc = Model.Conteudos.GetValueOrDefault("maravilhas-descricao",
+        "De filarmônicas centenárias a praias de tirar o fôlego — cada cantinho de Estância tem uma história esperando por você.");
+}
+<main class="paginas-page page-public">
+    @await Html.PartialAsync("_PaginasHeader")
+
+    <section class="paginas-hero">
+        <div class="paginas-hero-inner">
+            <div class="pill pill-white" style="background:var(--color-white--15);">
+                <span style="font-size:12px;">✦</span>
+                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">7 Maravilhas de Estância</span>
+            </div>
+            <h1 class="paginas-hero-title">Lugares que <span style="color:#FFC200;">Encantam</span></h1>
+            <p class="paginas-hero-subtitle">@Html.Raw(maravilhasDesc.Replace("\n", "<br />"))</p>
+        </div>
+    </section>
+
+    <div class="paginas-container paginas-container--deck">
+        @await Html.PartialAsync("_BaralhoMaravilhas", Model.Maravilhas)
+
+        <div class="paginas-cta-row paginas-cta-row--center">
+            <a href="/" class="btn-secondary"><i data-lucide="map" class="icon-lg"></i> Ver tudo no mapa da home</a>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_PaginasFooter")
+</main>

@@ -161,25 +161,83 @@ public static class DatabaseSeeder
             new Estatistica { Valor = "7", Legenda = "maravilhas", Ordem = 3 });
 
         // ---------- Cultura & Gastronomia ----------
+        // Imagens de exemplo reusam as capas do protótipo; as fotos reais
+        // podem ser trocadas pelo Gerenciador no CMS (upload no cadastro).
         db.GruposCulturais.AddRange(
-            new GrupoCultural { Nome = "Reisado", Ordem = 1 },
-            new GrupoCultural { Nome = "Cacumbi", Ordem = 2 },
-            new GrupoCultural { Nome = "Batucada", Ordem = 3 },
-            new GrupoCultural { Nome = "Quadrilhas Juninas", Ordem = 4 });
+            new GrupoCultural
+            {
+                Nome = "Reisado", Ordem = 1, ImagemArquivoId = capas["igreja"],
+                Descricao = "O Reisado de Estância é uma das manifestações mais antigas do folclore sergipano. Com cores, espadas e o tradicional baile, o grupo percorre as ruas celebrando o ciclo natalino e mantendo viva a herança dos ternos de reis."
+            },
+            new GrupoCultural
+            {
+                Nome = "Cacumbi", Ordem = 2, ImagemArquivoId = capas["lira"],
+                Descricao = "O Cacumbi traz a herança afro-brasileira com tambores, adereços e coreografias que contam a resistência e a fé do povo estanciano. Presença garantida nas festas de padroeiro e nas mostras culturais."
+            },
+            new GrupoCultural
+            {
+                Nome = "Batucada", Ordem = 3, ImagemArquivoId = capas["fabrica"],
+                Descricao = "Com ritmo forte e contagiante, a Batucada de Estância anima os eventos da cidade e ecoa nas manifestações populares. Tambores, repiques e muita energia no compasso de Sergipe."
+            },
+            new GrupoCultural
+            {
+                Nome = "Quadrilhas Juninas", Ordem = 4, ImagemArquivoId = capas["barco"],
+                Descricao = "As quadrilhas juninas de Estância arrastam multidões no São João. Casamentos matutos, coreografias e figurinos coloridos: a alma da maior festa junina do litoral sergipano."
+            });
 
         db.PratosTuristicos.AddRange(
-            new PratoTuristico { Nome = "Ginga com Tapioca", Ordem = 1 },
-            new PratoTuristico { Nome = "Bolo de Macaxeira", Ordem = 2 },
-            new PratoTuristico { Nome = "Moqueca de Camarão", Ordem = 3 },
-            new PratoTuristico { Nome = "Peixe Frito na Telha", Ordem = 4 });
+            new PratoTuristico
+            {
+                Nome = "Ginga com Tapioca", Ordem = 1, ImagemArquivoId = capas["saco"],
+                Descricao = "Clássico da culinária de rua sergipana, a ginga (peixe seco cozido) servida sobre a tapioca quentinha é o petisco que ninguém dispensa à beira-mar."
+            },
+            new PratoTuristico
+            {
+                Nome = "Bolo de Macaxeira", Ordem = 2, ImagemArquivoId = capas["cristo"],
+                Descricao = "O bolo de macaxeira de Estância é fofinho, úmido e levemente adocicado — receita de família que atravessa gerações e acompanha o café da tarde."
+            },
+            new PratoTuristico
+            {
+                Nome = "Moqueca de Camarão", Ordem = 3, ImagemArquivoId = capas["lagoa"],
+                Descricao = "Servida na panela de barro, com leite de coco, azeite de dendê e pimenta de cheiro: a moqueca de camarão é o sabor autêntico do litoral estanciano."
+            },
+            new PratoTuristico
+            {
+                Nome = "Peixe Frito na Telha", Ordem = 4, ImagemArquivoId = capas["fabrica"],
+                Descricao = "Tradição da pesca local: o peixe fresco frito na telha de barro, crocante por fora e macio por dentro, acompanhado de pirão e vinagrete."
+            });
 
         db.TagsCulturais.AddRange(
-            new TagCultural { Nome = "Barco de Fogo", Ordem = 1 },
-            new TagCultural { Nome = "Filarmônicas", Ordem = 2 },
-            new TagCultural { Nome = "São João", Ordem = 3 },
-            new TagCultural { Nome = "Procissões", Ordem = 4 },
-            new TagCultural { Nome = "Quadrilhas", Ordem = 5 },
-            new TagCultural { Nome = "Batucadas", Ordem = 6 });
+            new TagCultural
+            {
+                Nome = "Barco de Fogo", Ordem = 1, ImagemArquivoId = capas["barco"],
+                Descricao = "A tradição centenária que transformou Estância na Capital Nacional do Barco de Fogo: espetáculos pirotécnicos artesanais que iluminam o céu nas festas juninas."
+            },
+            new TagCultural
+            {
+                Nome = "Filarmônicas", Ordem = 2, ImagemArquivoId = capas["lira"],
+                Descricao = "A Lira Carlos Gomes (1879) e as demais filarmônicas mantêm viva a tradição das bandas sergipanas com concertos e serenatas no centro histórico."
+            },
+            new TagCultural
+            {
+                Nome = "São João", Ordem = 3, ImagemArquivoId = capas["saco"],
+                Descricao = "Forró, quadrilhas, comidas típicas e o Barco de Fogo: o São João de Estância é um dos mais animados do Nordeste."
+            },
+            new TagCultural
+            {
+                Nome = "Procissões", Ordem = 4, ImagemArquivoId = capas["igreja"],
+                Descricao = "Fé que move a cidade: procissões, novenas e festas de padroeiro compõem o calendário religioso de Estância durante todo o ano."
+            },
+            new TagCultural
+            {
+                Nome = "Quadrilhas", Ordem = 5, ImagemArquivoId = capas["lagoa"],
+                Descricao = "As quadrilhas juninas são patrimônio afetivo da cidade, com apresentações que reúnem gerações nas praças e arraiais."
+            },
+            new TagCultural
+            {
+                Nome = "Batucadas", Ordem = 6, ImagemArquivoId = capas["fabrica"],
+                Descricao = "O som dos tambores das batucadas ecoa pelas ruas, marcando o ritmo das manifestações populares e das festas da cidade."
+            });
 
         // ---------- Textos do portal (ConteudosSite) ----------
         db.ConteudosSite.AddRange(
@@ -287,8 +345,14 @@ public static class DatabaseSeeder
         var lira = await db.PontosTuristicos.FirstAsync(p => p.Nome == "Lira Carlos Gomes");
         var catedral = await db.PontosTuristicos.FirstAsync(p => p.Nome.Contains("Catedral"));
         var fabrica = await db.PontosTuristicos.FirstAsync(p => p.Nome.Contains("Fábrica"));
+        var barco = await db.PontosTuristicos.FirstAsync(p => p.Nome == "Barco de Fogo");
         var saco = await db.PontosTuristicos.FirstAsync(p => p.Nome == "Praia do Saco");
         var lagoa = await db.PontosTuristicos.FirstAsync(p => p.Nome.Contains("Lagoa"));
+        var portoDareia = await db.PontosTuristicos.FirstAsync(p => p.Nome.Contains("Porto D'Areia"));
+
+        // Horários de exemplo das 7 maravilhas (exibidos na página de detalhe).
+        foreach (var ponto in new[] { lira, catedral, fabrica, barco, lagoa, saco, portoDareia })
+            AddHorarios(db, ponto);
 
         db.RoteiroItens.AddRange(
             new RoteiroItem { RoteiroId = roteiro1.Id, PontoTuristicoId = catedral.Id, Dia = 1, Ordem = 1, Observacao = "Comece pela Catedral, marco religioso do século XVIII." },
@@ -353,6 +417,32 @@ public static class DatabaseSeeder
         else
         {
             Console.WriteLine($"[seed] Falha ao criar admin: {string.Join("; ", resultado.Errors.Select(e => e.Description))}");
+        }
+    }
+
+    private static void AddHorarios(AppDbContext db, PontoTuristico ponto)
+    {
+        var dias = new[]
+        {
+            (DiaSemana.Domingo, Fechado: true),
+            (DiaSemana.Segunda, Fechado: false),
+            (DiaSemana.Terca, Fechado: false),
+            (DiaSemana.Quarta, Fechado: false),
+            (DiaSemana.Quinta, Fechado: false),
+            (DiaSemana.Sexta, Fechado: false),
+            (DiaSemana.Sabado, Fechado: false)
+        };
+
+        foreach (var (dia, fechado) in dias)
+        {
+            db.HorariosFuncionamento.Add(new HorarioFuncionamento
+            {
+                PontoTuristicoId = ponto.Id,
+                DiaSemana = dia,
+                HoraInicio = fechado ? null : new TimeOnly(9, 0),
+                HoraFim = fechado ? null : new TimeOnly(18, 0),
+                Fechado = fechado
+            });
         }
     }
 

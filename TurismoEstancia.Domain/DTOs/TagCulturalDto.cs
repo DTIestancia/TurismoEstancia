@@ -10,6 +10,10 @@ public class TagCulturalDto
     [Required(ErrorMessage = "Informe o nome.")]
     [MaxLength(80)]
     public string Nome { get; set; } = null!;
+
+    [MaxLength(2000)]
+    public string? Descricao { get; set; }
+    public long? ImagemArquivoId { get; set; }
     public int Ordem { get; set; }
     public bool Ativo { get; set; } = true;
 }

@@ -21,10 +21,10 @@ public class GruposCulturaisController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Criar(GrupoCulturalDto dto, CancellationToken ct)
+    public async Task<IActionResult> Criar(GrupoCulturalDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _grupos.SalvarAsync(dto, ct);
+        await _grupos.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Grupo cultural salvo.";
         return RedirectToAction(nameof(Index));
     }
@@ -38,10 +38,10 @@ public class GruposCulturaisController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Editar(GrupoCulturalDto dto, CancellationToken ct)
+    public async Task<IActionResult> Editar(GrupoCulturalDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _grupos.SalvarAsync(dto, ct);
+        await _grupos.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Grupo cultural atualizado.";
         return RedirectToAction(nameof(Index));
     }

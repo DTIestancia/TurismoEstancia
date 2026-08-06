@@ -207,7 +207,14 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<GrupoCultural>(entity =>
         {
             entity.Property(e => e.Nome).HasMaxLength(150).IsRequired();
+            entity.Property(e => e.Descricao).HasMaxLength(2000);
             entity.Property(e => e.Ativo).HasDefaultValue(true);
+
+            // Referência compartilhada (Arquivo): Restrict.
+            entity.HasOne(e => e.Imagem)
+                  .WithMany()
+                  .HasForeignKey(e => e.ImagemArquivoId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
     }
 
@@ -216,7 +223,14 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<PratoTuristico>(entity =>
         {
             entity.Property(e => e.Nome).HasMaxLength(150).IsRequired();
+            entity.Property(e => e.Descricao).HasMaxLength(2000);
             entity.Property(e => e.Ativo).HasDefaultValue(true);
+
+            // Referência compartilhada (Arquivo): Restrict.
+            entity.HasOne(e => e.Imagem)
+                  .WithMany()
+                  .HasForeignKey(e => e.ImagemArquivoId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
     }
 
@@ -225,7 +239,14 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<TagCultural>(entity =>
         {
             entity.Property(e => e.Nome).HasMaxLength(150).IsRequired();
+            entity.Property(e => e.Descricao).HasMaxLength(2000);
             entity.Property(e => e.Ativo).HasDefaultValue(true);
+
+            // Referência compartilhada (Arquivo): Restrict.
+            entity.HasOne(e => e.Imagem)
+                  .WithMany()
+                  .HasForeignKey(e => e.ImagemArquivoId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
     }
 

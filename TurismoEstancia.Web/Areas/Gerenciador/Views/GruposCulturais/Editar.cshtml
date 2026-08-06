@@ -7,7 +7,7 @@
     </div>
 </div>
 
-<form class="painel-form" asp-action="Editar" method="post">
+<form class="painel-form" asp-action="Editar" method="post" enctype="multipart/form-data">
     <input asp-for="Id" type="hidden" />
     <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
 
@@ -17,16 +17,32 @@
         <span asp-validation-for="Nome" class="field-validation-error"></span>
     </div>
 
+    <div class="painel-field">
+        <label asp-for="Descricao"></label>
+        <textarea asp-for="Descricao" class="painel-input" rows="4" maxlength="2000" placeholder="Texto exibido na página de detalhe do portal."></textarea>
+        <span asp-validation-for="Descricao" class="field-validation-error"></span>
+    </div>
+
     <div class="painel-form-grid">
         <div class="painel-field">
             <label asp-for="Ordem"></label>
             <input asp-for="Ordem" class="painel-input" type="number" />
         </div>
         <div class="painel-field">
-            <label class="painel-checkbox">
-                <input asp-for="Ativo" /> Ativo no portal
-            </label>
+            <label>Imagem do grupo</label>
+            @if (Model.ImagemArquivoId is long imgId)
+            {
+                <img src="/arquivo/@imgId" alt="" style="max-width:200px;border-radius:10px;border:1px solid var(--color-white--12);margin-bottom:6px;" />
+            }
+            <input type="file" name="imagem" accept="image/*" class="painel-input" />
+            <span class="painel-hint">Envie para substituir a imagem atual (opcional).</span>
         </div>
+    </div>
+
+    <div class="painel-field">
+        <label class="painel-checkbox">
+            <input asp-for="Ativo" /> Ativo no portal
+        </label>
     </div>
 
     <div class="painel-form-actions">
