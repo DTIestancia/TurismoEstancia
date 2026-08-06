@@ -213,7 +213,7 @@
                 new Chart(elVisitas, {
                     type: 'line',
                     data: {
-                        labels: @System.Text.Json.JsonSerializer.Serialize(labelsLinha),
+                        labels: @Html.Raw(Js(labelsLinha)),
                         datasets: [{
                             label: 'Visitas',
                             data: @System.Text.Json.JsonSerializer.Serialize(dadosLinha),
@@ -240,7 +240,7 @@
                 new Chart(elDisp, {
                     type: 'doughnut',
                     data: {
-                        labels: @System.Text.Json.JsonSerializer.Serialize(labelsDispositivos),
+                        labels: @Html.Raw(Js(labelsDispositivos)),
                         datasets: [{
                             data: @System.Text.Json.JsonSerializer.Serialize(dadosDispositivos),
                             backgroundColor: [laranja, ciano, roxo],
@@ -263,7 +263,7 @@
                 new Chart(elPaginas, {
                     type: 'bar',
                     data: {
-                        labels: @System.Text.Json.JsonSerializer.Serialize(labelsPaginas),
+                        labels: @Html.Raw(Js(labelsPaginas)),
                         datasets: [{
                             label: 'Visitas',
                             data: @System.Text.Json.JsonSerializer.Serialize(dadosPaginas),
@@ -290,7 +290,7 @@
                 new Chart(elFontes, {
                     type: 'doughnut',
                     data: {
-                        labels: @System.Text.Json.JsonSerializer.Serialize(labelsFontes),
+                        labels: @Html.Raw(Js(labelsFontes)),
                         datasets: [{
                             data: @System.Text.Json.JsonSerializer.Serialize(dadosFontes),
                             backgroundColor: [verde, ciano, amarelo, laranja],
@@ -313,7 +313,7 @@
                 new Chart(elMaravilhas, {
                     type: 'bar',
                     data: {
-                        labels: @System.Text.Json.JsonSerializer.Serialize(labelsMaravilhas),
+                        labels: @Html.Raw(Js(labelsMaravilhas)),
                         datasets: [{
                             label: 'Cliques',
                             data: @System.Text.Json.JsonSerializer.Serialize(dadosMaravilhas),
@@ -337,8 +337,8 @@
             // Barras: cliques por evento
             var elEventos = document.getElementById('chartEventos');
             if (elEventos) {
-                var labelsEventos = @System.Text.Json.JsonSerializer.Serialize(Model.Resumo.TopEventos.Select(e => e.Rotulo).ToList());
-                var dadosEventos = @System.Text.Json.JsonSerializer.Serialize(Model.Resumo.TopEventos.Select(e => e.Quantidade).ToList());
+                var labelsEventos = @Html.Raw(Js(Model.Resumo.TopEventos.Select(e => e.Rotulo).ToList()));
+                var dadosEventos = @Html.Raw(Js(Model.Resumo.TopEventos.Select(e => e.Quantidade).ToList()));
                 new Chart(elEventos, {
                     type: 'doughnut',
                     data: {
@@ -360,4 +360,16 @@
             }
         })();
     </script>
+}
+
+@functions {
+    /// <summary>
+    /// Serializa dados para o Chart.js dentro de &lt;script&gt;: o Razor codificaria as
+    /// aspas do JSON (&amp;quot;), quebrando o JS; Html.Raw + escape de "&lt;/" evita
+    /// tanto o encoding quanto a saída do bloco de script.
+    /// </summary>
+    private static string Js(object valor)
+    {
+        return System.Text.Json.JsonSerializer.Serialize(valor, valor.GetType()).Replace("</", "<\\/");
+    }
 }

@@ -83,7 +83,8 @@ public class AnalyticsVisitTrackingMiddleware
         var partes = rota.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries);
         if (partes.Length == 0) return "Início";
 
-        return partes[0] switch
+        // Rotas são case-insensitive no ASP.NET (ex.: /Noticias/Detalhe/...).
+        return partes[0].ToLowerInvariant() switch
         {
             "cidade" => "Nossa Cidade",
             "cultura" => partes.Length > 1 ? "Nossa Cultura — Detalhe" : "Nossa Cultura",
@@ -94,7 +95,7 @@ public class AnalyticsVisitTrackingMiddleware
             "roteiros" => partes.Length > 1 ? "Roteiro" : "Roteiros",
             "agenda" => "Agenda",
             "contato" => "Contato",
-            "Evento" => "Evento",
+            "evento" => "Evento",
             _ => "Portal"
         };
     }
