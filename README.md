@@ -8,16 +8,37 @@ de conteúdo. Construído em **ASP.NET Core 9** seguindo o padrão de arquitetur
 
 - **Portal público** (a antiga `Prototipo/index.html`, agora 100% dinâmica):
   hero com slides, seção de história com estatísticas, cultura & gastronomia,
-  **7 Maravilhas** com cards por categoria, **mapa interativo** com os POIs
-  (filtros, legenda, modal com avaliações), agenda de eventos com exportação
-  **.ics**, roteiros, notícias e rodapé com newsletter (LGPD).
+  **vitrine das 7 Maravilhas** (postais com troca de foto, teclado e
+  acessibilidade), **mapa interativo** com os POIs (filtros, legenda, modal com
+  avaliações), agenda de eventos com exportação **.ics**, roteiros, notícias e
+  rodapé com newsletter (LGPD).
+- **Mobile-first**: todo o portal é responsivo para celular (público principal)
+  — grids em coluna única, navbar com menu hambúrguer, botão **voltar ao topo**
+  e **preloader personalizado** com os 7 pictogramas das maravilhas.
 - **CMS** com dois perfis (policies por **claim**, nunca roles literais):
   - **Gerenciador** — acesso total: categorias, pontos turísticos (mídias +
     horários), eventos, slides, estatísticas, grupos culturais, pratos, tags,
     textos do portal, configurações (guia/vídeo/SEO), contatos, notícias,
-    roteiros, moderação de avaliações, newsletter (CSV) e usuários.
+    roteiros, moderação de avaliações, newsletter (CSV), usuários e o
+    **Dashboard de Analytics** (visitas, cliques, fontes de tráfego, rankings,
+    newsletter e SEO).
   - **Operador** — restrito a **Eventos** e **Newsletter**.
+- **Analytics próprio** (anônimo, cookie de sessão `te_sessao`, sem dados
+  pessoais): middleware rastreia visitas por rota/dispositivo e o portal envia
+  cliques via `sendBeacon` para `POST /api/analytics/event`.
+- **SEO**: sitemap dinâmico, `title`/`meta description` por página via
+  `SeoService`, Open Graph e Twitter Cards, com `noindex` configurável.
 - **Login próprio** (sem auto-registro público — contas criadas pelo Gerenciador).
+
+## 📚 Documentação
+
+| Documento | Conteúdo |
+| --- | --- |
+| [`docs/USO.md`](./docs/USO.md) | **Manual de uso** — como navegar no portal e operar o painel (Gerenciador/Operador) |
+| [`docs/TECNICO.md`](./docs/TECNICO.md) | **Manual técnico** — arquitetura, fluxos, como adicionar módulos e manter |
+| [`docs/superpowers/specs/2026-08-05-turismoestancia-design.md`](./docs/superpowers/specs/2026-08-05-turismoestancia-design.md) | Especificação de design (o que foi decidido na fase de brainstorming) |
+| [`docs/superpowers/plans/2026-08-05-turismoestancia-plan.md`](./docs/superpowers/plans/2026-08-05-turismoestancia-plan.md) | Plano de implementação em fases |
+| [`PADRAO-DE-PROJETO.md`](./PADRAO-DE-PROJETO.md) | Padrão de arquitetura genérico (Prefeitura Digital) que o projeto segue |
 
 ## 🚀 Como rodar
 
@@ -98,3 +119,8 @@ TurismoEstancia.slnx
 - Edição dos **itens de roteiro** no CMS (hoje vêm do seed).
 - Paginação nas listagens do painel (Newsletter/Avaliações).
 - Upload do **guia em PDF real** (o seed usa uma imagem como placeholder).
+- Garantir **mínimo de 3 slides** no banco (a home só mostra as fotos polaroid
+  da "Nossa Cidade" com 3+; com menos, a seção degrada sem quebrar).
+- Dashboard de analytics: filtros por período além de 7/30/90 dias e
+  exportação de relatórios.
+- Testes automatizados (xUnit) para os serviços de negócio e controllers.
