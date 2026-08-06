@@ -82,6 +82,14 @@
         <div class="reveal reveal-delay-4">
             <div class="footer-contact-title"><i data-lucide="mail" class="icon-lg"></i> Fique por dentro</div>
             <p>@newsletterTitulo</p>
+            @if (TempData["NewsletterOk"] is string newsletterOk)
+            {
+                <div class="newsletter-feedback newsletter-feedback--ok" role="status">@newsletterOk</div>
+            }
+            @if (TempData["NewsletterErro"] is string newsletterErro)
+            {
+                <div class="newsletter-feedback newsletter-feedback--erro" role="alert">@newsletterErro</div>
+            }
             <form class="newsletter-form" method="post" asp-controller="Newsletter" asp-action="Inscrever" id="newsletterForm">
                 @Html.AntiForgeryToken()
                 <div class="newsletter-input-wrapper">

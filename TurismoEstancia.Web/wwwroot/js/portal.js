@@ -139,6 +139,17 @@ document.addEventListener('DOMContentLoaded', function () {
     updateScrollTop();
   })();
 
+  // ===== Feedback da newsletter: rola até a mensagem após o redirect =====
+  (function scrollToNewsletterFeedback() {
+    const feedback = document.querySelector('.newsletter-feedback');
+    if (!feedback) return;
+    // Espera o preloader sumir (window.load + transição de ~450ms) para o
+    // visitante ver a confirmação ao chegar no rodapé.
+    setTimeout(function () {
+      feedback.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 900);
+  })();
+
   // ===== Navbar scroll + mobile menu =====
   const navbar = document.getElementById('navbar');
   let lastScrollY = 0;
