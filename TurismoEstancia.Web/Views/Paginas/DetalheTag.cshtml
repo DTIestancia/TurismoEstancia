@@ -1,0 +1,40 @@
+@model TagCulturalDto
+@{
+    ViewData["Title"] = Model.Nome;
+}
+<main class="paginas-page page-public">
+    @await Html.PartialAsync("_PaginasHeader")
+
+    <section class="item-hero">
+        @if (Model.ImagemArquivoId is long img)
+        {
+            <img class="item-hero-bg" src="/arquivo/@img" alt="@Model.Nome" />
+            <div class="item-hero-overlay"></div>
+        }
+        <div class="item-hero-content">
+            <div class="pill pill-white" style="background:rgba(255,255,255,0.14);">
+                <i data-lucide="flame" class="icon-lg"></i>
+                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">Nossa Cultura</span>
+            </div>
+            <h1 class="item-hero-title">@Model.Nome</h1>
+        </div>
+    </section>
+
+    <div class="paginas-container paginas-container--item">
+        @if (!string.IsNullOrWhiteSpace(Model.Descricao))
+        {
+            <p class="item-descricao">@Model.Descricao</p>
+        }
+        else
+        {
+            <p class="item-descricao">Em breve, mais informações sobre esta tradição de Estância.</p>
+        }
+
+        <div class="paginas-cta-row">
+            <a href="/cultura" class="btn-primary"><i data-lucide="arrow-left" class="icon-lg"></i> Ver outras tradições</a>
+            <a href="/" class="btn-secondary"><i data-lucide="home" class="icon-lg"></i> Voltar ao início</a>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_PaginasFooter")
+</main>

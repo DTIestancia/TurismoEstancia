@@ -660,6 +660,62 @@ document.addEventListener('DOMContentLoaded', function () {
     img.style.objectFit = 'cover';
   }, true);
 
+  // ===== Baralho de maravilhas ("passando cartas") =====
+  // Cards empilhados um acima do outro; as setas/teclado "passam" a carta
+  // do topo, revelando a próxima (deslocamento via variável --deck-i).
+  function initWondersDeck() {
+    const deck = document.getElementById('wondersDeck');
+    if (!deck) return;
+    const cards = Array.prototype.slice.call(deck.querySelectorAll('.wonder-deck-card'));
+    const total = cards.length;
+    const counter = document.getElementById('deckCounter');
+    if (total === 0) return;
+
+    let atual = 0;
+
+    function render() {
+      cards.forEach(function (card, i) {
+        const desloc = (i - atual + total) % total; // 0 = ativa, 1 = próxima...
+        const visual = Math.min(desloc, 3); // empilha no máximo 3 cartas visíveis
+        card.classList.toggle('is-active', desloc === 0);
+        card.style.setProperty('--deck-i', String(visual));
+        card.style.zIndex = String(total - desloc);
+      });
+      if (counter) counter.textContent = (atual + 1) + ' / ' + total;
+    }
+
+    function proximo() { atual = (atual + 1) % total; render(); }
+    function anterior() { atual = (atual - 1 + total) % total; render(); }
+
+    const nextBtn = document.getElementById('deckNext');
+    const prevBtn = document.getElementById('deckPrev');
+    if (nextBtn) nextBtn.addEventListener('click', proximo);
+    if (prevBtn) prevBtn.addEventListener('click', anterior);
+
+    document.addEventListener('keydown', function (e) {
+      if (!deck.closest('.wonders-deck-wrap, .paginas-page')) return;
+      // Não navega o baralho enquanto o usuário digita em campos de formulário.
+      const alvo = e.target;
+      if (alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.tagName === 'SELECT' || alvo.isContentEditable)) return;
+      if (e.key === 'ArrowRight') { proximo(); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { anterior(); e.preventDefault(); }
+    });
+
+    // Toque/arraste também passa a carta (deslizar para cima).
+    let startY = null;
+    deck.addEventListener('touchstart', function (e) { startY = e.touches[0].clientY; }, { passive: true });
+    deck.addEventListener('touchend', function (e) {
+      if (startY === null) return;
+      const delta = e.changedTouches[0].clientY - startY;
+      if (Math.abs(delta) > 40) (delta < 0 ? proximo : anterior)();
+      startY = null;
+    }, { passive: true });
+
+    render();
+  }
+
+  initWondersDeck();
+
   // ===== Helper =====
   function esc(texto) {
     return String(texto == null ? '' : texto)

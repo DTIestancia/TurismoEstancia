@@ -21,10 +21,10 @@ public class TagsCulturaisController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Criar(TagCulturalDto dto, CancellationToken ct)
+    public async Task<IActionResult> Criar(TagCulturalDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _tags.SalvarAsync(dto, ct);
+        await _tags.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Tag cultural salva.";
         return RedirectToAction(nameof(Index));
     }
@@ -38,10 +38,10 @@ public class TagsCulturaisController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Editar(TagCulturalDto dto, CancellationToken ct)
+    public async Task<IActionResult> Editar(TagCulturalDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _tags.SalvarAsync(dto, ct);
+        await _tags.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Tag cultural atualizada.";
         return RedirectToAction(nameof(Index));
     }

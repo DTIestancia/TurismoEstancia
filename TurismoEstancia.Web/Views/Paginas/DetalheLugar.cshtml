@@ -1,0 +1,208 @@
+@model DetalheLugarViewModel
+@using TurismoEstancia.Domain.Models
+@{
+    ViewData["Title"] = Model.Lugar.Nome;
+    var lugar = Model.Lugar;
+    var galeria = lugar.Midias.Where(m => m.Tipo == TipoMidia.Galeria).ToList();
+    var urlDetalhe = $"/lugares/{lugar.Id}/{Slug.De(lugar.Nome)}";
+    var nomeDias = new Dictionary<DiaSemana, string>
+    {
+        [DiaSemana.Domingo] = "Domingo",
+        [DiaSemana.Segunda] = "Segunda",
+        [DiaSemana.Terca] = "Terça",
+        [DiaSemana.Quarta] = "Quarta",
+        [DiaSemana.Quinta] = "Quinta",
+        [DiaSemana.Sexta] = "Sexta",
+        [DiaSemana.Sabado] = "Sábado"
+    };
+}
+<main class="paginas-page page-public">
+    @await Html.PartialAsync("_PaginasHeader")
+
+    <!-- ===== Hero do lugar ===== -->
+    <section class="lugar-hero">
+        @if (lugar.CapaArquivoId is long capa)
+        {
+            <img class="lugar-hero-bg" src="/arquivo/@capa" alt="@lugar.Nome" />
+        }
+        <div class="lugar-hero-overlay"></div>
+        <div class="lugar-hero-content">
+            <div class="pill pill-white" style="background:rgba(255,255,255,0.14);">
+                <i data-lucide="@(lugar.CategoriaIcone ?? "star")" class="icon-lg"></i>
+                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">@lugar.CategoriaNome</span>
+            </div>
+            @if (lugar.PictogramaArquivoId is long picto)
+            {
+                <img class="lugar-hero-picto" src="/arquivo/@picto" alt="" />
+            }
+            <h1 class="lugar-hero-title">@lugar.Nome</h1>
+            @if (!string.IsNullOrWhiteSpace(lugar.Tag))
+            {
+                <span class="wonder-tag">@lugar.Tag</span>
+            }
+        </div>
+    </section>
+
+    <div class="paginas-container">
+        @if (TempData["AvaliacaoOk"] is not null)
+        {
+            <div class="paginas-toast paginas-toast--ok"><i data-lucide="check-circle" class="icon-lg"></i> @TempData["AvaliacaoOk"]</div>
+        }
+        @if (TempData["AvaliacaoErro"] is not null)
+        {
+            <div class="paginas-toast paginas-toast--erro"><i data-lucide="alert-circle" class="icon-lg"></i> @TempData["AvaliacaoErro"]</div>
+        }
+
+        <div class="lugar-layout">
+            <div class="lugar-conteudo">
+                @if (!string.IsNullOrWhiteSpace(lugar.Descricao))
+                {
+                    <p class="lugar-descricao">@lugar.Descricao</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(lugar.Detalhe))
+                {
+                    <div class="lugar-detalhe">@Html.Raw(lugar.Detalhe.Replace("\n", "<br />"))</div>
+                }
+            </div>
+
+            <aside class="lugar-info">
+                @if (!string.IsNullOrWhiteSpace(lugar.Endereco))
+                {
+                    <div class="lugar-info-item">
+                        <i data-lucide="map-pin" class="icon-lg"></i>
+                        <div>
+                            <span class="lugar-info-title">Endereço</span>
+                            <span class="lugar-info-text">@lugar.Endereco</span>
+                        </div>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(lugar.ComoChegar))
+                {
+                    <div class="lugar-info-item">
+                        <i data-lucide="compass" class="icon-lg"></i>
+                        <div>
+                            <span class="lugar-info-title">Como Chegar</span>
+                            <span class="lugar-info-text">@lugar.ComoChegar</span>
+                        </div>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(lugar.Endereco))
+                {
+                    <a class="lugar-info-link"
+                       href="https://www.google.com/maps/search/?api=1&query=@Uri.EscapeDataString(lugar.Endereco + ", Estância - SE")"
+                       target="_blank" rel="noopener">
+                        <i data-lucide="external-link" class="icon-lg"></i> Abrir no Google Maps
+                    </a>
+                }
+            </aside>
+        </div>
+
+        @if (lugar.Horarios.Count > 0)
+        {
+            <section class="lugar-bloco">
+                <h3 class="lugar-bloco-title"><i data-lucide="clock" class="icon-lg"></i> Horários de funcionamento</h3>
+                <div class="lugar-horarios">
+                    @foreach (var horario in lugar.Horarios.OrderBy(h => h.DiaSemana))
+                    {
+                        <div class="lugar-horario-item @(horario.Fechado ? "is-fechado" : "")">
+                            <span class="lugar-horario-dia">@nomeDias[horario.DiaSemana]</span>
+                            @if (horario.Fechado)
+                            {
+                                <span class="lugar-horario-valor">Fechado</span>
+                            }
+                            else
+                            {
+                                <span class="lugar-horario-valor">@horario.HoraInicio?.ToString("HH:mm") — @horario.HoraFim?.ToString("HH:mm")</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </section>
+        }
+
+        @if (galeria.Count > 0)
+        {
+            <section class="lugar-bloco">
+                <h3 class="lugar-bloco-title"><i data-lucide="images" class="icon-lg"></i> Galeria de fotos</h3>
+                <div class="lugar-galeria">
+                    @foreach (var midia in galeria)
+                    {
+                        <img src="/arquivo/@midia.ArquivoId" alt="@lugar.Nome" loading="lazy" />
+                    }
+                </div>
+            </section>
+        }
+
+        <section class="lugar-bloco">
+            <h3 class="lugar-bloco-title"><i data-lucide="star" class="icon-lg"></i> O que dizem os visitantes</h3>
+            @if (Model.Avaliacoes.Count == 0)
+            {
+                <p class="lugar-sem-avaliacoes">Nenhuma avaliação publicada ainda — seja o primeiro a contar sua experiência!</p>
+            }
+            else
+            {
+                <div class="lugar-avaliacoes">
+                    @foreach (var av in Model.Avaliacoes)
+                    {
+                        <div class="lugar-avaliacao">
+                            <div class="lugar-avaliacao-head">
+                                <strong>@av.Nome</strong>
+                                <span class="lugar-avaliacao-stars">@(new string('★', av.Nota))@(new string('☆', 5 - av.Nota))</span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(av.Comentario))
+                            {
+                                <p class="lugar-avaliacao-comentario">@av.Comentario</p>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            <form class="avaliacao-form" method="post" asp-controller="Avaliacao" asp-action="Submeter">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="retorno" value="@urlDetalhe" />
+                <input type="hidden" name="PontoTuristicoId" value="@lugar.Id" />
+                <div class="avaliacao-form-title"><i data-lucide="message-square-heart" class="icon-lg"></i> Deixe sua avaliação</div>
+                <input type="text" name="Nome" class="avaliacao-input" placeholder="Seu nome" maxlength="150" required />
+                <div class="avaliacao-notas" id="avaliacaoNotas">
+                    @for (var n = 1; n <= 5; n++)
+                    {
+                        <button type="button" class="avaliacao-nota@(n == 5 ? " active" : "")" data-nota="@n" aria-label="@n estrelas">★</button>
+                    }
+                    <input type="hidden" name="Nota" id="avaliacaoNotaInput" value="5" />
+                </div>
+                <textarea name="Comentario" class="avaliacao-textarea" placeholder="Conte sua experiência..." maxlength="1000"></textarea>
+                <button type="submit" class="avaliacao-submit"><i data-lucide="send" class="icon-lg"></i> Enviar avaliação</button>
+            </form>
+        </section>
+
+        @if (Model.RoteirosComPonto.Count > 0)
+        {
+            <section class="lugar-bloco">
+                <h3 class="lugar-bloco-title"><i data-lucide="map" class="icon-lg"></i> Está presente nestes roteiros</h3>
+                <div class="lugar-roteiros">
+                    @foreach (var roteiro in Model.RoteirosComPonto)
+                    {
+                        <a class="lugar-roteiro" asp-page="/Roteiros/Detalhe" asp-route-id="@roteiro.Id">
+                            <div>
+                                <strong>@roteiro.Titulo</strong>
+                                @if (!string.IsNullOrWhiteSpace(roteiro.Descricao))
+                                {
+                                    <p>@roteiro.Descricao</p>
+                                }
+                            </div>
+                            <i data-lucide="arrow-right" class="icon-lg"></i>
+                        </a>
+                    }
+                </div>
+            </section>
+        }
+
+        <div class="paginas-cta-row">
+            <a href="/lugares" class="btn-primary"><i data-lucide="arrow-left" class="icon-lg"></i> Ver outras maravilhas</a>
+            <a href="/" class="btn-secondary"><i data-lucide="home" class="icon-lg"></i> Voltar ao início</a>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_PaginasFooter")
+</main>

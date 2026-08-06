@@ -11,11 +11,24 @@ public class AvaliacaoController : Controller
 
     public AvaliacaoController(IAvaliacaoService avaliacoes) => _avaliacoes = avaliacoes;
 
-    /// <summary>POST /Avaliacao/Submeter — nome, nota 1-5 e comentário.</summary>
+    /// <summary>
+    /// POST /Avaliacao/Submeter — nome, nota 1-5 e comentário.
+    /// <paramref name="retorno"/> (opcional) devolve o usuário à página de
+    /// origem (ex.: detalhe do ponto) em vez da home. Só aceita caminhos
+    /// relativos do próprio site (anti open-redirect).
+    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Submeter(AvaliacaoDto dto, CancellationToken ct)
+    public async Task<IActionResult> Submeter(AvaliacaoDto dto, string? retorno = null)
     {
+        var ct = HttpContext.RequestAborted;
+
+        // Url.IsLocalUrl rejeita caminhos externos e bypasos (ex.: /\\host,
+        // //host, http://...), permitindo só caminhos do próprio site.
+        var destino = !string.IsNullOrWhiteSpace(retorno) && Url.IsLocalUrl(retorno)
+            ? retorno
+            : Url.Action(nameof(HomeController.Index), "Home") ?? "/";
+
         try
         {
             if (string.IsNullOrWhiteSpace(dto.Nome))
@@ -27,7 +40,7 @@ public class AvaliacaoController : Controller
             if (ModelState.ErrorCount > 0)
             {
                 TempData["AvaliacaoErro"] = "Verifique os dados da avaliação.";
-                return RedirectToAction(nameof(HomeController.Index), "Home", null);
+                return Redirect(destino);
             }
 
             await _avaliacoes.SubmeterAsync(dto, ct);
@@ -38,7 +51,7 @@ public class AvaliacaoController : Controller
             TempData["AvaliacaoErro"] = ex.Message;
         }
 
-        return RedirectToAction(nameof(HomeController.Index), "Home", null);
+        return Redirect(destino);
     }
 
     /// <summary>GET /Avaliacao/ListarPorPonto/{id} — JSON das avaliações aprovadas (modal do mapa).</summary>

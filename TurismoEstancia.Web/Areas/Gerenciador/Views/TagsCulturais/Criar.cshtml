@@ -3,17 +3,23 @@
 <div class="painel-page-header">
     <div>
         <h1 class="painel-page-title">Nova tag cultural</h1>
-        <p class="painel-page-desc">Preencha o nome da tag.</p>
+        <p class="painel-page-desc">Cadastre uma tradição da seção Cultura.</p>
     </div>
 </div>
 
-<form class="painel-form" asp-action="Criar" method="post">
+<form class="painel-form" asp-action="Criar" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
 
     <div class="painel-field">
         <label asp-for="Nome"></label>
-        <input asp-for="Nome" class="painel-input" maxlength="80" />
+        <input asp-for="Nome" class="painel-input" maxlength="80" placeholder="Ex.: 🔥 Barco de Fogo" />
         <span asp-validation-for="Nome" class="field-validation-error"></span>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Descricao"></label>
+        <textarea asp-for="Descricao" class="painel-input" rows="4" maxlength="2000" placeholder="Texto exibido na página de detalhe do portal."></textarea>
+        <span asp-validation-for="Descricao" class="field-validation-error"></span>
     </div>
 
     <div class="painel-form-grid">
@@ -22,10 +28,16 @@
             <input asp-for="Ordem" class="painel-input" type="number" />
         </div>
         <div class="painel-field">
-            <label class="painel-checkbox">
-                <input asp-for="Ativo" /> Ativa no portal
-            </label>
+            <label>Imagem da tag</label>
+            <input type="file" name="imagem" accept="image/*" class="painel-input" />
+            <span class="painel-hint">Usada no card e na página de detalhe (opcional).</span>
         </div>
+    </div>
+
+    <div class="painel-field">
+        <label class="painel-checkbox">
+            <input asp-for="Ativo" /> Ativo no portal
+        </label>
     </div>
 
     <div class="painel-form-actions">

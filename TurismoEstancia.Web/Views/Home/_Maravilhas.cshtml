@@ -2,6 +2,10 @@
 @{
     var maravilhasDesc = Model.Conteudos.GetValueOrDefault("maravilhas-descricao",
         "De filarmônicas centenárias a praias de tirar o fôlego — cada cantinho de Estância tem uma história esperando por você.") ?? "";
+    var maravilhas = Model.CategoriasMaravilhas
+        .SelectMany(g => g.Pontos)
+        .OrderBy(p => p.Ordem)
+        .ToList();
 }
 
 <section class="section-wonders section-3d section-divider" id="section-maravilhas" data-section="maravilhas">
@@ -19,54 +23,14 @@
             @Html.Raw(maravilhasDesc.Replace("\n", "<br />"))
         </p>
 
-        @foreach (var grupo in Model.CategoriasMaravilhas)
-        {
-            <div class="wonders-category">
-                <div class="wonders-category-header">
-                    <div class="wonders-category-icon @grupo.Categoria.Chave">
-                        <i data-lucide="@(grupo.Categoria.Icone ?? "star")" class="icon-lg"></i>
-                    </div>
-                    <div>
-                        <div class="wonders-category-title">@grupo.Categoria.Nome</div>
-                        <div class="wonders-category-subtitle">@grupo.Categoria.SubTitulo</div>
-                    </div>
-                </div>
-                <div class="wonders-grid">
-                    @foreach (var ponto in grupo.Pontos)
-                    {
-                        <div class="wonder-card reveal"
-                             role="button"
-                             tabindex="0"
-                             data-wonder-icon="@(ponto.Icone ?? "star")"
-                             data-wonder-title="@ponto.Nome"
-                             data-wonder-desc="@ponto.Descricao"
-                             data-wonder-detail="@ponto.Detalhe"
-                             data-wonder-img="@(ponto.CapaArquivoId is long capaId ? $"/arquivo/{capaId}" : "")"
-                             data-wonder-tag="@ponto.Tag"
-                             data-wonder-category="@grupo.Categoria.Nome"
-                             data-wonder-categoria-chave="@grupo.Categoria.Chave"
-                             data-wonder-point-id="@ponto.Id">
-                            @if (ponto.CapaArquivoId is long capa)
-                            {
-                                <img class="wonder-card-img" src="/arquivo/@capa" alt="@ponto.Nome" loading="lazy" />
-                            }
-                            <div class="wonder-card-overlay"></div>
-                            <div class="wonder-card-content">
-                                @if (ponto.PictogramaArquivoId is long picto)
-                                {
-                                    <img src="/arquivo/@picto" alt="Ícone @ponto.Nome" class="wonder-card-picto" loading="lazy" />
-                                }
-                                <h3>@ponto.Nome</h3>
-                                <p>@ponto.Descricao</p>
-                                @if (!string.IsNullOrWhiteSpace(ponto.Tag))
-                                {
-                                    <span class="wonder-tag">@ponto.Tag</span>
-                                }
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        }
+        <div class="wonders-deck-wrap reveal reveal-delay-1">
+            @await Html.PartialAsync("_BaralhoMaravilhas", maravilhas)
+        </div>
+
+        <div class="wonders-deck-link reveal reveal-delay-2">
+            <a href="/lugares" class="btn-primary">
+                Ver todas as maravilhas <i data-lucide="arrow-right" class="icon-lg"></i>
+            </a>
+        </div>
     </div>
 </section>

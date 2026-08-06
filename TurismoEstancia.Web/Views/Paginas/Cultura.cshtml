@@ -1,0 +1,74 @@
+@model SecaoCulturaViewModel
+@{
+    ViewData["Title"] = "Nossa Cultura";
+    var culturaDescricao = Model.Conteudos.GetValueOrDefault("cultura-descricao",
+        "<strong>Capital Mundial do Barco de Fogo</strong> — é aqui que o céu vira palco e a pólvora vira poesia. A Lira Carlos Gomes toca desde 1879, e o São João da cidade é daqueles de parar o coração.");
+    var culturaExtra = Model.Conteudos.GetValueOrDefault("cultura-extra",
+        "Quadrilhas que arrastam multidões, batucadas que ecoam no peito, forró que dura até o sol raiar — cada festa é um pedaço da alma estanciana. <em>Patrimônio que se sente na pele.</em>");
+    var culturaCitacao = Model.Conteudos.GetValueOrDefault("cultura-citacao",
+        "<strong>“Estância respira cultura.</strong> Cada festa é um encontro de gerações, cada tradição é um elo com o passado e um abraço no futuro.”");
+    var culturaImagem = Model.Slides.Count > 0 ? Model.Slides[0].ImagemArquivoId.ToString() : "";
+}
+<main class="paginas-page page-public">
+    @await Html.PartialAsync("_PaginasHeader")
+
+    <section class="paginas-hero">
+        <div class="paginas-hero-inner">
+            <div class="pill pill-white" style="background:var(--color-white--15);">
+                <i data-lucide="flame" class="icon-lg"></i>
+                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">A alma arde alto</span>
+            </div>
+            <h1 class="paginas-hero-title">Nossa <span style="color:#FFC200;">Cultura</span></h1>
+            <p class="paginas-hero-subtitle">Tradições que atravessam gerações e acendem o céu de Estância.</p>
+        </div>
+    </section>
+
+    <div class="paginas-container">
+        <div class="paginas-cultura-intro">
+            <div class="paginas-cultura-text">
+                <div class="cursive">a alma</div>
+                <h2 class="paginas-cidade-title">
+                    Nossa <span class="serif-bold">cultura</span> <span class="highlight-red">arde alto.</span>
+                </h2>
+                <p>@Html.Raw(culturaDescricao)</p>
+                <p class="paginas-cultura-extra">@Html.Raw(culturaExtra)</p>
+                @if (!string.IsNullOrWhiteSpace(culturaImagem))
+                {
+                    <img class="paginas-cultura-img" src="/arquivo/@culturaImagem" alt="Estância — símbolo cultural" loading="lazy" />
+                }
+            </div>
+            <blockquote class="paginas-cultura-quote">@Html.Raw(culturaCitacao)</blockquote>
+        </div>
+
+        <div class="paginas-grid">
+            @if (Model.Tags.Count == 0)
+            {
+                <div class="news-empty">Nenhuma tradição cadastrada ainda.</div>
+            }
+            else
+            {
+                @foreach (var tag in Model.Tags)
+                {
+                    <a class="paginas-card" href="/cultura/@tag.Id/@Slug.De(tag.Nome)">
+                        @if (tag.ImagemArquivoId is long img)
+                        {
+                            <img class="paginas-card-img" src="/arquivo/@img" alt="@tag.Nome" loading="lazy" />
+                        }
+                        <div class="paginas-card-body">
+                            <h3 class="paginas-card-title">@tag.Nome</h3>
+                            @if (!string.IsNullOrWhiteSpace(tag.Descricao))
+                            {
+                                <p class="paginas-card-desc">@tag.Descricao</p>
+                            }
+                            <span class="btn-primary paginas-card-btn">
+                                Ver mais <i data-lucide="arrow-right" class="icon-lg"></i>
+                            </span>
+                        </div>
+                    </a>
+                }
+            }
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_PaginasFooter")
+</main>
