@@ -39,7 +39,7 @@ secrets.json
 wwwroot/lib/
 
 # ===== CSS/JS compilados pelo SassCompiler no build =====
-wwwroot/css/main.css
-wwwroot/css/main.css.map
-wwwroot/css/painel.css
-wwwroot/css/painel.css.map
+TurismoEstancia.Web/wwwroot/css/main.css
+TurismoEstancia.Web/wwwroot/css/main.css.map
+TurismoEstancia.Web/wwwroot/css/painel.css
+TurismoEstancia.Web/wwwroot/css/painel.css.map
