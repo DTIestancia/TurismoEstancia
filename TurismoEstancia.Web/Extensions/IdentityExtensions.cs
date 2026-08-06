@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using TurismoEstancia.Authorization.Services;
 using TurismoEstancia.Identity.Data;
 using TurismoEstancia.Identity.Models;
 
@@ -6,7 +8,7 @@ namespace TurismoEstancia.Web.Extensions;
 
 /// <summary>
 /// Configura Identity, cookies e autorização. As policies por claim
-/// (Gerenciador/Operador) são adicionadas na Fase 3 (Authorization).
+/// (Gerenciador/Operador) são registradas aqui via ClaimObrigatoria.
 /// </summary>
 public static class IdentityExtensions
 {
@@ -46,6 +48,16 @@ public static class IdentityExtensions
             options.SlidingExpiration = true;
         });
 
-        builder.Services.AddAuthorization();
+        // Handler de claims + policies por perfil (nunca roles literais).
+        builder.Services.AddSingleton<IAuthorizationHandler, AppClaimHandler>();
+
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy(Perfis.Gerenciador, policy =>
+                policy.AddRequirements(new ClaimObrigatoria(Perfis.Gerenciador)));
+
+            options.AddPolicy(Perfis.Operador, policy =>
+                policy.AddRequirements(new ClaimObrigatoria(Perfis.Operador)));
+        });
     }
 }
