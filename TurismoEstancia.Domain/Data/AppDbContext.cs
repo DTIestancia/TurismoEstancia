@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<Arquivo> Arquivos => Set<Arquivo>();
+    public DbSet<AnalyticsEvento> AnalyticsEventos => Set<AnalyticsEvento>();
     public DbSet<CategoriaPontoTuristico> CategoriasPontosTuristicos => Set<CategoriaPontoTuristico>();
     public DbSet<PontoTuristico> PontosTuristicos => Set<PontoTuristico>();
     public DbSet<PontoTuristicoMidia> PontoTuristicoMidias => Set<PontoTuristicoMidia>();
@@ -38,6 +39,7 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        ConfigureAnalyticsEvento(modelBuilder);
         ConfigureArquivo(modelBuilder);
         ConfigureCategoriaPontoTuristico(modelBuilder);
         ConfigurePontoTuristico(modelBuilder);
@@ -64,6 +66,26 @@ public class AppDbContext : DbContext
     /// uniqueidentifier com default NEWID() e será o ROWGUIDCOL (aplicado via
     /// SQL na migração), pré-requisito para o ArquBytes virar FILESTREAM.
     /// </summary>
+    private static void ConfigureAnalyticsEvento(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<AnalyticsEvento>(entity =>
+        {
+            entity.Property(e => e.Data).HasDefaultValueSql("GETDATE()");
+            entity.Property(e => e.Tipo).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.Rota).HasMaxLength(300).IsRequired();
+            entity.Property(e => e.Titulo).HasMaxLength(200);
+            entity.Property(e => e.RefererHost).HasMaxLength(150);
+            entity.Property(e => e.SessaoId).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Dispositivo).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.Evento).HasMaxLength(50);
+            entity.Property(e => e.EntidadeNome).HasMaxLength(150);
+
+            // Consultas do dashboard: por período e por tipo/evento.
+            entity.HasIndex(e => e.Data);
+            entity.HasIndex(e => new { e.Tipo, e.Evento });
+        });
+    }
+
     private static void ConfigureArquivo(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Arquivo>(entity =>

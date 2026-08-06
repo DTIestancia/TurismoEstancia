@@ -613,6 +613,115 @@
   }
 }
 
+// ===== Dashboard de análises =====
+.painel-periodo {
+  display: inline-flex;
+  background: $color-white--5;
+  border: 1px solid $color-white--12;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 2px;
+
+  a {
+    padding: 7px 16px;
+    border-radius: 9px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: $color-white--55;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+
+    &:hover { color: $color-white-solid; }
+
+    &.active {
+      background: linear-gradient(90deg, $color-orange-48 0%, $color-red-54 100%);
+      color: $color-white-solid;
+    }
+  }
+}
+
+.painel-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+
+  .painel-kpi {
+    background: linear-gradient(160deg, rgba(247, 100, 0, 0.12) 0%, rgba(3, 14, 25, 0) 65%);
+  }
+}
+
+.painel-charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.painel-chart {
+  .painel-chart-canvas {
+    position: relative;
+    min-height: 210px;
+
+    canvas {
+      max-height: 320px;
+    }
+  }
+}
+
+.painel-newsletter-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  .painel-newsletter-stat {
+    flex: 1;
+    min-width: 140px;
+    background: $color-white--4;
+    border: 1px solid $color-white--10;
+    border-radius: 12px;
+    padding: 14px 16px;
+
+    .painel-newsletter-value {
+      font-family: 'Fraunces', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: $color-white-solid;
+      line-height: 1;
+    }
+
+    .painel-newsletter-label {
+      margin-top: 6px;
+      font-size: 11.5px;
+      color: $color-white--55;
+    }
+  }
+}
+
+.painel-seo-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 0;
+  border-bottom: 1px solid $color-white--8;
+
+  &:last-of-type { border-bottom: none; }
+
+  .painel-seo-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: $color-white--40;
+  }
+
+  strong, span:last-child { color: $color-white--80; font-size: 13px; }
+}
+
 // ===== Responsivo =====
 @media (max-width: 900px) {
   .painel {

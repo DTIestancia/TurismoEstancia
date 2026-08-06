@@ -25,7 +25,8 @@
             <div class="news-grid">
                 @foreach (var roteiro in Model.Roteiros)
                 {
-                    <a class="news-card" asp-page="Detalhe" asp-route-id="@roteiro.Id">
+                    <a class="news-card" asp-page="Detalhe" asp-route-id="@roteiro.Id"
+                       data-track="roteiro" data-track-id="@roteiro.Id" data-track-nome="@roteiro.Titulo">
                         @if (roteiro.ImagemArquivoId is long imgId)
                         {
                             <img class="news-card-img" src="/arquivo/@imgId" alt="@roteiro.Titulo" loading="lazy" />

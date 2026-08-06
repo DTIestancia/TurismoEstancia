@@ -385,7 +385,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
       el.addEventListener('click', function () {
         var p = window.estanciaMarkers[this.getAttribute('data-title')];
-        if (p) showPoiInfo(p);
+        if (p) {
+          trackAnalytics('mapa-poi', p.id, p.title);
+          showPoiInfo(p);
+        }
       });
       el.setAttribute('tabindex', '0');
       el.setAttribute('role', 'button');
@@ -715,6 +718,33 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   initWondersDeck();
+
+  // ===== Analytics: beacon de cliques (anônimo, LGPD-safe) =====
+  // Envia o clique via sendBeacon — nunca bloqueia a navegação. A sessão
+  // anônima vem do cookie te_sessao; nada pessoal trafega no payload.
+  function trackAnalytics(evento, entidadeId, entidadeNome) {
+    try {
+      if (!navigator.sendBeacon) return;
+      var payload = JSON.stringify({
+        evento: evento || null,
+        entidadeId: entidadeId || null,
+        entidadeNome: entidadeNome || null,
+        rota: window.location.pathname
+      });
+      navigator.sendBeacon('/api/analytics/event', new Blob([payload], { type: 'application/json' }));
+    } catch (e) { /* nunca bloqueia o clique */ }
+  }
+
+  // Qualquer elemento com data-track é rastreado (Ver detalhes, cards...).
+  document.addEventListener('click', function (e) {
+    var alvo = e.target && e.target.closest ? e.target.closest('[data-track]') : null;
+    if (!alvo) return;
+    trackAnalytics(
+      alvo.getAttribute('data-track'),
+      alvo.getAttribute('data-track-id'),
+      alvo.getAttribute('data-track-nome')
+    );
+  });
 
   // ===== Helper =====
   function esc(texto) {

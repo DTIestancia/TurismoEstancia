@@ -4,6 +4,7 @@ using TurismoEstancia.Domain.Data;
 using TurismoEstancia.Domain.Models;
 using TurismoEstancia.Identity.Data;
 using TurismoEstancia.Identity.Models;
+using TurismoEstancia.Web.Models;
 
 namespace TurismoEstancia.Web.Extensions;
 
@@ -34,6 +35,9 @@ public static class DatabaseSeeder
 
         // Admin sempre garantido (mesmo se o banco de negócio já estiver populado).
         await GarantirAdminAsync(userManager);
+
+        // Amostra de analytics também roda com banco já populado (idempotente).
+        await SemearAnalyticsAsync(db);
 
         if (await db.CategoriasPontosTuristicos.AnyAsync() && await db.Arquivos.AnyAsync())
         {
@@ -393,6 +397,95 @@ public static class DatabaseSeeder
 
         await db.SaveChangesAsync();
         Console.WriteLine("[seed] Dados do protótipo importados com sucesso.");
+
+        // Nova chamada para cobrir banco recém-criado: na primeira execução o
+        // conteúdo ainda não existia quando SemearAnalyticsAsync rodou (início).
+        await SemearAnalyticsAsync(db);
+    }
+
+    /// <summary>
+    /// Gera uma amostra de eventos de analytics dos últimos 30 dias (visitantes
+    /// anônimos, dispositivos, referrers e cliques nas maravilhas) para o
+    /// dashboard nascer com dados. Determinística (Random com seed fixo).
+    /// </summary>
+    private static async Task SemearAnalyticsAsync(AppDbContext db)
+    {
+        if (await db.AnalyticsEventos.AnyAsync()) return;
+
+        var maravilhas = await db.PontosTuristicos
+            .Include(p => p.Categoria)
+            .Where(p => p.Ativo && p.Categoria != null && p.Categoria.ApresentarEmMaravilhas)
+            .OrderBy(p => p.Ordem)
+            .ToListAsync();
+        if (maravilhas.Count == 0) return;
+
+        var rng = new Random(2026);
+        var sessoes = Enumerable.Range(0, 90).Select(_ => Guid.NewGuid().ToString("N")).ToArray();
+        var dispositivos = new[] { "Desktop", "Desktop", "Desktop", "Mobile", "Mobile", "Tablet" };
+        string?[] referrers =
+        {
+            null, null, null, null,
+            "www.google.com.br", "www.google.com.br",
+            "pt-br.facebook.com", "www.instagram.com", "www.bing.com"
+        };
+
+        var primeiro = maravilhas[0];
+        var rotaDetalhe = $"/lugares/{primeiro.Id}/{Slug.De(primeiro.Nome)}";
+        var rotas = new[] { "/", "/cidade", "/cultura", "/grupos-populares", "/gastronomia", "/lugares", "/noticias", "/roteiros", rotaDetalhe };
+        var titulos = new Dictionary<string, string>
+        {
+            ["/"] = "Início",
+            ["/cidade"] = "Nossa Cidade",
+            ["/cultura"] = "Nossa Cultura",
+            ["/grupos-populares"] = "Grupos Populares",
+            ["/gastronomia"] = "Gastronomia",
+            ["/lugares"] = "Lugares que Encantam",
+            ["/noticias"] = "Notícias",
+            ["/roteiros"] = "Roteiros",
+            [rotaDetalhe] = "Lugares que Encantam — Detalhe"
+        };
+
+        var eventos = new List<AnalyticsEvento>();
+        for (var dia = 29; dia >= 0; dia--)
+        {
+            var data = DateTime.Today.AddDays(-dia);
+            var visitas = rng.Next(18, 60);
+            for (var v = 0; v < visitas; v++)
+            {
+                var rota = rotas[rng.Next(rotas.Length)];
+                eventos.Add(new AnalyticsEvento
+                {
+                    Data = data.Date.AddHours(rng.Next(6, 23)).AddMinutes(rng.Next(0, 60)),
+                    Tipo = "Visita",
+                    Rota = rota,
+                    Titulo = titulos[rota],
+                    RefererHost = referrers[rng.Next(referrers.Length)],
+                    SessaoId = sessoes[rng.Next(sessoes.Length)],
+                    Dispositivo = dispositivos[rng.Next(dispositivos.Length)]
+                });
+            }
+
+            var cliques = rng.Next(2, 9);
+            for (var c = 0; c < cliques; c++)
+            {
+                var ponto = maravilhas[rng.Next(maravilhas.Count)];
+                eventos.Add(new AnalyticsEvento
+                {
+                    Data = data.Date.AddHours(rng.Next(8, 22)).AddMinutes(rng.Next(0, 60)),
+                    Tipo = "Clique",
+                    Rota = rng.Next(2) == 0 ? "/" : "/lugares",
+                    Evento = "ver-maravilha",
+                    EntidadeId = ponto.Id,
+                    EntidadeNome = ponto.Nome,
+                    SessaoId = sessoes[rng.Next(sessoes.Length)],
+                    Dispositivo = dispositivos[rng.Next(dispositivos.Length)]
+                });
+            }
+        }
+
+        db.AnalyticsEventos.AddRange(eventos);
+        await db.SaveChangesAsync();
+        Console.WriteLine($"[seed] Analytics: {eventos.Count} eventos de exemplo gerados (30 dias).");
     }
 
     private static async Task GarantirAdminAsync(UserManager<Usuario> userManager)
