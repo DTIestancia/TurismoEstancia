@@ -1,0 +1,83 @@
+@model CidadeVitrineViewModel
+@if (Model.Slides.Count == 0)
+{
+    <div class="vitrine-empty">Em breve, os cantos de Estância estarão aqui.</div>
+}
+else
+{
+    <div class="cidade-vitrine" id="cidadeVitrine" data-total="@Model.Slides.Count">
+        <div class="cidade-blob" aria-hidden="true">
+            @if (Model.Slides.Count > 1)
+            {
+                <img src="/arquivo/@Model.Slides[1].ImagemArquivoId" alt="" loading="lazy" />
+            }
+            else
+            {
+                <img src="/arquivo/@Model.Slides[0].ImagemArquivoId" alt="" loading="lazy" />
+            }
+        </div>
+
+        <div class="cidade-stage">
+            <figure class="cidade-foto">
+                @{
+                    var fotoPrincipal = string.IsNullOrWhiteSpace(Model.ImagemPrincipal)
+                        ? $"/arquivo/{Model.Slides[0].ImagemArquivoId}"
+                        : Model.ImagemPrincipal;
+                }
+                <img id="cidadeImg" src="@fotoPrincipal" alt="Estância — nossa cidade" />
+            </figure>
+
+            <div class="cidade-info">
+                @if (Model.ExibirTitulo)
+                {
+                    <div class="cidade-titulo">
+                        <span class="cidade-titulo-linha1">nossa</span>
+                        <span class="cidade-titulo-linha2">cidade <span class="cidade-stars" aria-hidden="true">✦✦✦</span></span>
+                    </div>
+                }
+                <div class="cidade-card">
+                    <p class="cidade-desc">@Html.Raw((Model.Texto ?? string.Empty).Replace("\n", "<br />"))</p>
+                    <div class="cidade-card-foot">
+                        @if (!string.IsNullOrWhiteSpace(Model.Citacao))
+                        {
+                            <span class="cidade-citacao">@Model.Citacao</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.BotaoHref))
+                        {
+                            <a class="btn-primary cidade-btn" href="@Model.BotaoHref" data-track="@Model.EventoRastreio">
+                                @Model.BotaoTexto <i data-lucide="arrow-right" class="icon-lg"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cidade-postais">
+            <button type="button" class="cidade-seta" id="cidadePrev" aria-label="Foto anterior">
+                <i data-lucide="chevron-left" class="icon-lg"></i>
+            </button>
+            <div class="cidade-postais-track" id="cidadeTrack" role="tablist" aria-label="Cantos de Estância">
+                @for (var i = 0; i < Model.Slides.Count; i++)
+                {
+                    var slide = Model.Slides[i];
+                    <button type="button"
+                            class="cidade-postal@(i == 0 ? " is-active" : "")"
+                            role="tab"
+                            aria-selected="@(i == 0 ? "true" : "false")"
+                            data-index="@i"
+                            data-img="/arquivo/@slide.ImagemArquivoId"
+                            data-nome="@(slide.Titulo ?? "Estância")">
+                        <img src="/arquivo/@slide.ImagemArquivoId" alt="" loading="lazy" />
+                        <span class="cidade-postal-nome">@(slide.Titulo ?? "Estância")</span>
+                    </button>
+                }
+            </div>
+            <button type="button" class="cidade-seta" id="cidadeNext" aria-label="Próxima foto">
+                <i data-lucide="chevron-right" class="icon-lg"></i>
+            </button>
+        </div>
+
+        <p class="cidade-hint" id="cidadeCounter">Canto 1 de @Model.Slides.Count — passe para conhecer Estância</p>
+    </div>
+}

@@ -18,8 +18,10 @@
         </div>
     </section>
 
-    <div class="paginas-container paginas-container--deck">
-        @await Html.PartialAsync("_BaralhoMaravilhas", Model.Maravilhas)
+    <div class="paginas-container paginas-container--vitrine">
+        <div class="vitrine-painel">
+            @await Html.PartialAsync("_VitrineMaravilhas", Model.Maravilhas)
+        </div>
 
         <div class="paginas-cta-row paginas-cta-row--center">
             <a href="/" class="btn-secondary"><i data-lucide="map" class="icon-lg"></i> Ver tudo no mapa da home</a>

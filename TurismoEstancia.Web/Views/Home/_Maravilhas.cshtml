@@ -8,26 +8,24 @@
         .ToList();
 }
 
-<section class="section-wonders section-3d section-divider" id="section-maravilhas" data-section="maravilhas">
+<section class="section-wonders section-divider" id="section-maravilhas" data-section="maravilhas">
     <div class="section-wonders-inner">
-        <div class="section-tag">
-            <div class="pill pill-white">
-                <span style="font-size:12px;">✦</span>
-                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;line-height:16px;">7 Maravilhas de Estância</span>
-            </div>
+        <div class="vitrine-eyebrow reveal">
+            <span class="vitrine-eyebrow-star">✦</span>
+            <span>7 Maravilhas de Estância</span>
         </div>
-        <h2 class="section-title reveal" style="color:var(--color-white-solid);">
-            Lugares que <span style="color:#FFC200;">encantam</span>
+        <h2 class="section-title reveal">
+            Lugares que <span class="vitrine-accent">encantam</span>
         </h2>
-        <p class="section-desc reveal reveal-delay-1" style="color:var(--color-white--70);max-width:640px;">
+        <p class="section-desc reveal reveal-delay-1 vitrine-section-desc">
             @Html.Raw(maravilhasDesc.Replace("\n", "<br />"))
         </p>
 
-        <div class="wonders-deck-wrap reveal reveal-delay-1">
-            @await Html.PartialAsync("_BaralhoMaravilhas", maravilhas)
+        <div class="vitrine-wrap reveal reveal-delay-1">
+            @await Html.PartialAsync("_VitrineMaravilhas", maravilhas)
         </div>
 
-        <div class="wonders-deck-link reveal reveal-delay-2">
+        <div class="vitrine-link reveal reveal-delay-2">
             <a href="/lugares" class="btn-primary">
                 Ver todas as maravilhas <i data-lucide="arrow-right" class="icon-lg"></i>
             </a>

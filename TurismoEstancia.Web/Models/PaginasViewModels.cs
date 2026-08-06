@@ -15,6 +15,31 @@ public class SecaoCidadeViewModel : SecaoViewModel
     public IReadOnlyList<SlideDto> Slides { get; set; } = Array.Empty<SlideDto>();
 }
 
+/// <summary>Mostruário "Nossa Cidade" — fotos, texto e carrossel de postais.</summary>
+public class CidadeVitrineViewModel
+{
+    public IReadOnlyList<SlideDto> Slides { get; set; } = Array.Empty<SlideDto>();
+
+    /// <summary>Texto da história (HTML).</summary>
+    public string? Texto { get; set; }
+
+    /// <summary>Frase de fecho da seção.</summary>
+    public string? Citacao { get; set; }
+
+    /// <summary>Foto principal ("ImagemPrincipal"), já em URL (/arquivo/{id}); vazio usa o primeiro slide.</summary>
+    public string? ImagemPrincipal { get; set; }
+
+    /// <summary>Se mostra o título retrô "nossa cidade" dentro do mostruário.</summary>
+    public bool ExibirTitulo { get; set; } = true;
+
+    /// <summary>Botão do card (padrão do sistema) — nulo oculta.</summary>
+    public string? BotaoHref { get; set; }
+    public string? BotaoTexto { get; set; } = "Conheça nossa cidade";
+
+    /// <summary>Evento de analytics do botão (padrão: ver-cidade).</summary>
+    public string EventoRastreio { get; set; } = "ver-cidade";
+}
+
 /// <summary>Página "Nossa Cultura" — textos + tags culturais.</summary>
 public class SecaoCulturaViewModel : SecaoViewModel
 {

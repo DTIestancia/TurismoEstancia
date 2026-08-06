@@ -126,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let tickingNav = false;
 
   function updateNavbar() {
+    if (!navbar) return;
     const currentScrollY = window.scrollY;
     if (currentScrollY > 50) navbar.classList.add('scrolled');
     else navbar.classList.remove('scrolled');
@@ -663,61 +664,187 @@ document.addEventListener('DOMContentLoaded', function () {
     img.style.objectFit = 'cover';
   }, true);
 
-  // ===== Baralho de maravilhas ("passando cartas") =====
-  // Cards empilhados um acima do outro; as setas/teclado "passam" a carta
-  // do topo, revelando a próxima (deslocamento via variável --deck-i).
-  function initWondersDeck() {
-    const deck = document.getElementById('wondersDeck');
-    if (!deck) return;
-    const cards = Array.prototype.slice.call(deck.querySelectorAll('.wonder-deck-card'));
-    const total = cards.length;
-    const counter = document.getElementById('deckCounter');
+  // ===== Vitrine das 7 Maravilhas ("postais de Estância") =====
+  // Foto + nome + card de texto trocam conforme o postal selecionado;
+  // setas/teclado/toque passam os postais (a vitrine acompanha).
+  function initWondersVitrine() {
+    const vitrine = document.getElementById('wondersVitrine');
+    if (!vitrine) return;
+    const postais = Array.prototype.slice.call(vitrine.querySelectorAll('.vitrine-postal'));
+    const total = postais.length;
     if (total === 0) return;
+
+    const img = document.getElementById('vitrineImg');
+    const num = document.getElementById('vitrineNum');
+    const cat = document.getElementById('vitrineCat');
+    const titulo = document.getElementById('vitrineTitulo');
+    const desc = document.getElementById('vitrineDesc');
+    const tag = document.getElementById('vitrineTag');
+    const btn = document.getElementById('vitrineBtn');
+    const counter = document.getElementById('vitrineCounter');
 
     let atual = 0;
 
-    function render() {
-      cards.forEach(function (card, i) {
-        const desloc = (i - atual + total) % total; // 0 = ativa, 1 = próxima...
-        const visual = Math.min(desloc, 3); // empilha no máximo 3 cartas visíveis
-        card.classList.toggle('is-active', desloc === 0);
-        card.style.setProperty('--deck-i', String(visual));
-        card.style.zIndex = String(total - desloc);
+    function mostrar(index) {
+      atual = (index + total) % total;
+      const d = postais[atual].dataset;
+
+      // Crossfade da foto grande.
+      if (img) {
+        img.style.opacity = '0';
+        setTimeout(function () {
+          if (img) {
+            img.src = d.img || '';
+            img.alt = d.nome || '';
+            img.style.opacity = '1';
+          }
+        }, 170);
+      }
+
+      if (num) num.textContent = String(atual + 1).padStart(2, '0');
+      if (cat) cat.textContent = d.categoria || '';
+      if (titulo) titulo.textContent = d.nome || '';
+      if (desc) desc.textContent = d.desc || '';
+      if (tag) tag.textContent = d.tag || '';
+      if (btn) {
+        btn.setAttribute('href', d.href || '#');
+        btn.setAttribute('data-track-id', d.id || '');
+        btn.setAttribute('data-track-nome', d.nome || '');
+      }
+      if (counter) counter.textContent = 'Postal ' + (atual + 1) + ' de ' + total;
+
+      postais.forEach(function (p, i) {
+        const active = i === atual;
+        p.classList.toggle('is-active', active);
+        p.setAttribute('aria-selected', active ? 'true' : 'false');
+        if (active && p.scrollIntoView && p.parentElement) {
+          // Mantém o postal ativo visível na faixa (mobile).
+          const rect = p.getBoundingClientRect();
+          const faixa = p.parentElement.getBoundingClientRect();
+          if (rect.left < faixa.left || rect.right > faixa.right) {
+            p.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+          }
+        }
       });
-      if (counter) counter.textContent = (atual + 1) + ' / ' + total;
     }
 
-    function proximo() { atual = (atual + 1) % total; render(); }
-    function anterior() { atual = (atual - 1 + total) % total; render(); }
-
-    const nextBtn = document.getElementById('deckNext');
-    const prevBtn = document.getElementById('deckPrev');
-    if (nextBtn) nextBtn.addEventListener('click', proximo);
-    if (prevBtn) prevBtn.addEventListener('click', anterior);
-
-    document.addEventListener('keydown', function (e) {
-      if (!deck.closest('.wonders-deck-wrap, .paginas-page')) return;
-      // Não navega o baralho enquanto o usuário digita em campos de formulário.
-      const alvo = e.target;
-      if (alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.tagName === 'SELECT' || alvo.isContentEditable)) return;
-      if (e.key === 'ArrowRight') { proximo(); e.preventDefault(); }
-      if (e.key === 'ArrowLeft') { anterior(); e.preventDefault(); }
+    postais.forEach(function (p, i) {
+      p.addEventListener('click', function () { mostrar(i); });
     });
 
-    // Toque/arraste também passa a carta (deslizar para cima).
-    let startY = null;
-    deck.addEventListener('touchstart', function (e) { startY = e.touches[0].clientY; }, { passive: true });
-    deck.addEventListener('touchend', function (e) {
-      if (startY === null) return;
-      const delta = e.changedTouches[0].clientY - startY;
-      if (Math.abs(delta) > 40) (delta < 0 ? proximo : anterior)();
-      startY = null;
+    const prevBtn = document.getElementById('vitrinePrev');
+    const nextBtn = document.getElementById('vitrineNext');
+    if (prevBtn) prevBtn.addEventListener('click', function () { mostrar(atual - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { mostrar(atual + 1); });
+
+    document.addEventListener('keydown', function (e) {
+      // Só navega quando a vitrine está visível na tela (a home tem duas vitrines).
+      if (!vitrine.closest('.section-wonders, .paginas-container')) return;
+      const rect = vitrine.getBoundingClientRect();
+      const vh = window.innerHeight;
+      if (rect.bottom < 0 || rect.top > vh) return;
+      // Não navega a vitrine enquanto o usuário digita em campos de formulário.
+      const alvo = e.target;
+      if (alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.tagName === 'SELECT' || alvo.isContentEditable)) return;
+      if (e.key === 'ArrowRight') { mostrar(atual + 1); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { mostrar(atual - 1); e.preventDefault(); }
+    });
+
+    // Toque/arraste horizontal também passa os postais.
+    let startX = null;
+    vitrine.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
+    vitrine.addEventListener('touchend', function (e) {
+      if (startX === null) return;
+      const delta = e.changedTouches[0].clientX - startX;
+      if (Math.abs(delta) > 40) (delta < 0 ? mostrar(atual + 1) : mostrar(atual - 1));
+      startX = null;
     }, { passive: true });
 
-    render();
+    mostrar(0);
   }
 
-  initWondersDeck();
+  initWondersVitrine();
+
+  // ===== Vitrine "Nossa Cidade" (mostruário no estilo do print) =====
+  // O postal selecionado troca a foto grande; setas/teclado/toque passam os cantos.
+  function initCidadeVitrine() {
+    const vitrine = document.getElementById('cidadeVitrine');
+    if (!vitrine) return;
+    const postais = Array.prototype.slice.call(vitrine.querySelectorAll('.cidade-postal'));
+    const total = postais.length;
+    if (total === 0) return;
+
+    const img = document.getElementById('cidadeImg');
+    const counter = document.getElementById('cidadeCounter');
+
+    let atual = 0;
+
+    function mostrar(index) {
+      atual = (index + total) % total;
+      const d = postais[atual].dataset;
+
+      // Crossfade da foto grande.
+      if (img) {
+        img.style.opacity = '0';
+        setTimeout(function () {
+          if (img) {
+            img.src = d.img || '';
+            img.alt = d.nome || 'Estância — nossa cidade';
+            img.style.opacity = '1';
+          }
+        }, 170);
+      }
+
+      if (counter) counter.textContent = 'Canto ' + (atual + 1) + ' de ' + total + ' — passe para conhecer Estância';
+
+      postais.forEach(function (p, i) {
+        const active = i === atual;
+        p.classList.toggle('is-active', active);
+        p.setAttribute('aria-selected', active ? 'true' : 'false');
+        if (active && p.scrollIntoView && p.parentElement) {
+          const rect = p.getBoundingClientRect();
+          const faixa = p.parentElement.getBoundingClientRect();
+          if (rect.left < faixa.left || rect.right > faixa.right) {
+            p.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+          }
+        }
+      });
+    }
+
+    postais.forEach(function (p, i) {
+      p.addEventListener('click', function () { mostrar(i); });
+    });
+
+    const prevBtn = document.getElementById('cidadePrev');
+    const nextBtn = document.getElementById('cidadeNext');
+    if (prevBtn) prevBtn.addEventListener('click', function () { mostrar(atual - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { mostrar(atual + 1); });
+
+    document.addEventListener('keydown', function (e) {
+      // Só navega quando a vitrine está visível na tela (a home tem duas vitrines).
+      if (!vitrine.closest('.section-cidade, .paginas-container')) return;
+      const rect = vitrine.getBoundingClientRect();
+      const vh = window.innerHeight;
+      if (rect.bottom < 0 || rect.top > vh) return;
+      const alvo = e.target;
+      if (alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.tagName === 'SELECT' || alvo.isContentEditable)) return;
+      if (e.key === 'ArrowRight') { mostrar(atual + 1); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { mostrar(atual - 1); e.preventDefault(); }
+    });
+
+    let startX = null;
+    vitrine.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
+    vitrine.addEventListener('touchend', function (e) {
+      if (startX === null) return;
+      const delta = e.changedTouches[0].clientX - startX;
+      if (Math.abs(delta) > 40) (delta < 0 ? mostrar(atual + 1) : mostrar(atual - 1));
+      startX = null;
+    }, { passive: true });
+
+    mostrar(0);
+  }
+
+  initCidadeVitrine();
 
   // ===== Analytics: beacon de cliques (anônimo, LGPD-safe) =====
   // Envia o clique via sendBeacon — nunca bloqueia a navegação. A sessão
