@@ -6,7 +6,7 @@ de conteúdo. Construído em **ASP.NET Core 9** seguindo o padrão de arquitetur
 
 ## ✨ O que o sistema faz
 
-- **Portal público** (a antiga `Prototipo/index.html`, agora 100% dinâmica):
+- **Portal público** (100% dinâmico):
   hero com slides, seção de história com estatísticas, cultura & gastronomia,
   **vitrine das 7 Maravilhas** (postais com troca de foto, teclado e
   acessibilidade), **mapa interativo** com os POIs (filtros, legenda, modal com
@@ -85,7 +85,7 @@ TurismoEstancia.slnx
 │   ├── Controllers/                # Portal público + endpoints (.ics, arquivo, newsletter, avaliação)
 │   ├── Pages/                      # Notícias e Roteiros (Razor Pages)
 │   ├── Views/Home/                 # 10 partials do portal
-│   └── wwwroot/scss/               # SCSS portado do protótipo (compila p/ css no build)
+│   └── wwwroot/scss/               # SCSS do portal (compila p/ css no build)
 ├── TurismoEstancia.Domain/         # Entidades, enums, DTOs e AppDbContext (+ migrações)
 ├── TurismoEstancia.Services/       # 7 módulos de serviços (interface + implementação)
 ├── TurismoEstancia.Authorization/  # Policies por claim (Gerenciador/Operador)
