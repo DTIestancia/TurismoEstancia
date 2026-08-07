@@ -9,7 +9,7 @@
         "<strong>“Estância respira cultura.</strong> Cada festa é um encontro de gerações, cada tradição é um elo com o passado e um abraço no futuro.”");
     var culturaImagem = Model.Slides.Count > 0 ? Model.Slides[0].ImagemArquivoId.ToString() : "";
 }
-<main class="paginas-page page-public">
+<main class="paginas-page page-public paginas-page--cultura">
     @await Html.PartialAsync("_PaginasHeader")
 
     <section class="paginas-hero">
@@ -18,7 +18,7 @@
                 <i data-lucide="flame" class="icon-lg"></i>
                 <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">A alma arde alto</span>
             </div>
-            <h1 class="paginas-hero-title">Nossa <span style="color:#FCBB0F;">Cultura</span></h1>
+            <h1 class="paginas-hero-title">Nossa <span class="secao-destaque">Cultura</span></h1>
             <p class="paginas-hero-subtitle">Tradições que atravessam gerações e acendem o céu de Estância.</p>
         </div>
     </section>

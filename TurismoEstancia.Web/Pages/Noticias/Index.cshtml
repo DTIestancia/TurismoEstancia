@@ -4,14 +4,14 @@
     ViewData["Title"] = "Notícias";
 }
 @await Html.PartialAsync("_PaginasHeader")
-<main class="news-index page-public">
+<main class="news-index page-public paginas-page--noticias">
     <section class="news-hero">
         <div class="news-hero-inner">
             <div class="pill pill-white" style="background:var(--color-white--15);">
                 <i data-lucide="newspaper" class="icon-lg"></i>
                 <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">Fique por dentro</span>
             </div>
-            <h1 class="news-hero-title">Notícias de <span style="color:#FCBB0F;">Estância</span></h1>
+            <h1 class="news-hero-title">Notícias de <span class="secao-destaque">Estância</span></h1>
             <p class="news-hero-subtitle">Cultura, eventos e novidades da Capital Sergipana da Cultura.</p>
         </div>
     </section>
