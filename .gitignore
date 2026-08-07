@@ -46,3 +46,15 @@ TurismoEstancia.Web/wwwroot/css/painel.css.map
 
 # ===== Mídias locais de dev (seed grava os binários no banco) =====
 TurismoEstancia.Web/wwwroot/img/
+
+# ===== Design / protótipos locais (não versionar) =====
+# O protótipo estático que deu origem ao portal (Prototipo/) foi removido do
+# repositório — o portal é 100% dinâmico. Pastas de protótipo/design locais
+# não devem entrar no GitHub; suba apenas o que for referência oficial.
+Prototipo/
+prototipo/
+prototype/
+[Pp]roto/
+wireframes/
+mockups/
+design/
