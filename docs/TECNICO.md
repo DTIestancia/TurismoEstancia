@@ -44,6 +44,7 @@ TurismoEstancia.slnx
 │   ├── Areas/Operador/                 # Eventos + Newsletter (perfil restrito)
 │   ├── Controllers/                    # Portal público e endpoints
 │   ├── Infrastructure/SeoService.cs    # SEO por página (title/meta/OG/Twitter)
+│   ├── Infrastructure/ConfiguracaoSiteCache.cs  # decorator: 1 consulta de config por request
 │   ├── Middleware/AnalyticsVisitTrackingMiddleware.cs
 │   ├── Middleware/FaviconMiddleware.cs # favicon dinâmico (logo-principal ou estático)
 │   ├── Models/                         # ViewModels do portal (Home, Paginas...)
@@ -122,6 +123,13 @@ Módulos atuais: **Turismo** (pontos, categorias, mídias, horários, avaliaçõ
 **CulturaGastronomia** (grupos, pratos, tags), **Roteiro** (roteiros/notícias),
 **Conteudo** (conteúdos, configurações, slides, estatísticas, contatos, notícias),
 **Comunicacao** (newsletter), **Avaliacao**, **Analytics**.
+
+> **Cache de configurações:** o `IConfiguracaoSiteService` público é um decorator
+> (`Web/Infrastructure/ConfiguracaoSiteCache`) que carrega todas as configurações
+> **1 vez por request** — o SEO, o header, o rodapé, o favicon e os controllers
+> leem do dicionário (1 consulta por página). Sempre fresco (cache morre no
+> request) e invalidado ao salvar/excluir configuração. Se o painel ler dado
+> velho após salvar, é bug — a invalidação roda junto com o `SalvarAsync`/`ExcluirAsync`.
 
 ### Como adicionar um módulo novo (8 passos)
 
