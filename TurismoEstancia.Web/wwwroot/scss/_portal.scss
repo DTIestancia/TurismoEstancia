@@ -2356,9 +2356,8 @@
       background: none;
       border: none;
       color: var(--color-white-solid);
-      font-size: 22px;
       cursor: pointer;
-      padding: 8px;
+      padding: 9px;
       border-radius: 10px;
       transition: background 0.2s ease, color 0.2s ease;
     }
@@ -2369,6 +2368,46 @@
 
     .navbar-toggle.open {
       color: var(--color-orange-48);
+    }
+
+    /* Hambúrguer 100% CSS (3 barras) que vira X quando aberto */
+    .navbar-toggle-icon {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: currentColor;
+      border-radius: 2px;
+      position: relative;
+      transition: background 0.25s ease 0.15s;
+    }
+
+    .navbar-toggle-icon::before,
+    .navbar-toggle-icon::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: currentColor;
+      border-radius: 2px;
+      transition: top 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .navbar-toggle-icon::before { top: -7px; }
+    .navbar-toggle-icon::after { top: 7px; }
+
+    .navbar-toggle.open .navbar-toggle-icon {
+      background: transparent;
+    }
+
+    .navbar-toggle.open .navbar-toggle-icon::before {
+      top: 0;
+      transform: rotate(45deg);
+    }
+
+    .navbar-toggle.open .navbar-toggle-icon::after {
+      top: 0;
+      transform: rotate(-45deg);
     }
 
     /* Hide mobile CTA on desktop */
@@ -3279,6 +3318,16 @@
       .section-blend::after {
         display: none;
       }
+
+      .navbar-toggle-icon,
+      .navbar-toggle-icon::before,
+      .navbar-toggle-icon::after {
+        transition: none;
+      }
+
+      .navbar-links.open {
+        animation: none;
+      }
     }
 
     /* ===== Responsive ===== */
@@ -3302,28 +3351,47 @@
         gap: 32px;
       }
 
+      /* No mobile o CTA "Baixe o Guia" sai da navbar (fica só dentro do
+         menu, .navbar-cta-mobile) — sobra brand + toggle, e o toggle vai
+         para a direita com margin-left: auto. */
+      .navbar-cta {
+        display: none;
+      }
+
       .navbar-links {
         display: none;
       }
 
       .navbar-toggle {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        margin-left: auto;
+        /* Fica acima do overlay do menu para poder fechar. */
+        position: relative;
+        z-index: 60;
       }
 
       /* Mobile menu overlay */
       .navbar-links.open {
         display: flex;
         flex-direction: column;
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         right: 0;
+        bottom: 0;
         min-height: 100vh;
+        min-height: 100dvh;
         background: rgba(0, 5, 15, 0.97);
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);
-        padding: 96px 32px 40px;
+        padding: 104px 24px 40px;
         gap: 4px;
+        overflow-y: auto;
+        z-index: 50;
         animation: mobileMenuIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
       }
 
@@ -3338,16 +3406,6 @@
         }
       }
 
-      @keyframes mobileMenuOut {
-        from {
-          opacity: 1;
-          transform: translateY(0);
-        }
-        to {
-          opacity: 0;
-          transform: translateY(-12px);
-        }
-      }
 
       .navbar-links.open .navbar-link {
         padding: 14px 20px;
@@ -3371,6 +3429,26 @@
         background: var(--color-orange-48-10);
         border-color: var(--color-orange-48-20);
         color: var(--color-white-solid);
+      }
+
+      /* Theme toggle vira um item de menu no overlay mobile */
+      .navbar-links.open .theme-toggle {
+        width: auto;
+        height: auto;
+        margin-top: 8px;
+        padding: 14px 20px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.03);
+        justify-content: flex-start;
+        gap: 10px;
+        font-size: 16px;
+        color: var(--color-white--85);
+      }
+
+      .navbar-links.open .theme-toggle:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.12);
       }
 
       /* Mobile CTA inside the menu */

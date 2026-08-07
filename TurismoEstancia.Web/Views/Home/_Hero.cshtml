@@ -39,7 +39,9 @@
         <a href="#section-cidade" class="navbar-brand">
             @await Component.InvokeAsync("LogoSite", new { altura = 36 })
         </a>
-        <button class="navbar-toggle" id="navToggle" aria-label="Abrir menu"><i data-lucide="menu" class="icon-lg"></i></button>
+        <button class="navbar-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="navLinks">
+            <span class="navbar-toggle-icon" aria-hidden="true"></span>
+        </button>
         <div class="navbar-links" id="navLinks">
             <a href="#section-cidade" class="navbar-link" data-section="cidade">Nossa Cidade</a>
             <a href="#section-cultura" class="navbar-link" data-section="cultura">Cultura</a>

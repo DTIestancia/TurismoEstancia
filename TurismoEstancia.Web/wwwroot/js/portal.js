@@ -175,21 +175,26 @@ document.addEventListener('DOMContentLoaded', function () {
   const navToggle = document.getElementById('navToggle');
   const navLinks = document.getElementById('navLinks');
   let menuOpen = false;
-  let navToggleIcon = navToggle ? navToggle.querySelector('[data-lucide]') : null;
 
   function toggleMobileMenu(open) {
     const isOpen = open !== undefined ? open : !menuOpen;
     navLinks.classList.toggle('open', isOpen);
     navToggle.classList.toggle('open', isOpen);
     document.body.style.overflow = isOpen ? 'hidden' : '';
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    navToggle.setAttribute('aria-label', isOpen ? 'Fechar menu' : 'Abrir menu');
     menuOpen = isOpen;
-    if (navToggleIcon) navToggleIcon.setAttribute('data-lucide', isOpen ? 'x' : 'menu');
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-    navToggleIcon = navToggle.querySelector('[data-lucide]');
   }
   if (navToggle) navToggle.addEventListener('click', function () { toggleMobileMenu(); });
   document.querySelectorAll('.navbar-link').forEach(function (link) {
     link.addEventListener('click', function () { toggleMobileMenu(false); });
+  });
+  // Clicar fora do menu (overlay ou qualquer lugar da página) fecha.
+  document.addEventListener('click', function (e) {
+    if (!menuOpen) return;
+    if (navLinks && navLinks.contains(e.target)) return;
+    if (navToggle && navToggle.contains(e.target)) return;
+    toggleMobileMenu(false);
   });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && menuOpen) toggleMobileMenu(false);
