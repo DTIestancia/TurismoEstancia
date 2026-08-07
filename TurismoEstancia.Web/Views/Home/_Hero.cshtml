@@ -6,24 +6,11 @@
     var slides = Model.Slides.Any() ? Model.Slides : null;
 
     // Pictogramas das 7 maravilhas para o preloader personalizado.
-    var pictogramas = Model.CategoriasMaravilhas
-        .SelectMany(g => g.Pontos)
-        .OrderBy(p => p.Ordem)
-        .Select(p => p.PictogramaArquivoId)
-        .Where(id => id is long)
-        .Select(id => id!.Value)
+    // Regra de coleta compartilhada com o rodapé (HomeViewModel.MaravilhasComPictograma).
+    var pictogramas = Model.MaravilhasComPictograma
+        .Select(p => p.PictogramaArquivoId!.Value)
         .Distinct()
         .ToList();
-    if (pictogramas.Count == 0)
-    {
-        // Fallback: usa os pontos do mapa que possuem pictograma.
-        pictogramas = Model.PontosParaMapa
-            .Select(p => p.PictogramaArquivoId)
-            .Where(id => id is long)
-            .Select(id => id!.Value)
-            .Distinct()
-            .ToList();
-    }
 }
 
 <!-- ===== Reading Progress Bar ===== -->
