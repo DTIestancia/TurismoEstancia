@@ -127,7 +127,7 @@ public class HomeController : Controller
             {
                 key = c.Chave,
                 label = c.Nome,
-                color = c.Cor ?? "#f76400",
+                color = c.Cor ?? "#F97E31",
                 icon = c.Icone ?? "map-pin"
             })
             .ToList();

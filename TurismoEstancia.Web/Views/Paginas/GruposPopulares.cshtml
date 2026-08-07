@@ -4,7 +4,7 @@
     var gruposTexto = Model.Conteudos.GetValueOrDefault("gastronomia-grupos-texto",
         "Reisados, cacumbis, samba de coco e batucadas que mantêm vivas as raízes afro-brasileiras e nordestinas da cidade.");
 }
-<main class="paginas-page page-public">
+<main class="paginas-page page-public paginas-page--grupos">
     @await Html.PartialAsync("_PaginasHeader")
 
     <section class="paginas-hero">
@@ -13,7 +13,7 @@
                 <i data-lucide="users" class="icon-lg"></i>
                 <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">Na mesa &amp; na rua</span>
             </div>
-            <h1 class="paginas-hero-title">Grupos <span style="color:#FCBB0F;">Populares</span></h1>
+            <h1 class="paginas-hero-title">Grupos <span class="secao-destaque">Populares</span></h1>
             <p class="paginas-hero-subtitle">@Html.Raw(gruposTexto)</p>
         </div>
     </section>

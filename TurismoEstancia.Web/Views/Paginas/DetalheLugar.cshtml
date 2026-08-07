@@ -27,9 +27,9 @@
         }
         <div class="lugar-hero-overlay"></div>
         <div class="lugar-hero-content">
-            <div class="pill pill-white" style="background:rgba(255,255,255,0.14);">
-                <i data-lucide="@(lugar.CategoriaIcone ?? "star")" class="icon-lg"></i>
-                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">@lugar.CategoriaNome</span>
+            <div class="pill pill-white" style="background:rgba(255,255,255,0.14);border:1px solid @(lugar.CategoriaCor ?? "#F97E31");">
+                <i data-lucide="@(lugar.CategoriaIcone ?? "star")" class="icon-lg" style="color:@(lugar.CategoriaCor ?? "#F97E31");"></i>
+                <span style="color:@(lugar.CategoriaCor ?? "#F97E31");font-size:12px;font-weight:700;">@lugar.CategoriaNome</span>
             </div>
             @if (lugar.PictogramaArquivoId is long picto)
             {

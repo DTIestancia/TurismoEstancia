@@ -22,7 +22,7 @@ else
             </figure>
 
             <div class="vitrine-info">
-                <span class="vitrine-cat" id="vitrineCat">@Model[0].CategoriaNome</span>
+                <span class="vitrine-cat" id="vitrineCat" style="color:@(Model[0].CategoriaCor ?? "#F97E31");border-color:@(Model[0].CategoriaCor ?? "#F97E31");">@Model[0].CategoriaNome</span>
                 <h3 class="vitrine-titulo" id="vitrineTitulo">@Model[0].Nome</h3>
                 <div class="vitrine-card">
                     <p class="vitrine-desc" id="vitrineDesc">@Model[0].Descricao</p>
@@ -60,7 +60,8 @@ else
                             data-tag="@ponto.Tag"
                             data-img="@(ponto.CapaArquivoId is long c ? $"/arquivo/{c}" : "")"
                             data-href="/lugares/@ponto.Id/@Slug.De(ponto.Nome)"
-                            data-id="@ponto.Id">
+                            data-id="@ponto.Id"
+                            data-cor="@(ponto.CategoriaCor ?? "#F97E31")">
                         @if (ponto.CapaArquivoId is long capa)
                         {
                             <img src="/arquivo/@capa" alt="" loading="lazy" />

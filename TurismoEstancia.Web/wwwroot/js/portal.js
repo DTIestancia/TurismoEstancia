@@ -749,6 +749,18 @@ document.addEventListener('DOMContentLoaded', function () {
       if (titulo) titulo.textContent = d.nome || '';
       if (desc) desc.textContent = d.desc || '';
       if (tag) tag.textContent = d.tag || '';
+
+      // Identidade de cor por categoria (paleta oficial): o pill da
+      // categoria, o número da foto e o postal ativo usam a cor da
+      // categoria da maravilha em destaque.
+      const cor = d.cor || '#F97E31';
+      if (cat) {
+        cat.style.color = cor;
+        cat.style.borderColor = cor;
+        // Fundo translúcido na cor da categoria (funciona na home e em /lugares).
+        cat.style.background = cor + '1A';
+      }
+      if (num) num.style.color = cor;
       if (btn) {
         btn.setAttribute('href', d.href || '#');
         btn.setAttribute('data-track-id', d.id || '');
@@ -760,6 +772,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const active = i === atual;
         p.classList.toggle('is-active', active);
         p.setAttribute('aria-selected', active ? 'true' : 'false');
+        // Postal ativo herda a cor da categoria; os demais voltam ao padrão.
+        p.style.borderColor = active ? cor : '';
+        const pNum = p.querySelector('.vitrine-postal-num');
+        if (pNum) pNum.style.color = active ? cor : '';
         if (active && p.scrollIntoView && p.parentElement) {
           // Mantém o postal ativo visível na faixa (mobile).
           const rect = p.getBoundingClientRect();

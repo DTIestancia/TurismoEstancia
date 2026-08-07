@@ -4,7 +4,7 @@
     var maravilhasDesc = Model.Conteudos.GetValueOrDefault("maravilhas-descricao",
         "De filarmônicas centenárias a praias de tirar o fôlego — cada cantinho de Estância tem uma história esperando por você.");
 }
-<main class="paginas-page page-public">
+<main class="paginas-page page-public paginas-page--lugares">
     @await Html.PartialAsync("_PaginasHeader")
 
     <section class="paginas-hero">
@@ -13,7 +13,7 @@
                 <span style="font-size:12px;">✦</span>
                 <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">7 Maravilhas de Estância</span>
             </div>
-            <h1 class="paginas-hero-title">Lugares que <span style="color:#FCBB0F;">Encantam</span></h1>
+            <h1 class="paginas-hero-title">Lugares que <span class="secao-destaque">Encantam</span></h1>
             <p class="paginas-hero-subtitle">@Html.Raw(maravilhasDesc.Replace("\n", "<br />"))</p>
         </div>
     </section>

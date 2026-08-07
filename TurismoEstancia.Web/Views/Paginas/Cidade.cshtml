@@ -8,7 +8,7 @@
         "Sente o vento salgado da <strong>Praia do Saco</strong>, escuta o estalar dos Barcos de Fogo no céu. Aqui, cada esquina é uma descoberta, cada sorriso é um convite. <strong>Vem viver Estância.</strong>");
     var historiaImagem = Model.Conteudos.GetValueOrDefault("historia-imagem");
 }
-<main class="paginas-page page-public">
+<main class="paginas-page page-public paginas-page--cidade">
     @await Html.PartialAsync("_PaginasHeader")
 
     <section class="paginas-hero">
@@ -17,7 +17,7 @@
                 <i data-lucide="landmark" class="icon-lg"></i>
                 <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">Conheça a história</span>
             </div>
-            <h1 class="paginas-hero-title">Nossa <span style="color:#FCBB0F;">Cidade</span></h1>
+            <h1 class="paginas-hero-title">Nossa <span class="secao-destaque">Cidade</span></h1>
             <p class="paginas-hero-subtitle">@Html.Raw(historiaCitar)</p>
         </div>
     </section>

@@ -6,7 +6,7 @@
     var gastroMain = Model.Conteudos.GetValueOrDefault("gastronomia-main-texto",
         "Moqueca de peixe, arroz de polvo, caldeirada de camarão, tapioca recheada e a inesquecível cocada puxa.");
 }
-<main class="paginas-page page-public">
+<main class="paginas-page page-public paginas-page--gastronomia">
     @await Html.PartialAsync("_PaginasHeader")
 
     <section class="paginas-hero">
@@ -15,7 +15,7 @@
                 <i data-lucide="utensils" class="icon-lg"></i>
                 <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">Sabores do Litoral</span>
             </div>
-            <h1 class="paginas-hero-title">Gastronomia <span style="color:#FCBB0F;">de Estância</span></h1>
+            <h1 class="paginas-hero-title">Gastronomia <span class="secao-destaque">de Estância</span></h1>
             <p class="paginas-hero-subtitle">@Html.Raw(gastroDesc)</p>
         </div>
     </section>

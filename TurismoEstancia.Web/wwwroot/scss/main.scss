@@ -1985,3 +1985,68 @@
   .error-message { font-size: 15px; color: var(--color-white--60); max-width: 460px; line-height: 1.6; }
   .error-actions { display: flex; gap: 12px; margin-top: 8px; }
 }
+
+// ===== Identidade de cor por seção (paleta oficial) =====
+// Cada seção do portal carrega uma das 6 cores oficiais como acento
+// (--secao-cor). O destaque .secao-destaque e os acentos das seções
+// seguem essa cor; a vitrine das 7 Maravilhas ainda usa a cor da
+// categoria de cada maravilha (data-cor no JS), que tem precedência.
+.hero { --secao-cor: #ED2027; }
+.section-history { --secao-cor: #ED2027; }
+.section-culture { --secao-cor: #E9568A; }
+.section-gastronomy { --secao-cor: #FCBB0F; }
+.section-wonders { --secao-cor: #F97E31; }
+.section-agenda { --secao-cor: #F97E31; }
+// Agenda: a data dos cards segue a cor da seção (Barco de Fogo = laranja).
+.section-agenda .agenda-card-date { background: var(--secao-cor); }
+.section-noticias { --secao-cor: #0095F6; }
+.section-roteiros { --secao-cor: #0095F6; }
+.section-map { --secao-cor: #0095F6; }
+
+.paginas-page--cidade { --secao-cor: #ED2027; }
+.paginas-page--cultura { --secao-cor: #E9568A; }
+.paginas-page--gastronomia { --secao-cor: #FCBB0F; }
+.paginas-page--grupos { --secao-cor: #658746; }
+.paginas-page--lugares { --secao-cor: #F97E31; }
+.paginas-page--noticias,
+.paginas-page--roteiros { --secao-cor: #0095F6; }
+
+// Destaque que acompanha a cor da seção (palavras-acento dos títulos)
+.secao-destaque { color: var(--secao-cor, #FCBB0F); }
+
+// --- Nossa Cidade (vermelho) ---
+.section-history .cursive { color: var(--secao-cor); }
+
+// --- Cultura (rosa) ---
+.section-culture .cursive,
+.section-culture .headline-yellow { color: var(--secao-cor); }
+.section-culture .culture-tag { outline-color: var(--secao-cor); }
+
+// --- Gastronomia (amarelo) + Grupos Populares (verde) ---
+.section-gastronomy .gastronomy-cursive { color: var(--secao-cor); }
+.section-gastronomy .gastronomy-card-pill {
+  background: var(--secao-cor);
+  color: #241c07;
+}
+// Obs.: --red e --icon--red carregam a identidade VERDE dos Grupos
+// Populares (o nome histórico do protótipo ficou, o visual é o novo).
+.section-gastronomy .gastronomy-side-card--red {
+  background: #E7EED8;
+}
+.section-gastronomy .gastronomy-side-icon--red {
+  background: #658746;
+}
+[data-theme="dark"] .section-gastronomy .gastronomy-side-card--red {
+  background: rgba(101, 135, 70, 0.12);
+  outline: 1px solid rgba(101, 135, 70, 0.22);
+  outline-offset: -1px;
+}
+
+// --- 7 Maravilhas (laranja; a cor da categoria vence via JS) ---
+// O "encantam" ja usa gradiente laranja->amarelo (identidade da secao).
+.section-wonders .vitrine-eyebrow-star { color: var(--secao-cor); }
+.section-wonders .vitrine-cat {
+  color: var(--secao-cor);
+  border-color: var(--secao-cor);
+  background: rgba(255, 255, 255, 0.06);
+}
