@@ -1376,6 +1376,105 @@
   .vitrine-foto { border-width: 4px; }
 }
 
+// ===== Cards das seções (história, cultura, gastronomia) — altura adequada =====
+// Os cards do protótipo tinham altura definida pelo conteúdo; nas seções dinâmicas
+// eles ficavam baixos (o history-card ficava com 200px quando não há imagem).
+// Aqui eles passam a preencher a altura do wrapper e as imagens crescem para ocupar.
+.history-card,
+.culture-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 480px;
+}
+
+.history-card-header,
+.history-card-text,
+.history-card-quote,
+.culture-card-quote {
+  flex: 0 0 auto;
+}
+
+// História: a imagem (quando houver) preenche o espaço entre cabeçalho e textos.
+// flex-basis 300px evita que a imagem cresça até o tamanho intrínseco (o card
+// ficava com ~724px); assim o card fica ~480px no desktop e preenche o wrapper
+// na coluna, sempre sem distorcer (object-fit: cover).
+.history-card img {
+  flex: 1 1 300px;
+  height: auto;
+  min-height: 240px;
+  object-fit: cover;
+  margin-top: 12px;
+}
+
+// História: fallback decorativo quando não há imagem cadastrada no Gerenciador.
+.history-card-img-fallback {
+  flex: 1 1 300px;
+  min-height: 240px;
+  margin-top: 12px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--color-yellow-50) 0%, var(--color-orange-48) 55%, var(--color-red-54) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.94);
+  overflow: hidden;
+  position: relative;
+}
+
+.history-card-img-fallback svg {
+  width: 84px;
+  height: 84px;
+  opacity: 0.9;
+}
+
+.history-card-img-fallback span {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.28);
+}
+
+// Cultura: a imagem estica para preencher o card amarelo.
+.culture-card-img-wrapper {
+  flex: 1 1 auto;
+  min-height: 300px;
+}
+
+.culture-card img {
+  height: 100%;
+  object-fit: cover;
+}
+
+// Gastronomia: card principal bem mais alto — a imagem de fundo vira a
+// "capa" da seção, equilibrando a coluna lateral (2 cards empilhados).
+.gastronomy-card-img-wrap img,
+.gastronomy-card-img-wrap video {
+  height: 480px;
+}
+
+@media (max-width: 1024px) {
+  // Em coluna, o card principal precisa da largura total (o align-items: flex-start
+  // do portal o deixava com ~208px) e a altura volta a ser a do conteúdo.
+  .gastronomy-card-main {
+    align-self: stretch;
+    flex-basis: auto;
+  }
+
+  .gastronomy-card-img-wrap img,
+  .gastronomy-card-img-wrap video {
+    height: 400px;
+  }
+}
+
+@media (max-width: 640px) {
+  .gastronomy-card-img-wrap img,
+  .gastronomy-card-img-wrap video {
+    height: 300px;
+  }
+}
+
 // ===== Ajustes mobile (celular primeiro — público principal) =====
 @media (max-width: 640px) {
   // Grids das páginas internas viram coluna única: nunca estouram a largura

@@ -31,6 +31,21 @@
                     {
                         <img src="/arquivo/@historiaImagem" alt="Vista da Catedral de Estância" loading="lazy" />
                     }
+                    else
+                    {
+                        <div class="history-card-img-fallback" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 21h16" />
+                                <path d="M5 21V10l2-1.5V21" />
+                                <path d="M9.5 21V8l2.5-2V21" />
+                                <path d="M14.5 21V7l2 1.5V21" />
+                                <path d="M19 21V11l-1.5-1L19 9l1.5 1L19 11" />
+                                <path d="M12 4V2.5" />
+                                <path d="M12 6.5a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z" />
+                            </svg>
+                            <span>Princesinha do Sul Sergipano</span>
+                        </div>
+                    }
                     <div class="history-card-text">
                         @Html.Raw(historiaTexto)
                     </div>
