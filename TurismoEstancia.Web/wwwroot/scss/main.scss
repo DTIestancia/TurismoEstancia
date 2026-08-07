@@ -1236,7 +1236,12 @@
 }
 
 .vitrine-eyebrow {
-  display: inline-flex;
+  // inline-flex + text-align: start do container deixava o selo colado à
+  // esquerda enquanto título/descrição ficam centralizados — aqui ele se
+  // centraliza sozinho, independente do alinhamento do pai.
+  display: flex;
+  width: fit-content;
+  margin-inline: auto;
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
