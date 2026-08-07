@@ -21,7 +21,7 @@ public static class EmailHtml
         return $"""
         <div style="background:#0B1320;padding:32px 16px;font-family:Arial,Helvetica,sans-serif;">
           <div style="max-width:560px;margin:0 auto;background:#101C2C;border:1px solid #1E2F45;border-radius:14px;overflow:hidden;">
-            <div style="padding:24px 28px;border-bottom:1px solid #1E2F45;background:linear-gradient(135deg,#F76400,#D63031);">
+            <div style="padding:24px 28px;border-bottom:1px solid #1E2F45;background:linear-gradient(135deg,#F97E31,#ED2027);">
               <div style="font-size:13px;font-weight:bold;letter-spacing:1px;color:#FFFFFF;">DESCUBRA ESTÂNCIA</div>
               <div style="font-size:22px;font-weight:bold;color:#FFFFFF;margin-top:4px;">{WebUtility.HtmlEncode(assunto)}</div>
             </div>

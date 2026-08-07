@@ -29,7 +29,7 @@
                     <tr>
                         <td><strong>@(item.PontoTuristicoNome ?? $"Ponto #{item.PontoTuristicoId}")</strong></td>
                         <td>@item.Nome</td>
-                        <td style="color:#FFC200;">@(new string('★', item.Nota))<span style="color:var(--color-white--25);">@(new string('★', 5 - item.Nota))</span></td>
+                        <td style="color:#FCBB0F;">@(new string('★', item.Nota))<span style="color:var(--color-white--25);">@(new string('★', 5 - item.Nota))</span></td>
                         <td style="max-width:280px;">@(item.Comentario ?? "—")</td>
                         <td>@item.Data.ToString("dd/MM/yyyy HH:mm")</td>
                         <td>

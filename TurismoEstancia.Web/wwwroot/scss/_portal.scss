@@ -44,33 +44,33 @@
       --color-azure-37: #50606E;
       --color-azure-87-60: rgba(211, 225, 232, 0.60);
 
-      --color-orange-34: #AC3600;
-      --color-orange-35: #B03000;
-      --color-orange-47: #EF8700;
-      --color-orange-48: #F76400;
-      --color-orange-48-10: rgba(247, 100, 0, 0.10);
-      --color-orange-48-20: rgba(247, 100, 0, 0.20);
-      --color-orange-51: #E8521A;
-      --color-orange-57: #F2B233;
+      --color-orange-34: #A84605;
+      --color-orange-35: #AD4805;
+      --color-orange-47: #E96107;
+      --color-orange-48: #F97E31;   // LARANJA OFICIAL
+      --color-orange-48-10: rgba(249, 126, 49, 0.10);
+      --color-orange-48-20: rgba(249, 126, 49, 0.20);
+      --color-orange-51: #F86B0D;
+      --color-orange-57: #F87D2A;
 
       --color-red-11-85: rgba(55, 0, 0, 0.85);
       --color-red-14: #39150F;
       --color-red-14-75_3: rgba(47, 25, 29, 0.75);
       --color-red-19: #44241F;
       --color-red-19-80: rgba(85, 18, 11, 0.80);
-      --color-red-43-40: rgba(212, 9, 36, 0.40);
-      --color-red-43-0: rgba(212, 9, 36, 0);
-      --color-red-49: #E94211;
-      --color-red-54: #E62B34;
+      --color-red-43-40: rgba(237, 32, 39, 0.40);
+      --color-red-43-0: rgba(237, 32, 39, 0);
+      --color-red-49: #EC1F18;
+      --color-red-54: #ED2027;   // VERMELHO OFICIAL
 
-      --color-rose-42: #CC086C;
-      --color-rose-42-0: rgba(204, 8, 108, 0);
-      --color-rose-46: #C4276B;
+      --color-rose-42: #B41761;
+      --color-rose-42-0: rgba(233, 86, 138, 0);
+      --color-rose-46: #E9568A;   // ROSA OFICIAL
 
-      --color-cyan-41: #009CCF;
-      --color-spring-green-29: #009662;
+      --color-cyan-41: #0095F6;   // AZUL OFICIAL
+      --color-spring-green-29: #658746;   // VERDE OFICIAL
 
-      --color-yellow-50: #FFC200;
+      --color-yellow-50: #FCBB0F;   // AMARELO OFICIAL
 
       --color-white--0_2-box-shadow: 0px 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
@@ -129,6 +129,9 @@
       border-radius: 12px;
       border: none;
       color: var(--color-white-solid);
+      // O laranja oficial #F97E31 é mais claro que o anterior — a sombra
+      // sutil mantém o texto legível sobre o gradiente laranja→vermelho.
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
       font-size: 16px;
       font-family: 'Inter', sans-serif;
       font-weight: 400;
@@ -291,7 +294,7 @@
     }
 
     .hero-title .highlight-orange {
-      color: #FF932A;
+      color: #F97E31;
     }
     .hero-title .highlight-green {
       color: #26CB96;
@@ -656,7 +659,7 @@
       height: 0;
       border-style: solid;
       border-width: 12px 0 12px 21px;
-      border-color: transparent transparent transparent #AC3600;
+      border-color: transparent transparent transparent #A84605;
       margin-left: 4px;
     }
 
@@ -1662,7 +1665,7 @@
     }
 
     .agenda-title .highlight-fire {
-      color: #FF8D00;
+      color: #F97E31;
     }
 
     .agenda-subtitle {
@@ -1992,7 +1995,7 @@
       width: 0%;
       height: 3px;
       z-index: 10000;
-      background: linear-gradient(90deg, var(--color-orange-48), var(--color-red-54), #FF8D00);
+      background: linear-gradient(90deg, var(--color-orange-48), var(--color-red-54), #FA9552);
       background-size: 200% 100%;
       animation: progressBarGlow 3s ease-in-out infinite;
       transition: width 0.1s linear;
@@ -2762,7 +2765,7 @@
     [data-theme="dark"] .theme-toggle {
       background: rgba(255, 194, 0, 0.12);
       border-color: rgba(255, 194, 0, 0.25);
-      color: #FFC200;
+      color: #FCBB0F;
     }
 
     [data-theme="dark"] .theme-toggle:hover {
@@ -2904,7 +2907,7 @@
 
     .page-loader-highlight {
       font-weight: 700;
-      color: #FFC200;
+      color: #FCBB0F;
     }
 
     .page-loader-subtitle {
@@ -2929,7 +2932,7 @@
     .page-loader-bar-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #FFC200, #FF8D00);
+      background: linear-gradient(90deg, #FCBB0F, #F97E31);
       border-radius: 9999px;
       animation: loaderBarGrow 1.8s ease-in-out infinite;
     }
