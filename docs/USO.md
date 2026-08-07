@@ -105,7 +105,14 @@ Ao entrar, o **Dashboard** mostra:
 | **Notícias** | Publicações do portal | Com publicação/destaque |
 | **Roteiros** | Roteiros de visitação | Itens do roteiro hoje vêm do seed (edição via CMS no roadmap) |
 | **Avaliações** | Avaliações deixadas no portal | **Moderação**: aprovar/reprovar antes de publicar |
-| **Newsletter** | Lista de inscritos | **Exportar CSV**; ativar/inativar inscrito |
+| **Newsletter** | Lista de inscritos (com **busca**) | **Exportar CSV**; **disparo em massa**; ativar/inativar inscrito |
+
+> **Disparo em massa da newsletter:** o botão **"Enviar disparo"** abre um formulário
+> (assunto + mensagem) e enfileira um e-mail para cada inscrição **ativa com
+> consentimento LGPD**, enviados em segundo plano. Para habilitar, configure a
+> seção `Smtp` no `appsettings.json` (Host, Porta, Usuario, Senha, RemetenteEmail,
+> RemetenteNome). Sem essa configuração o botão aparece desabilitado com aviso
+> no painel — nada é enviado.
 | **Usuários** | Contas do painel | Criar com perfil Gerenciador ou Operador |
 | **Contatos** | Mensagens do formulário de contato | — |
 

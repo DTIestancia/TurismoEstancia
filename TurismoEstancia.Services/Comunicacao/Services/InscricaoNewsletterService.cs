@@ -103,4 +103,11 @@ public class InscricaoNewsletterService : IInscricaoNewsletterService
         var bytes = Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(sb.ToString())).ToArray();
         return bytes;
     }
+
+    public async Task<IReadOnlyList<string>> ListarEmailsAtivosAsync(CancellationToken ct = default) =>
+        await _db.InscricoesNewsletter.AsNoTracking()
+            .Where(i => i.Ativo && i.ConsentimentoLgpd)
+            .OrderBy(i => i.Email)
+            .Select(i => i.Email)
+            .ToListAsync(ct);
 }

@@ -1,20 +1,52 @@
-@model IReadOnlyList<InscricaoNewsletterDto>
+@model NewsletterIndexViewModel
 @{
     ViewData["Title"] = "Newsletter";
 }
 <div class="painel-page-header">
     <div>
         <h1 class="painel-page-title">Newsletter</h1>
-        <p class="painel-page-desc">Inscrições com consentimento LGPD. Exporte em CSV para abrir no Excel.</p>
+        <p class="painel-page-desc">Inscrições com consentimento LGPD. Busque, exporte em CSV ou envie um disparo em massa.</p>
     </div>
     <div class="painel-actions">
+        <button type="button" class="btn-painel btn-painel--primary" data-dialog-open="dialogEnviarDisparo">
+            <i data-lucide="send"></i> Enviar disparo
+        </button>
         <a class="btn-painel btn-painel--ghost" asp-action="ExportarCsv"><i data-lucide="download"></i> Exportar CSV</a>
     </div>
 </div>
 
+<div class="painel-stats-grid">
+    <div class="painel-stat">
+        <div class="painel-stat-icon"><i data-lucide="users"></i></div>
+        <div class="painel-stat-value">@Model.Total</div>
+        <div class="painel-stat-label">Inscrições</div>
+    </div>
+    <div class="painel-stat">
+        <div class="painel-stat-icon"><i data-lucide="user-check"></i></div>
+        <div class="painel-stat-value">@Model.Ativas</div>
+        <div class="painel-stat-label">Ativas</div>
+    </div>
+    <div class="painel-stat">
+        <div class="painel-stat-icon"><i data-lucide="user-x"></i></div>
+        <div class="painel-stat-value">@Model.Inativas</div>
+        <div class="painel-stat-label">Inativas</div>
+    </div>
+    <div class="painel-stat">
+        <div class="painel-stat-icon"><i data-lucide="mail"></i></div>
+        <div class="painel-stat-value">@Model.Destinatarios</div>
+        <div class="painel-stat-label">Destinatários do disparo</div>
+    </div>
+</div>
+
+<div class="painel-search">
+    <i data-lucide="search" class="painel-search-icon"></i>
+    <input type="search" id="newsletterSearch" class="painel-search-input" placeholder="Buscar por e-mail ou origem..." autocomplete="off" aria-label="Buscar inscrições" />
+    <span class="painel-search-count" id="newsletterCount"></span>
+</div>
+
 <div class="painel-card">
     <div class="painel-table-wrap">
-        <table class="painel-table">
+        <table class="painel-table" id="newsletterTable">
             <thead>
                 <tr>
                     <th>E-mail</th>
@@ -26,9 +58,9 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @foreach (var item in Model.Inscricoes)
                 {
-                    <tr>
+                    <tr data-search="@item.Email.ToLowerInvariant() @(item.Origem?.ToLowerInvariant() ?? "")">
                         <td><strong>@item.Email</strong></td>
                         <td>@(item.Origem ?? "—")</td>
                         <td>
@@ -65,8 +97,47 @@
             </tbody>
         </table>
     </div>
-    @if (Model.Count == 0)
-    {
-        <div class="painel-empty">Nenhuma inscrição recebida ainda.</div>
-    }
+    <div class="painel-empty" id="newsletterEmpty"></div>
 </div>
+
+<dialog id="dialogEnviarDisparo" class="painel-dialog">
+    <div class="painel-dialog-inner">
+        <div class="painel-dialog-header">
+            <div>
+                <h2 class="painel-dialog-title">Enviar disparo em massa</h2>
+                <p class="painel-dialog-desc">
+                    O e-mail será enviado para <strong>@Model.Destinatarios destinatário(s)</strong>
+                    (inscrições ativas com consentimento LGPD) e processado em segundo plano.
+                </p>
+            </div>
+            <button type="button" class="painel-dialog-close" data-dialog-close aria-label="Fechar"><i data-lucide="x"></i></button>
+        </div>
+
+        @if (!Model.SmtpConfigurado)
+        {
+            <div class="painel-alert painel-alert--warn">
+                <i data-lucide="alert-triangle"></i>
+                E-mail SMTP não configurado — adicione a seção "Smtp" (Host e RemetenteEmail) no appsettings.json.
+            </div>
+        }
+
+        <form method="post" asp-action="EnviarDisparo" class="painel-form">
+            @Html.AntiForgeryToken()
+            <div class="painel-field">
+                <label for="Assunto">Assunto</label>
+                <input id="Assunto" name="Assunto" class="painel-input" maxlength="120" placeholder="Ex.: Programação cultural de setembro" required />
+            </div>
+            <div class="painel-field">
+                <label for="Corpo">Mensagem</label>
+                <textarea id="Corpo" name="Corpo" class="painel-textarea" rows="6" maxlength="5000" placeholder="Escreva a mensagem do e-mail..." required></textarea>
+                <span class="painel-hint">Texto puro — as quebras de linha viram parágrafos. Um rodapé de descadastro é adicionado automaticamente.</span>
+            </div>
+            <div class="painel-form-actions">
+                <button type="submit" class="btn-painel btn-painel--primary" @(Model.SmtpConfigurado ? "" : "disabled")>
+                    <i data-lucide="send"></i> Enviar para @Model.Destinatarios
+                </button>
+                <button type="button" class="btn-painel btn-painel--ghost" data-dialog-close>Cancelar</button>
+            </div>
+        </form>
+    </div>
+</dialog>
