@@ -45,7 +45,9 @@ TurismoEstancia.Web/wwwroot/css/painel.css
 TurismoEstancia.Web/wwwroot/css/painel.css.map
 
 # ===== Mídias locais de dev (seed grava os binários no banco) =====
-TurismoEstancia.Web/wwwroot/img/
+TurismoEstancia.Web/wwwroot/img/*
+# A logo oficial (SVG, paleta de 6 cores) é asset versionado — exceção à regra.
+!TurismoEstancia.Web/wwwroot/img/logo-barco-de-fogo.svg
 
 # ===== Design / protótipos locais (não versionar) =====
 # O protótipo estático que deu origem ao portal (Prototipo/) foi removido do

@@ -13,8 +13,9 @@ public class LogoSiteViewComponent : ViewComponent
     /// <summary>Chave da configuração que armazena o logotipo enviado pelo Gerenciador.</summary>
     public const string ChaveLogo = "logo-principal";
 
-    /// <summary>Assinatura padrão usada quando nenhum logotipo foi configurado.</summary>
-    public const string Fallback = "~/img/ASSINATURA-CAPITAL-MARAVILHAS-AZUL.png";
+    /// <summary>Assinatura padrão usada quando nenhum logotipo foi configurado.
+    /// Redesenhada com as 6 cores oficiais (SVG vetorial, nítido em qualquer tamanho).</summary>
+    public const string Fallback = "~/img/logo-barco-de-fogo.svg";
 
     private readonly IConfiguracaoSiteService _configuracoes;
 

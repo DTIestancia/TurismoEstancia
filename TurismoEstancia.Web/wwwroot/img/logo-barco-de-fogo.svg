@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 108" role="img" aria-label="CAPITAL BRASILEIRA DO BARCO DE FOGO">
+  <!--
+    Logotipo redesenhado com a paleta oficial (6 cores):
+    vermelho #ED2027, laranja #F97E31, amarelo #FCBB0F,
+    verde #658746, azul #0095F6 e rosa #E9568A.
+    As barras atravessam as letras do wordmark (técnica de máscara).
+  -->
+  <defs>
+    <!-- A máscara "fura" o texto onde cada barra passa: as letras mostram
+         as cores de trás e permanecem brancas no restante. -->
+    <mask id="riscas">
+      <rect width="420" height="108" fill="#ffffff" />
+      <rect x="0" y="54" width="420" height="6" fill="#000000" />
+      <rect x="0" y="62" width="420" height="6" fill="#000000" />
+      <rect x="0" y="70" width="420" height="6" fill="#000000" />
+      <rect x="0" y="78" width="420" height="6" fill="#000000" />
+      <rect x="0" y="86" width="420" height="6" fill="#000000" />
+      <rect x="0" y="94" width="420" height="6" fill="#000000" />
+    </mask>
+  </defs>
+
+  <!-- Linha 1: "CAPITAL BRASILEIRA DO" -->
+  <text x="210" y="22" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="5" fill="#ffffff">CAPITAL BRASILEIRA DO</text>
+
+  <!-- Barras coloridas (atrás do wordmark, visíveis dentro das letras) -->
+  <g>
+    <rect x="0" y="54" width="420" height="6" fill="#ED2027" />
+    <rect x="0" y="62" width="420" height="6" fill="#F97E31" />
+    <rect x="0" y="70" width="420" height="6" fill="#FCBB0F" />
+    <rect x="0" y="78" width="420" height="6" fill="#658746" />
+    <rect x="0" y="86" width="420" height="6" fill="#0095F6" />
+    <rect x="0" y="94" width="420" height="6" fill="#E9568A" />
+  </g>
+
+  <!-- Wordmark "BARCO DE FOGO" com as 6 cores atravessando as letras -->
+  <text x="210" y="92" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="46" font-weight="900" fill="#ffffff" mask="url(#riscas)">BARCO DE FOGO</text>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Favicon redesenhado com a paleta oficial: 6 ondas inclinadas
+       (sugerem o barco cortando a água / fogo) sobre fundo azul-marinho. -->
+  <rect width="64" height="64" rx="14" fill="#04121F" />
+  <g transform="rotate(-8 32 34)">
+    <rect x="10" y="10" width="44" height="6" rx="3" fill="#ED2027" />
+    <rect x="10" y="19" width="44" height="6" rx="3" fill="#F97E31" />
+    <rect x="10" y="28" width="44" height="6" rx="3" fill="#FCBB0F" />
+    <rect x="10" y="37" width="44" height="6" rx="3" fill="#658746" />
+    <rect x="10" y="46" width="44" height="6" rx="3" fill="#0095F6" />
+    <rect x="10" y="55" width="44" height="6" rx="3" fill="#E9568A" />
+  </g>
+</svg>
