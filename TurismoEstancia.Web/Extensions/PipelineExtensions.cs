@@ -30,6 +30,10 @@ public static class PipelineExtensions
         }
 
         app.UseHttpsRedirection();
+
+        // Favicon dinâmico (usa a logo de logo-principal quando configurada).
+        app.UseMiddleware<FaviconMiddleware>();
+
         app.UseStaticFiles();
         app.UseRouting();
         app.UseAuthentication();

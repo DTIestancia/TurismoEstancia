@@ -145,7 +145,10 @@ uma equipe que mantém a agenda e a lista de e-mails sem mexer no resto do conte
   crie em **Configurações** uma entrada com chave **`logo-principal`**, tipo
   **Arquivo**, e envie a imagem (PNG com transparência, em orientação paisagem).
   O rodapé aceita um logotipo próprio na chave **`logo`** (se não existir, usa o
-  `logo-principal`). Enquanto não houver configuração, o portal usa a assinatura
+  `logo-principal`). O **favicon do navegador** também usa a imagem de
+  `logo-principal` (com fallback para o favicon atual). Dica: para um favicon
+  legível, use uma imagem **quadrada** — a assinatura larga fica achatada no
+  tamanho 16×16. Enquanto não houver configuração, o portal usa a assinatura
   padrão que acompanha o projeto.
 - **Antes de publicar**: ative o item (Ativo = sim) — itens inativos não aparecem no
   portal, mas contam no dashboard.

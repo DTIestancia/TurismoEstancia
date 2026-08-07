@@ -45,6 +45,7 @@ TurismoEstancia.slnx
 │   ├── Controllers/                    # Portal público e endpoints
 │   ├── Infrastructure/SeoService.cs    # SEO por página (title/meta/OG/Twitter)
 │   ├── Middleware/AnalyticsVisitTrackingMiddleware.cs
+│   ├── Middleware/FaviconMiddleware.cs # favicon dinâmico (logo-principal ou estático)
 │   ├── Models/                         # ViewModels do portal (Home, Paginas...)
 │   ├── Pages/Noticias|Roteiros/        # Razor Pages públicas
 │   ├── Views/Home/                     # 12 partials do portal (hero, história...)
@@ -197,6 +198,11 @@ Fluxo anônimo (sem dados pessoais):
   do banco (maravilhas, notícias, roteiros, grupos, pratos, tags).
 - **`noindex`** configurável por página.
 - O `_Layout.cshtml` injeta as meta tags; `ViewData["Seo"]` permite sobrepor por página.
+- **Favicon dinâmico** (`FaviconMiddleware`, antes do `UseStaticFiles`): o
+  `/favicon.ico` redireciona (302, cache 1h) para a imagem de `logo-principal`
+  quando configurada; sem ela, o `wwwroot/favicon.ico` estático é servido.
+  O `<link rel="icon" href="/favicon.ico" />` está no `_Layout`, no
+  `_PainelLayout` e no `Login`.
 
 ---
 
