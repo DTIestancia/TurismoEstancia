@@ -59,15 +59,4 @@ public static class PipelineExtensions
         app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
         app.MapRazorPages();
     }
-
-    public static async Task RunWithSeedSupportAsync(this WebApplication app, string[] args)
-    {
-        if (args.Contains("--seed"))
-        {
-            await DatabaseSeeder.SeedAsync(app);
-            return;
-        }
-
-        await app.RunAsync();
-    }
 }

@@ -45,12 +45,12 @@ de conteúdo. Construído em **ASP.NET Core 9** seguindo o padrão de arquitetur
 Pré-requisitos: **.NET 9 SDK**, **SQL Server** (LocalDB ou instância local).
 
 ```bash
-# 1. Restaurar e aplicar migrações + importar os dados do protótipo (seed)
-dotnet run --project TurismoEstancia.Web -- --seed
-
-# 2. Subir o portal
+# Subir o portal (migrações do banco principal aplicadas à parte)
 dotnet run --project TurismoEstancia.Web
 ```
+
+> ⛔ **Regra permanente:** rodar seed e alterar o banco do Identity são **proibidos**
+> neste projeto (ver `PADRAO-DE-PROJETO.md` §7).
 
 - **Portal:** `http://localhost:5xxx` (ver porta no console)
 - **Painel:** `/Identity/Account/Login` (o acesso às áreas `/Gerenciador` e `/Operador`
@@ -104,7 +104,8 @@ TurismoEstancia.slnx
 - `InvalidOperationException` (mensagem pt-BR) para entidade ausente.
 - Enums armazenados como **string**; datas com `GETDATE()`; bools com default.
 - FKs `Restrict`/`SetNull` (Cascade apenas em filhos próprios).
-- Seed **desacoplado** das migrações (`--seed`), nunca dentro de `OnModelCreating`.
+- **Seed é proibido** (regra permanente) — dados de referência entram por migração de
+  schema, nunca por `HasData`/seeder.
 
 ## 🧪 Validação
 

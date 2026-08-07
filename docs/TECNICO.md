@@ -67,7 +67,7 @@ builder.AddInfrastructure();    // MVC, Razor Pages, SeoService, upload limit...
 
 app.UseStandardPipeline();      // pt-BR, static files, auth, analytics middleware
 app.MapAllRoutes();             // áreas + rota padrão + Razor Pages
-await app.RunWithSeedSupportAsync(args); // suporte a --seed (bloqueado em prod)
+await app.RunAsync();           // (sem --seed: seed é proibido por regra)
 ```
 
 ---
@@ -98,20 +98,14 @@ dotnet ef database update       --project TurismoEstancia.Domain --startup-proje
 
 > Nunca mexa em migrações do `IdentityContext` (banco de usuários, intacto).
 
-### Seed — desacoplado das migrações
+### Seed — REMOVIDO (regra permanente)
 
-**NUNCA usar `HasData`** (senão `database update` semearia dados em produção). O seed é
-um `DatabaseSeeder` executado só em Development:
+> ⛔ **Proibido:** o `DatabaseSeeder` e o suporte a `--seed` foram **removidos do
+> projeto** por regra permanente. **NUNCA** reintroduzir seed nem usar `HasData`
+> (senão `database update` semearia dados em produção).
 
-```bash
-dotnet run --project TurismoEstancia.Web -- --seed
-```
-
-- **Idempotente**: cada `SeedXxxAsync` começa com `if (await _db.X.AnyAsync(ct)) return;`.
-- **Dupla proteção**: o seeder e o `RunWithSeedSupportAsync` recusam rodar fora de
-  `Development`.
-- Cria o admin `admin@estancia.se.gov.br` / `Estancia@2026`, os pictogramas das 7
-  maravilhas, slides, textos padrão, etc.
+Dados de referência entram por **migração de schema**; usuários do painel são criados
+**apenas** pela tela de Usuários do Gerenciador (o banco do Identity é intocável).
 
 ---
 
@@ -252,7 +246,7 @@ contador. **Manter o padrão `data-*`** ao estender.
 ## 11. Deploy
 
 - **Pré-requisitos**: .NET 9 runtime, SQL Server, `ASPNETCORE_ENVIRONMENT=Production`.
-- O seed é **bloqueado em produção** (dupla proteção no seeder e no `--seed`).
+- **Não existe seed** — proibido por regra (o `DatabaseSeeder` foi removido).
 - **Banco**: aplicar migrações (`dotnet ef database update`) e, para mídias grandes,
   seguir [`Deploy/01-Filestream-Config.sql`](../Deploy/01-Filestream-Config.sql).
 - **Segurança**: trocar a senha do admin, usar connection strings por secrets/env vars,
@@ -279,9 +273,6 @@ contador. **Manter o padrão `data-*`** ao estender.
 ```bash
 # Build da solução (0 erros / 0 avisos é o padrão aceito)
 dotnet build TurismoEstancia.slnx
-
-# Rodar com seed (Development apenas)
-dotnet run --project TurismoEstancia.Web -- --seed
 
 # Rodar o portal (porta 5257)
 dotnet run --project TurismoEstancia.Web --launch-profile http
