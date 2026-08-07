@@ -1991,25 +1991,28 @@
 // (--secao-cor). O destaque .secao-destaque e os acentos das seções
 // seguem essa cor; a vitrine das 7 Maravilhas ainda usa a cor da
 // categoria de cada maravilha (data-cor no JS), que tem precedência.
-.hero { --secao-cor: #ED2027; }
-.section-history { --secao-cor: #ED2027; }
-.section-culture { --secao-cor: #E9568A; }
-.section-gastronomy { --secao-cor: #FCBB0F; }
-.section-wonders { --secao-cor: #F97E31; }
-.section-agenda { --secao-cor: #F97E31; }
+// As seções referenciam os TOKENS da paleta (--color-*): o tema editável
+// do Gerenciador sobrescreve esses tokens em :root e a identidade de cada
+// seção acompanha sem recompilar o SCSS.
+.hero { --secao-cor: var(--color-red-54); }
+.section-history { --secao-cor: var(--color-red-54); }
+.section-culture { --secao-cor: var(--color-rose-46); }
+.section-gastronomy { --secao-cor: var(--color-yellow-50); }
+.section-wonders { --secao-cor: var(--color-orange-48); }
+.section-agenda { --secao-cor: var(--color-orange-48); }
 // Agenda: a data dos cards segue a cor da seção (Barco de Fogo = laranja).
 .section-agenda .agenda-card-date { background: var(--secao-cor); }
-.section-noticias { --secao-cor: #0095F6; }
-.section-roteiros { --secao-cor: #0095F6; }
-.section-map { --secao-cor: #0095F6; }
+.section-noticias { --secao-cor: var(--color-cyan-41); }
+.section-roteiros { --secao-cor: var(--color-cyan-41); }
+.section-map { --secao-cor: var(--color-cyan-41); }
 
-.paginas-page--cidade { --secao-cor: #ED2027; }
-.paginas-page--cultura { --secao-cor: #E9568A; }
-.paginas-page--gastronomia { --secao-cor: #FCBB0F; }
-.paginas-page--grupos { --secao-cor: #658746; }
-.paginas-page--lugares { --secao-cor: #F97E31; }
+.paginas-page--cidade { --secao-cor: var(--color-red-54); }
+.paginas-page--cultura { --secao-cor: var(--color-rose-46); }
+.paginas-page--gastronomia { --secao-cor: var(--color-yellow-50); }
+.paginas-page--grupos { --secao-cor: var(--color-spring-green-29); }
+.paginas-page--lugares { --secao-cor: var(--color-orange-48); }
 .paginas-page--noticias,
-.paginas-page--roteiros { --secao-cor: #0095F6; }
+.paginas-page--roteiros { --secao-cor: var(--color-cyan-41); }
 
 // Destaque que acompanha a cor da seção (palavras-acento dos títulos)
 .secao-destaque { color: var(--secao-cor, #FCBB0F); }
@@ -2031,14 +2034,14 @@
 // Obs.: --red e --icon--red carregam a identidade VERDE dos Grupos
 // Populares (o nome histórico do protótipo ficou, o visual é o novo).
 .section-gastronomy .gastronomy-side-card--red {
-  background: #E7EED8;
+  background: color-mix(in srgb, var(--color-spring-green-29) 16%, #fff);
 }
 .section-gastronomy .gastronomy-side-icon--red {
-  background: #658746;
+  background: var(--color-spring-green-29);
 }
 [data-theme="dark"] .section-gastronomy .gastronomy-side-card--red {
-  background: rgba(101, 135, 70, 0.12);
-  outline: 1px solid rgba(101, 135, 70, 0.22);
+  background: color-mix(in srgb, var(--color-spring-green-29) 14%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--color-spring-green-29) 26%, transparent);
   outline-offset: -1px;
 }
 

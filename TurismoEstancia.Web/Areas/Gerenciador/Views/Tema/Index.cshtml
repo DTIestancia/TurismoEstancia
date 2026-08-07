@@ -1,0 +1,130 @@
+@model TemaViewModel
+@{
+    ViewData["Title"] = "Tema e cores";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Tema e cores</h1>
+        <p class="painel-page-desc">Personalize a paleta oficial do portal (Barco de Fogo). As cores valem na hora, sem recompilar o site.</p>
+    </div>
+</div>
+
+@if (Model.Personalizado)
+{
+    <div class="painel-alert painel-alert--ok" style="margin-bottom:18px;">
+        <i data-lucide="palette"></i> Tema personalizado ativo. Para voltar à paleta oficial, use "Restaurar paleta oficial".
+    </div>
+}
+
+<form class="painel-form" asp-action="Salvar" method="post">
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-card" style="padding:22px;">
+        <div class="tema-grid">
+            <div class="tema-item">
+                <label class="tema-label" asp-for="Vermelho">Vermelho</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="Vermelho" class="tema-color" data-cor="vermelho" />
+                    <input type="text" asp-for="Vermelho" class="painel-input tema-hex" data-hex="vermelho" maxlength="7" />
+                </div>
+                <small class="tema-dica">Identidade: Nossa Cidade, avisos, fim dos gradientes.</small>
+            </div>
+            <div class="tema-item">
+                <label class="tema-label" asp-for="Laranja">Laranja</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="Laranja" class="tema-color" data-cor="laranja" />
+                    <input type="text" asp-for="Laranja" class="painel-input tema-hex" data-hex="laranja" maxlength="7" />
+                </div>
+                <small class="tema-dica">Identidade: 7 Maravilhas, botões principais, CTAs.</small>
+            </div>
+            <div class="tema-item">
+                <label class="tema-label" asp-for="Amarelo">Amarelo</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="Amarelo" class="tema-color" data-cor="amarelo" />
+                    <input type="text" asp-for="Amarelo" class="painel-input tema-hex" data-hex="amarelo" maxlength="7" />
+                </div>
+                <small class="tema-dica">Identidade: Gastronomia, títulos de hero, selo das Maravilhas.</small>
+            </div>
+            <div class="tema-item">
+                <label class="tema-label" asp-for="Verde">Verde</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="Verde" class="tema-color" data-cor="verde" />
+                    <input type="text" asp-for="Verde" class="painel-input tema-hex" data-hex="verde" maxlength="7" />
+                </div>
+                <small class="tema-dica">Identidade: Grupos Populares, sucesso, destaques de História.</small>
+            </div>
+            <div class="tema-item">
+                <label class="tema-label" asp-for="Azul">Azul</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="Azul" class="tema-color" data-cor="azul" />
+                    <input type="text" asp-for="Azul" class="painel-input tema-hex" data-hex="azul" maxlength="7" />
+                </div>
+                <small class="tema-dica">Identidade: Notícias, Roteiros, Mapa, links.</small>
+            </div>
+            <div class="tema-item">
+                <label class="tema-label" asp-for="Rosa">Rosa</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="Rosa" class="tema-color" data-cor="rosa" />
+                    <input type="text" asp-for="Rosa" class="painel-input tema-hex" data-hex="rosa" maxlength="7" />
+                </div>
+                <small class="tema-dica">Identidade: Cultura, partículas do hero.</small>
+            </div>
+        </div>
+
+        <!-- Pré-visualização ao vivo -->
+        <div class="tema-preview" style="margin-top:22px;border-top:1px solid var(--color-white--10);padding-top:18px;">
+            <div class="tema-preview-title">Pré-visualização</div>
+            <div class="tema-preview-bar">
+                <span class="tema-chip" data-preview="vermelho">Nossa Cidade</span>
+                <span class="tema-chip" data-preview="rosa">Cultura</span>
+                <span class="tema-chip" data-preview="amarelo">Gastronomia</span>
+                <span class="tema-chip" data-preview="verde">Grupos</span>
+                <span class="tema-chip" data-preview="laranja">7 Maravilhas</span>
+                <span class="tema-chip" data-preview="azul">Notícias</span>
+            </div>
+            <div class="tema-preview-cta" data-preview="laranja">Explorar as 7 Maravilhas</div>
+        </div>
+    </div>
+
+    <div class="painel-form-actions" style="margin-top:16px;">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar tema</button>
+        <button type="submit" class="btn-painel btn-painel--ghost" formaction="@Url.Action("Restaurar")" formmethod="post"
+                onclick="return confirm('Restaurar a paleta oficial? As cores personalizadas serão apagadas.');">
+            <i data-lucide="rotate-ccw"></i> Restaurar paleta oficial
+        </button>
+        <a class="btn-painel btn-painel--ghost" asp-area="Gerenciador" asp-controller="Configuracoes" asp-action="Index"><i data-lucide="settings"></i> Ver configurações</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        (function () {
+            // Sincroniza color picker <-> campo hex e atualiza o preview ao vivo.
+            function sincronizar(nome, hex) {
+                var cor = document.querySelector('[data-cor="' + nome + '"]');
+                var hexEl = document.querySelector('[data-hex="' + nome + '"]');
+                if (cor && hexEl) {
+                    cor.value = hex;
+                    hexEl.value = hex;
+                }
+                document.querySelectorAll('[data-preview="' + nome + '"]').forEach(function (el) {
+                    el.style.setProperty('--cor', hex);
+                });
+            }
+
+            document.querySelectorAll('.tema-color').forEach(function (input) {
+                input.addEventListener('input', function () { sincronizar(input.dataset.cor, input.value); });
+            });
+            document.querySelectorAll('.tema-hex').forEach(function (input) {
+                input.addEventListener('input', function () {
+                    var v = input.value.trim();
+                    if (/^#[0-9a-fA-F]{6}$/.test(v)) sincronizar(input.dataset.hex, v);
+                });
+            });
+            // Preview inicial com os valores carregados do servidor
+            document.querySelectorAll('.tema-color').forEach(function (input) {
+                sincronizar(input.dataset.cor, input.value);
+            });
+        })();
+    </script>
+}
