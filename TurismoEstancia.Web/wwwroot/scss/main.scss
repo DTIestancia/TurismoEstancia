@@ -222,10 +222,67 @@
 
 // No mobile (coluna) a ordem natural retorna: e-mail, LGPD, botão — e o
 // botão ocupa a largura toda (touch target, padrão hero-actions).
+// Atenção à especificidade: os seletores precisam de .newsletter-form (como
+// no desktop) ou perdem para as regras de cima, e o flex-basis 180px do
+// wrapper viraria 180px de ALTURA no modo coluna (input no topo + ícone
+// flutuando no vazio) — por isso flex: 0 1 auto aqui.
 @media (max-width: 640px) {
-  .newsletter-input-wrapper { order: 1; }
-  .newsletter-lgpd { order: 2; }
-  .newsletter-btn { order: 3; width: 100%; }
+  .newsletter-form .newsletter-input-wrapper {
+    order: 1;
+    flex: 0 1 auto;
+  }
+
+  .newsletter-form .newsletter-lgpd { order: 2; }
+  .newsletter-form .newsletter-btn { order: 3; width: 100%; }
+}
+
+// Controles mais altos, casando com o btn-primary do portal (44px/12px).
+.newsletter-form .newsletter-input {
+  height: 44px;
+  padding-left: 40px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.newsletter-form .newsletter-input-icon {
+  left: 14px;
+  font-size: 15px;
+}
+
+.newsletter-form .newsletter-btn {
+  height: 44px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  box-shadow: 0 6px 18px rgba(247, 100, 0, 0.22);
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.newsletter-form .newsletter-btn:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(247, 100, 0, 0.35);
+}
+
+.newsletter-form .newsletter-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+// LGPD com mais respiro e contraste (margem simétrica: 10px + gap 8px do
+// form = 18px nos dois lados, no mobile e no desktop)
+.newsletter-form .newsletter-lgpd {
+  margin: 10px 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+// Link de volta sem sublinhado (padrão dos links do rodapé)
+.footer-back-link {
+  text-decoration: none;
 }
 
 // Feedback do formulário (TempData do NewsletterController)
