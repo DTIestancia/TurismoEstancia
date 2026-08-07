@@ -127,7 +127,7 @@ var app = builder.Build();
 app.UseStandardPipeline();
 app.MapAllRoutes();
 
-await app.RunWithSeedSupportAsync(args);
+await app.RunAsync(); // SEM suporte a --seed: seed é proibido por regra
 ```
 
 Toda a composição vive em **`Extensions/`**, um arquivo por responsabilidade:
@@ -140,7 +140,6 @@ Toda a composição vive em **`Extensions/`**, um arquivo por responsabilidade:
 | `AddInfrastructure` | Data Protection, upload limit, session/TempData, paginação, reCAPTCHA, MVC+Razor |
 | `UseStandardPipeline` | Middleware (cultura pt-BR, static files, auth...) |
 | `MapAllRoutes` | Rotas por área + rota padrão + Razor Pages |
-| `RunWithSeedSupportAsync` | Suporte ao argumento `--seed` (bloqueado em produção) |
 
 > **Convenção:** `BusinessServiceExtensions` e `MapAllRoutes` mantêm um comentário
 > `// Novos módulos serão adicionados aqui` — é lá que você "plug-in" cada módulo novo.
@@ -381,6 +380,10 @@ dotnet ef database update            --project {NomeProjeto}.Domain --startup-pr
 semearia dados em produção). O seed é um **`DatabaseSeeder`** separado, executado só em
 Development via `dotnet run --project {NomeProjeto}.Web -- --seed`:
 
+> ⛔ **Atualização por regra permanente:** o `DatabaseSeeder` e o `--seed` **foram
+> removidos** — projetos novos **não devem criá-los**. O bloco abaixo fica apenas como
+> referência do mecanismo original do Prefeitura Digital.
+
 ```csharp
 // {NomeProjeto}.Domain/Seeding/DatabaseSeeder.cs
 public async Task SeedAsync(CancellationToken ct = default)
@@ -525,7 +528,7 @@ _notificacaoQueue.Enqueue(async (sp, ct) => await sp.GetRequiredService<IXServic
 **B. Dados**
 - [ ] `AppDbContext` com os DbSets do domínio novo + config fluente no `OnModelCreating`.
 - [ ] `dotnet ef migrations add Inicial` e `database update`.
-- [ ] `DatabaseSeeder` com guard de produção + `SeedAsync` idempotente.
+- [ ] **Sem** `DatabaseSeeder`/`--seed` (proibido por regra permanente).
 - [ ] Seed dos dados "de referência" do domínio (ex.: status, categorias, pontos turísticos iniciais).
 
 **C. Módulos de negócio (repetir para cada módulo: PontoTuristico, Roteiro, Reserva...)**
@@ -571,8 +574,8 @@ Requisitos:
    AddScoped em BusinessServiceExtensions → Controller com [Authorize(Policy=...)] → Views
    (Index + Formulario) com botões `btn`/`btn btn-sm`.
 6. Upload de imagens via tabela Arquivo (byte[]) + endpoint de download.
-7. DatabaseSeeder idempotente desacoplado das migrações (nunca HasData), com guard de
-   produção e suporte a `--seed`.
+7. Sem DatabaseSeeder/`--seed` (proibido por regra permanente); dados de referência
+   apenas via migração de schema, nunca `HasData`.
 8. Policies de autorização por claim em {NomeProjeto}.Authorization.
 9. pt-BR em todo código/UI; arquivos UTF-8.
 10. Comandos de migração documentados no README do novo projeto.

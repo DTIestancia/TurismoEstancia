@@ -12,4 +12,5 @@ var app = builder.Build();
 app.UseStandardPipeline();
 app.MapAllRoutes();
 
-await app.RunWithSeedSupportAsync(args);
+// Regra permanente do projeto: seed e alterações no banco do Identity são proibidos.
+await app.RunAsync();
