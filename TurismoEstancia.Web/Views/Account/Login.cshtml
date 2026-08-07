@@ -18,7 +18,9 @@
 <body class="painel-body">
     <div class="login-page">
         <div class="login-card">
-            <div class="login-logo"><i data-lucide="map-pin" width="26" height="26"></i></div>
+            <div class="login-logo">
+                @await Component.InvokeAsync("LogoSite", new { altura = 34 })
+            </div>
             <h1 class="login-title">Painel de Gestão</h1>
             <p class="login-subtitle">Portal de Turismo de Estância/SE — acesso restrito à equipe.</p>
 

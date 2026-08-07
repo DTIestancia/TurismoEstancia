@@ -27,7 +27,9 @@
         <!-- ===== Sidebar ===== -->
         <aside class="painel-sidebar">
             <div class="painel-brand">
-                <div class="painel-brand-logo"><i data-lucide="map-pin"></i></div>
+                <div class="painel-brand-logo">
+                    @await Component.InvokeAsync("LogoSite", new { altura = 26 })
+                </div>
                 <div class="painel-brand-text">
                     Turismo Estância
                     <small>Painel de gestão</small>

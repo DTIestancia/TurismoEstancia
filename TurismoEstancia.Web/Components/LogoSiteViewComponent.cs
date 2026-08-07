@@ -22,9 +22,14 @@ public class LogoSiteViewComponent : ViewComponent
 
     /// <param name="altura">Altura do logotipo em px (o navbar usa 36, headers internos 34, rodapés 30).</param>
     /// <param name="alt">Texto alternativo; padrão "Descubra Estância".</param>
-    public async Task<IViewComponentResult> InvokeAsync(int altura = 36, string? alt = null)
+    /// <param name="chave">Chave da configuração do logotipo (padrão: navbar; rodapé usa "logo").</param>
+    public async Task<IViewComponentResult> InvokeAsync(int altura = 36, string? alt = null, string chave = ChaveLogo)
     {
-        var logo = await _configuracoes.ObterPorChaveAsync(ChaveLogo, HttpContext.RequestAborted);
+        var logo = await _configuracoes.ObterPorChaveAsync(chave, HttpContext.RequestAborted);
+
+        // O rodapé pode ter um logotipo próprio; sem um arquivo útil, usa o principal (navbar).
+        if (logo?.ArquivoId is not long && !string.Equals(chave, ChaveLogo, StringComparison.Ordinal))
+            logo = await _configuracoes.ObterPorChaveAsync(ChaveLogo, HttpContext.RequestAborted);
 
         var url = logo?.ArquivoId is long arquivoId
             ? $"/arquivo/{arquivoId}"
