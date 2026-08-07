@@ -16,6 +16,7 @@ using TurismoEstancia.Services.Roteiro.Interfaces;
 using TurismoEstancia.Services.Roteiro.Services;
 using TurismoEstancia.Services.Turismo.Interfaces;
 using TurismoEstancia.Services.Turismo.Services;
+using TurismoEstancia.Web.Infrastructure;
 
 namespace TurismoEstancia.Web.Extensions;
 
@@ -43,7 +44,11 @@ public static class BusinessServiceExtensions
 
         // Módulo Conteudo
         builder.Services.AddScoped<IConteudoSiteService, ConteudoSiteService>();
-        builder.Services.AddScoped<IConfiguracaoSiteService, ConfiguracaoSiteService>();
+        builder.Services.AddScoped<ConfiguracaoSiteService>();
+        // Decorator com cache por request: todas as leituras de configuração da
+        // página (header, rodapé, favicon, SEO, controllers) custam 1 consulta.
+        builder.Services.AddScoped<IConfiguracaoSiteService>(sp =>
+            new ConfiguracaoSiteCache(sp.GetRequiredService<ConfiguracaoSiteService>()));
         builder.Services.AddScoped<IContatoService, ContatoService>();
 
         // Módulo Comunicacao
