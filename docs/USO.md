@@ -101,7 +101,7 @@ Ao entrar, o **Dashboard** mostra:
 | **Pratos Turísticos** | Pratos típicos | Com foto e descrição |
 | **Tags Culturais** | Tags da cultura | Linkam para páginas de detalhe |
 | **Conteúdos** | Textos do portal (título do hero, descrições das seções) | Chave → valor; use `\n` para quebrar linha |
-| **Configurações** | Guia em PDF, vídeo institucional, título do site, SEO, contatos | O "Baixe o Guia" usa o arquivo configurado aqui |
+| **Configurações** | Logotipo do portal, guia em PDF, vídeo institucional, título do site, SEO, contatos | O "Baixe o Guia" usa o arquivo configurado aqui |
 | **Notícias** | Publicações do portal | Com publicação/destaque |
 | **Roteiros** | Roteiros de visitação | Itens do roteiro hoje vêm do seed (edição via CMS no roadmap) |
 | **Avaliações** | Avaliações deixadas no portal | **Moderação**: aprovar/reprovar antes de publicar |
@@ -141,6 +141,10 @@ uma equipe que mantém a agenda e a lista de e-mails sem mexer no resto do conte
 - **SEO**: em Configurações, preencha `site-titulo`, `meta-descricao` e a imagem de
   compartilhamento — o portal gera `title`, `meta description`, **Open Graph** e
   **Twitter Cards** automaticamente para cada página.
+- **Logotipo**: para trocar a logo do portal (navbar, headers e rodapés), crie em
+  **Configurações** uma entrada com chave **`logo-principal`**, tipo **Arquivo**, e
+  envie a imagem (PNG com transparência, em orientação paisagem). Enquanto não
+  existir essa configuração, o portal usa a assinatura padrão que acompanha o projeto.
 - **Antes de publicar**: ative o item (Ativo = sim) — itens inativos não aparecem no
   portal, mas contam no dashboard.
 
@@ -153,5 +157,6 @@ uma equipe que mantém a agenda e a lista de e-mails sem mexer no resto do conte
 | Página do portal com erro 500 | Banco sem migrações ou slides com contagem incompatível | `dotnet ef database update`; manter 3+ slides |
 | Login não funciona | Usuário/senha incorretos ou conta inativa | Acione o gerenciador de acessos da DTI (este sistema não gerencia usuários) |
 | "Baixe o Guia" não aparece | Configuração `guia-pdf` sem arquivo | Configure o guia em **Configurações** |
+| O logotipo do portal não muda | Configuração `logo-principal` ausente | Crie em Configurações: chave `logo-principal`, tipo Arquivo, e envie a imagem |
 | Imagem não carrega no portal | Arquivo removido/órfão | Reenvie a imagem no módulo correspondente |
 | Analytics zerado | Navegação de teste com cookies bloqueados | Abrir em aba normal (não anônima) |

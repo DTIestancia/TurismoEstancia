@@ -1,7 +1,7 @@
 <header class="paginas-nav">
     <div class="paginas-nav-inner">
         <a href="/" class="paginas-brand">
-            <img src="~/img/ASSINATURA-CAPITAL-MARAVILHAS-AZUL.png" alt="Descubra Estância" style="height:34px;width:auto;" />
+            @await Component.InvokeAsync("LogoSite", new { altura = 34 })
         </a>
         <nav class="paginas-nav-links" aria-label="Seções do portal">
             <a href="/cidade">Nossa Cidade</a>

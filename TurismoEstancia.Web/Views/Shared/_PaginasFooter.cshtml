@@ -1,7 +1,7 @@
 <footer class="paginas-footer">
     <div class="paginas-footer-inner">
         <div class="paginas-footer-brand">
-            <img src="~/img/ASSINATURA-CAPITAL-MARAVILHAS-AZUL.png" alt="Descubra Estância" style="height:30px;width:auto;" />
+            @await Component.InvokeAsync("LogoSite", new { altura = 30 })
             <p>Portal de Turismo de Estância/SE — Capital Sergipana da Cultura.</p>
         </div>
         <nav class="paginas-footer-links" aria-label="Navegação do rodapé">
