@@ -49,6 +49,34 @@ public class HomeViewModel
 
     /// <summary>JSON do mapa (categorias + POIs) serializado no controller.</summary>
     public string MapaJson { get; set; } = "{}";
+
+    /// <summary>
+    /// As maravilhas com pictograma cadastrado (até 7, na ordem do mapa).
+    /// Usada no preloader e na faixa de pictogramas do rodapé — a regra de
+    /// coleta fica num só lugar para os dois pontos ficarem sempre em sincronia.
+    /// </summary>
+    public IReadOnlyList<PontoTuristicoDto> MaravilhasComPictograma
+    {
+        get
+        {
+            var comPicto = CategoriasMaravilhas
+                .SelectMany(g => g.Pontos)
+                .Where(p => p.PictogramaArquivoId is long)
+                .OrderBy(p => p.Ordem)
+                .Take(7)
+                .ToList();
+            if (comPicto.Count == 0)
+            {
+                // Fallback: pontos do mapa que possuem pictograma.
+                comPicto = PontosParaMapa
+                    .Where(p => p.PictogramaArquivoId is long)
+                    .OrderBy(p => p.Ordem)
+                    .Take(7)
+                    .ToList();
+            }
+            return comPicto;
+        }
+    }
 }
 
 /// <summary>Uma categoria + seus pontos (seção 7 Maravilhas).</summary>

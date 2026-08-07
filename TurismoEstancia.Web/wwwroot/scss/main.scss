@@ -263,6 +263,200 @@
   input { margin-top: 2px; accent-color: var(--color-orange-48); }
 }
 
+// ===== Footer: faixa dos 7 pictogramas =====
+// As mesmas 7 maravilhas do preloader viram a assinatura visual do rodapé:
+// cada pictograma em um tile que linka para a página de detalhe do lugar.
+.footer-pictos {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, transparent 100%);
+  border-bottom: 1px solid var(--color-white--8);
+}
+
+.footer-pictos-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 30px 32px 26px;
+}
+
+.footer-pictos-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 0 0 20px;
+  color: var(--color-white--60);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  text-align: center;
+}
+
+.footer-eyebrow-line {
+  width: 44px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-orange-48));
+}
+
+.footer-eyebrow-line:last-child {
+  background: linear-gradient(90deg, var(--color-orange-48), transparent);
+}
+
+.footer-pictos-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px clamp(8px, 2.2vw, 22px);
+}
+
+.footer-picto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 88px;
+  text-decoration: none;
+  transition: transform 0.25s ease;
+}
+
+.footer-picto-tile {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-white--8);
+  outline: 1px solid var(--color-white--15);
+  outline-offset: -1px;
+  transition: background 0.3s ease, outline-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.footer-picto-tile img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  filter: brightness(0) invert(1); // silhueta branca, como no preloader
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+// Especificidade maior que img[loading="lazy"].loaded do portal (fade-in):
+// mantém a opacidade sutil dos pictos no estado padrão.
+.footer-picto-tile img[loading="lazy"] {
+  opacity: 0.85;
+}
+
+.footer-picto-nome {
+  color: var(--color-white--60);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 14px;
+  text-align: center;
+  max-width: 88px;
+  transition: color 0.2s ease;
+}
+
+.footer-picto:hover {
+  transform: translateY(-4px);
+}
+
+.footer-picto:hover .footer-picto-tile {
+  background: linear-gradient(135deg, var(--color-orange-48), var(--color-red-54));
+  outline-color: transparent;
+  box-shadow: 0 10px 24px rgba(247, 100, 0, 0.35);
+}
+
+.footer-picto:hover .footer-picto-tile img {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.footer-picto:hover .footer-picto-nome {
+  color: var(--color-orange-48);
+}
+
+.footer-picto:focus-visible {
+  outline: 2px solid var(--color-orange-48);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+// ===== Footer: links de navegação (coluna 1) =====
+.footer-pages {
+  margin-top: 20px;
+}
+
+.footer-pages-title {
+  color: var(--color-white--90);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.70px;
+  line-height: 20px;
+  margin-bottom: 12px;
+}
+
+.footer-pages-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+  max-width: 340px;
+}
+
+.footer-pages-grid a {
+  color: var(--color-white--65);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 22px;
+  text-decoration: none;
+  transition: color 0.2s, transform 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-pages-grid a::before {
+  content: "›";
+  color: var(--color-orange-48);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.footer-pages-grid a:hover {
+  color: var(--color-orange-48);
+  transform: translateX(3px);
+}
+
+// ===== Footer: mobile =====
+@media (max-width: 640px) {
+  .footer-pictos-inner {
+    padding: 24px 16px 20px;
+  }
+
+  .footer-picto {
+    width: 66px;
+  }
+
+  .footer-picto-tile {
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+  }
+
+  .footer-picto-tile img {
+    width: 25px;
+    height: 25px;
+  }
+
+  .footer-picto-nome {
+    font-size: 10px;
+    max-width: 66px;
+  }
+
+  .footer-pages-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 // --- Seção Roteiros ---
 .section-roteiros {
   background: var(--color-azure-7);
