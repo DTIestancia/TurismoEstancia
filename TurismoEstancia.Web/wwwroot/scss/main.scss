@@ -42,7 +42,7 @@
 }
 
 .page-loader-bar-fill {
-  background: linear-gradient(90deg, #63C9E8 0%, var(--color-cyan-41) 65%, #005C8C 100%);
+  background: linear-gradient(90deg, #4DB5FF 0%, var(--color-cyan-41) 65%, #005999 100%);
 }
 
 // Glow de fundo: ciano no lugar do laranja, para combinar com a barra
@@ -101,7 +101,7 @@
   }
 
   .modal-avaliacao-stars {
-    color: #FFC200;
+    color: #FCBB0F;
     letter-spacing: 1px;
     font-size: 12px;
   }
@@ -167,7 +167,7 @@
     cursor: pointer;
     transition: color 0.2s, transform 0.2s;
 
-    &:hover, &.active { color: #FFC200; transform: scale(1.15); }
+    &:hover, &.active { color: #FCBB0F; transform: scale(1.15); }
   }
 
   .avaliacao-submit {
@@ -764,7 +764,7 @@
   .roteiro-dia-title {
     font-family: 'Fraunces', serif;
     font-size: 22px;
-    color: #FFC200;
+    color: #FCBB0F;
     margin-bottom: 12px;
   }
 
@@ -834,7 +834,7 @@
       color: var(--color-white--70);
       text-decoration: none;
       transition: color 0.2s;
-      &:hover { color: #FFC200; }
+      &:hover { color: #FCBB0F; }
     }
   }
 
@@ -977,13 +977,13 @@
     padding: 20px 24px 4px;
     .cursive { color: var(--color-orange-48); font-size: 28px; }
     .big { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 700; }
-    .stars { color: #FFC200; font-size: 14px; }
+    .stars { color: #FCBB0F; font-size: 14px; }
   }
 
   .paginas-cidade-card-img { width: 100%; height: 260px; object-fit: cover; }
 
   .paginas-cidade-card-text { padding: 18px 24px 0; font-size: 15px; line-height: 1.7; color: var(--color-white--80); }
-  .paginas-cidade-card-quote { padding: 14px 24px 24px; font-family: 'Caveat', cursive; font-size: 22px; color: #FFC200; }
+  .paginas-cidade-card-quote { padding: 14px 24px 24px; font-family: 'Caveat', cursive; font-size: 22px; color: #FCBB0F; }
 }
 
 .paginas-cidade-text {
@@ -1034,7 +1034,7 @@
     font-family: 'Fraunces', serif;
     font-size: 20px;
     line-height: 1.6;
-    color: #FFC200;
+    color: #FCBB0F;
     border-left: 3px solid var(--color-orange-48);
     padding: 16px 0 16px 22px;
     margin: 0;
@@ -1080,7 +1080,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    a { font-size: 14px; color: var(--color-white--65); text-decoration: none; transition: color 0.2s; &:hover { color: #FFC200; } }
+    a { font-size: 14px; color: var(--color-white--65); text-decoration: none; transition: color 0.2s; &:hover { color: #FCBB0F; } }
   }
 
   .paginas-footer-bottom {
@@ -1175,7 +1175,7 @@
     margin-top: 4px;
     font-size: 13px;
     font-weight: 700;
-    color: #FFC200;
+    color: #FCBB0F;
     text-decoration: none;
     &:hover { text-decoration: underline; }
   }
@@ -1232,7 +1232,7 @@
   padding: 12px 14px;
 
   .lugar-avaliacao-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; color: var(--color-white-solid); }
-  .lugar-avaliacao-stars { color: #FFC200; letter-spacing: 1px; font-size: 13px; }
+  .lugar-avaliacao-stars { color: #FCBB0F; letter-spacing: 1px; font-size: 13px; }
   .lugar-avaliacao-comentario { margin-top: 6px; font-size: 13px; line-height: 1.5; color: var(--color-white--65); }
 }
 
@@ -1309,7 +1309,7 @@
   color: var(--color-white-solid);
 
   .vitrine-accent {
-    background: linear-gradient(90deg, #FF932A 0%, #FFC200 100%);
+    background: linear-gradient(90deg, #F97E31 0%, #FCBB0F 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -1344,7 +1344,7 @@
   letter-spacing: 0.6px;
   text-transform: uppercase;
 
-  .vitrine-eyebrow-star { color: #FFC200; font-size: 13px; }
+  .vitrine-eyebrow-star { color: #FCBB0F; font-size: 13px; }
 }
 
 // --- Vitrine (componente) ---
@@ -1436,7 +1436,7 @@
   border-radius: 999px;
   background: rgba(247, 100, 0, 0.14);
   border: 1px solid rgba(247, 100, 0, 0.35);
-  color: #FF932A;
+  color: #F97E31;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1.2px;
@@ -1543,7 +1543,7 @@
     font-family: 'Baloo 2', sans-serif;
     font-weight: 700;
     font-size: 13px;
-    color: #FFC200;
+    color: #FCBB0F;
     line-height: 1;
   }
 
@@ -1760,7 +1760,7 @@
         background: rgba(255, 255, 255, 0.08);
         border-color: rgba(255, 255, 255, 0.12);
         transform: translateX(4px);
-        color: #FFC200;
+        color: #FCBB0F;
       }
     }
   }

@@ -591,10 +591,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!container) return;
     const particleCount = window.innerWidth < 768 ? 15 : 35;
     const types = ['ember', 'sparkle', 'star', 'glow'];
-    const emberColors = ['#F76400', '#FF8D00', '#E62B34', '#FFB347', '#FF6B35'];
-    const sparkleColors = ['#FFD700', '#FFC200', '#FFFFFF', '#FFE44D'];
+    const emberColors = ['#F97E31', '#FCBB0F', '#ED2027', '#E9568A', '#0095F6'];
+    const sparkleColors = ['#FCBB0F', '#F97E31', '#FFFFFF', '#FCD766'];
     const starColors = ['#FFFFFF', '#FFFAF0', '#F0F8FF'];
-    const glowColors = ['#F76400', '#FF4500', '#FF6347'];
+    const glowColors = ['#F97E31', '#ED2027', '#E9568A'];
     container.innerHTML = '';
     for (let i = 0; i < particleCount; i++) {
       const el = document.createElement('div');

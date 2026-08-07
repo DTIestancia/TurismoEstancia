@@ -204,8 +204,8 @@
             Chart.defaults.borderColor = 'rgba(255,255,255,0.08)';
             Chart.defaults.font.family = 'Inter, sans-serif';
 
-            var laranja = '#F76400', vermelho = '#E62B34', verde = '#009662',
-                ciano = '#009CCF', amarelo = '#FFC200', roxo = '#6C63FF';
+            var laranja = '#F97E31', vermelho = '#ED2027', verde = '#658746',
+                ciano = '#0095F6', amarelo = '#FCBB0F', rosa = '#E9568A';
 
             // Linha: visitas por dia
             var elVisitas = document.getElementById('chartVisitas');
@@ -243,7 +243,7 @@
                         labels: @Html.Raw(Js(labelsDispositivos)),
                         datasets: [{
                             data: @System.Text.Json.JsonSerializer.Serialize(dadosDispositivos),
-                            backgroundColor: [laranja, ciano, roxo],
+                            backgroundColor: [laranja, ciano, rosa],
                             borderWidth: 0
                         }]
                     },
@@ -345,7 +345,7 @@
                         labels: labelsEventos,
                         datasets: [{
                             data: dadosEventos,
-                            backgroundColor: [laranja, ciano, verde, amarelo, roxo, vermelho],
+                            backgroundColor: [laranja, ciano, verde, amarelo, rosa, vermelho],
                             borderWidth: 0
                         }]
                     },

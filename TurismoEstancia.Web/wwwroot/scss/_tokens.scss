@@ -39,32 +39,38 @@ $color-azure-8-70: rgba(2, 18, 38, 0.70);
 $color-azure-37: #50606E;
 $color-azure-87-60: rgba(211, 225, 232, 0.60);
 
-$color-orange-34: #AC3600;
-$color-orange-35: #B03000;
-$color-orange-47: #EF8700;
-$color-orange-48: #F76400;
-$color-orange-48-10: rgba(247, 100, 0, 0.10);
-$color-orange-48-20: rgba(247, 100, 0, 0.20);
-$color-orange-51: #E8521A;
-$color-orange-57: #F2B233;
+// ===== Paleta oficial (Prefeitura de Estância — turismo) =====
+// Vermelho #ED2027 · Azul #0095F6 · Verde #658746 · Laranja #F97E31 ·
+// Amarelo #FCBB0F · Rosa #E9568A. Os nomes dos tokens são mantidos para
+// não quebrar o SCSS; os valores seguem a paleta nova (as escalas escuro/
+// claro são derivadas por leveza a partir dos tons oficiais).
 
-$color-red-11-85: rgba(55, 0, 0, 0.85);
+$color-orange-34: #A84605;   // laranja escuro (l=34)
+$color-orange-35: #AD4805;   // laranja escuro (l=35)
+$color-orange-47: #E96107;   // laranja (l=47)
+$color-orange-48: #F97E31;   // LARANJA OFICIAL
+$color-orange-48-10: rgba(249, 126, 49, 0.10);
+$color-orange-48-20: rgba(249, 126, 49, 0.20);
+$color-orange-51: #F86B0D;   // laranja (l=51)
+$color-orange-57: #F87D2A;   // laranja claro (l=57)
+
+$color-red-11-85: rgba(55, 0, 0, 0.85);   // neutros escuros (mantidos)
 $color-red-14: #39150F;
 $color-red-14-75_3: rgba(47, 25, 29, 0.75);
 $color-red-19: #44241F;
 $color-red-19-80: rgba(85, 18, 11, 0.80);
-$color-red-43-40: rgba(212, 9, 36, 0.40);
-$color-red-43-0: rgba(212, 9, 36, 0);
-$color-red-49: #E94211;
-$color-red-54: #E62B34;
+$color-red-43-40: rgba(237, 32, 39, 0.40);
+$color-red-43-0: rgba(237, 32, 39, 0);
+$color-red-49: #EC1F18;   // vermelho (l=51)
+$color-red-54: #ED2027;   // VERMELHO OFICIAL
 
-$color-rose-42: #CC086C;
-$color-rose-42-0: rgba(204, 8, 108, 0);
-$color-rose-46: #C4276B;
+$color-rose-42: #B41761;   // rosa escuro
+$color-rose-42-0: rgba(233, 86, 138, 0);
+$color-rose-46: #E9568A;   // ROSA OFICIAL
 
-$color-cyan-41: #009CCF;
-$color-spring-green-29: #009662;
+$color-cyan-41: #0095F6;          // AZUL OFICIAL
+$color-spring-green-29: #658746;  // VERDE OFICIAL (nome histórico mantido)
 
-$color-yellow-50: #FFC200;
+$color-yellow-50: #FCBB0F;   // AMARELO OFICIAL
 
 $shadow-card: 0px 25px 50px -12px rgba(0, 0, 0, 0.25);
