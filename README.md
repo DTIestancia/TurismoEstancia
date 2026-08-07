@@ -55,13 +55,9 @@ dotnet run --project TurismoEstancia.Web
 - **Portal:** `http://localhost:5xxx` (ver porta no console)
 - **Painel:** `/Identity/Account/Login` (o acesso às áreas `/Gerenciador` e `/Operador`
   redireciona para o login)
-- **Usuário admin (Gerenciador) criado pelo seed:**
-  - e-mail: `admin@estancia.se.gov.br`
-  - senha: `Estancia@2026`
-
-> ⚠️ Troque a senha em produção. O seed é idempotente: rodar de novo não duplica nada.
-> A senha do admin também pode ser redefinida pelo Gerenciador no painel (Usuários → Excluir
-> e recriar) — em versões futuras haverá redefinição de senha.
+- **Acessos ao painel** são liberados pelo **gerenciador geral de acessos da DTI** (sistemas
+  do município) — este projeto **não cria nem gerencia usuários** (módulo Usuários removido;
+  banco do Identity intocável, ver regras no `PADRAO-DE-PROJETO.md` §7).
 
 ## 🗄️ Bancos
 

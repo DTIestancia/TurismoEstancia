@@ -104,8 +104,10 @@ dotnet ef database update       --project TurismoEstancia.Domain --startup-proje
 > projeto** por regra permanente. **NUNCA** reintroduzir seed nem usar `HasData`
 > (senão `database update` semearia dados em produção).
 
-Dados de referência entram por **migração de schema**; usuários do painel são criados
-**apenas** pela tela de Usuários do Gerenciador (o banco do Identity é intocável).
+Dados de referência entram por **migração de schema**; os acessos ao painel são
+provisionados pelo **gerenciador geral de acessos da DTI** (sistemas do município) —
+este projeto não cria nem gerencia usuários (módulo Usuários removido; banco do
+Identity intocável).
 
 ---
 

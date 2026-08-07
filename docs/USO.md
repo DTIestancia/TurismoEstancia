@@ -12,10 +12,10 @@ o portal.
 | --- | --- |
 | **Portal público** | `http://localhost:5257` (ou a porta configurada) |
 | **Painel (login)** | `/Identity/Account/Login` — ao acessar `/Gerenciador` ou `/Operador` sem login, o sistema redireciona para o login |
-| **Usuário admin (criado pelo seed)** | `admin@estancia.se.gov.br` / `Estancia@2026` |
+| **Acessos ao painel** | Liberados pelo **gerenciador geral de acessos da DTI** (sistemas do município) |
 
-> ⚠️ Troque a senha em produção. O seed é **idempotente**: rodar de novo não duplica dados.
-> Contas novas são criadas pelo **Gerenciador** (não há auto-registro público).
+> ⚠️ Este projeto **não cria nem gerencia usuários** (módulo Usuários removido; banco do
+> Identity intocável). Contas/claims são provisionados pelo sistema central da DTI.
 
 ---
 
@@ -113,7 +113,6 @@ Ao entrar, o **Dashboard** mostra:
 > seção `Smtp` no `appsettings.json` (Host, Porta, Usuario, Senha, RemetenteEmail,
 > RemetenteNome). Sem essa configuração o botão aparece desabilitado com aviso
 > no painel — nada é enviado.
-| **Usuários** | Contas do painel | Criar com perfil Gerenciador ou Operador |
 | **Contatos** | Mensagens do formulário de contato | — |
 
 **Padrões de uso:**
@@ -152,7 +151,7 @@ uma equipe que mantém a agenda e a lista de e-mails sem mexer no resto do conte
 | Sintoma | Causa provável | Solução |
 | --- | --- | --- |
 | Página do portal com erro 500 | Banco sem migrações ou slides com contagem incompatível | `dotnet ef database update`; manter 3+ slides |
-| Login não funciona | Usuário/senha incorretos ou conta inativa | Redefina no Gerenciador (Usuários → excluir e recriar) |
+| Login não funciona | Usuário/senha incorretos ou conta inativa | Acione o gerenciador de acessos da DTI (este sistema não gerencia usuários) |
 | "Baixe o Guia" não aparece | Configuração `guia-pdf` sem arquivo | Configure o guia em **Configurações** |
 | Imagem não carrega no portal | Arquivo removido/órfão | Reenvie a imagem no módulo correspondente |
 | Analytics zerado | Navegação de teste com cookies bloqueados | Abrir em aba normal (não anônima) |
