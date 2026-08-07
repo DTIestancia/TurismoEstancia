@@ -172,36 +172,43 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!tickingNav) { requestAnimationFrame(updateNavbar); tickingNav = true; }
   }, { passive: true });
 
-  const navToggle = document.getElementById('navToggle');
-  const navLinks = document.getElementById('navLinks');
-  let menuOpen = false;
+  // Menu mobile genérico: vale para a navbar da home (breakpoint 1024px) e
+  // para o header das páginas internas (breakpoint 860px).
+  function initMobileMenu(navToggle, navLinks, breakpoint) {
+    if (!navToggle || !navLinks) return;
+    let menuOpen = false;
 
-  function toggleMobileMenu(open) {
-    const isOpen = open !== undefined ? open : !menuOpen;
-    navLinks.classList.toggle('open', isOpen);
-    navToggle.classList.toggle('open', isOpen);
-    document.body.style.overflow = isOpen ? 'hidden' : '';
-    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    navToggle.setAttribute('aria-label', isOpen ? 'Fechar menu' : 'Abrir menu');
-    menuOpen = isOpen;
+    function toggleMenu(open) {
+      const isOpen = open !== undefined ? open : !menuOpen;
+      navLinks.classList.toggle('open', isOpen);
+      navToggle.classList.toggle('open', isOpen);
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      navToggle.setAttribute('aria-label', isOpen ? 'Fechar menu' : 'Abrir menu');
+      menuOpen = isOpen;
+    }
+
+    navToggle.addEventListener('click', function () { toggleMenu(); });
+    navLinks.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () { toggleMenu(false); });
+    });
+    // Clicar fora do menu (overlay ou qualquer lugar da página) fecha.
+    document.addEventListener('click', function (e) {
+      if (!menuOpen) return;
+      if (navLinks.contains(e.target)) return;
+      if (navToggle.contains(e.target)) return;
+      toggleMenu(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && menuOpen) toggleMenu(false);
+    });
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > breakpoint && menuOpen) toggleMenu(false);
+    });
   }
-  if (navToggle) navToggle.addEventListener('click', function () { toggleMobileMenu(); });
-  document.querySelectorAll('.navbar-link').forEach(function (link) {
-    link.addEventListener('click', function () { toggleMobileMenu(false); });
-  });
-  // Clicar fora do menu (overlay ou qualquer lugar da página) fecha.
-  document.addEventListener('click', function (e) {
-    if (!menuOpen) return;
-    if (navLinks && navLinks.contains(e.target)) return;
-    if (navToggle && navToggle.contains(e.target)) return;
-    toggleMobileMenu(false);
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && menuOpen) toggleMobileMenu(false);
-  });
-  window.addEventListener('resize', function () {
-    if (window.innerWidth > 1024 && menuOpen) toggleMobileMenu(false);
-  });
+
+  initMobileMenu(document.getElementById('navToggle'), document.getElementById('navLinks'), 1024);
+  initMobileMenu(document.getElementById('paginasNavToggle'), document.getElementById('paginasNavLinks'), 860);
 
   // ===== Wonder/POI Modal =====
   const modal = document.getElementById('wonderModal');
@@ -326,7 +333,8 @@ document.addEventListener('DOMContentLoaded', function () {
     modal.addEventListener('click', function (e) { if (e.target === modal) closeWonderModal(); });
   }
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && modal.classList.contains('active')) closeWonderModal();
+    // O modal só existe na home — páginas internas não têm #wonderModal.
+    if (e.key === 'Escape' && modal && modal.classList.contains('active')) closeWonderModal();
   });
 
   // ===== Avaliação: seletor de notas =====
