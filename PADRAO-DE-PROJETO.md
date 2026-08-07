@@ -342,6 +342,17 @@ private async Task<long?> SalvarImagemAsync(IFormFile? imagem, long? arquivoExis
 
 ## 7. Banco de dados
 
+> ⛔ **REGRAS PERMANENTES — PROIBIDO (vale para todo projeto que use este blueprint):**
+>
+> 1. **NUNCA rodar o seed** (argumento `--seed` / `DatabaseSeeder`) — em nenhum
+>    ambiente, nem em desenvolvimento, nem para testes.
+> 2. **NUNCA alterar o banco do Identity** (`{NomeProjeto}IdentityDb`): sem migrações,
+>    sem SQL manual (`INSERT`/`UPDATE`/`DELETE`), sem criar/alterar/excluir usuários
+>    ou claims — nem para validar funcionalidades. Contas são criadas **apenas** pela
+>    tela de Usuários do painel, por quem tem acesso.
+>
+> Violar qualquer uma destas regras é considerado falha crítica.
+
 ### DbContexts
 
 - **Um `DbContext` por bounded context**, registrado em `AddDatabase`:
@@ -396,6 +407,9 @@ public async Task SeedAsync(CancellationToken ct = default)
   **bloqueado se `ASPNETCORE_ENVIRONMENT != Development`** (dupla proteção: no Program.cs e no Seeder).
 - Dados de status/fluxo (ex.: status de solicitação) são seed, **não schema** — ao evoluir em
   banco já migrado, insira via SQL manual.
+
+> ⛔ **Lembrete:** a existência do mecanismo acima **não** autoriza executá-lo —
+> rodar `--seed`/`DatabaseSeeder` é **proibido** (ver regras no topo da seção 7).
 
 ---
 
