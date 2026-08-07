@@ -37,7 +37,7 @@
 <nav class="navbar" id="navbar">
     <div class="navbar-inner">
         <a href="#section-cidade" class="navbar-brand">
-            <img src="~/img/ASSINATURA-CAPITAL-MARAVILHAS-AZUL.png" alt="Logo Descubra Estância" style="height:36px;width:auto;" />
+            @await Component.InvokeAsync("LogoSite", new { altura = 36 })
         </a>
         <button class="navbar-toggle" id="navToggle" aria-label="Abrir menu"><i data-lucide="menu" class="icon-lg"></i></button>
         <div class="navbar-links" id="navLinks">
