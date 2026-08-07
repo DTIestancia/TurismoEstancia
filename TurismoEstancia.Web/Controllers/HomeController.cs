@@ -25,6 +25,7 @@ public class HomeController : Controller
     private readonly ICategoriaPontoTuristicoService _categorias;
     private readonly IEventoService _eventos;
     private readonly IRoteiroService _roteiros;
+    private readonly INoticiaService _noticias;
     private readonly IConteudoSiteService _conteudos;
     private readonly IConfiguracaoSiteService _configuracoes;
     private readonly IContatoService _contatos;
@@ -39,6 +40,7 @@ public class HomeController : Controller
         ICategoriaPontoTuristicoService categorias,
         IEventoService eventos,
         IRoteiroService roteiros,
+        INoticiaService noticias,
         IConteudoSiteService conteudos,
         IConfiguracaoSiteService configuracoes,
         IContatoService contatos)
@@ -52,6 +54,7 @@ public class HomeController : Controller
         _categorias = categorias;
         _eventos = eventos;
         _roteiros = roteiros;
+        _noticias = noticias;
         _conteudos = conteudos;
         _configuracoes = configuracoes;
         _contatos = contatos;
@@ -72,6 +75,7 @@ public class HomeController : Controller
             TagsCulturais = await _tags.ListarAsync(ct),
             EventosProximos = await _eventos.ListarAsync(apenasProximos: true, ct),
             Roteiros = await _roteiros.ListarAsync(ct),
+            Noticias = (await _noticias.ListarAsync(apenasPublicadas: true, ct)).Take(3).ToList(),
             Contatos = await _contatos.ListarAsync(null, ct)
         };
 

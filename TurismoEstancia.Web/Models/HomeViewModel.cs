@@ -40,6 +40,9 @@ public class HomeViewModel
     // Roteiros
     public IReadOnlyList<RoteiroDto> Roteiros { get; set; } = Array.Empty<RoteiroDto>();
 
+    // Notícias (últimas publicadas, para a seção da home)
+    public IReadOnlyList<NoticiaDto> Noticias { get; set; } = Array.Empty<NoticiaDto>();
+
     // Contatos do rodapé
     public IReadOnlyList<ContatoDto> Contatos { get; set; } = Array.Empty<ContatoDto>();
 

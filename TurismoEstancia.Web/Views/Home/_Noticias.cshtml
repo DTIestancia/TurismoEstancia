@@ -1,0 +1,50 @@
+@model HomeViewModel
+@{
+    var noticiasDesc = Model.Conteudos.GetValueOrDefault("noticias-descricao",
+        "Cultura, eventos e novidades da Capital Sergipana da Cultura.");
+}
+
+@if (Model.Noticias.Count > 0)
+{
+    <section class="section-noticias section-divider" id="section-noticias">
+        <div class="section-noticias-inner">
+            <div class="section-tag">
+                <div class="pill pill-white">
+                    <i data-lucide="newspaper" class="icon-lg" style="color:var(--color-white-solid);"></i>
+                    <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;line-height:16px;">Fique por dentro</span>
+                </div>
+            </div>
+            <h2 class="section-title reveal" style="color:var(--color-white-solid);">
+                Notícias de <span style="color:#FFC200;">Estância</span>
+            </h2>
+            <p class="section-desc reveal reveal-delay-1" style="color:var(--color-white--70);max-width:640px;">
+                @noticiasDesc
+            </p>
+
+            <div class="news-grid section-noticias-grid">
+                @foreach (var noticia in Model.Noticias)
+                {
+                    <a class="news-card reveal" href="/Noticias/Detalhe/@noticia.Slug"
+                       data-track="noticia" data-track-id="@noticia.Id" data-track-nome="@noticia.Titulo">
+                        @if (noticia.ImagemArquivoId is long imgId)
+                        {
+                            <img class="news-card-img" src="/arquivo/@imgId" alt="@noticia.Titulo" loading="lazy" />
+                        }
+                        <div class="news-card-body">
+                            <div class="news-card-date">@noticia.DataPublicacao.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"))</div>
+                            <h3 class="news-card-title">@noticia.Titulo</h3>
+                            @if (!string.IsNullOrWhiteSpace(noticia.Resumo))
+                            {
+                                <p class="news-card-resumo">@noticia.Resumo</p>
+                            }
+                        </div>
+                    </a>
+                }
+            </div>
+
+            <div class="section-noticias-link reveal reveal-delay-2">
+                <a href="/Noticias" class="btn-primary">Ver todas as notícias <i data-lucide="arrow-right" class="icon-lg"></i></a>
+            </div>
+        </div>
+    </section>
+}
