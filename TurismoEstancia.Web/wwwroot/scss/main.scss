@@ -514,6 +514,34 @@
   }
 }
 
+// --- Seção Notícias (home) ---
+// Reusa o grid/cards da página /Noticias (news-grid/news-card) num fundo
+// próprio da home, com o cabeçalho de seção padrão do site.
+.section-noticias {
+  // Azure-7 como as vizinhas, com um leve brilho quente no topo para
+  // diferenciar da seção de Roteiros que vem logo acima.
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(247, 100, 0, 0.07) 0%, transparent 70%),
+    var(--color-azure-7);
+  padding: 96px 0;
+}
+
+.section-noticias-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section-noticias-grid {
+  margin-top: 48px;
+}
+
+.section-noticias-link {
+  display: flex;
+  justify-content: center;
+  margin-top: 44px;
+}
+
 // --- Seção Roteiros ---
 .section-roteiros {
   background: var(--color-azure-7);
