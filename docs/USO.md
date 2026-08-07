@@ -141,10 +141,12 @@ uma equipe que mantém a agenda e a lista de e-mails sem mexer no resto do conte
 - **SEO**: em Configurações, preencha `site-titulo`, `meta-descricao` e a imagem de
   compartilhamento — o portal gera `title`, `meta description`, **Open Graph** e
   **Twitter Cards** automaticamente para cada página.
-- **Logotipo**: para trocar a logo do portal (navbar, headers e rodapés), crie em
-  **Configurações** uma entrada com chave **`logo-principal`**, tipo **Arquivo**, e
-  envie a imagem (PNG com transparência, em orientação paisagem). Enquanto não
-  existir essa configuração, o portal usa a assinatura padrão que acompanha o projeto.
+- **Logotipo**: para trocar a logo do portal (navbar, headers, login e painel),
+  crie em **Configurações** uma entrada com chave **`logo-principal`**, tipo
+  **Arquivo**, e envie a imagem (PNG com transparência, em orientação paisagem).
+  O rodapé aceita um logotipo próprio na chave **`logo`** (se não existir, usa o
+  `logo-principal`). Enquanto não houver configuração, o portal usa a assinatura
+  padrão que acompanha o projeto.
 - **Antes de publicar**: ative o item (Ativo = sim) — itens inativos não aparecem no
   portal, mas contam no dashboard.
 

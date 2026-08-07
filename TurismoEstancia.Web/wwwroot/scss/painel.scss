@@ -37,14 +37,8 @@
       border-bottom: 1px solid $color-white--10;
 
       .painel-brand-logo {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, $color-orange-48 0%, $color-red-54 100%);
         display: flex;
         align-items: center;
-        justify-content: center;
-        color: $color-white-solid;
         flex-shrink: 0;
       }
 
@@ -522,12 +516,7 @@
   backdrop-filter: blur(10px);
 
   .login-logo {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, $color-orange-48 0%, $color-red-54 100%);
     display: flex;
-    align-items: center;
     justify-content: center;
     margin-bottom: 18px;
   }
