@@ -5,6 +5,25 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/favicon.ico" />
+    <script>
+        // A página abre sempre no topo: o navegador (sobretudo no celular) tende a
+        // restaurar a rolagem da visita anterior e "pular" para o meio da página.
+        // Se o link veio com âncora (#section-...), rola até ela após carregar.
+        (function () {
+            try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) { }
+            if (location.hash && location.hash.length > 1) {
+                window.addEventListener('load', function () {
+                    var alvo = document.getElementById(location.hash.slice(1));
+                    if (alvo) setTimeout(function () { alvo.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 600);
+                });
+            } else {
+                window.scrollTo(0, 0);
+            }
+            // Navegação Voltar/Avançar (bfcache) também restaura a rolagem antiga —
+            // volta ao topo quando a página vem do cache da sessão.
+            window.addEventListener('pageshow', function (e) { if (e.persisted) window.scrollTo(0, 0); });
+        })();
+    </script>
     @{
         var seo = await SeoService.ObterMetaAsync(ViewData["Seo"] as SeoMeta);
         var baseUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
