@@ -22,4 +22,10 @@ public interface IInscricaoNewsletterService
 
     /// <summary>Exporta as inscrições ativas em CSV (com BOM UTF-8 para Excel).</summary>
     Task<byte[]> ExportarCsvAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// E-mails ativos com consentimento LGPD — destinatários do disparo em
+    /// massa da newsletter (LGPD: sem consentimento não recebe e-mail).
+    /// </summary>
+    Task<IReadOnlyList<string>> ListarEmailsAtivosAsync(CancellationToken ct = default);
 }

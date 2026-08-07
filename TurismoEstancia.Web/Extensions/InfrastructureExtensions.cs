@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using TurismoEstancia.Mail;
 using TurismoEstancia.Web.Infrastructure;
 
 namespace TurismoEstancia.Web.Extensions;
@@ -18,6 +19,13 @@ public static class InfrastructureExtensions
 
         // Metadados SEO do portal (defaults das configurações + override por página).
         builder.Services.AddScoped<SeoService>();
+
+        // E-mail (SMTP): seção "Smtp" + fila em memória + worker em background.
+        // Sem Host/RemetenteEmail configurados, o EmailSender avisa e não envia.
+        builder.Services.Configure<SmtpConfig>(builder.Configuration.GetSection("Smtp"));
+        builder.Services.AddScoped<IEmailSender, EmailSender>();
+        builder.Services.AddSingleton<IEmailQueue, EmailQueue>();
+        builder.Services.AddHostedService<EmailBackgroundService>();
 
         // Upload limit: ~60 MB no Kestrel e IIS
         builder.Services.Configure<KestrelServerOptions>(o =>
