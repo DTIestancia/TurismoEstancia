@@ -1,49 +1,87 @@
-@model IReadOnlyList<ConteudoSiteDto>
+@model ConteudosCatalogViewModel
 @{
     ViewData["Title"] = "Textos do portal";
 }
 <div class="painel-page-header">
     <div>
         <h1 class="painel-page-title">Textos do portal</h1>
-        <p class="painel-page-desc">Blocos de texto por chave (títulos, descrições e avisos das seções).</p>
+        <p class="painel-page-desc">Todos os textos editáveis do site, organizados por seção. O que não estiver cadastrado usa o texto padrão do protótipo.</p>
     </div>
     <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Novo texto</a>
 </div>
 
-<div class="painel-card">
-    <div class="painel-table-wrap">
-        <table class="painel-table">
-            <thead>
-                <tr>
-                    <th>Chave</th>
-                    <th>Nome</th>
-                    <th>Texto</th>
-                    <th style="text-align:right;">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
+@foreach (var secao in Model.Secoes)
+{
+    <div class="painel-card" style="margin-bottom:18px;">
+        <div class="painel-card-head" style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px;">
+            <div>
+                <h2 class="painel-card-title" style="font-size:15px;margin:0;">@secao.Titulo</h2>
+                <p class="painel-card-desc" style="font-size:12px;color:var(--color-white--50);margin:2px 0 0;">@secao.Descricao</p>
+            </div>
+        </div>
+        <div class="painel-table-wrap">
+            <table class="painel-table">
+                <thead>
                     <tr>
-                        <td><code>@item.Chave</code></td>
-                        <td><strong>@item.Nome</strong></td>
-                        <td style="max-width:380px;">@(item.Texto ?? "—")</td>
-                        <td>
-                            <div class="painel-actions" style="justify-content:flex-end;">
-                                <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Editar" asp-route-id="@item.Id"><i data-lucide="pencil"></i> Editar</a>
-                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir o texto '@item.Nome'?">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
-                                </form>
-                            </div>
-                        </td>
+                        <th>Campo</th>
+                        <th>Texto atual</th>
+                        <th style="text-align:right;">Ações</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in secao.Itens)
+                    {
+                        <tr>
+                            <td style="min-width:200px;">
+                                <strong>@item.Nome</strong>
+                                @if (!string.IsNullOrWhiteSpace(item.Descricao))
+                                {
+                                    <div style="font-size:11px;color:var(--color-white--45);margin-top:2px;">@item.Descricao</div>
+                                }
+                                <code style="font-size:10px;color:var(--color-white--35);">@item.Chave</code>
+                            </td>
+                            <td style="max-width:400px;">
+                                @if (item.Cadastrado)
+                                {
+                                    @if (string.IsNullOrWhiteSpace(item.Texto))
+                                    {
+                                        <span class="painel-badge painel-badge--grey">vazio</span>
+                                    }
+                                    else
+                                    {
+                                        <span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12.5px;">@item.Texto</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="painel-badge painel-badge--yellow">usa o padrão</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="painel-actions" style="justify-content:flex-end;">
+                                    @if (item.Cadastrado)
+                                    {
+                                        <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Editar" asp-route-id="@item.Id"><i data-lucide="pencil"></i> Editar</a>
+                                        <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir o texto '@item.Nome'? O portal volta a usar o texto padrão.">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs" title="Voltar ao texto padrão"><i data-lucide="trash-2"></i></button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Criar" asp-route-chave="@item.Chave" asp-route-nome="@item.Nome"><i data-lucide="plus"></i> Personalizar</a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
-    @if (Model.Count == 0)
-    {
-        <div class="painel-empty">Nenhum texto cadastrado. As seções usam os textos padrão do protótipo.</div>
-    }
-</div>
+}
+
+@if (Model.Secoes.Count == 0)
+{
+    <div class="painel-empty">Nenhuma seção cadastrada.</div>
+}

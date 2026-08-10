@@ -433,6 +433,30 @@
       }
     }
 
+    // O <select> nativo abre o dropdown com o tema do sistema operacional
+    // (branco no Windows). color-scheme: dark força o navegador a renderizar
+    // a lista de opções no tema escuro do painel — texto legível, sem fundo branco.
+    .painel-select {
+      color-scheme: dark;
+      // A seta do select nativo some no tema escuro de alguns navegadores;
+      // usa-se uma imagem de seta clara para manter o affordance visível.
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c9d4e3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 34px;
+      appearance: none;
+      -webkit-appearance: none;
+
+      option {
+        background: #0d1526;
+        color: $color-white-solid;
+
+        &:disabled {
+          color: $color-white--30;
+        }
+      }
+    }
+
     .painel-textarea { min-height: 120px; resize: vertical; }
 
     .painel-hint {
@@ -854,6 +878,43 @@
   background: color-mix(in srgb, var(--color-yellow-50) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-yellow-50) 40%, transparent);
   color: color-mix(in srgb, var(--color-yellow-50) 60%, #fff);
+}
+
+// ===== Pré-visualização ao vivo de textos (Textos do portal) =====
+.painel-preview {
+  margin-top: 14px;
+  border: 1px dashed $color-white--20;
+  border-radius: 12px;
+  background: $color-white--4;
+  padding: 14px 16px;
+
+  .painel-preview-titulo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: $color-white--55;
+    margin-bottom: 10px;
+
+    i { width: 14px; height: 14px; }
+  }
+
+  .painel-preview-conteudo {
+    font-size: 15px;
+    line-height: 1.65;
+    color: $color-white-solid;
+    word-break: break-word;
+
+    strong { color: var(--color-yellow-50); font-weight: 700; }
+
+    .painel-preview-vazio {
+      color: $color-white--30;
+      font-style: italic;
+    }
+  }
 }
 
 // ===== Tema e cores (Gerenciador) =====

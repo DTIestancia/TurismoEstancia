@@ -727,6 +727,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const counter = document.getElementById('vitrineCounter');
 
     let atual = 0;
+    // Na primeira renderização (init no load) o layout ainda não estabilizou
+    // (imagens carregando): o scrollIntoView do postal ativo rolaria a página
+    // inteira até a seção das 7 Maravilhas. O scroll da faixa só faz sentido
+    // quando o usuário troca o postal — pulamos no init.
+    let primeiraRender = true;
 
     function mostrar(index) {
       atual = (index + total) % total;
@@ -776,8 +781,9 @@ document.addEventListener('DOMContentLoaded', function () {
         p.style.borderColor = active ? cor : '';
         const pNum = p.querySelector('.vitrine-postal-num');
         if (pNum) pNum.style.color = active ? cor : '';
-        if (active && p.scrollIntoView && p.parentElement) {
-          // Mantém o postal ativo visível na faixa (mobile).
+        if (active && !primeiraRender && p.scrollIntoView && p.parentElement) {
+          // Mantém o postal ativo visível na faixa (mobile) — apenas quando o
+          // usuário troca o postal; nunca no load inicial da página.
           const rect = p.getBoundingClientRect();
           const faixa = p.parentElement.getBoundingClientRect();
           if (rect.left < faixa.left || rect.right > faixa.right) {
@@ -820,6 +826,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { passive: true });
 
     mostrar(0);
+    primeiraRender = false;
   }
 
   initWondersVitrine();

@@ -1,0 +1,117 @@
+@using TurismoEstancia.Web.Models
+@model string
+@{
+    // Lista de opções: por padrão ViewData["ChavesDisponiveis"] (campo Chave);
+    // a tela de Estatísticas usa ViewData["LegendasDisponiveis"] e a de
+    // Contatos usa ViewData["RotulosDisponiveis"] — o controller define qual.
+    var listaKey = ViewData["ListaOpcoesKey"] as string ?? "ChavesDisponiveis";
+    var opcoes = (ViewData[listaKey] as IReadOnlyList<ChaveDisponivelViewModel>)
+                 ?? Array.Empty<ChaveDisponivelViewModel>();
+    var campo = ViewData["CampoSelect"] as string ?? "Chave";
+    var valorAtual = Model ?? string.Empty;
+    var ehConhecida = opcoes.Any(c => c.Chave == valorAtual);
+    // Id do select de tipo (Configurações) para ajustar automaticamente ao escolher a chave.
+    var campoTipoId = ViewData["CampoTipoId"] as string;
+}
+<div class="painel-field">
+    <label for="seletorChave">@(campo switch { "Legenda" => "Legenda", "Rotulo" => "Rótulo", _ => "Chave" })</label>
+    <select class="painel-select" id="seletorChave">
+        <option value="">Selecione @(campo switch { "Legenda" => "a legenda", "Rotulo" => "o rótulo", _ => "a chave" })...</option>
+        @foreach (var grupo in opcoes.GroupBy(c => c.Grupo ?? "").OrderBy(g => g.Key))
+        {
+            if (string.IsNullOrEmpty(grupo.Key))
+            {
+                foreach (var c in grupo)
+                {
+                    <option value="@c.Chave" data-arquivo="@(c.EhArquivo ? "1" : "0")" data-emuso="@(c.EmUso ? "1" : "0")" data-imagem="@(c.EhImagem ? "1" : "0")"
+                            disabled="@(c.EmUso)" title="@(c.EmUso ? "Já usada — escolha outra" : "")" selected="@(valorAtual == c.Chave)">@c.Chave@(c.EmUso ? " (em uso)" : "")</option>
+                }
+            }
+            else
+            {
+                <optgroup label="@grupo.Key">
+                    @foreach (var c in grupo)
+                    {
+                        <option value="@c.Chave" data-arquivo="@(c.EhArquivo ? "1" : "0")" data-emuso="@(c.EmUso ? "1" : "0")" data-imagem="@(c.EhImagem ? "1" : "0")"
+                                disabled="@(c.EmUso)" title="@(c.EmUso ? "Já usada — escolha outra" : "")" selected="@(valorAtual == c.Chave)">@c.Chave@(c.EmUso ? " (em uso)" : "")</option>
+                    }
+                </optgroup>
+            }
+        }
+        <option value="__outra__" selected="@(!ehConhecida && valorAtual.Length > 0)">Outra (digitar)</option>
+    </select>
+    <div class="painel-hint" id="avisoChaveEmUso" style="display:@(opcoes.Any(c => c.EmUso) ? "" : "none");color:var(--color-orange-48);margin-top:6px;">
+        @(campo switch
+        {
+            "Legenda" => "Legendas marcadas como \"em uso\" já estão em outra estatística — escolha outra ou digite uma nova.",
+            "Rotulo" => "Rótulos marcados como \"em uso\" já estão em outro contato — escolha outro ou digite um novo.",
+            _ => "Chaves marcadas como \"em uso\" já estão cadastradas — escolha outra ou digite uma chave nova."
+        })
+    </div>
+    <div id="campoChaveOutra" style="margin-top:8px;@(ehConhecida ? "display:none;" : "")">
+        <input type="text" id="chaveOutraInput" class="painel-input" maxlength="120"
+               placeholder="ex.: nova-@(campo == "Legenda" ? "legenda" : "chave")" value="@(ehConhecida ? "" : valorAtual)" />
+    </div>
+    <!-- Único campo que posta o valor; o select e o "outra" alimentam este hidden. -->
+    <input type="hidden" name="@campo" value="@valorAtual" />
+</div>
+
+<script>
+    (function () {
+        var select = document.getElementById('seletorChave');
+        if (!select) return;
+        var campoOutra = document.getElementById('campoChaveOutra');
+        var inputOutra = document.getElementById('chaveOutraInput');
+        var inputReal = document.querySelector('[name="@campo"]');
+        if (!inputReal) return;
+        var tipoSelect = @(campoTipoId is null ? "null" : $"document.getElementById('{campoTipoId}')");
+
+        // Mantém o valor inicial do model (ex.: edição de um registro existente).
+        var valorInicial = inputReal.value;
+
+        function aplicar() {
+            var v = select.value;
+            var ehOutra = v === '__outra__';
+            if (campoOutra) campoOutra.style.display = ehOutra ? '' : 'none';
+            if (ehOutra) {
+                // "Outra": o valor vem do campo de texto.
+                if (!inputOutra.value && valorInicial) inputOutra.value = valorInicial;
+                inputReal.value = inputOutra.value;
+                inputOutra.focus();
+            } else if (v) {
+                // Segurança: opção desabilitada não pode ser escolhida — se por
+                // algum motivo o navegador permitir, volta para "Selecione".
+                var opt = select.options[select.selectedIndex];
+                if (opt && opt.disabled) {
+                    select.value = '';
+                    inputReal.value = valorInicial;
+                    return;
+                }
+                inputReal.value = v;
+            } else {
+                inputReal.value = valorInicial;
+            }
+            // Configurações: ajusta o tipo (Texto/Arquivo) conforme a chave escolhida.
+            if (tipoSelect && !ehOutra && v) {
+                var opt = select.options[select.selectedIndex];
+                var ehArquivo = opt && opt.dataset.arquivo === '1';
+                var valor = ehArquivo
+                    ? '@((int)TurismoEstancia.Domain.Models.TipoConfiguracao.Arquivo)'
+                    : '@((int)TurismoEstancia.Domain.Models.TipoConfiguracao.Texto)';
+                if (tipoSelect.value !== valor) {
+                    tipoSelect.value = valor;
+                    if (tipoSelect.dispatchEvent) tipoSelect.dispatchEvent(new Event('change'));
+                }
+            }
+
+            // Avisa a página (ex.: Textos do portal) quando a chave mudou, para
+            // ela alternar entre campo de texto e upload de imagem.
+            if (window.OnChaveSelecionada) window.OnChaveSelecionada(ehOutra ? '__outra__' : v);
+        }
+        if (inputOutra) inputOutra.addEventListener('input', function () {
+            if (select.value === '__outra__') inputReal.value = inputOutra.value;
+        });
+        select.addEventListener('change', aplicar);
+        aplicar();
+    })();
+</script>

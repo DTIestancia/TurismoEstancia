@@ -3,19 +3,15 @@
 <div class="painel-page-header">
     <div>
         <h1 class="painel-page-title">Novo texto</h1>
-        <p class="painel-page-desc">Chaves usadas pelo portal: hero-titulo, hero-subtitulo, mapa-descricao, maravilhas-descricao, roteiros-descricao, noticias-descricao, newsletter-titulo etc.</p>
+        <p class="painel-page-desc">Escolha no select a seção/campo que quer personalizar — a chave é preenchida sozinha.</p>
     </div>
 </div>
 
-<form class="painel-form" asp-action="Criar" method="post">
+<form class="painel-form" asp-action="Criar" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
 
     <div class="painel-form-grid">
-        <div class="painel-field">
-            <label asp-for="Chave"></label>
-            <input asp-for="Chave" class="painel-input" maxlength="60" placeholder="hero-titulo" />
-            <span asp-validation-for="Chave" class="field-validation-error"></span>
-        </div>
+        @await Html.PartialAsync("_SeletorChave", Model.Chave)
         <div class="painel-field">
             <label asp-for="Nome"></label>
             <input asp-for="Nome" class="painel-input" maxlength="120" placeholder="Título do hero" />
@@ -23,10 +19,18 @@
         </div>
     </div>
 
-    <div class="painel-field">
+    <div class="painel-field" id="campoTexto">
         <label asp-for="Texto"></label>
-        <textarea asp-for="Texto" class="painel-textarea"></textarea>
-        <span class="painel-hint">Quebras de linha viram quebras no portal.</span>
+        <textarea asp-for="Texto" class="painel-textarea" id="Texto"></textarea>
+        <span class="painel-hint">Quebras de linha viram quebras no portal. Você pode usar <strong> e <br>.</span>
+    </div>
+
+    @await Html.PartialAsync("_PreviewTexto", "Texto")
+
+    <div class="painel-field" id="campoImagem" style="display:none;">
+        <label>Imagem (foto da cidade)</label>
+        <input type="file" name="imagem" accept="image/*" class="painel-input" />
+        <span class="painel-hint">Envie a foto — o portal exibe no card da seção "Nossa Cidade".</span>
     </div>
 
     <div class="painel-form-actions">
@@ -34,3 +38,19 @@
         <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        // Alterna entre campo de texto (chave de texto) e upload de imagem
+        // (chave como historia-imagem), conforme a chave escolhida no select.
+        window.OnChaveSelecionada = function (chave) {
+            var eImagem = chave === 'historia-imagem';
+            var campoTexto = document.getElementById('campoTexto');
+            var campoImagem = document.getElementById('campoImagem');
+            var previews = document.querySelectorAll('.painel-preview');
+            if (campoTexto) campoTexto.style.display = eImagem ? 'none' : '';
+            if (campoImagem) campoImagem.style.display = eImagem ? '' : 'none';
+            previews.forEach(function (p) { p.style.display = eImagem ? 'none' : ''; });
+        };
+    </script>
+}

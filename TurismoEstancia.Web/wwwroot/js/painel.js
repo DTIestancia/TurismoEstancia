@@ -17,6 +17,28 @@ document.addEventListener('submit', function (e) {
   }
 });
 
+// ===== Preview ao vivo de texto (Textos do portal) =====
+// Renderiza o texto como o portal faz: quebras de linha viram <br> e tags
+// conhecidas (<strong>, <em>, <br>) passam como HTML. O resto é escapado.
+window.PrevisualizarTexto = function (textareaId) {
+  var fonte = document.getElementById(textareaId);
+  var alvo = document.getElementById('preview_' + textareaId);
+  if (!fonte || !alvo) return;
+
+  function atualizar() {
+    var html = (fonte.value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/&lt;(\/?(?:strong|b|em|i|u|br)\s*\/?)&gt;/gi, '<$1>')
+      .replace(/\n/g, '<br />');
+    alvo.innerHTML = html || '<span class="painel-preview-vazio">O texto aparecerá aqui enquanto você digita…</span>';
+  }
+
+  fonte.addEventListener('input', atualizar);
+  atualizar();
+};
+
 // ===== Newsletter: busca ao vivo + dialog de disparo =====
 // (elementos existem apenas na página de newsletter do painel)
 

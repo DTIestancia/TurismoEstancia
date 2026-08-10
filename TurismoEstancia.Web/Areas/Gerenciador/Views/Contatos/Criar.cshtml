@@ -19,10 +19,10 @@
                 <option value="@((int)TipoContato.RedesSocial)">Rede social</option>
             </select>
         </div>
-        <div class="painel-field">
-            <label asp-for="Rotulo"></label>
-            <input asp-for="Rotulo" class="painel-input" maxlength="80" placeholder="Ex.: Emergência, Instagram" />
-        </div>
+        @{
+            ViewData["CampoSelect"] = "Rotulo";
+        }
+        @await Html.PartialAsync("_SeletorChave", Model.Rotulo ?? string.Empty)
     </div>
 
     <div class="painel-field">

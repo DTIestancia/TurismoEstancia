@@ -1,5 +1,7 @@
 using System.Text;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewComponents;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 
 namespace TurismoEstancia.Web.Components;
@@ -50,7 +52,10 @@ public class ThemeSiteViewComponent : ViewComponent
         if (configuracoes.Count == 0)
             return Content(string.Empty);
 
-        return Content($"<style id=\"tema-site\">{MontarCss(configuracoes)}</style>");
+        // HtmlContentViewComponentResult escreve o HTML sem encode — o
+        // Content() padrão escaparia as aspas e o <style> viraria texto.
+        return new HtmlContentViewComponentResult(
+            new HtmlString($"<style id=\"tema-site\">{MontarCss(configuracoes)}</style>"));
     }
 
     private static bool EhHex(string valor) =>

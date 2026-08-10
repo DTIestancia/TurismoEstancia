@@ -16,10 +16,10 @@
         <span asp-validation-for="Valor" class="field-validation-error"></span>
     </div>
 
-    <div class="painel-field">
-        <label asp-for="Legenda"></label>
-        <input asp-for="Legenda" class="painel-input" maxlength="120" placeholder="Ex.: Anos de história" />
-    </div>
+    @{
+        ViewData["CampoSelect"] = "Legenda";
+    }
+    @await Html.PartialAsync("_SeletorChave", Model.Legenda ?? string.Empty)
 
     <div class="painel-form-grid">
         <div class="painel-field">

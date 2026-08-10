@@ -11,11 +11,7 @@
     <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
 
     <div class="painel-form-grid">
-        <div class="painel-field">
-            <label asp-for="Chave"></label>
-            <input asp-for="Chave" class="painel-input" maxlength="40" placeholder="heritage" />
-            <span asp-validation-for="Chave" class="field-validation-error"></span>
-        </div>
+        @await Html.PartialAsync("_SeletorChave", Model.Chave)
         <div class="painel-field">
             <label asp-for="Nome"></label>
             <input asp-for="Nome" class="painel-input" maxlength="100" placeholder="Patrimônio" />

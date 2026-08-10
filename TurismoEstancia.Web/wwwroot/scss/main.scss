@@ -852,6 +852,10 @@
     transition: border-color 0.2s, background 0.2s;
     &:hover { border-color: var(--color-orange-48); background: var(--color-white--5); }
   }
+
+  // O "Início" dentro do nav é do menu mobile: no desktop fica oculto, e o
+  // "Início" da barra (.paginas-nav-home-top) é o único visível.
+  .paginas-nav-links .paginas-nav-home-menu { display: none; }
 }
 
 .paginas-hero {
@@ -1767,6 +1771,7 @@
 
   // "Início" como botão de destaque no fim do menu
   .paginas-nav .paginas-nav-links.open .paginas-nav-home-menu {
+    display: flex;
     margin-top: 12px;
     justify-content: center;
     font-size: 15px;
