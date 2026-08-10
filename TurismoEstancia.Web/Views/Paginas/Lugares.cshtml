@@ -46,7 +46,7 @@
                         <div class="paginas-card-body">
                             @if (!string.IsNullOrWhiteSpace(ponto.CategoriaNome))
                             {
-                                <span class="paginas-card-cat" style="color:@cor;border-color:@cor;background:@(cor + "1A");">@ponto.CategoriaNome</span>
+                                <span class="paginas-card-cat" style="color:color-mix(in srgb, @cor 70%, #fff);border-color:@cor;background:@(cor + "26");">@ponto.CategoriaNome</span>
                             }
                             <h3 class="paginas-card-title">@ponto.Nome</h3>
                             @if (!string.IsNullOrWhiteSpace(ponto.Descricao))
