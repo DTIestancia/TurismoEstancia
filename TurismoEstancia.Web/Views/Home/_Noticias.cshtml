@@ -55,24 +55,27 @@
                 </div>
             }
 
-            <!-- Feed estilo Instagram: as 3 últimas notícias em grade quadrada -->
+            <!-- Feed estilo Instagram: as 3 últimas notícias em grade quadrada,
+                 com a foto em cima e o texto (data + título) sempre exposto -->
             <div class="ig-feed reveal reveal-delay-1">
                 @foreach (var noticia in Model.Noticias)
                 {
                     <a class="ig-post" href="/Noticias/Detalhe/@noticia.Slug"
                        data-track="noticia" data-track-id="@noticia.Id" data-track-nome="@noticia.Titulo">
-                        @if (noticia.ImagemArquivoId is long imgId)
-                        {
-                            <img class="ig-post-img" src="/arquivo/@imgId" alt="@noticia.Titulo" loading="lazy" />
-                        }
-                        else
-                        {
-                            <span class="ig-post-fallback" aria-hidden="true"><i data-lucide="newspaper" class="icon-xl"></i></span>
-                        }
-                        <span class="ig-post-overlay">
+                        <span class="ig-post-foto">
+                            @if (noticia.ImagemArquivoId is long imgId)
+                            {
+                                <img class="ig-post-img" src="/arquivo/@imgId" alt="@noticia.Titulo" loading="lazy" />
+                            }
+                            else
+                            {
+                                <span class="ig-post-fallback" aria-hidden="true"><i data-lucide="newspaper" class="icon-xl"></i></span>
+                            }
+                            <span class="ig-post-ver">Ver notícia <i data-lucide="arrow-right" class="icon-lg"></i></span>
+                        </span>
+                        <span class="ig-post-texto">
                             <span class="ig-post-date">@noticia.DataPublicacao.ToString("dd 'de' MMMM", new System.Globalization.CultureInfo("pt-BR"))</span>
                             <span class="ig-post-title">@noticia.Titulo</span>
-                            <span class="ig-post-ver">Ver notícia <i data-lucide="arrow-right" class="icon-lg"></i></span>
                         </span>
                     </a>
                 }

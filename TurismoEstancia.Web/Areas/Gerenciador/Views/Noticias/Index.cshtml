@@ -49,6 +49,16 @@
                         </td>
                         <td>
                             <div class="painel-actions" style="justify-content:flex-end;">
+                                <button type="button" class="btn-painel btn-painel--ghost btn-painel--xs js-compartilhar-noticia"
+                                        data-url="@(Context.Request.Scheme)://@(Context.Request.Host)/Noticias/Detalhe/@item.Slug"
+                                        data-titulo="@item.Titulo"
+                                        title="Copiar link + legenda para postar no Instagram">
+                                    <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                                    </svg>
+                                </button>
                                 <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-page="/Noticias/Detalhe" asp-route-slug="@item.Slug" target="_blank" title="Ver no portal"><i data-lucide="eye"></i></a>
                                 <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Editar" asp-route-id="@item.Id"><i data-lucide="pencil"></i> Editar</a>
                                 <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir a notícia '@item.Titulo'?">
@@ -67,3 +77,51 @@
         <div class="painel-empty">Nenhuma notícia cadastrada.</div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        // Compartilhar a notícia no Instagram direto do Gerenciador: copia
+        // link + legenda prontos para colar (e abre a folha do sistema no
+        // celular, com o Instagram entre as opções).
+        (function () {
+            var botoes = document.querySelectorAll('.js-compartilhar-noticia');
+            if (!botoes.length) return;
+
+            function toast(mensagem) {
+                var el = document.createElement('div');
+                el.textContent = mensagem;
+                el.style.cssText = 'position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:9999;background:#0B1726;color:#fff;border:1px solid rgba(255,255,255,0.16);padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,0.45);pointer-events:none;';
+                document.body.appendChild(el);
+                setTimeout(function () { el.remove(); }, 2800);
+            }
+
+            botoes.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var url = btn.getAttribute('data-url');
+                    var titulo = btn.getAttribute('data-titulo');
+                    var texto = titulo + '\n' + url + '\n#VemPraEstância #Estância';
+
+                    function copiado() {
+                        toast('Link e legenda copiados — cole no Instagram 📸');
+                    }
+
+                    if (navigator.share) {
+                        navigator.share({ title: titulo, text: texto, url: url }).catch(function () { /* cancelado */ });
+                    }
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(texto).then(copiado).catch(function () { /* sem permissão */ });
+                    } else {
+                        var ta = document.createElement('textarea');
+                        ta.value = texto;
+                        ta.style.position = 'fixed';
+                        ta.style.opacity = '0';
+                        document.body.appendChild(ta);
+                        ta.select();
+                        try { document.execCommand('copy'); copiado(); } catch (e) { /* noop */ }
+                        ta.remove();
+                    }
+                });
+            });
+        })();
+    </script>
+}

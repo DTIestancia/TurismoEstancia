@@ -688,15 +688,30 @@
     margin-top: 30px;
   }
 
+  // Post: foto quadrada em cima + texto (data e título) sempre exposto embaixo,
+  // como a legenda de um post do Instagram.
   .ig-post {
-    position: relative;
-    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
     border-radius: 16px;
     overflow: hidden;
-    display: block;
     border: 1px solid var(--color-white--10);
     background: var(--color-white--5);
     text-decoration: none;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+      border-color: var(--color-orange-48-20);
+    }
+  }
+
+  .ig-post-foto {
+    position: relative;
+    display: block;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--color-white--5);
   }
 
   .ig-post-img {
@@ -719,20 +734,34 @@
     color: var(--color-white--40);
   }
 
-  .ig-post-overlay {
+  // Badge "Ver notícia" sobre a foto (hover no desktop, sempre no toque)
+  .ig-post-ver {
     position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    gap: 4px;
-    padding: 14px;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0.05));
+    left: 10px;
+    bottom: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--color-white-solid);
+    background: rgba(8, 12, 20, 0.72);
+    backdrop-filter: blur(4px);
     opacity: 0;
-    transition: opacity 0.25s ease;
+    transform: translateY(4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
   }
 
-  .ig-post:hover .ig-post-overlay { opacity: 1; }
+  .ig-post:hover .ig-post-ver { opacity: 1; transform: translateY(0); }
+
+  .ig-post-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px 14px;
+  }
 
   .ig-post-date {
     font-size: 10.5px;
@@ -746,27 +775,17 @@
     font-family: 'Fraunces', serif;
     font-size: 15px;
     font-weight: 700;
-    line-height: 1.3;
+    line-height: 1.35;
     color: var(--color-white-solid);
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
-  .ig-post-ver {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 6px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #FCBB0F;
-  }
-
-  // Em telas de toque o overlay fica sempre visível (não há hover)
+  // Em telas de toque o badge "Ver notícia" fica sempre visível (não há hover)
   @media (hover: none) {
-    .ig-post-overlay { opacity: 1; }
+    .ig-post-ver { opacity: 1; transform: none; }
   }
 }
 
@@ -778,10 +797,10 @@
     .ig-handle { font-size: 20px; }
     .ig-feed { gap: 8px; }
     .ig-post { border-radius: 12px; }
-    .ig-post-overlay { padding: 10px; }
+    .ig-post-texto { padding: 10px 12px 12px; }
     .ig-post-title { font-size: 12.5px; -webkit-line-clamp: 2; }
     .ig-post-date { font-size: 9.5px; }
-    .ig-post-ver { font-size: 11px; margin-top: 4px; }
+    .ig-post-ver { font-size: 11px; padding: 5px 10px; }
   }
 }
 
@@ -997,6 +1016,18 @@
     display: flex;
     justify-content: center;
     padding-top: 16px;
+  }
+
+  .news-share-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  @media (max-width: 640px) {
+    .news-share-row { flex-direction: column; align-items: stretch; }
+    .news-share-row .btn-secondary, .news-share-row .btn-primary { width: 100%; justify-content: center; }
   }
 }
 
