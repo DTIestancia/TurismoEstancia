@@ -1559,8 +1559,18 @@
     }
 
     @media (max-width: 1024px) {
+      /* O inner tinha align-items: center e ficava com largura de conteúdo
+         (~473px) centralizada. Stretch faz ele ocupar a seção toda, e o
+         layout de cards acompanha. */
+      .section-gastronomy-inner {
+        align-items: stretch;
+      }
+
       .gastronomy-layout {
         flex-direction: column;
+        /* Mesmo tratamento do "descubra": em coluna, stretch faz os cards
+           ocuparem a largura toda (sem isso ficavam numa coluna estreita). */
+        align-items: stretch;
       }
 
       .gastronomy-side {
@@ -1576,6 +1586,43 @@
     @media (max-width: 640px) {
       .section-gastronomy {
         padding: 64px 16px;
+      }
+
+      // Título empilhado (Grupos / populares / & / gastronomia.) mais
+      // compacto: o min-height 290px do desktop virava um vão enorme.
+      // (O 290px está no wrap aninhado, dentro do editável.)
+      .gastronomy-title-wrap-editavel,
+      .gastronomy-title-wrap {
+        min-height: 0;
+      }
+
+      .gastronomy-title-line {
+        font-size: clamp(2.25rem, 9.5vw, 2.75rem);
+      }
+
+      // Cadeia header → desc tinha align-items: center e ficava na largura
+      // do conteúdo (~252px). Esticar faz os botões ocuparem a seção toda.
+      .gastronomy-header {
+        align-items: stretch;
+        width: 100%;
+      }
+
+      .gastronomy-desc {
+        width: 100%;
+      }
+
+      // Botões emparelhados viram full-width empilhados (mesmo padrão
+      // dos CTAs do hero e do "descubra").
+      .gastronomy-desc-actions {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+      }
+
+      .gastronomy-desc-actions .btn-primary,
+      .gastronomy-desc-actions .btn-secondary {
+        width: 100%;
+        justify-content: center;
       }
 
       .gastronomy-side {
