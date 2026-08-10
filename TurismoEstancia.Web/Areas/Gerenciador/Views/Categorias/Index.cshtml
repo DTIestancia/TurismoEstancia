@@ -1,13 +1,16 @@
 @model IReadOnlyList<CategoriaPontoTuristicoDto>
 @{
     ViewData["Title"] = "Categorias";
+    ViewData["AreaAtiva"] = "maravilhas";
 }
 <div class="painel-page-header">
     <div>
         <h1 class="painel-page-title">Categorias</h1>
         <p class="painel-page-desc">Categorias de pontos turísticos — usadas no mapa, nas maravilhas e nos cards do portal.</p>
     </div>
-    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Nova categoria</a>
+    <button type="button" class="btn-painel btn-painel--primary js-abrir-criar" data-titulo="Nova categoria" data-url="@Url.Action("Criar")">
+        <i data-lucide="plus"></i> Nova categoria
+    </button>
 </div>
 
 <div class="painel-card">

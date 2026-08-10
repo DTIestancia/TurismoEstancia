@@ -1,10 +1,12 @@
 @model HomeViewModel
 @{
+    var mapaTitulo = Model.Conteudos.GetValueOrDefault("mapa-titulo",
+        "Encontre as <span class=\"secao-destaque\">7 Maravilhas</span>") ?? "";
     var mapaDesc = Model.Conteudos.GetValueOrDefault("mapa-descricao",
         "Clique nos marcadores e descubra onde cada maravilha está esperando por você, com endereço e dicas de como chegar. <strong>Bora explorar?</strong>") ?? "";
 }
 
-<section class="section-map section-3d section-divider" data-section="servicos">
+<section class="section-map section-3d section-divider" id="section-mapa" data-section="servicos">
     <div class="section-map-inner">
         <div class="section-tag">
             <div class="pill pill-white" style="background:rgba(255,255,255,0.10);">
@@ -13,7 +15,7 @@
             </div>
         </div>
         <h2 class="section-title reveal" style="color:var(--color-white-solid);">
-            Encontre as <span class="secao-destaque">7 Maravilhas</span>
+            @Html.Raw(mapaTitulo)
         </h2>
         <p class="section-desc reveal reveal-delay-1" style="color:var(--color-white--70);max-width:640px;">
             @Html.Raw(mapaDesc.Replace("\n", "<br />"))

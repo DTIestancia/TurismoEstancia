@@ -7,7 +7,9 @@
         <h1 class="painel-page-title">Roteiros</h1>
         <p class="painel-page-desc">Roteiros turísticos exibidos em /Roteiros no portal.</p>
     </div>
-    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Novo roteiro</a>
+    <button type="button" class="btn-painel btn-painel--primary js-abrir-criar" data-titulo="Novo roteiro" data-url="@Url.Action("Criar")">
+        <i data-lucide="plus"></i> Novo roteiro
+    </button>
 </div>
 
 <div class="painel-card">

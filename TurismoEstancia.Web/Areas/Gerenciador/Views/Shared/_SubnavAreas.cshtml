@@ -1,0 +1,43 @@
+@{
+    // Subnavegação entre as áreas do portal — usada nas páginas de seção
+    // (Secoes/Editar) e nos CRUDs relacionados (Categorias, Grupos, Eventos...).
+    // A área atual vem de ViewData["AreaAtiva"] (slug: hero, cidade, cultura...).
+    // Quando ViewData["VerSecaoUrl"] existe (páginas de seção), um item extra
+    // no fim abre a seção correspondente no portal em nova aba.
+    var areaAtiva = (ViewData["AreaAtiva"] as string) ?? "";
+    var verSecaoUrl = (ViewData["VerSecaoUrl"] as string) ?? "";
+    (string Area, string Rotulo, string Icone)[] areas =
+    [
+        ("hero", "Hero", "images"),
+        ("cidade", "Nossa Cidade", "landmark"),
+        ("cultura", "Cultura", "music"),
+        ("gastronomia", "Gastronomia", "utensils"),
+        ("maravilhas", "7 Maravilhas", "gem"),
+        ("agenda", "Agenda", "calendar"),
+        ("noticias", "Notícias", "newspaper"),
+        ("roteiros", "Roteiros", "route"),
+        ("mapa", "Mapa", "map"),
+        ("rodape", "Rodapé", "phone")
+    ];
+}
+<div class="painel-subnav" aria-label="Áreas do portal">
+    @foreach (var area in areas)
+    {
+        var ativa = string.Equals(area.Area, areaAtiva, StringComparison.OrdinalIgnoreCase);
+        var acao = char.ToUpperInvariant(area.Area[0]) + area.Area[1..];
+        <a class="painel-subnav-link @(ativa ? "active" : "")" aria-current="@(ativa ? "page" : null)"
+           asp-area="Gerenciador" asp-controller="Secoes" asp-action="@acao">
+            <i data-lucide="@area.Icone"></i> @area.Rotulo
+        </a>
+    }
+    @if (!string.IsNullOrWhiteSpace(verSecaoUrl))
+    {
+        <a class="painel-subnav-link painel-subnav-link--externo" href="@verSecaoUrl" target="_blank" rel="noopener" title="Abre a seção no portal em nova aba">
+            <i data-lucide="external-link"></i> Ver seção no portal
+        </a>
+        <button type="button" class="painel-subnav-link painel-subnav-link--externo js-abrir-preview"
+                id="jsAbrirPreview" data-url="@verSecaoUrl" title="Prévia da seção como fica no portal">
+            <i data-lucide="eye"></i> Prévia
+        </button>
+    }
+</div>

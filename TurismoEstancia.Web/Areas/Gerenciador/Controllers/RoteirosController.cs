@@ -14,10 +14,15 @@ public class RoteirosController : PainelController
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Roteiros";
+        ViewData["AreaAtiva"] = "roteiros";
         return View(await _roteiros.ListarAsync(ct));
     }
 
-    public IActionResult Criar() => View(new RoteiroDto());
+    public async Task<IActionResult> Criar(CancellationToken ct)
+    {
+        ViewData["AreaAtiva"] = "roteiros";
+        return View(new RoteiroDto());
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -40,6 +45,7 @@ public class RoteirosController : PainelController
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
     {
         ViewData["Title"] = "Editar roteiro";
+        ViewData["AreaAtiva"] = "roteiros";
         var dto = await _roteiros.ObterPorIdAsync(id, ct);
         return dto is null ? NotFound() : View(dto);
     }

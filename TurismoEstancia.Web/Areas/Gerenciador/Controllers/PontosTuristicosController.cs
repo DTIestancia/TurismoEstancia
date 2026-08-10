@@ -19,15 +19,28 @@ public class PontosTuristicosController : PainelController
         _categorias = categorias;
     }
 
-    public async Task<IActionResult> Index(CancellationToken ct)
+    public async Task<IActionResult> Index(string? contexto, CancellationToken ct)
     {
         ViewData["Title"] = "Pontos turísticos";
-        return View(await _pontos.ListarAsync(apenasAtivos: false, ct));
+        // O contexto separa os dois usos no portal: "maravilhas" (7 Maravilhas)
+        // e "mapa" (todos os pontos com ExibirNoMapa — restaurantes, hotéis...).
+        ViewData["AreaAtiva"] = contexto == "mapa" ? "mapa" : "maravilhas";
+        ViewData["ContextoPontos"] = contexto;
+
+        var todos = await _pontos.ListarAsync(apenasAtivos: false, ct);
+        var lista = contexto switch
+        {
+            "maravilhas" => todos.Where(p => p.CategoriaApresentarEmMaravilhas).ToList(),
+            "mapa" => todos.Where(p => p.ExibirNoMapa).ToList(),
+            _ => todos
+        };
+        return View(lista);
     }
 
     public async Task<IActionResult> Criar(CancellationToken ct)
     {
         ViewData["Title"] = "Novo ponto turístico";
+        ViewData["AreaAtiva"] = "maravilhas";
         ViewBag.Categorias = await _categorias.ListarAsync(incluirInativos: true, ct);
         return View(new PontoTuristicoDto());
     }
@@ -64,6 +77,7 @@ public class PontosTuristicosController : PainelController
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
     {
         ViewData["Title"] = "Editar ponto turístico";
+        ViewData["AreaAtiva"] = "maravilhas";
         ViewBag.Categorias = await _categorias.ListarAsync(incluirInativos: true, ct);
         var dto = await _pontos.ObterPorIdAsync(id, ct);
         return dto is null ? NotFound() : View(dto);

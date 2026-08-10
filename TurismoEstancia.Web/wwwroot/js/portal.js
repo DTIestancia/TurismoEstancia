@@ -707,94 +707,74 @@ document.addEventListener('DOMContentLoaded', function () {
     img.style.objectFit = 'cover';
   }, true);
 
-  // ===== Vitrine das 7 Maravilhas ("postais de Estância") =====
-  // Foto + nome + card de texto trocam conforme o postal selecionado;
-  // setas/teclado/toque passam os postais (a vitrine acompanha).
+  // ===== Vitrine das 7 Maravilhas (baralho de cartas com prévia) =====
+  // Cada maravilha é uma carta no deck de scroll-snap: a central é a exibida,
+  // a próxima espreita pela direita e a anterior fica à esquerda. Arraste,
+  // setas ou teclado passam as cartas — o scroll define a carta atual.
   function initWondersVitrine() {
     const vitrine = document.getElementById('wondersVitrine');
     if (!vitrine) return;
-    const postais = Array.prototype.slice.call(vitrine.querySelectorAll('.vitrine-postal'));
-    const total = postais.length;
-    if (total === 0) return;
+    const deck = document.getElementById('vitrineDeck');
+    const cartas = Array.prototype.slice.call(vitrine.querySelectorAll('.vitrine-carta'));
+    const total = cartas.length;
+    if (total === 0 || !deck) return;
 
-    const img = document.getElementById('vitrineImg');
-    const num = document.getElementById('vitrineNum');
-    const cat = document.getElementById('vitrineCat');
-    const titulo = document.getElementById('vitrineTitulo');
-    const desc = document.getElementById('vitrineDesc');
-    const tag = document.getElementById('vitrineTag');
-    const btn = document.getElementById('vitrineBtn');
     const counter = document.getElementById('vitrineCounter');
-
     let atual = 0;
 
-    function mostrar(index) {
-      atual = (index + total) % total;
-      const d = postais[atual].dataset;
-
-      // Crossfade da foto grande.
-      if (img) {
-        img.style.opacity = '0';
-        setTimeout(function () {
-          if (img) {
-            img.src = d.img || '';
-            img.alt = d.nome || '';
-            img.style.opacity = '1';
-          }
-        }, 170);
-      }
-
-      if (num) num.textContent = String(atual + 1).padStart(2, '0');
-      if (cat) cat.textContent = d.categoria || '';
-      if (titulo) titulo.textContent = d.nome || '';
-      if (desc) desc.textContent = d.desc || '';
-      if (tag) tag.textContent = d.tag || '';
-
-      // Identidade de cor por categoria (paleta oficial): o pill da
-      // categoria, o número da foto e o postal ativo usam a cor da
-      // categoria da maravilha em destaque.
-      const cor = d.cor || '#F97E31';
-      if (cat) {
-        cat.style.color = cor;
-        cat.style.borderColor = cor;
-        // Fundo translúcido na cor da categoria (funciona na home e em /lugares).
-        cat.style.background = cor + '1A';
-      }
-      if (num) num.style.color = cor;
-      if (btn) {
-        btn.setAttribute('href', d.href || '#');
-        btn.setAttribute('data-track-id', d.id || '');
-        btn.setAttribute('data-track-nome', d.nome || '');
-      }
-      if (counter) counter.textContent = 'Postal ' + (atual + 1) + ' de ' + total;
-
-      postais.forEach(function (p, i) {
-        const active = i === atual;
-        p.classList.toggle('is-active', active);
-        p.setAttribute('aria-selected', active ? 'true' : 'false');
-        // Postal ativo herda a cor da categoria; os demais voltam ao padrão.
-        p.style.borderColor = active ? cor : '';
-        const pNum = p.querySelector('.vitrine-postal-num');
-        if (pNum) pNum.style.color = active ? cor : '';
-        if (active && p.scrollIntoView && p.parentElement) {
-          // Mantém o postal ativo visível na faixa (mobile).
-          const rect = p.getBoundingClientRect();
-          const faixa = p.parentElement.getBoundingClientRect();
-          if (rect.left < faixa.left || rect.right > faixa.right) {
-            p.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
-          }
-        }
+    // A carta mais próxima do centro do deck é a atual: ela escala para 1,
+    // as laterais encolhem/apagam e o contador acompanha.
+    let raf = null;
+    function atualizarEstados() {
+      const centro = deck.scrollLeft + deck.clientWidth / 2;
+      let melhor = 0;
+      let melhorDist = Infinity;
+      cartas.forEach(function (c, i) {
+        const cc = c.offsetLeft + c.offsetWidth / 2;
+        const dist = Math.abs(cc - centro);
+        if (dist < melhorDist) { melhorDist = dist; melhor = i; }
       });
+      atual = melhor;
+      cartas.forEach(function (c, i) {
+        const ativa = i === melhor;
+        c.classList.toggle('is-atual', ativa);
+        c.classList.toggle('is-lateral', !ativa);
+        if (ativa) c.setAttribute('aria-current', 'true');
+        else c.removeAttribute('aria-current');
+      });
+      if (counter) counter.textContent = 'Maravilha ' + (melhor + 1) + ' de ' + total + ' — arraste ou use as setas';
     }
 
-    postais.forEach(function (p, i) {
-      p.addEventListener('click', function () { mostrar(i); });
+    function noScroll() {
+      if (raf) return;
+      raf = requestAnimationFrame(function () {
+        raf = null;
+        atualizarEstados();
+      });
+    }
+    deck.addEventListener('scroll', noScroll, { passive: true });
+    if ('onscrollend' in window) deck.addEventListener('scrollend', atualizarEstados);
+
+    function irPara(indice) {
+      const alvo = cartas[(indice + total) % total];
+      alvo.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+
+    // Clicar numa carta lateral (fora de links/botões) leva a carta ao centro:
+    // a prévia da próxima avança e a anterior volta.
+    cartas.forEach(function (c, i) {
+      c.addEventListener('click', function (e) {
+        if (i === atual) return;
+        const alvo = e.target;
+        if (alvo && alvo.closest && alvo.closest('a, button')) return;
+        irPara(i);
+      });
     });
 
     const prevBtn = document.getElementById('vitrinePrev');
     const nextBtn = document.getElementById('vitrineNext');
-    if (prevBtn) prevBtn.addEventListener('click', function () { mostrar(atual - 1); });
-    if (nextBtn) nextBtn.addEventListener('click', function () { mostrar(atual + 1); });
+    if (prevBtn) prevBtn.addEventListener('click', function () { irPara(atual - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { irPara(atual + 1); });
 
     document.addEventListener('keydown', function (e) {
       // Só navega quando a vitrine está visível na tela (a home tem duas vitrines).
@@ -805,21 +785,62 @@ document.addEventListener('DOMContentLoaded', function () {
       // Não navega a vitrine enquanto o usuário digita em campos de formulário.
       const alvo = e.target;
       if (alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.tagName === 'SELECT' || alvo.isContentEditable)) return;
-      if (e.key === 'ArrowRight') { mostrar(atual + 1); e.preventDefault(); }
-      if (e.key === 'ArrowLeft') { mostrar(atual - 1); e.preventDefault(); }
+      if (e.key === 'ArrowRight') { irPara(atual + 1); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { irPara(atual - 1); e.preventDefault(); }
     });
 
-    // Toque/arraste horizontal também passa os postais.
-    let startX = null;
-    vitrine.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
-    vitrine.addEventListener('touchend', function (e) {
-      if (startX === null) return;
-      const delta = e.changedTouches[0].clientX - startX;
-      if (Math.abs(delta) > 40) (delta < 0 ? mostrar(atual + 1) : mostrar(atual - 1));
-      startX = null;
-    }, { passive: true });
+    // Arraste com o mouse no desktop (no celular o scroll-snap nativo já passa
+    // as cartas). Durante o arrasto o snap é desativado (.is-dragging) para o
+    // dedo/mouse mover livremente; ao soltar, a carta mais próxima é encaixada.
+    // Um clique que não arrastou continua normal; depois de arrastar, o clique
+    // é suprimido para não abrir links/cartas.
+    let arrastando = false;
+    let iniX = 0;
+    let iniScroll = 0;
+    let moveu = false;
+    deck.addEventListener('mousedown', function (e) {
+      if (e.button !== 0) return;
+      if (e.target.closest && e.target.closest('a, button')) return;
+      arrastando = true;
+      moveu = false;
+      iniX = e.clientX;
+      iniScroll = deck.scrollLeft;
+      deck.classList.add('is-dragging');
+    });
+    window.addEventListener('mousemove', function (e) {
+      if (!arrastando) return;
+      const dx = e.clientX - iniX;
+      if (Math.abs(dx) > 4) moveu = true;
+      deck.scrollLeft = iniScroll - dx;
+    });
+    window.addEventListener('mouseup', function () {
+      if (!arrastando) return;
+      arrastando = false;
+      deck.classList.remove('is-dragging');
+      // Encaixa na carta mais próxima do centro ao soltar.
+      const centro = deck.scrollLeft + deck.clientWidth / 2;
+      let melhor = 0;
+      let melhorDist = Infinity;
+      cartas.forEach(function (c, i) {
+        const d = Math.abs((c.offsetLeft + c.offsetWidth / 2) - centro);
+        if (d < melhorDist) { melhorDist = d; melhor = i; }
+      });
+      irPara(melhor);
+    });
+    deck.addEventListener('click', function (e) {
+      if (moveu) {
+        e.preventDefault();
+        e.stopPropagation();
+        moveu = false;
+      }
+    }, true);
 
-    mostrar(0);
+    atualizarEstados();
+    // Recalcula quando o layout estabiliza (CSS/imagens carregadas) e na
+    // troca de tamanho de tela (offsetLeft depende da largura do deck).
+    requestAnimationFrame(atualizarEstados);
+    window.addEventListener('load', atualizarEstados);
+    window.addEventListener('resize', atualizarEstados);
   }
 
   initWondersVitrine();

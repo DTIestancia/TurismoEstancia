@@ -25,7 +25,7 @@
                 <option value="">— Selecione —</option>
                 @foreach (var c in categorias)
                 {
-                    <option value="@c.Id">@c.Nome</option>
+                    <option value="@c.Id" data-maravilha="@(c.ApresentarEmMaravilhas ? "true" : "false")">@c.Nome</option>
                 }
             </select>
             <span asp-validation-for="CategoriaId" class="field-validation-error"></span>
@@ -65,17 +65,35 @@
         <span class="painel-hint">Dicas de como chegar exibidas no modal do mapa.</span>
     </div>
 
-    <div class="painel-form-grid">
-        <div class="painel-field">
-            <label asp-for="LeftPercent"></label>
-            <input asp-for="LeftPercent" class="painel-input" type="number" min="0" max="100" />
-            <span class="painel-hint">Posição X no mapa (0–100).</span>
+    <div class="painel-field" id="campoPosicaoMapa">
+        <label>Posição no mapa</label>
+        <div class="painel-mapa" id="painelMapa" role="application" aria-label="Mapa de Estância — clique para posicionar o ponto">
+            <div class="custom-map-terrain" aria-hidden="true">
+                <div class="terrain-circle" style="width:260px;height:260px;top:8%;left:6%;"></div>
+                <div class="terrain-circle" style="width:180px;height:180px;top:22%;left:16%;"></div>
+                <div class="terrain-circle" style="width:340px;height:340px;top:38%;left:48%;"></div>
+                <div class="terrain-circle" style="width:220px;height:220px;top:58%;left:22%;"></div>
+                <div class="terrain-circle" style="width:300px;height:300px;top:28%;left:68%;"></div>
+                <div class="terrain-circle" style="width:160px;height:160px;top:68%;left:64%;"></div>
+            </div>
+            <div class="custom-map-grid" aria-hidden="true"></div>
+            <div class="custom-map-river" aria-hidden="true"></div>
+            <div class="painel-mapa-vazio" id="painelMapaVazio">👆 Clique no mapa para posicionar o ponto</div>
+            <div class="painel-mapa-marcador" id="painelMapaMarcador" hidden></div>
         </div>
-        <div class="painel-field">
-            <label asp-for="TopPercent"></label>
-            <input asp-for="TopPercent" class="painel-input" type="number" min="0" max="100" />
-            <span class="painel-hint">Posição Y no mapa (0–100).</span>
+        <div class="painel-form-grid" style="margin-top:10px;">
+            <div class="painel-field">
+                <label asp-for="LeftPercent"></label>
+                <input asp-for="LeftPercent" class="painel-input" type="number" min="0" max="100" />
+                <span class="painel-hint">Posição X (0–100).</span>
+            </div>
+            <div class="painel-field">
+                <label asp-for="TopPercent"></label>
+                <input asp-for="TopPercent" class="painel-input" type="number" min="0" max="100" />
+                <span class="painel-hint">Posição Y (0–100).</span>
+            </div>
         </div>
+        <span class="painel-hint">Clique no mapa para posicionar o marcador, ou ajuste os valores X/Y para um posicionamento fino.</span>
     </div>
 
     <div class="painel-form-grid">
@@ -153,5 +171,30 @@
                 campo.style.display = chk.checked ? 'none' : '';
             });
         });
+
+        // Posição no mapa é exclusiva do mapa: some quando a categoria escolhida
+        // é uma das 7 Maravilhas (a posição delas é definida na seção 7 Maravilhas).
+        var selectCategoria = document.getElementById('CategoriaId');
+        var campoPosicao = document.getElementById('campoPosicaoMapa');
+        function atualizarPosicao() {
+            var opt = selectCategoria && selectCategoria.options[selectCategoria.selectedIndex];
+            var ehMaravilha = opt && opt.getAttribute('data-maravilha') === 'true';
+            campoPosicao.style.display = ehMaravilha ? 'none' : '';
+        }
+        if (selectCategoria && campoPosicao) {
+            selectCategoria.addEventListener('change', atualizarPosicao);
+            atualizarPosicao();
+        }
+
+        // Mapa interativo: clique posiciona o marcador e atualiza X/Y.
+        if (window.InicializarMapaPonto) {
+            window.InicializarMapaPonto({
+                mapaId: 'painelMapa',
+                marcadorId: 'painelMapaMarcador',
+                vazioId: 'painelMapaVazio',
+                leftId: 'LeftPercent',
+                topId: 'TopPercent'
+            });
+        }
     </script>
 }

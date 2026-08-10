@@ -14,10 +14,15 @@ public class TagsCulturaisController : PainelController
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Tags culturais";
+        ViewData["AreaAtiva"] = "cultura";
         return View(await _tags.ListarAsync(ct));
     }
 
-    public IActionResult Criar() => View(new TagCulturalDto());
+    public async Task<IActionResult> Criar(CancellationToken ct)
+    {
+        ViewData["AreaAtiva"] = "cultura";
+        return View(new TagCulturalDto());
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -32,6 +37,7 @@ public class TagsCulturaisController : PainelController
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
     {
         ViewData["Title"] = "Editar tag cultural";
+        ViewData["AreaAtiva"] = "cultura";
         var dto = await _tags.ObterPorIdAsync(id, ct);
         return dto is null ? NotFound() : View(dto);
     }

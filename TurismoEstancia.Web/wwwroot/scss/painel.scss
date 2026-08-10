@@ -96,12 +96,12 @@
         &.active {
           background: linear-gradient(90deg, rgba(247, 100, 0, 0.18) 0%, rgba(230, 43, 52, 0.12) 100%);
           color: $color-white-solid;
-          box-shadow: inset 3px 0 0 $color-orange-48;
+          box-shadow: inset 3px 0 0 var(--color-orange-48);
         }
 
         .painel-badge {
           margin-left: auto;
-          background: $color-red-54;
+          background: var(--color-red-54);
           color: $color-white-solid;
           font-size: 10.5px;
           font-weight: 700;
@@ -164,7 +164,7 @@
         width: 32px;
         height: 32px;
         border-radius: 50%;
-        background: linear-gradient(135deg, $color-orange-48, $color-red-54);
+        background: linear-gradient(135deg, var(--color-orange-48), var(--color-red-54));
         display: flex;
         align-items: center;
         justify-content: center;
@@ -199,6 +199,309 @@
         color: $color-white--55;
         max-width: 620px;
       }
+    }
+  }
+}
+
+// ===== Modo embutido (?embutido=1) — formulário de Criar no modal das listas =====
+// Oculta sidebar e topbar para o iframe mostrar só o formulário de cadastro.
+.painel--embutido {
+  .painel-sidebar,
+  .painel-topbar {
+    display: none;
+  }
+
+  .painel-content {
+    padding: 18px;
+  }
+}
+
+// ===== Transição dos modais (fade + escala) =====
+// A entrada roda via keyframes quando o dialog abre; a saída usa a classe
+// .dialog-fechando (o JS espera a animação antes de chamar close()).
+@keyframes painel-dialog-abrir {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes painel-dialog-fechar {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.94) translateY(10px);
+  }
+}
+
+.painel-criar-dialog,
+.painel-preview-dialog {
+  animation: painel-dialog-abrir 0.22s ease-out;
+
+  &.dialog-fechando {
+    animation: painel-dialog-fechar 0.18s ease-in forwards;
+  }
+}
+
+.painel-criar-dialog::backdrop,
+.painel-preview-dialog::backdrop {
+  transition: background 0.22s ease-out;
+}
+
+// ===== Modal de cadastro ("Novo ..." nas telas de lista) =====
+.painel-criar-dialog {
+  // Centralização explícita: alguns navegadores/temas não aplicam o
+  // margin:auto do UA ao dialog, deixando-o encostado à esquerda.
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: $color-white-solid;
+  width: min(760px, calc(100vw - 24px));
+  height: min(680px, calc(100vh - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+
+  &::backdrop {
+    background: rgba(3, 14, 25, 0.78);
+    backdrop-filter: blur(4px);
+  }
+
+  .painel-criar-dialog-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: $color-azure-5;
+    border: 1px solid $color-white--12;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .painel-criar-dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 20px;
+    border-bottom: 1px solid $color-white--10;
+    background: rgba(3, 14, 25, 0.6);
+
+    .painel-criar-dialog-title {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+
+      i { width: 18px; height: 18px; color: var(--color-orange-48); }
+    }
+
+    .painel-criar-dialog-acoes {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .painel-criar-dialog-close {
+      background: $color-white--8;
+      border: 1px solid $color-white--15;
+      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $color-white--70;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+
+      &:hover {
+        color: $color-white-solid;
+        border-color: $color-white--40;
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .painel-criar-dialog-corpo {
+    flex: 1;
+    min-height: 0;
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: $color-azure-5;
+    }
+  }
+}
+
+// ===== Modal de prévia da seção ("Prévia" na subnav das áreas) =====
+// Mostra a seção do portal num iframe (âncora da área) para o Gerenciador ver
+// como o conteúdo fica no site — sem sair da página nem recarregar o painel.
+.painel-preview-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: $color-white-solid;
+  width: min(1200px, calc(100vw - 24px));
+  height: min(820px, calc(100vh - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+
+  &::backdrop {
+    background: rgba(3, 14, 25, 0.82);
+    backdrop-filter: blur(4px);
+  }
+
+  .painel-preview-dialog-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: $color-azure-5;
+    border: 1px solid $color-white--12;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .painel-preview-dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 20px;
+    border-bottom: 1px solid $color-white--10;
+    background: rgba(3, 14, 25, 0.6);
+
+    .painel-preview-dialog-title {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+
+      i { width: 18px; height: 18px; color: var(--color-orange-48); }
+    }
+
+    .painel-preview-dialog-acoes {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .painel-preview-dialog-close {
+      background: $color-white--8;
+      border: 1px solid $color-white--15;
+      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $color-white--70;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+
+      &:hover {
+        color: $color-white-solid;
+        border-color: $color-white--40;
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .painel-preview-dialog-corpo {
+    flex: 1;
+    min-height: 0;
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: $color-azure-5;
+    }
+  }
+}
+
+// ===== Subnavegação por área do portal (abaixo do header das páginas de seção) =====
+.painel-subnav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin: -6px 0 22px;
+  scrollbar-width: thin;
+
+  .painel-subnav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    border: 1px solid $color-white--12;
+    background: $color-white--4;
+    color: $color-white--60;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+
+    i { width: 14px; height: 14px; flex-shrink: 0; }
+
+    &:hover {
+      border-color: $color-white--40;
+      color: $color-white-solid;
+    }
+
+    &.active {
+      background: linear-gradient(90deg, rgba(247, 100, 0, 0.22) 0%, rgba(230, 43, 52, 0.14) 100%);
+      border-color: rgba(247, 100, 0, 0.45);
+      color: $color-white-solid;
+      font-weight: 700;
+    }
+
+    // Item "Ver seção no portal" (só nas páginas de seção): separado por
+    // uma linha da navegação e com o laranja da paleta, deixando claro que
+    // leva para fora do painel.
+    &--externo {
+      margin-left: 8px;
+      box-shadow: inset 1px 0 0 $color-white--15;
+      border-color: transparent;
+      color: var(--color-orange-48);
+      background: transparent;
+
+      &:hover {
+        background: $color-white--8;
+        color: var(--color-orange-48);
+      }
+    }
+
+    // O botão "Prévia" vem depois do link externo — sem o separador de novo.
+    &.js-abrir-preview {
+      margin-left: 2px;
+      box-shadow: none;
+      border: 1px solid transparent;
     }
   }
 }
@@ -263,7 +566,7 @@
 
   .painel-stat-icon {
     align-self: flex-end;
-    color: $color-orange-48;
+    color: var(--color-orange-48);
   }
 }
 
@@ -316,12 +619,12 @@
   font-weight: 700;
   white-space: nowrap;
 
-  &--green  { background: rgba(0, 150, 98, 0.18);  color: #4AD295; }
-  &--orange { background: rgba(247, 100, 0, 0.18); color: #FF9A4D; }
-  &--red    { background: rgba(230, 43, 52, 0.18); color: #FF6B74; }
+  &--green  { background: color-mix(in srgb, var(--color-spring-green-29) 18%, transparent); color: color-mix(in srgb, var(--color-spring-green-29) 65%, #fff); }
+  &--orange { background: color-mix(in srgb, var(--color-orange-48) 18%, transparent); color: color-mix(in srgb, var(--color-orange-48) 55%, #fff); }
+  &--red    { background: color-mix(in srgb, var(--color-red-54) 18%, transparent); color: color-mix(in srgb, var(--color-red-54) 55%, #fff); }
   &--grey   { background: $color-white--10;        color: $color-white--55; }
-  &--yellow { background: rgba(255, 194, 0, 0.16); color: #FFD75E; }
-  &--cyan   { background: rgba(0, 156, 207, 0.16); color: #5BC8E8; }
+  &--yellow { background: color-mix(in srgb, var(--color-yellow-50) 16%, transparent); color: color-mix(in srgb, var(--color-yellow-50) 60%, #fff); }
+  &--cyan   { background: color-mix(in srgb, var(--color-cyan-41) 16%, transparent); color: color-mix(in srgb, var(--color-cyan-41) 60%, #fff); }
 }
 
 // ===== Botões =====
@@ -346,7 +649,7 @@
   &:hover { opacity: 0.88; transform: translateY(-1px); }
 
   &--primary {
-    background: linear-gradient(90deg, $color-orange-48 0%, $color-red-54 100%);
+    background: linear-gradient(90deg, var(--color-orange-48) 0%, var(--color-red-54) 100%);
   }
 
   &--ghost {
@@ -360,7 +663,7 @@
   &--danger {
     background: rgba(230, 43, 52, 0.18);
     border-color: rgba(230, 43, 52, 0.4);
-    color: #FF8A92;
+    color: color-mix(in srgb, var(--color-red-54) 55%, #fff);
 
     &:hover { background: rgba(230, 43, 52, 0.3); }
   }
@@ -428,8 +731,32 @@
       &::placeholder { color: $color-white--40; }
 
       &:focus {
-        border-color: $color-orange-48;
+        border-color: var(--color-orange-48);
         background: $color-white--8;
+      }
+    }
+
+    // O <select> nativo abre o dropdown com o tema do sistema operacional
+    // (branco no Windows). color-scheme: dark força o navegador a renderizar
+    // a lista de opções no tema escuro do painel — texto legível, sem fundo branco.
+    .painel-select {
+      color-scheme: dark;
+      // A seta do select nativo some no tema escuro de alguns navegadores;
+      // usa-se uma imagem de seta clara para manter o affordance visível.
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c9d4e3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 34px;
+      appearance: none;
+      -webkit-appearance: none;
+
+      option {
+        background: #0d1526;
+        color: $color-white-solid;
+
+        &:disabled {
+          color: $color-white--30;
+        }
       }
     }
 
@@ -450,7 +777,7 @@
       letter-spacing: 0;
       cursor: pointer;
 
-      input { accent-color: $color-orange-48; width: 16px; height: 16px; }
+      input { accent-color: var(--color-orange-48); width: 16px; height: 16px; }
     }
   }
 
@@ -462,7 +789,7 @@
 }
 
 .field-validation-error {
-  color: #FF8A92;
+  color: color-mix(in srgb, var(--color-red-54) 55%, #fff);
   font-size: 12px;
 }
 
@@ -489,7 +816,7 @@
   &--erro {
     background: rgba(230, 43, 52, 0.15);
     border: 1px solid rgba(230, 43, 52, 0.4);
-    color: #FF8A92;
+    color: color-mix(in srgb, var(--color-red-54) 55%, #fff);
   }
 }
 
@@ -546,7 +873,7 @@
   .login-error {
     background: rgba(230, 43, 52, 0.15);
     border: 1px solid rgba(230, 43, 52, 0.4);
-    color: #FF8A92;
+    color: color-mix(in srgb, var(--color-red-54) 55%, #fff);
     padding: 10px 14px;
     border-radius: 10px;
     font-size: 13px;
@@ -595,7 +922,7 @@
   }
 
   .current {
-    background: linear-gradient(90deg, $color-orange-48 0%, $color-red-54 100%);
+    background: linear-gradient(90deg, var(--color-orange-48) 0%, var(--color-red-54) 100%);
     border-color: transparent;
     color: $color-white-solid;
     font-weight: 700;
@@ -623,7 +950,7 @@
     &:hover { color: $color-white-solid; }
 
     &.active {
-      background: linear-gradient(90deg, $color-orange-48 0%, $color-red-54 100%);
+      background: linear-gradient(90deg, var(--color-orange-48) 0%, var(--color-red-54) 100%);
       color: $color-white-solid;
     }
   }
@@ -749,7 +1076,7 @@
   transition: border-color 0.2s, background 0.2s;
 
   &:focus-within {
-    border-color: $color-orange-48;
+    border-color: var(--color-orange-48);
     background: $color-white--8;
   }
 
@@ -823,7 +1150,7 @@
       line-height: 1.55;
       color: $color-white--55;
 
-      strong { color: $color-orange-48; }
+      strong { color: var(--color-orange-48); }
     }
   }
 
@@ -851,7 +1178,327 @@
 
 // ===== Alerta de aviso (SMTP não configurado etc.) =====
 .painel-alert--warn {
-  background: rgba(255, 194, 0, 0.12);
-  border: 1px solid rgba(255, 194, 0, 0.4);
-  color: #FFD54F;
+  background: color-mix(in srgb, var(--color-yellow-50) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-yellow-50) 40%, transparent);
+  color: color-mix(in srgb, var(--color-yellow-50) 60%, #fff);
+}
+
+// ===== Pré-visualização ao vivo de textos (Textos do portal) =====
+.painel-preview {
+  margin-top: 14px;
+  border: 1px dashed $color-white--20;
+  border-radius: 12px;
+  background: $color-white--4;
+  padding: 14px 16px;
+
+  .painel-preview-titulo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: $color-white--55;
+    margin-bottom: 10px;
+
+    i { width: 14px; height: 14px; }
+  }
+
+  .painel-preview-conteudo {
+    font-size: 15px;
+    line-height: 1.65;
+    color: $color-white-solid;
+    word-break: break-word;
+
+    strong { color: var(--color-yellow-50); font-weight: 700; }
+
+    .painel-preview-vazio {
+      color: $color-white--30;
+      font-style: italic;
+    }
+  }
+}
+
+// ===== Tema e cores (Gerenciador) =====
+.tema-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.tema-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tema-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: $color-white--85;
+}
+
+.tema-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tema-color {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid $color-white--20;
+  background: transparent;
+  padding: 3px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.tema-hex {
+  font-family: 'Cascadia Code', Consolas, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tema-dica {
+  font-size: 12px;
+  color: $color-white--50;
+  line-height: 1.45;
+}
+
+.tema-preview-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: $color-white--60;
+  margin-bottom: 12px;
+}
+
+.tema-preview-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tema-chip {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--cor) 16%, transparent);
+  color: color-mix(in srgb, var(--cor) 62%, #fff);
+  border: 1px solid color-mix(in srgb, var(--cor) 40%, transparent);
+}
+
+.tema-preview-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 11px 22px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  color: $color-white-solid;
+  background: linear-gradient(90deg, var(--cor) 0%, color-mix(in srgb, var(--cor) 55%, #000) 100%);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--cor) 35%, transparent);
+}
+
+// ===== Prévia de ícone (Contatos) =====
+// Campo de ícone com prévia em tempo real e sugestões por tipo de contato.
+.painel-icone-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+
+  .painel-icone-input { flex: 1; }
+}
+
+.painel-icone-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  min-width: 46px;
+  border-radius: 10px;
+  border: 1px solid $color-white--15;
+  background: $color-white--5;
+  color: var(--color-orange-48);
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .painel-icone-preview-vazio { color: $color-white--30; font-weight: 700; }
+  .painel-icone-preview-invalido { color: var(--color-red-54); font-weight: 700; }
+}
+
+.painel-icone-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.painel-icone-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid $color-white--15;
+  background: $color-white--5;
+  color: $color-white--65;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  i.lucide {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    border-color: var(--color-orange-48);
+    color: var(--color-orange-48);
+    transform: translateY(-2px);
+  }
+
+  &.active {
+    border-color: var(--color-orange-48);
+    background: color-mix(in srgb, var(--color-orange-48) 14%, transparent);
+    color: var(--color-orange-48);
+  }
+}
+
+// ===== Mapa interativo de posicionamento (Pontos turísticos) =====
+// Mesmo visual do mapa ilustrado do portal (terreno, grade e rio), em escala
+// de formulário e com clique para posicionar o marcador — o usuário não precisa
+// mais adivinhar as porcentagens X/Y.
+.painel-mapa {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0a1628;
+  background-image:
+    radial-gradient(circle at 25% 40%, rgba(255, 141, 0, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 75% 35%, rgba(0, 150, 98, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 55% 65%, rgba(255, 141, 0, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 15% 70%, rgba(0, 150, 98, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(0, 150, 98, 0.04) 0%, transparent 40%);
+  cursor: crosshair;
+  outline: 1px solid rgba(255, 255, 255, 0.08);
+  outline-offset: -1px;
+  box-shadow: 0 18px 40px -14px rgba(0, 0, 0, 0.45);
+
+  // Camadas decorativas (mesmos nomes do portal, escopadas ao painel).
+  .custom-map-terrain {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+
+    .terrain-circle {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  .custom-map-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 56px 56px;
+    opacity: 0.5;
+  }
+
+  .custom-map-river {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    width: 60%;
+    height: 30%;
+    top: 55%;
+    left: 18%;
+    border-radius: 50%;
+    border: 2px dashed rgba(255, 255, 255, 0.07);
+    transform: rotate(-15deg);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+  }
+
+  .painel-mapa-vazio {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: $color-white--40;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .painel-mapa-marcador {
+    position: absolute;
+    z-index: 3;
+    width: 22px;
+    height: 22px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-orange-48), var(--color-red-54));
+    border: 2px solid $color-white-solid;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+    pointer-events: none;
+    animation: painel-mapa-ping 1.8s ease-out infinite;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: $color-white-solid;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+@keyframes painel-mapa-ping {
+  0% {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), 0 0 0 0 rgba(249, 126, 49, 0.45);
+  }
+  70% {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), 0 0 0 12px rgba(249, 126, 49, 0);
+  }
+  100% {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), 0 0 0 0 rgba(249, 126, 49, 0);
+  }
 }

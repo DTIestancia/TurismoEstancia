@@ -1,5 +1,7 @@
 @model HomeViewModel
 @{
+    var culturaTitulo = Model.Conteudos.GetValueOrDefault("cultura-titulo",
+        "<div class=\"cursive\">a alma</div><div><div class=\"headline-white\">Nossa</div><div class=\"headline-yellow\">cultura</div><div class=\"cursive-small\">arde alto.</div></div>") ?? "";
     var culturaDescricao = Model.Conteudos.GetValueOrDefault("cultura-descricao",
         "<strong>Capital Mundial do Barco de Fogo</strong> — é aqui que o céu vira palco e a pólvora vira poesia. A Lira Carlos Gomes toca desde 1879, e o São João da cidade é daqueles de parar o coração.");
     var culturaExtra = Model.Conteudos.GetValueOrDefault("cultura-extra",
@@ -17,12 +19,7 @@
     <div class="section-culture-inner">
         <div class="culture-layout">
             <div class="culture-text-content">
-                <div class="cursive reveal reveal-delay-1">a alma</div>
-                <div>
-                    <div class="headline-white reveal reveal-delay-2">Nossa</div>
-                    <div class="headline-yellow reveal reveal-delay-3">cultura</div>
-                    <div class="cursive-small reveal reveal-delay-4">arde alto.</div>
-                </div>
+                <div class="culture-title-wrap reveal">@Html.Raw(culturaTitulo)</div>
                 <div class="description">
                     @Html.Raw(culturaDescricao)
                 </div>

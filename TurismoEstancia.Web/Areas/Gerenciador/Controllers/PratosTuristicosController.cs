@@ -14,10 +14,15 @@ public class PratosTuristicosController : PainelController
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Pratos turísticos";
+        ViewData["AreaAtiva"] = "gastronomia";
         return View(await _pratos.ListarAsync(ct));
     }
 
-    public IActionResult Criar() => View(new PratoTuristicoDto());
+    public async Task<IActionResult> Criar(CancellationToken ct)
+    {
+        ViewData["AreaAtiva"] = "gastronomia";
+        return View(new PratoTuristicoDto());
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -32,6 +37,7 @@ public class PratosTuristicosController : PainelController
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
     {
         ViewData["Title"] = "Editar prato turístico";
+        ViewData["AreaAtiva"] = "gastronomia";
         var dto = await _pratos.ObterPorIdAsync(id, ct);
         return dto is null ? NotFound() : View(dto);
     }

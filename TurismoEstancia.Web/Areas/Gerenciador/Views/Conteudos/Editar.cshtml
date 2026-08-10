@@ -1,5 +1,8 @@
 @model ConteudoSiteDto
-@{ ViewData["Title"] = "Editar texto"; }
+@{
+    ViewData["Title"] = "Editar texto";
+    var eImagem = Model.Chave == "historia-imagem";
+}
 <div class="painel-page-header">
     <div>
         <h1 class="painel-page-title">Editar texto</h1>
@@ -7,16 +10,12 @@
     </div>
 </div>
 
-<form class="painel-form" asp-action="Editar" method="post">
+<form class="painel-form" asp-action="Editar" method="post" enctype="multipart/form-data">
     <input asp-for="Id" type="hidden" />
     <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
 
     <div class="painel-form-grid">
-        <div class="painel-field">
-            <label asp-for="Chave"></label>
-            <input asp-for="Chave" class="painel-input" maxlength="60" />
-            <span asp-validation-for="Chave" class="field-validation-error"></span>
-        </div>
+        @await Html.PartialAsync("_SeletorChave", Model.Chave)
         <div class="painel-field">
             <label asp-for="Nome"></label>
             <input asp-for="Nome" class="painel-input" maxlength="120" />
@@ -24,9 +23,25 @@
         </div>
     </div>
 
-    <div class="painel-field">
+    <div class="painel-field" id="campoTexto" style="@(eImagem ? "display:none;" : "")">
         <label asp-for="Texto"></label>
-        <textarea asp-for="Texto" class="painel-textarea"></textarea>
+        <textarea asp-for="Texto" class="painel-textarea" id="Texto"></textarea>
+        <span class="painel-hint">Quebras de linha viram quebras no portal. Você pode usar <strong> e <br>.</span>
+    </div>
+
+    @await Html.PartialAsync("_PreviewTexto", "Texto")
+
+    <div class="painel-field" id="campoImagem" style="@(eImagem ? "" : "display:none;")">
+        <label>Imagem (foto da cidade)</label>
+        @if (eImagem && Model.Texto is { Length: > 0 } textoId && textoId.All(char.IsDigit))
+        {
+            <div style="margin-bottom:10px;">
+                <img src="/arquivo/@textoId" alt="Foto atual da cidade" style="max-width:280px;border-radius:12px;border:1px solid var(--color-white--15);" />
+                <div style="font-size:12px;color:var(--color-white--50);margin-top:4px;">Foto atual — enviar outra substitui.</div>
+            </div>
+        }
+        <input type="file" name="imagem" accept="image/*" class="painel-input" />
+        <span class="painel-hint">Envie a foto — o portal exibe no card da seção "Nossa Cidade".</span>
     </div>
 
     <div class="painel-form-actions">
@@ -34,3 +49,19 @@
         <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        // Alterna entre campo de texto (chave de texto) e upload de imagem
+        // (chave como historia-imagem), conforme a chave escolhida no select.
+        window.OnChaveSelecionada = function (chave) {
+            var eImagem = chave === 'historia-imagem';
+            var campoTexto = document.getElementById('campoTexto');
+            var campoImagem = document.getElementById('campoImagem');
+            var previews = document.querySelectorAll('.painel-preview');
+            if (campoTexto) campoTexto.style.display = eImagem ? 'none' : '';
+            if (campoImagem) campoImagem.style.display = eImagem ? '' : 'none';
+            previews.forEach(function (p) { p.style.display = eImagem ? 'none' : ''; });
+        };
+    </script>
+}

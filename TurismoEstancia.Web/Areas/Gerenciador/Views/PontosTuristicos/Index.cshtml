@@ -1,13 +1,22 @@
 @model IReadOnlyList<PontoTuristicoDto>
 @{
     ViewData["Title"] = "Pontos turísticos";
+    var contexto = (ViewData["ContextoPontos"] as string) ?? "todos";
 }
 <div class="painel-page-header">
     <div>
         <h1 class="painel-page-title">Pontos turísticos</h1>
-        <p class="painel-page-desc">Locais exibidos no mapa e nas maravilhas do portal.</p>
+        <p class="painel-page-desc">Locais do portal. As 7 Maravilhas e o Mapa mostram conjuntos diferentes: o mapa inclui também restaurantes, hotéis, praias e demais pontos.</p>
     </div>
-    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Novo ponto</a>
+    <button type="button" class="btn-painel btn-painel--primary js-abrir-criar" data-titulo="Novo ponto turístico" data-url="@Url.Action("Criar")">
+        <i data-lucide="plus"></i> Novo ponto
+    </button>
+</div>
+
+<div class="painel-periodo" style="margin-bottom:16px;">
+    <a asp-action="Index" asp-route-contexto="" class="@(contexto == "todos" ? "active" : "")">Todos</a>
+    <a asp-action="Index" asp-route-contexto="maravilhas" class="@(contexto == "maravilhas" ? "active" : "")"><i data-lucide="gem" style="width:13px;height:13px;"></i> 7 Maravilhas</a>
+    <a asp-action="Index" asp-route-contexto="mapa" class="@(contexto == "mapa" ? "active" : "")"><i data-lucide="map" style="width:13px;height:13px;"></i> Mapa (todos)</a>
 </div>
 
 <div class="painel-card">
@@ -18,6 +27,7 @@
                     <th>Imagem</th>
                     <th>Nome</th>
                     <th>Categoria</th>
+                    <th>Maravilha</th>
                     <th>Mapa</th>
                     <th>Ordem</th>
                     <th>Status</th>
@@ -36,6 +46,11 @@
                         </td>
                         <td><strong>@item.Nome</strong></td>
                         <td>@(item.CategoriaNome ?? "—")</td>
+                        <td>
+                            <span class="painel-badge @(item.CategoriaApresentarEmMaravilhas ? "painel-badge--yellow" : "painel-badge--grey")">
+                                @(item.CategoriaApresentarEmMaravilhas ? "Sim" : "Não")
+                            </span>
+                        </td>
                         <td>
                             <span class="painel-badge @(item.ExibirNoMapa ? "painel-badge--cyan" : "painel-badge--grey")">
                                 @(item.ExibirNoMapa ? "Sim" : "Não")

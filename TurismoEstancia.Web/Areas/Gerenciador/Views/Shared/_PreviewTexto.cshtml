@@ -1,0 +1,14 @@
+@model string
+@{
+    // Id do <textarea> monitorado (o preview atualiza a cada tecla).
+    var textareaId = Model;
+}
+<div class="painel-preview">
+    <div class="painel-preview-titulo"><i data-lucide="eye"></i> Pré-visualização (como aparece no portal)</div>
+    <div class="painel-preview-conteudo" id="preview_@textareaId"></div>
+</div>
+
+<script>
+    // A lógica vive no painel.js (window.PrevisualizarTexto) — sem Razor aqui.
+    if (window.PrevisualizarTexto) window.PrevisualizarTexto('@textareaId');
+</script>

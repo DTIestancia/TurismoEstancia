@@ -14,10 +14,15 @@ public class NoticiasController : PainelController
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Notícias";
+        ViewData["AreaAtiva"] = "noticias";
         return View(await _noticias.ListarAsync(apenasPublicadas: false, ct));
     }
 
-    public IActionResult Criar() => View(new NoticiaDto { DataPublicacao = DateTime.Now });
+    public async Task<IActionResult> Criar(CancellationToken ct)
+    {
+        ViewData["AreaAtiva"] = "noticias";
+        return View(new NoticiaDto { DataPublicacao = DateTime.Now });
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -40,6 +45,7 @@ public class NoticiasController : PainelController
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
     {
         ViewData["Title"] = "Editar notícia";
+        ViewData["AreaAtiva"] = "noticias";
         var dto = await _noticias.ObterPorIdAsync(id, ct);
         return dto is null ? NotFound() : View(dto);
     }

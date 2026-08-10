@@ -5,7 +5,7 @@
 <div class="painel-page-header">
     <div>
         <h1 class="painel-page-title">Editar configuração</h1>
-        <p class="painel-page-desc">Ajuste o valor da configuração.</p>
+        <p class="painel-page-desc">Ajuste o valor da configuração. A chave pode ser trocada no select.</p>
     </div>
 </div>
 
@@ -13,12 +13,11 @@
     <input asp-for="Id" type="hidden" />
     <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
 
+    @{
+        ViewData["CampoTipoId"] = "tipoConfig";
+    }
     <div class="painel-form-grid">
-        <div class="painel-field">
-            <label asp-for="Chave"></label>
-            <input asp-for="Chave" class="painel-input" maxlength="60" />
-            <span asp-validation-for="Chave" class="field-validation-error"></span>
-        </div>
+        @await Html.PartialAsync("_SeletorChave", Model.Chave)
         <div class="painel-field">
             <label asp-for="Nome"></label>
             <input asp-for="Nome" class="painel-input" maxlength="120" />

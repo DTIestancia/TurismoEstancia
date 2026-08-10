@@ -7,7 +7,9 @@
         <h1 class="painel-page-title">Tags culturais</h1>
         <p class="painel-page-desc">Etiquetas usadas na seção Cultura do portal.</p>
     </div>
-    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Nova tag</a>
+    <button type="button" class="btn-painel btn-painel--primary js-abrir-criar" data-titulo="Nova tag cultural" data-url="@Url.Action("Criar")">
+        <i data-lucide="plus"></i> Nova tag
+    </button>
 </div>
 
 <div class="painel-card">

@@ -1,13 +1,16 @@
 @model IReadOnlyList<EventoDto>
 @{
     ViewData["Title"] = "Eventos";
+    ViewData["AreaAtiva"] = "agenda";
 }
 <div class="painel-page-header">
     <div>
         <h1 class="painel-page-title">Eventos</h1>
         <p class="painel-page-desc">Agenda de eventos exibida no portal, com exportação .ics para calendários.</p>
     </div>
-    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Novo evento</a>
+    <button type="button" class="btn-painel btn-painel--primary js-abrir-criar" data-titulo="Novo evento" data-url="@Url.Action("Criar")">
+        <i data-lucide="plus"></i> Novo evento
+    </button>
 </div>
 
 <div class="painel-card">
