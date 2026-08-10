@@ -206,7 +206,7 @@ public class SecoesController : PainelController
     public async Task<IActionResult> Maravilhas(CancellationToken ct)
     {
         ViewData["Title"] = "7 Maravilhas";
-        var vm = await MontarAsync("maravilhas", "7 Maravilhas", "Chamada do deck de postais e acesso às categorias e pontos.", ct,
+        var vm = await MontarAsync("maravilhas", "7 Maravilhas", "Chamada do baralho de cartas e acesso às categorias e pontos.", ct,
             textos: [
                 T("maravilhas-titulo", "Título", "Aceita <strong> e <span class=\"vitrine-accent\"> para destacar; ex.: Lugares que <strong>encantam</strong>"),
                 T("maravilhas-descricao", "Descrição", "Chamada acima do deck")

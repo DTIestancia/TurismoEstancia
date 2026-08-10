@@ -75,7 +75,7 @@ public class ConteudosController : PainelController
                 new ConteudosCatalogViewModel.SecaoTextos
                 {
                     Titulo = "7 Maravilhas",
-                    Descricao = "Seção do deck de postais.",
+                    Descricao = "Seção do baralho de cartas das 7 Maravilhas.",
                     Itens = Itens(cadastrados,
                         ("maravilhas-titulo", "Título", "Aceita <span class=\"vitrine-accent\"> para destacar"),
                         ("maravilhas-descricao", "Descrição", "Chamada acima do deck"))
