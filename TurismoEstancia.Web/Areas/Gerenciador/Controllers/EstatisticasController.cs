@@ -16,12 +16,14 @@ public class EstatisticasController : PainelController
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Estatísticas";
+        ViewData["AreaAtiva"] = "cidade";
         return View(await _estatisticas.ListarAsync(ct));
     }
 
     public async Task<IActionResult> Criar(CancellationToken ct)
     {
         ViewData["Title"] = "Nova estatística";
+        ViewData["AreaAtiva"] = "cidade";
         await PreencherLegendasAsync(ViewData, ct);
         return View(new EstatisticaDto());
     }
@@ -43,6 +45,7 @@ public class EstatisticasController : PainelController
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
     {
         ViewData["Title"] = "Editar estatística";
+        ViewData["AreaAtiva"] = "cidade";
         var dto = await _estatisticas.ObterPorIdAsync(id, ct);
         if (dto is null) return NotFound();
         await PreencherLegendasAsync(ViewData, ct, dto.Legenda);

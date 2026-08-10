@@ -1,5 +1,7 @@
 @model HomeViewModel
 @{
+    var roteirosTitulo = Model.Conteudos.GetValueOrDefault("roteiros-titulo",
+        "Trilhas para <span class=\"secao-destaque\">explorar</span>") ?? "";
     var roteirosDesc = Model.Conteudos.GetValueOrDefault("roteiros-descricao",
         "Itinerários prontos para você viver o melhor de Estância — da história ao litoral.");
 }
@@ -15,7 +17,7 @@
                 </div>
             </div>
             <h2 class="section-title reveal" style="color:var(--color-white-solid);">
-                Trilhas para <span class="secao-destaque">explorar</span>
+                @Html.Raw(roteirosTitulo)
             </h2>
             <p class="section-desc reveal reveal-delay-1" style="color:var(--color-white--70);max-width:640px;">
                 @roteirosDesc

@@ -19,9 +19,48 @@
     </section>
 
     <div class="paginas-container paginas-container--vitrine">
-        <div class="vitrine-painel">
-            @await Html.PartialAsync("_VitrineMaravilhas", Model.Maravilhas)
-        </div>
+        @if (Model.Maravilhas.Count == 0)
+        {
+            <div class="news-empty">Nenhuma maravilha cadastrada ainda.</div>
+        }
+        else
+        {
+            <div class="paginas-grid">
+                @for (var i = 0; i < Model.Maravilhas.Count; i++)
+                {
+                    var ponto = Model.Maravilhas[i];
+                    var cor = ponto.CategoriaCor ?? "#F97E31";
+                    <a class="paginas-card paginas-card--maravilha" href="/lugares/@ponto.Id/@Slug.De(ponto.Nome)"
+                       data-track="ver-maravilha" data-track-id="@ponto.Id" data-track-nome="@ponto.Nome">
+                        <figure class="paginas-card-figure">
+                            @if (ponto.CapaArquivoId is long capa)
+                            {
+                                <img class="paginas-card-img" src="/arquivo/@capa" alt="@ponto.Nome" loading="lazy" />
+                            }
+                            else
+                            {
+                                <img class="paginas-card-img" src="" alt="@ponto.Nome" loading="lazy" />
+                            }
+                            <span class="paginas-card-num">@((i + 1).ToString("00"))</span>
+                        </figure>
+                        <div class="paginas-card-body">
+                            @if (!string.IsNullOrWhiteSpace(ponto.CategoriaNome))
+                            {
+                                <span class="paginas-card-cat" style="color:@cor;border-color:@cor;background:@(cor + "1A");">@ponto.CategoriaNome</span>
+                            }
+                            <h3 class="paginas-card-title">@ponto.Nome</h3>
+                            @if (!string.IsNullOrWhiteSpace(ponto.Descricao))
+                            {
+                                <p class="paginas-card-desc">@ponto.Descricao</p>
+                            }
+                            <span class="btn-primary paginas-card-btn">
+                                Ver detalhes <i data-lucide="arrow-right" class="icon-lg"></i>
+                            </span>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
 
         <div class="paginas-cta-row paginas-cta-row--center">
             <a href="/" class="btn-secondary"><i data-lucide="map" class="icon-lg"></i> Ver tudo no mapa da home</a>

@@ -17,7 +17,11 @@ public class GruposCulturaisController : PainelController
         return View(await _grupos.ListarAsync(ct));
     }
 
-    public IActionResult Criar() => View(new GrupoCulturalDto());
+    public async Task<IActionResult> Criar(CancellationToken ct)
+    {
+        ViewData["Title"] = "Novo grupo cultural";
+        return View(new GrupoCulturalDto());
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]

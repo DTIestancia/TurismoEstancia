@@ -1,0 +1,18 @@
+@model ContatoDto
+<div class="painel-field">
+    <label asp-for="Icone"></label>
+    <div class="painel-icone-input-row">
+        <input asp-for="Icone" class="painel-input painel-icone-input" maxlength="40" placeholder="phone, instagram, map-pin..." />
+        <div class="painel-icone-preview" id="iconePreview" aria-hidden="true"></div>
+    </div>
+    <div class="painel-icone-chips" id="iconeChips" role="group" aria-label="Ícones sugeridos"></div>
+    <span class="painel-hint">Ícone exibido ao lado do contato no rodapé — escolha uma sugestão abaixo ou digite o nome (Lucide ou rede social).</span>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (window.InicializarCampoIcone) {
+            window.InicializarCampoIcone('Icone', 'iconePreview', 'iconeChips', 'Tipo');
+        }
+    });
+</script>

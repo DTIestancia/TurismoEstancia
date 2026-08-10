@@ -7,7 +7,9 @@
         <h1 class="painel-page-title">Contatos do rodapé</h1>
         <p class="painel-page-desc">Endereço, telefones de emergência e redes sociais exibidos no rodapé do portal.</p>
     </div>
-    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Novo contato</a>
+    <button type="button" class="btn-painel btn-painel--primary js-abrir-criar" data-titulo="Novo contato" data-url="@Url.Action("Criar")">
+        <i data-lucide="plus"></i> Novo contato
+    </button>
 </div>
 
 <div class="painel-card">

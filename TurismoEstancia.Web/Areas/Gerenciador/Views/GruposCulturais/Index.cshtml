@@ -1,13 +1,16 @@
 @model IReadOnlyList<GrupoCulturalDto>
 @{
     ViewData["Title"] = "Grupos culturais";
+    ViewData["AreaAtiva"] = "cultura";
 }
 <div class="painel-page-header">
     <div>
         <h1 class="painel-page-title">Grupos culturais</h1>
         <p class="painel-page-desc">Reisado, Cacumbi, Batucada e demais grupos exibidos na seção Cultura do portal.</p>
     </div>
-    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Novo grupo</a>
+    <button type="button" class="btn-painel btn-painel--primary js-abrir-criar" data-titulo="Novo grupo cultural" data-url="@Url.Action("Criar")">
+        <i data-lucide="plus"></i> Novo grupo
+    </button>
 </div>
 
 <div class="painel-card">

@@ -11,4 +11,11 @@ public interface IConteudoSiteService
     Task<Dictionary<string, string?>> ObterDicionarioAsync(CancellationToken ct = default);
     Task SalvarAsync(ConteudoSiteDto dto, CancellationToken ct = default);
     Task ExcluirAsync(int id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Cria ou atualiza o texto de uma chave (upsert por chave) — usado pelas
+    /// telas de área do portal (Hero, Nossa Cidade, Cultura...) que editam os
+    /// textos da seção num formulário só, sem precisar saber o Id do registro.
+    /// </summary>
+    Task SalvarPorChaveAsync(string chave, string nome, string? texto, CancellationToken ct = default);
 }

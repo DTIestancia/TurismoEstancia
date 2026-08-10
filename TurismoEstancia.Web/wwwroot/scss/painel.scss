@@ -203,6 +203,309 @@
   }
 }
 
+// ===== Modo embutido (?embutido=1) — formulário de Criar no modal das listas =====
+// Oculta sidebar e topbar para o iframe mostrar só o formulário de cadastro.
+.painel--embutido {
+  .painel-sidebar,
+  .painel-topbar {
+    display: none;
+  }
+
+  .painel-content {
+    padding: 18px;
+  }
+}
+
+// ===== Transição dos modais (fade + escala) =====
+// A entrada roda via keyframes quando o dialog abre; a saída usa a classe
+// .dialog-fechando (o JS espera a animação antes de chamar close()).
+@keyframes painel-dialog-abrir {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes painel-dialog-fechar {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.94) translateY(10px);
+  }
+}
+
+.painel-criar-dialog,
+.painel-preview-dialog {
+  animation: painel-dialog-abrir 0.22s ease-out;
+
+  &.dialog-fechando {
+    animation: painel-dialog-fechar 0.18s ease-in forwards;
+  }
+}
+
+.painel-criar-dialog::backdrop,
+.painel-preview-dialog::backdrop {
+  transition: background 0.22s ease-out;
+}
+
+// ===== Modal de cadastro ("Novo ..." nas telas de lista) =====
+.painel-criar-dialog {
+  // Centralização explícita: alguns navegadores/temas não aplicam o
+  // margin:auto do UA ao dialog, deixando-o encostado à esquerda.
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: $color-white-solid;
+  width: min(760px, calc(100vw - 24px));
+  height: min(680px, calc(100vh - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+
+  &::backdrop {
+    background: rgba(3, 14, 25, 0.78);
+    backdrop-filter: blur(4px);
+  }
+
+  .painel-criar-dialog-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: $color-azure-5;
+    border: 1px solid $color-white--12;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .painel-criar-dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 20px;
+    border-bottom: 1px solid $color-white--10;
+    background: rgba(3, 14, 25, 0.6);
+
+    .painel-criar-dialog-title {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+
+      i { width: 18px; height: 18px; color: var(--color-orange-48); }
+    }
+
+    .painel-criar-dialog-acoes {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .painel-criar-dialog-close {
+      background: $color-white--8;
+      border: 1px solid $color-white--15;
+      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $color-white--70;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+
+      &:hover {
+        color: $color-white-solid;
+        border-color: $color-white--40;
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .painel-criar-dialog-corpo {
+    flex: 1;
+    min-height: 0;
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: $color-azure-5;
+    }
+  }
+}
+
+// ===== Modal de prévia da seção ("Prévia" na subnav das áreas) =====
+// Mostra a seção do portal num iframe (âncora da área) para o Gerenciador ver
+// como o conteúdo fica no site — sem sair da página nem recarregar o painel.
+.painel-preview-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: $color-white-solid;
+  width: min(1200px, calc(100vw - 24px));
+  height: min(820px, calc(100vh - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+
+  &::backdrop {
+    background: rgba(3, 14, 25, 0.82);
+    backdrop-filter: blur(4px);
+  }
+
+  .painel-preview-dialog-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: $color-azure-5;
+    border: 1px solid $color-white--12;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .painel-preview-dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 20px;
+    border-bottom: 1px solid $color-white--10;
+    background: rgba(3, 14, 25, 0.6);
+
+    .painel-preview-dialog-title {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+
+      i { width: 18px; height: 18px; color: var(--color-orange-48); }
+    }
+
+    .painel-preview-dialog-acoes {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .painel-preview-dialog-close {
+      background: $color-white--8;
+      border: 1px solid $color-white--15;
+      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $color-white--70;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+
+      &:hover {
+        color: $color-white-solid;
+        border-color: $color-white--40;
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .painel-preview-dialog-corpo {
+    flex: 1;
+    min-height: 0;
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: $color-azure-5;
+    }
+  }
+}
+
+// ===== Subnavegação por área do portal (abaixo do header das páginas de seção) =====
+.painel-subnav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin: -6px 0 22px;
+  scrollbar-width: thin;
+
+  .painel-subnav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    border: 1px solid $color-white--12;
+    background: $color-white--4;
+    color: $color-white--60;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+
+    i { width: 14px; height: 14px; flex-shrink: 0; }
+
+    &:hover {
+      border-color: $color-white--40;
+      color: $color-white-solid;
+    }
+
+    &.active {
+      background: linear-gradient(90deg, rgba(247, 100, 0, 0.22) 0%, rgba(230, 43, 52, 0.14) 100%);
+      border-color: rgba(247, 100, 0, 0.45);
+      color: $color-white-solid;
+      font-weight: 700;
+    }
+
+    // Item "Ver seção no portal" (só nas páginas de seção): separado por
+    // uma linha da navegação e com o laranja da paleta, deixando claro que
+    // leva para fora do painel.
+    &--externo {
+      margin-left: 8px;
+      box-shadow: inset 1px 0 0 $color-white--15;
+      border-color: transparent;
+      color: var(--color-orange-48);
+      background: transparent;
+
+      &:hover {
+        background: $color-white--8;
+        color: var(--color-orange-48);
+      }
+    }
+
+    // O botão "Prévia" vem depois do link externo — sem o separador de novo.
+    &.js-abrir-preview {
+      margin-left: 2px;
+      box-shadow: none;
+      border: 1px solid transparent;
+    }
+  }
+}
+
 // ===== Cards do painel =====
 .painel-card {
   background: $color-white--5;
@@ -1002,4 +1305,200 @@
   color: $color-white-solid;
   background: linear-gradient(90deg, var(--cor) 0%, color-mix(in srgb, var(--cor) 55%, #000) 100%);
   box-shadow: 0 6px 18px color-mix(in srgb, var(--cor) 35%, transparent);
+}
+
+// ===== Prévia de ícone (Contatos) =====
+// Campo de ícone com prévia em tempo real e sugestões por tipo de contato.
+.painel-icone-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+
+  .painel-icone-input { flex: 1; }
+}
+
+.painel-icone-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  min-width: 46px;
+  border-radius: 10px;
+  border: 1px solid $color-white--15;
+  background: $color-white--5;
+  color: var(--color-orange-48);
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .painel-icone-preview-vazio { color: $color-white--30; font-weight: 700; }
+  .painel-icone-preview-invalido { color: var(--color-red-54); font-weight: 700; }
+}
+
+.painel-icone-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.painel-icone-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid $color-white--15;
+  background: $color-white--5;
+  color: $color-white--65;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  i.lucide {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    border-color: var(--color-orange-48);
+    color: var(--color-orange-48);
+    transform: translateY(-2px);
+  }
+
+  &.active {
+    border-color: var(--color-orange-48);
+    background: color-mix(in srgb, var(--color-orange-48) 14%, transparent);
+    color: var(--color-orange-48);
+  }
+}
+
+// ===== Mapa interativo de posicionamento (Pontos turísticos) =====
+// Mesmo visual do mapa ilustrado do portal (terreno, grade e rio), em escala
+// de formulário e com clique para posicionar o marcador — o usuário não precisa
+// mais adivinhar as porcentagens X/Y.
+.painel-mapa {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0a1628;
+  background-image:
+    radial-gradient(circle at 25% 40%, rgba(255, 141, 0, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 75% 35%, rgba(0, 150, 98, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 55% 65%, rgba(255, 141, 0, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 15% 70%, rgba(0, 150, 98, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(0, 150, 98, 0.04) 0%, transparent 40%);
+  cursor: crosshair;
+  outline: 1px solid rgba(255, 255, 255, 0.08);
+  outline-offset: -1px;
+  box-shadow: 0 18px 40px -14px rgba(0, 0, 0, 0.45);
+
+  // Camadas decorativas (mesmos nomes do portal, escopadas ao painel).
+  .custom-map-terrain {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+
+    .terrain-circle {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  .custom-map-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 56px 56px;
+    opacity: 0.5;
+  }
+
+  .custom-map-river {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    width: 60%;
+    height: 30%;
+    top: 55%;
+    left: 18%;
+    border-radius: 50%;
+    border: 2px dashed rgba(255, 255, 255, 0.07);
+    transform: rotate(-15deg);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+  }
+
+  .painel-mapa-vazio {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: $color-white--40;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .painel-mapa-marcador {
+    position: absolute;
+    z-index: 3;
+    width: 22px;
+    height: 22px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-orange-48), var(--color-red-54));
+    border: 2px solid $color-white-solid;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+    pointer-events: none;
+    animation: painel-mapa-ping 1.8s ease-out infinite;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: $color-white-solid;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+@keyframes painel-mapa-ping {
+  0% {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), 0 0 0 0 rgba(249, 126, 49, 0.45);
+  }
+  70% {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), 0 0 0 12px rgba(249, 126, 49, 0);
+  }
+  100% {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), 0 0 0 0 rgba(249, 126, 49, 0);
+  }
 }

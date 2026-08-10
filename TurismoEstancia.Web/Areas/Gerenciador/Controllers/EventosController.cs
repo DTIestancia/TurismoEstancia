@@ -14,10 +14,16 @@ public class EventosController : PainelController
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Eventos";
+        ViewData["AreaAtiva"] = "agenda";
         return View(await _eventos.ListarAsync(apenasProximos: false, ct));
     }
 
-    public IActionResult Criar() => View(new EventoDto { DataInicio = DateTime.Today, DataFim = DateTime.Today });
+    public async Task<IActionResult> Criar(CancellationToken ct)
+    {
+        ViewData["Title"] = "Novo evento";
+        ViewData["AreaAtiva"] = "agenda";
+        return View(new EventoDto { DataInicio = DateTime.Today, DataFim = DateTime.Today });
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]

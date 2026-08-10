@@ -1,5 +1,7 @@
 @model HomeViewModel
 @{
+    var gastroTitulo = Model.Conteudos.GetValueOrDefault("gastronomia-titulo",
+        "<div class=\"gastronomy-cursive\">na mesa &amp; na rua</div><div class=\"gastronomy-title-wrap\"><div class=\"gastronomy-title-line serif-italic\">Grupos</div><div class=\"gastronomy-title-line georgia-bold\">populares</div><div class=\"gastronomy-title-ampersand\">&amp;</div><div class=\"gastronomy-title-line georgia-bold white\">gastronomia.</div></div>") ?? "";
     var gastroDesc = Model.Conteudos.GetValueOrDefault("gastronomia-descricao",
         "A alma de Estância vive nas batucadas, nos tambores e na mesa farta dos seus restaurantes — receitas que <em>atravessam gerações</em>.");
     var gastroMain = Model.Conteudos.GetValueOrDefault("gastronomia-main-texto",
@@ -19,13 +21,7 @@
 
     <div class="section-gastronomy-inner">
         <div class="gastronomy-header reveal">
-            <div class="gastronomy-cursive">na mesa &amp; na rua</div>
-            <div class="gastronomy-title-wrap">
-                <div class="gastronomy-title-line serif-italic">Grupos</div>
-                <div class="gastronomy-title-line georgia-bold">populares</div>
-                <div class="gastronomy-title-ampersand">&amp;</div>
-                <div class="gastronomy-title-line georgia-bold white">gastronomia.</div>
-            </div>
+            <div class="gastronomy-title-wrap-editavel reveal">@Html.Raw(gastroTitulo)</div>
             <div class="gastronomy-desc reveal reveal-delay-1">
                 <p>@Html.Raw(gastroDesc)</p>
                 <div class="gastronomy-desc-actions">

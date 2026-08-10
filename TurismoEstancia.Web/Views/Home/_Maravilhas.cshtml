@@ -1,5 +1,7 @@
 @model HomeViewModel
 @{
+    var maravilhasTitulo = Model.Conteudos.GetValueOrDefault("maravilhas-titulo",
+        "Lugares que <span class=\"vitrine-accent\">encantam</span>") ?? "";
     var maravilhasDesc = Model.Conteudos.GetValueOrDefault("maravilhas-descricao",
         "De filarmônicas centenárias a praias de tirar o fôlego — cada cantinho de Estância tem uma história esperando por você.") ?? "";
     var maravilhas = Model.CategoriasMaravilhas
@@ -15,7 +17,7 @@
             <span>7 Maravilhas de Estância</span>
         </div>
         <h2 class="section-title reveal">
-            Lugares que <span class="vitrine-accent">encantam</span>
+            @Html.Raw(maravilhasTitulo)
         </h2>
         <p class="section-desc reveal reveal-delay-1 vitrine-section-desc">
             @Html.Raw(maravilhasDesc.Replace("\n", "<br />"))

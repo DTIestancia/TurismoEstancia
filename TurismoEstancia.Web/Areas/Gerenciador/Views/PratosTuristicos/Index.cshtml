@@ -7,7 +7,9 @@
         <h1 class="painel-page-title">Pratos turísticos</h1>
         <p class="painel-page-desc">Pratos típicos exibidos na seção Gastronomia do portal.</p>
     </div>
-    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Novo prato</a>
+    <button type="button" class="btn-painel btn-painel--primary js-abrir-criar" data-titulo="Novo prato turístico" data-url="@Url.Action("Criar")">
+        <i data-lucide="plus"></i> Novo prato
+    </button>
 </div>
 
 <div class="painel-card">

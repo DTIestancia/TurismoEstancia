@@ -5,52 +5,48 @@
         <h1 class="painel-page-title">Novo contato</h1>
         <p class="painel-page-desc">Adicione um contato para o rodapé do portal.</p>
     </div>
-</div>
 
 <form class="painel-form" asp-action="Criar" method="post">
-    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+        <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
 
-    <div class="painel-form-grid">
-        <div class="painel-field">
-            <label asp-for="Tipo"></label>
-            <select asp-for="Tipo" class="painel-select">
-                <option value="@((int)TipoContato.Endereco)">Endereço</option>
-                <option value="@((int)TipoContato.Telefone)">Telefone</option>
-                <option value="@((int)TipoContato.RedesSocial)">Rede social</option>
-            </select>
+        <div class="painel-form-grid">
+            <div class="painel-field">
+                <label asp-for="Tipo"></label>
+                <select asp-for="Tipo" class="painel-select">
+                    <option value="@((int)TipoContato.Endereco)">Endereço</option>
+                    <option value="@((int)TipoContato.Telefone)">Telefone</option>
+                    <option value="@((int)TipoContato.RedesSocial)">Rede social</option>
+                </select>
+            </div>
+            @{
+                ViewData["CampoSelect"] = "Rotulo";
+            }
+            @await Html.PartialAsync("_SeletorChave", Model.Rotulo ?? string.Empty)
         </div>
-        @{
-            ViewData["CampoSelect"] = "Rotulo";
-        }
-        @await Html.PartialAsync("_SeletorChave", Model.Rotulo ?? string.Empty)
-    </div>
 
-    <div class="painel-field">
-        <label asp-for="Valor"></label>
-        <input asp-for="Valor" class="painel-input" maxlength="500" placeholder="Ex.: (79) 99999-0000 ou https://instagram.com/..." />
-        <span asp-validation-for="Valor" class="field-validation-error"></span>
-    </div>
-
-    <div class="painel-form-grid">
         <div class="painel-field">
-            <label asp-for="Icone"></label>
-            <input asp-for="Icone" class="painel-input" maxlength="40" placeholder="phone, instagram, map-pin..." />
-            <span class="painel-hint">Ícone Lucide exibido ao lado do contato.</span>
+            <label asp-for="Valor"></label>
+            <input asp-for="Valor" class="painel-input" maxlength="500" placeholder="Ex.: (79) 99999-0000 ou https://instagram.com/..." />
+            <span asp-validation-for="Valor" class="field-validation-error"></span>
         </div>
+
+        @await Html.PartialAsync("_CampoIconeContato", Model)
+
+        <div class="painel-form-grid">
+            <div class="painel-field">
+                <label asp-for="Ordem"></label>
+                <input asp-for="Ordem" class="painel-input" type="number" />
+            </div>
+        </div>
+
         <div class="painel-field">
-            <label asp-for="Ordem"></label>
-            <input asp-for="Ordem" class="painel-input" type="number" />
+            <label class="painel-checkbox">
+                <input asp-for="Ativo" /> Ativo no portal
+            </label>
         </div>
-    </div>
 
-    <div class="painel-field">
-        <label class="painel-checkbox">
-            <input asp-for="Ativo" /> Ativo no portal
-        </label>
-    </div>
-
-    <div class="painel-form-actions">
-        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar</button>
-        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
-    </div>
-</form>
+        <div class="painel-form-actions">
+            <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar</button>
+            <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+        </div>
+    </form>

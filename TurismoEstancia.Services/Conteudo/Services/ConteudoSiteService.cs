@@ -69,4 +69,20 @@ public class ConteudoSiteService : IConteudoSiteService
         _db.ConteudosSite.Remove(entidade);
         await _db.SaveChangesAsync(ct);
     }
+
+    public async Task SalvarPorChaveAsync(string chave, string nome, string? texto, CancellationToken ct = default)
+    {
+        var existente = await _db.ConteudosSite.FirstOrDefaultAsync(c => c.Chave == chave, ct);
+        if (existente is null)
+        {
+            _db.ConteudosSite.Add(new ConteudoSite { Chave = chave, Nome = nome, Texto = texto });
+        }
+        else
+        {
+            existente.Nome = nome;
+            existente.Texto = texto;
+        }
+
+        await _db.SaveChangesAsync(ct);
+    }
 }

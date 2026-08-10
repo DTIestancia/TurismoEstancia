@@ -7,7 +7,9 @@
         <h1 class="painel-page-title">Notícias</h1>
         <p class="painel-page-desc">Publicações exibidas em /Noticias no portal.</p>
     </div>
-    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Nova notícia</a>
+    <button type="button" class="btn-painel btn-painel--primary js-abrir-criar" data-titulo="Nova notícia" data-url="@Url.Action("Criar")">
+        <i data-lucide="plus"></i> Nova notícia
+    </button>
 </div>
 
 <div class="painel-card">

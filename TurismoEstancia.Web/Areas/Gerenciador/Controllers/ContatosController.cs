@@ -17,12 +17,14 @@ public class ContatosController : PainelController
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Contatos do rodapé";
+        ViewData["AreaAtiva"] = "rodape";
         return View(await _contatos.ListarAsync(null, ct));
     }
 
     public async Task<IActionResult> Criar(CancellationToken ct)
     {
         ViewData["Title"] = "Novo contato";
+        ViewData["AreaAtiva"] = "rodape";
         await PreencherRotulosAsync(ViewData, ct);
         return View(new ContatoDto());
     }
@@ -44,6 +46,7 @@ public class ContatosController : PainelController
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
     {
         ViewData["Title"] = "Editar contato";
+        ViewData["AreaAtiva"] = "rodape";
         var dto = await _contatos.ObterPorIdAsync(id, ct);
         if (dto is null) return NotFound();
         await PreencherRotulosAsync(ViewData, ct, dto.Rotulo);

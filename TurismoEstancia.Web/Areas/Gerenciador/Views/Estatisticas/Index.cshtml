@@ -7,7 +7,9 @@
         <h1 class="painel-page-title">Estatísticas</h1>
         <p class="painel-page-desc">Números exibidos na seção de história do portal.</p>
     </div>
-    <a class="btn-painel btn-painel--primary" asp-action="Criar"><i data-lucide="plus"></i> Nova estatística</a>
+    <button type="button" class="btn-painel btn-painel--primary js-abrir-criar" data-titulo="Nova estatística" data-url="@Url.Action("Criar")">
+        <i data-lucide="plus"></i> Nova estatística
+    </button>
 </div>
 
 <div class="painel-card">

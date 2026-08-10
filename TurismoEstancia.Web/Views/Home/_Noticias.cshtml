@@ -1,5 +1,7 @@
 @model HomeViewModel
 @{
+    var noticiasTitulo = Model.Conteudos.GetValueOrDefault("noticias-titulo",
+        "Notícias de <span class=\"secao-destaque\">Estância</span>") ?? "";
     var noticiasDesc = Model.Conteudos.GetValueOrDefault("noticias-descricao",
         "Cultura, eventos e novidades da Capital Sergipana da Cultura.");
 }
@@ -15,7 +17,7 @@
                 </div>
             </div>
             <h2 class="section-title reveal" style="color:var(--color-white-solid);">
-                Notícias de <span class="secao-destaque">Estância</span>
+                @Html.Raw(noticiasTitulo)
             </h2>
             <p class="section-desc reveal reveal-delay-1" style="color:var(--color-white--70);max-width:640px;">
                 @noticiasDesc

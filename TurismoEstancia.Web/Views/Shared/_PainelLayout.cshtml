@@ -9,6 +9,10 @@
     var inicial = string.IsNullOrWhiteSpace(nome) ? "?" : nome.Trim().Substring(0, 1).ToUpperInvariant();
     var perfil = User.FindFirst(Perfis.TipoClaim)?.Value ?? "";
     var gerenciador = perfil == Perfis.Gerenciador;
+    // Modo embutido (?embutido=1): o formulário de Criar abre dentro do modal
+    // das telas de lista — esconde sidebar/topbar/subnav para o iframe mostrar
+    // só o formulário, sem duplicar views.
+    var embutido = ViewContext.HttpContext.Request.Query["embutido"].ToString() == "1";
 }
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -25,7 +29,7 @@
     @await Component.InvokeAsync("ThemeSite")
 </head>
 <body class="painel-body">
-    <div class="painel">
+    <div class="painel @(embutido ? "painel--embutido" : "")">
         <!-- ===== Sidebar ===== -->
         <aside class="painel-sidebar">
             <div class="painel-brand">
@@ -39,7 +43,6 @@
             </div>
 
             <nav class="painel-nav">
-                <div class="painel-nav-title">Geral</div>
                 <a class="painel-nav-link @(IsAreaPage("Gerenciador","Dashboard") || IsAreaPage("Operador","Dashboard") ? "active" : "")"
                    asp-area="@(gerenciador ? "Gerenciador" : "Operador")"
                    asp-controller="Dashboard" asp-action="Index">
@@ -51,64 +54,54 @@
 
                 @if (gerenciador)
                 {
-                    <div class="painel-nav-title">Turismo</div>
-                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Categorias") ? "active" : "")" asp-area="Gerenciador" asp-controller="Categorias" asp-action="Index">
-                        <i data-lucide="folder-tree"></i> Categorias
+                    <div class="painel-nav-title">Conteúdo do site</div>
+                    <a class="painel-nav-link @(IsAreaSecao("hero") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Hero">
+                        <i data-lucide="images"></i> Hero
                     </a>
-                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","PontosTuristicos") ? "active" : "")" asp-area="Gerenciador" asp-controller="PontosTuristicos" asp-action="Index">
-                        <i data-lucide="map-pin"></i> Pontos turísticos
+                    <a class="painel-nav-link @(IsAreaSecao("cidade") || IsAreaPage("Gerenciador","Estatisticas") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Cidade">
+                        <i data-lucide="landmark"></i> Nossa Cidade
                     </a>
-                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Eventos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Eventos" asp-action="Index">
-                        <i data-lucide="calendar"></i> Eventos
+                    <a class="painel-nav-link @(IsAreaSecao("cultura") || IsAreaPage("Gerenciador","GruposCulturais") || IsAreaPage("Gerenciador","TagsCulturais") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Cultura">
+                        <i data-lucide="music"></i> Cultura
                     </a>
-                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Slides") ? "active" : "")" asp-area="Gerenciador" asp-controller="Slides" asp-action="Index">
-                        <i data-lucide="images"></i> Slides do hero
+                    <a class="painel-nav-link @(IsAreaSecao("gastronomia") || IsAreaPage("Gerenciador","PratosTuristicos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Gastronomia">
+                        <i data-lucide="utensils"></i> Gastronomia
                     </a>
-                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Estatisticas") ? "active" : "")" asp-area="Gerenciador" asp-controller="Estatisticas" asp-action="Index">
-                        <i data-lucide="bar-chart-3"></i> Estatísticas
+                    <a class="painel-nav-link @(IsAreaSecao("maravilhas") || IsAreaPage("Gerenciador","Categorias") || IsAreaPage("Gerenciador","PontosTuristicos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Maravilhas">
+                        <i data-lucide="gem"></i> 7 Maravilhas
+                    </a>
+                    <a class="painel-nav-link @(IsAreaSecao("agenda") || IsAreaPage("Gerenciador","Eventos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Agenda">
+                        <i data-lucide="calendar"></i> Agenda
+                    </a>
+                    <a class="painel-nav-link @(IsAreaSecao("noticias") || IsAreaPage("Gerenciador","Noticias") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Noticias">
+                        <i data-lucide="newspaper"></i> Notícias
+                    </a>
+                    <a class="painel-nav-link @(IsAreaSecao("roteiros") || IsAreaPage("Gerenciador","Roteiros") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Roteiros">
+                        <i data-lucide="route"></i> Roteiros
+                    </a>
+                    <a class="painel-nav-link @(IsAreaSecao("mapa") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Mapa">
+                        <i data-lucide="map"></i> Mapa
+                    </a>
+                    <a class="painel-nav-link @(IsAreaSecao("rodape") || IsAreaPage("Gerenciador","Contatos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Rodape">
+                        <i data-lucide="phone"></i> Rodapé
                     </a>
 
-                    <div class="painel-nav-title">Cultura e Gastronomia</div>
-                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","GruposCulturais") ? "active" : "")" asp-area="Gerenciador" asp-controller="GruposCulturais" asp-action="Index">
-                        <i data-lucide="music"></i> Grupos culturais
-                    </a>
-                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","PratosTuristicos") ? "active" : "")" asp-area="Gerenciador" asp-controller="PratosTuristicos" asp-action="Index">
-                        <i data-lucide="utensils"></i> Pratos turísticos
-                    </a>
-                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","TagsCulturais") ? "active" : "")" asp-area="Gerenciador" asp-controller="TagsCulturais" asp-action="Index">
-                        <i data-lucide="tags"></i> Tags culturais
-                    </a>
-
-                    <div class="painel-nav-title">Conteúdo</div>
-                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Conteudos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Conteudos" asp-action="Index">
-                        <i data-lucide="type"></i> Textos do portal
-                    </a>
+                    <div class="painel-nav-title">Sistema</div>
                     <a class="painel-nav-link @(IsAreaPage("Gerenciador","Tema") ? "active" : "")" asp-area="Gerenciador" asp-controller="Tema" asp-action="Index">
                         <i data-lucide="palette"></i> Tema e cores
                     </a>
                     <a class="painel-nav-link @(IsAreaPage("Gerenciador","Configuracoes") ? "active" : "")" asp-area="Gerenciador" asp-controller="Configuracoes" asp-action="Index">
                         <i data-lucide="settings"></i> Configurações
                     </a>
-                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Contatos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Contatos" asp-action="Index">
-                        <i data-lucide="phone"></i> Contatos do rodapé
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Newsletter") ? "active" : "")" asp-area="Gerenciador" asp-controller="Newsletter" asp-action="Index">
+                        <i data-lucide="mail"></i> Newsletter
                     </a>
-                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Noticias") ? "active" : "")" asp-area="Gerenciador" asp-controller="Noticias" asp-action="Index">
-                        <i data-lucide="newspaper"></i> Notícias
-                    </a>
-                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Roteiros") ? "active" : "")" asp-area="Gerenciador" asp-controller="Roteiros" asp-action="Index">
-                        <i data-lucide="route"></i> Roteiros
-                    </a>
-
-                    <div class="painel-nav-title">Comunidade</div>
                     <a class="painel-nav-link @(IsAreaPage("Gerenciador","Avaliacoes") ? "active" : "")" asp-area="Gerenciador" asp-controller="Avaliacoes" asp-action="Index">
                         <i data-lucide="star"></i> Avaliações
                         @if (ViewData["PendentesAvaliacoes"] is int pend && pend > 0)
                         {
                             <span class="painel-badge">@pend</span>
                         }
-                    </a>
-                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Newsletter") ? "active" : "")" asp-area="Gerenciador" asp-controller="Newsletter" asp-action="Index">
-                        <i data-lucide="mail"></i> Newsletter
                     </a>
                 }
                 else
@@ -144,6 +137,35 @@
             </header>
 
             <main class="painel-content">
+                @if (!embutido
+                    && !string.IsNullOrWhiteSpace(ViewData["AreaAtiva"] as string)
+                    && string.Equals(ViewContext.RouteData.Values["area"]?.ToString(), "Gerenciador", StringComparison.OrdinalIgnoreCase))
+                {
+                    <partial name="_SubnavAreas" />
+                }
+                @if (!embutido)
+                {
+                    // Modal único de cadastro: os botões "Novo ..." das telas de
+                    // lista abrem aqui o formulário de Criar (iframe ?embutido=1).
+                    <dialog class="painel-criar-dialog" id="criarDialog" aria-label="Cadastrar novo item">
+                        <div class="painel-criar-dialog-inner">
+                            <div class="painel-criar-dialog-header">
+                                <h3 class="painel-criar-dialog-title" id="criarDialogTitulo"><i data-lucide="plus-circle"></i> Cadastrar</h3>
+                                <div class="painel-criar-dialog-acoes">
+                                    <a class="btn-painel btn-painel--ghost btn-painel--sm" id="criarDialogAbrirAba" href="#" target="_blank" rel="noopener" title="Abrir em nova aba">
+                                        <i data-lucide="external-link"></i> Nova aba
+                                    </a>
+                                    <button type="button" class="painel-criar-dialog-close" id="criarDialogFechar" title="Fechar">
+                                        <i data-lucide="x"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="painel-criar-dialog-corpo">
+                                <iframe id="criarDialogFrame" src="about:blank" title="Formulário de cadastro"></iframe>
+                            </div>
+                        </div>
+                    </dialog>
+                }
                 @if (TempData["PainelOk"] is string ok)
                 {
                     <div class="painel-alert painel-alert--ok"><i data-lucide="check-circle"></i> @ok</div>
@@ -153,6 +175,12 @@
                     <div class="painel-alert painel-alert--erro"><i data-lucide="alert-circle"></i> @erro</div>
                 }
                 @RenderBody()
+                @if (embutido && TempData["PainelOk"] is string)
+                {
+                    // Dentro do modal de cadastro, avisa a página (que abriu o
+                    // dialog) que o item foi salvo — ela fecha e recarrega a lista.
+                    <script>if (window.parent !== window) { window.parent.postMessage('painel-salvo', '*'); }</script>
+                }
             </main>
         </div>
     </div>
@@ -170,5 +198,12 @@
         var rotaController = ViewContext.RouteData.Values["controller"]?.ToString();
         return string.Equals(rotaArea, area, StringComparison.OrdinalIgnoreCase)
             && string.Equals(rotaController, controller, StringComparison.OrdinalIgnoreCase);
+    }
+
+    // True quando estamos na página de uma área do portal (Secoes/<Area>).
+    private bool IsAreaSecao(string area)
+    {
+        return IsAreaPage("Gerenciador", "Secoes")
+            && string.Equals(ViewContext.RouteData.Values["action"]?.ToString(), area, StringComparison.OrdinalIgnoreCase);
     }
 }

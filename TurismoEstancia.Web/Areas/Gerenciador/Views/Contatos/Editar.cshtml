@@ -32,12 +32,9 @@
         <span asp-validation-for="Valor" class="field-validation-error"></span>
     </div>
 
+    @await Html.PartialAsync("_CampoIconeContato", Model)
+
     <div class="painel-form-grid">
-        <div class="painel-field">
-            <label asp-for="Icone"></label>
-            <input asp-for="Icone" class="painel-input" maxlength="40" />
-            <span class="painel-hint">Ícone Lucide exibido ao lado do contato.</span>
-        </div>
         <div class="painel-field">
             <label asp-for="Ordem"></label>
             <input asp-for="Ordem" class="painel-input" type="number" />

@@ -1,0 +1,251 @@
+@model AreaSiteViewModel
+@{
+    ViewData["Title"] = Model.Titulo;
+    var ehHero = Model.Area == "hero";
+    var ehCidade = Model.Area == "cidade";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">@Model.Titulo</h1>
+        <p class="painel-page-desc">@Model.Descricao</p>
+    </div>
+</div>
+
+@{
+    ViewData["AreaAtiva"] = Model.Area;
+    ViewData["VerSecaoUrl"] = Model.VerSecaoUrl;
+}
+
+@if (Model.Itens is { } blocoItens)
+{
+    <div class="painel-card">
+        <div class="painel-card-title"><i data-lucide="@blocoItens.Icone"></i> @blocoItens.Titulo
+            <span class="painel-badge painel-badge--grey" style="margin-left:auto;">@blocoItens.Itens.Count</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--color-white--45);margin:0 0 14px;">Veja o que já está cadastrado nesta área e cadastre novos itens sem sair da página.</p>
+
+        @if (blocoItens.Itens.Count == 0)
+        {
+            <div class="painel-empty" style="padding:18px 10px;margin-bottom:14px;">Nada cadastrado ainda — clique em "@blocoItens.RotuloBotao" para começar.</div>
+        }
+        else
+        {
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-bottom:14px;">
+                @foreach (var item in blocoItens.Itens)
+                {
+                    <div style="display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--color-white--5);border:1px solid var(--color-white--10);">
+                        @if (item.ImagemArquivoId is long imgId)
+                        {
+                            <img src="/arquivo/@imgId" alt="" style="width:42px;height:42px;border-radius:9px;object-fit:cover;flex-shrink:0;border:1px solid var(--color-white--10);" />
+                        }
+                        else
+                        {
+                            <div style="width:42px;height:42px;border-radius:9px;background:var(--color-white--8);display:flex;align-items:center;justify-content:center;color:var(--color-white--40);flex-shrink:0;"><i data-lucide="@blocoItens.Icone" style="width:18px;height:18px;"></i></div>
+                        }
+                        <div style="min-width:0;flex:1;">
+                            <div style="font-size:13px;font-weight:600;color:var(--color-white-solid);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@item.Nome</div>
+                            @if (!string.IsNullOrWhiteSpace(item.Detalhe))
+                            {
+                                <div style="font-size:11.5px;color:var(--color-white--45);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@item.Detalhe</div>
+                            }
+                        </div>
+                        <span class="painel-badge @(item.Ativo ? "painel-badge--green" : "painel-badge--grey")">@(item.Ativo ? "Ativo" : "Inativo")</span>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="painel-actions">
+            <button type="button" class="btn-painel btn-painel--primary js-abrir-criar"
+                    data-titulo="@blocoItens.RotuloBotao" data-url="@blocoItens.UrlCriar">
+                <i data-lucide="plus"></i> @blocoItens.RotuloBotao
+            </button>
+            <a class="btn-painel btn-painel--ghost" href="@blocoItens.UrlLista" target="_blank" rel="noopener">
+                <i data-lucide="list"></i> Ver todos (lista completa)
+            </a>
+        </div>
+    </div>
+}
+
+@if (ehHero)
+{
+    <div class="painel-card" style="margin-bottom:18px;">
+        <div class="painel-card-title"><i data-lucide="images"></i> Imagens do carrossel (hero)</div>
+        <p style="font-size:13px;color:var(--color-white--55);margin:4px 0 14px;">As imagens do fundo do hero. A primeira da lista aparece primeiro no carrossel.</p>
+
+        @if (Model.Slides.Count == 0)
+        {
+            <div class="painel-empty" style="margin-bottom:14px;">Nenhuma imagem no carrossel ainda. Adicione a primeira abaixo.</div>
+        }
+        else
+        {
+            <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
+                @foreach (var slide in Model.Slides.OrderBy(s => s.Ordem))
+                {
+                    <div style="position:relative;width:200px;">
+                        <img src="/arquivo/@slide.ImagemArquivoId" alt="@(slide.Titulo ?? "Slide do hero")"
+                             style="width:200px;height:112px;object-fit:cover;border-radius:12px;border:1px solid var(--color-white--15);" />
+                        @if (!string.IsNullOrWhiteSpace(slide.Titulo))
+                        {
+                            <div style="position:absolute;left:8px;bottom:8px;background:rgba(0,0,0,0.7);color:#fff;font-size:11px;padding:3px 8px;border-radius:6px;">@slide.Titulo</div>
+                        }
+                        <form asp-action="ExcluirSlide" asp-route-id="@slide.Id" method="post" class="js-confirm"
+                              data-confirm="Remover esta imagem do carrossel?" style="position:absolute;top:6px;right:6px;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs" title="Remover slide"><i data-lucide="trash-2"></i></button>
+                        </form>
+                    </div>
+                }
+            </div>
+        }
+
+        <form asp-action="AdicionarSlide" method="post" enctype="multipart/form-data" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+            @Html.AntiForgeryToken()
+            <div class="painel-field" style="flex:1;min-width:220px;margin:0;">
+                <label>Título (opcional)</label>
+                <input name="Titulo" class="painel-input" maxlength="120" placeholder="Ex.: Praia do Saco ao entardecer" />
+            </div>
+            <div class="painel-field" style="flex:1;min-width:220px;margin:0;">
+                <label>Imagem do slide</label>
+                <input type="file" name="imagem" accept="image/*" class="painel-input" required />
+            </div>
+            <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="plus"></i> Adicionar slide</button>
+        </form>
+    </div>
+}
+
+<form class="painel-form" asp-action="Salvar@(char.ToUpperInvariant(Model.Area[0]) + Model.Area[1..])" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="Area" value="@Model.Area" />
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-card" style="padding:22px;">
+        @for (var i = 0; i < Model.Textos.Count; i++)
+        {
+            var campo = Model.Textos[i];
+            <div class="painel-field">
+                <label for="Textos_@(i)__Valor">@campo.Nome</label>
+                <textarea name="Textos[@i].Valor" id="Textos_@(i)__Valor" class="painel-textarea" style="min-height:90px;">@campo.Valor</textarea>
+                <input type="hidden" name="Textos[@i].Chave" value="@campo.Chave" />
+                <input type="hidden" name="Textos[@i].Nome" value="@campo.Nome" />
+                @if (!string.IsNullOrWhiteSpace(campo.Dica))
+                {
+                    <span class="painel-hint">@campo.Dica</span>
+                }
+            </div>
+        }
+
+        @for (var j = 0; j < Model.Imagens.Count; j++)
+        {
+            var img = Model.Imagens[j];
+            <div class="painel-field">
+                <label>@img.Nome</label>
+                @if (img.ArquivoId is long arquivoId)
+                {
+                    <div style="margin-bottom:10px;">
+                        <img src="/arquivo/@arquivoId" alt="@img.Nome" style="max-width:300px;border-radius:12px;border:1px solid var(--color-white--15);" />
+                        <div style="font-size:12px;color:var(--color-white--50);margin-top:4px;">Imagem atual — enviar outra substitui.</div>
+                    </div>
+                }
+                <input type="file" name="imagem_@(img.Chave)" accept="image/*" class="painel-input" />
+                <input type="hidden" name="Imagens[@j].Chave" value="@img.Chave" />
+                <input type="hidden" name="Imagens[@j].Nome" value="@img.Nome" />
+            </div>
+        }
+
+        @if (Model.Links.Count > 0)
+        {
+            <div style="border-top:1px solid var(--color-white--10);margin-top:20px;padding-top:16px;">
+                <div class="painel-preview-title" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--color-white--55);margin-bottom:12px;">Itens desta área</div>
+                <p style="font-size:12.5px;color:var(--color-white--45);margin:0 0 12px;">Veja o que já está cadastrado e crie novos itens nas telas próprias (abrem em nova aba).</p>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    @foreach (var link in Model.Links)
+                    {
+                        <a href="@link.Url" target="_blank" rel="noopener" class="btn-painel btn-painel--ghost" style="justify-content:flex-start;text-align:left;">
+                            <i data-lucide="@link.Icone"></i>
+                            <span>
+                                <strong>@link.Titulo</strong>
+                                <small style="display:block;color:var(--color-white--50);font-size:12px;">@link.Descricao</small>
+                            </span>
+                            <i data-lucide="chevron-right" style="margin-left:auto;"></i>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (ehCidade && Model.Estatisticas.Count > 0)
+        {
+            <div style="border-top:1px solid var(--color-white--10);margin-top:20px;padding-top:16px;">
+                <div class="painel-preview-title" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--color-white--55);margin-bottom:12px;">Estatísticas atuais</div>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                    @foreach (var est in Model.Estatisticas)
+                    {
+                        <span class="tema-chip" style="--cor: var(--color-orange-48);">@est.Valor · @est.Legenda</span>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="painel-form-actions" style="margin-top:16px;">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar @Model.Titulo</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index" asp-controller="Dashboard" asp-area="Gerenciador"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>
+
+<dialog class="painel-preview-dialog" id="previewDialog" aria-label="Prévia da seção no portal">
+    <div class="painel-preview-dialog-inner">
+        <div class="painel-preview-dialog-header">
+            <h3 class="painel-preview-dialog-title"><i data-lucide="eye"></i> Prévia — @Model.Titulo</h3>
+            <div class="painel-preview-dialog-acoes">
+                <button type="button" class="painel-preview-dialog-close" id="previewDialogFechar" title="Fechar">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+        </div>
+        <div class="painel-preview-dialog-corpo">
+            <iframe id="previewDialogFrame" src="about:blank" title="Prévia da seção no portal"></iframe>
+        </div>
+    </div>
+</dialog>
+
+@section Scripts {
+    <script>
+        // Preview ao vivo dos campos de texto que aceitam HTML (reuso do painel.js).
+        @for (var i = 0; i < Model.Textos.Count; i++)
+        {
+            <text>if (window.PrevisualizarTexto) window.PrevisualizarTexto('Textos_@(i)__Valor');</text>
+        }
+
+        // Modal de prévia: mostra a seção do portal (com os textos/imagens que
+        // serão salvos) num iframe apontando para a âncora da área — sem sair
+        // da página e sem recarregar o Gerenciador.
+        (function () {
+            var dialog = document.getElementById('previewDialog');
+            var frame = document.getElementById('previewDialogFrame');
+            if (!dialog || !frame) return;
+
+            function abrir(url) {
+                if (!url) return;
+                frame.setAttribute('src', url);
+                if (typeof dialog.showModal === 'function') dialog.showModal();
+                else dialog.setAttribute('open', '');
+                if (window.lucide) window.lucide.createIcons();
+            }
+
+            // Botão "Prévia" na subnav (definido pelo partial _SubnavAreas).
+            var botaoPreview = document.getElementById('jsAbrirPreview');
+            if (botaoPreview) botaoPreview.addEventListener('click', function () { abrir(botaoPreview.getAttribute('data-url')); });
+
+            document.getElementById('previewDialogFechar').addEventListener('click', function () {
+                window.FecharDialogPainel('previewDialog');
+            });
+            dialog.addEventListener('click', function (ev) {
+                if (ev.target === dialog) window.FecharDialogPainel('previewDialog'); // clique no backdrop
+            });
+            document.addEventListener('keydown', function (ev) {
+                if (ev.key === 'Escape' && dialog.open) window.FecharDialogPainel('previewDialog');
+            });
+        })();
+    </script>
+}
