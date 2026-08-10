@@ -39,17 +39,19 @@ TurismoEstancia.Web ──► Services ──► Domain
 TurismoEstancia.slnx
 ├── TurismoEstancia.Web/                # Entrada (MVC + Razor Pages + Áreas)
 │   ├── Program.cs                      # Fino: encadeia as Extensions
-│   ├── Extensions/                     # Composição (DI, DB, Identity, Pipeline, seed)
-│   ├── Areas/Gerenciador/              # CMS completo (16 CRUDs + Dashboard, além do PainelController base)
+│   ├── Extensions/                     # Composição (DI, DB, Identity, Pipeline)
+│   ├── Areas/Gerenciador/              # CMS: "Conteúdo do site" (10 áreas, SecoesController)
+│   │                                   #   + CRUDs + Tema/Configurações/Newsletter/Avaliações
 │   ├── Areas/Operador/                 # Eventos + Newsletter (perfil restrito)
+│   ├── Components/                     # ViewComponents: LogoSite, ThemeSite, ContatosRodape
 │   ├── Controllers/                    # Portal público e endpoints
 │   ├── Infrastructure/SeoService.cs    # SEO por página (title/meta/OG/Twitter)
 │   ├── Infrastructure/ConfiguracaoSiteCache.cs  # decorator: 1 consulta de config por request
 │   ├── Middleware/AnalyticsVisitTrackingMiddleware.cs
 │   ├── Middleware/FaviconMiddleware.cs # favicon dinâmico (logo-principal ou estático)
-│   ├── Models/                         # ViewModels do portal (Home, Paginas...)
+│   ├── Models/                         # ViewModels do portal (Home, Paginas...) e das áreas
 │   ├── Pages/Noticias|Roteiros/        # Razor Pages públicas
-│   ├── Views/Home/                     # 12 partials do portal (hero, história...)
+│   ├── Views/Home/                     # 11 partials do portal (hero, história...)
 │   └── wwwroot/scss/                   # SCSS: _portal.scss (verbatim) + main.scss (ajustes)
 ├── TurismoEstancia.Domain/             # Entidades + DbContext + DTOs + migrações
 ├── TurismoEstancia.Services/           # 7 módulos: Turismo, CulturaGastronomia, Roteiro,
@@ -141,7 +143,7 @@ Módulos atuais: **Turismo** (pontos, categorias, mídias, horários, avaliaçõ
 5. **Controller** na área certa com `[Authorize(Policy = "Gerenciador")]`.
 6. **Mapper/ViewModel** (`Areas/Gerenciador/Models/` ou `Web/Models/`).
 7. **Views** (Index + Formulario).
-8. **Migração + seed** idempotente (se houver dados de referência).
+8. **Migração de schema** (dados de referência entram por migração — **seed é proibido** por regra).
 
 > Para um módulo visível no **portal**, o passo extra é: service consumido no
 > `HomeController`/`PaginasController` → partial nova em `Views/Home/` → classes de
@@ -172,7 +174,8 @@ Módulos atuais: **Turismo** (pontos, categorias, mídias, horários, avaliaçõ
   `Gerenciador` e `Operador` são registradas em `IdentityExtensions`.
 - `[Authorize(Policy = "Gerenciador")]` nos controllers do CMS;
   `[Authorize(Policy = "Operador")]` na área Operador (Eventos + Newsletter).
-- **Usuário admin** criado pelo seed com as duas claims.
+- **Não há seed nem admin local**: os acessos ao painel (claims `Gerenciador`/`Operador`)
+  são provisionados pelo **gerenciador geral de acessos da DTI** (sistemas do município).
 
 ---
 
@@ -220,7 +223,7 @@ Fluxo anônimo (sem dados pessoais):
 
 | Rota | Controller/Action |
 | --- | --- |
-| `/` | `HomeController.Index` (home com 12 partials) |
+| `/` | `HomeController.Index` (home com 11 partials) |
 | `/cidade`, `/cultura`, `/grupos-populares`, `/gastronomia`, `/lugares` | `PaginasController` |
 | `/lugares/{id}/{slug}`, `/grupos-populares/{id}/{slug}`, `/gastronomia/{id}/{slug}`, `/cultura/{id}/{slug}` | detalhes |
 | `/noticias`, `/noticias/{slug}` e `/roteiros`, `/roteiros/{slug}` | Razor Pages (`Pages/`) |
@@ -230,12 +233,55 @@ Fluxo anônimo (sem dados pessoais):
 
 **Partials da home** (`Views/Home/`): `_Hero` (navbar, preloader, hero),
 `_Historia`, `_Cultura`, `_Gastronomia`, `_Maravilhas` (vitrine),
-`_Agenda`, `_Mapa`, `_Roteiros`, `_Video`, `_Footer`, `Privacy`.
+`_Agenda`, `_Mapa`, `_Roteiros`, `_Noticias`, `_Video`, `_Footer`, `Privacy`.
 
-**Vitrine das 7 Maravilhas** — `Views/Shared/_VitrineMaravilhas.cshtml` (componente
-reutilizado na home e em `/lugares`), JS em `portal.js` (`initWondersVitrine`):
-postais com `role="tab"`/`aria-selected`, teclado ← →, swipe, crossfade da foto,
-contador. **Manter o padrão `data-*`** ao estender.
+**Vitrine das 7 Maravilhas** — `Views/Shared/_VitrineMaravilhas.cshtml`, JS em
+`portal.js` (`initWondersVitrine`): **baralho de cartas com prévia** via scroll-snap
+horizontal — a carta mais próxima do centro do deck é a atual (`is-atual`; escala 1,
+nítida), a próxima espreita à direita e a anterior fica à esquerda. Navegação por
+**setas ‹ › sobrepostas no centro da foto**, **teclado ← →**, **clique na carta
+lateral** (avança/volta) e **arrasto** (mouse: snap desativado durante o arrasto via
+`.is-dragging` e re-encaixe ao soltar; toque: scroll nativo). Contador
+`#vitrineCounter` ("Maravilha X de 7"). As extremidades do deck são centralizadas
+com espaçadores `::before/::after` (o `%` do flex-basis e o padding resolvem contra
+boxes diferentes). **`/lugares` é uma listagem** (grid `paginas-card--maravilha`
+numerada 01–07) — não usa o baralho.
+
+**Contatos do rodapé** — `Components/ContatosRodapeViewComponent` + view `Default`
+(com **cache por request** via `HttpContext.Items` — a home invoca o componente 3×
+mas faz 1 consulta): endereços com `map-pin`, telefones com ícone por contato e
+**detecção de WhatsApp** (`wa.me`/`whatsapp` → link `https://wa.me/<nº>`), redes
+sociais com **detecção pela URL** (instagram/facebook/youtube/tiktok/x/linkedin).
+Usado no `_Footer` (home) e no `_PaginasFooter` (páginas internas) — única fonte de
+verdade para a marcação dos contatos.
+
+**Logotipo e tema dinâmicos** — `Components/LogoSiteViewComponent` (lê `logo-principal`,
+renderiza `/arquivo/{id}`, fallback para a assinatura; usado no navbar, headers,
+login e `_PainelLayout`; cache por request) e `Components/ThemeSiteViewComponent`
+(emite `<style id="tema-site">` com as 6 cores da paleta editáveis no Gerenciador
+`TemaController`, chaves `tema-cor-*`; vale no portal, painel e login).
+
+### Gerenciador — "Conteúdo do site" (áreas)
+
+O `SecoesController` (`Areas/Gerenciador/Controllers/`) é o hub de edição das **10
+áreas** (Hero, Nossa Cidade, Cultura, Gastronomia, 7 Maravilhas, Agenda, Notícias,
+Roteiros, Mapa, Rodapé). Cada ação monta um `AreaSiteViewModel` com:
+
+- **Itens cadastrados** (cards `ItensAreaViewModel` — o que a área já tem) + botão
+  "Cadastrar novo" que abre o **modal de cadastro** do CRUD correspondente
+  (`dialog` com fade+escala, `FecharDialogPainel` no `painel.js`) e "Ver todos"
+  (lista completa em nova aba);
+- **Textos** da área (chave → valor, com dica e `PrevisualizarTexto` ao vivo);
+- **Imagens** da área (upload substitui a atual);
+- **Slides do hero** (gestão inline na área Hero) e **estatísticas** (chips na área
+  Cidade);
+- Subnav `_SubnavAreas` (10 áreas + **"Ver seção no portal"** com âncora e
+  **"Prévia"** em iframe) — reutilizada nos CRUDs relacionados (Categorias, Grupos,
+  Eventos...).
+
+O **seletor de chave** (`_SeletorChave`) substitui a digitação manual de chaves:
+lista o catálogo disponível (por contexto) e **desabilita chaves já em uso** — usado
+em Conteúdos, Configurações, Categorias, Estatísticas e Contatos.
 
 ---
 
@@ -246,8 +292,12 @@ contador. **Manter o padrão `data-*`** ao estender.
   protótipo); mudanças vão no `main.scss`.
 - **`_tokens.scss`** — tokens reutilizáveis (`$shadow-card`, etc.).
 - **`main.scss`** — `@use 'portal'` + **ajustes dinâmicos e overrides** (preloader,
-  vitrine, páginas internas, responsividade mobile). Por vir **depois** no cascade, um
-  override de mesma especificidade vence.
+  baralho das 7 Maravilhas, `--secao-cor` por seção, páginas internas, responsividade
+  mobile). Por vir **depois** no cascade, um override de mesma especificidade vence.
+- **Paleta editável** — o `ThemeSiteViewComponent` emite um `<style id="tema-site">`
+  que sobrescreve as variáveis de cor em runtime (sem recompilar): as seções usam
+  `var(--secao-cor)`/`var(--tema-*)` e as 6 cores oficiais viram `var(--cor-*)`
+  quando o tema personalizado está ativo.
 - Compilado no **build** (`sasscompiler.json`, pacote `AspNetCore.SassCompiler`) para
   `wwwroot/css/main.css`.
 
@@ -265,8 +315,9 @@ contador. **Manter o padrão `data-*`** ao estender.
 - **Não existe seed** — proibido por regra (o `DatabaseSeeder` foi removido).
 - **Banco**: aplicar migrações (`dotnet ef database update`) e, para mídias grandes,
   seguir [`Deploy/01-Filestream-Config.sql`](../Deploy/01-Filestream-Config.sql).
-- **Segurança**: trocar a senha do admin, usar connection strings por secrets/env vars,
-  HTTPS obrigatório (o `_Layout` gera canônicos/OG com `Request.Scheme`).
+- **Segurança**: usar connection strings por secrets/env vars, HTTPS obrigatório (o
+  `_Layout` gera canônicos/OG com `Request.Scheme`); acessos ao painel são da DTI
+  (não há admin local para "trocar senha").
 
 ---
 
@@ -304,7 +355,8 @@ dotnet ef database update --project TurismoEstancia.Domain --startup-project Tur
 
 ## 14. Notas de evolução (roadmap técnico)
 
-- **Itens de roteiro** editáveis no CMS (hoje vêm do seed — ver `RoteiroItem`).
+- **Itens de roteiro** editáveis no CMS (hoje são dados de referência no banco — ver
+  `RoteiroItem`).
 - **Paginação** em Newsletter/Avaliações no painel.
 - **Testes automatizados** (xUnit) para services e controllers — hoje a validação é
   build + smoke manual.

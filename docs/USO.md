@@ -29,7 +29,7 @@ A home é uma página única com as seções:
 2. **Nossa Cidade** — história, estatísticas e fotos.
 3. **Nossa Cultura** — manifestações culturais e grupos.
 4. **Grupos & Gastronomia** — grupos populares e pratos típicos.
-5. **7 Maravilhas** — a vitrine de postais (veja abaixo).
+5. **7 Maravilhas** — o baralho de cartas das maravilhas (veja abaixo).
 6. **Mapa Interativo** — todos os pontos no mapa, com filtros e modal de detalhes.
 7. **Agenda** — eventos com botão de adicionar ao calendário (`.ics`).
 8. **Roteiros** — roteiros sugeridos de visitação.
@@ -40,13 +40,20 @@ O menu superior navega por âncoras. Em telas pequenas ele vira um **menu hambú
 de tela cheia. Há um **botão "voltar ao topo"** flutuante no canto inferior direito
 que aparece ao rolar.
 
-### 2.2 A vitrine das 7 Maravilhas
+### 2.2 As 7 Maravilhas (baralho de cartas)
 
-- A seção "Lugares que encantam" mostra um **postal grande** com a foto da maravilha,
-  categoria, descrição, tag e o botão **"Ver detalhes"** (leva à página completa do lugar).
-- Os **postais menores** embaixo navegam o postal grande (troca de foto com fade).
-  Funciona por **clique, toque, teclado (← →)** e **swipe**.
-- A página `/lugares` repete a vitrine completa.
+- A seção "Lugares que encantam" é um **baralho de cartas com prévia**: a **carta
+  central** é a maravilha exibida (foto + número 01–07 + categoria na cor oficial +
+  título + descrição + tag + botão **"Ver detalhes"** → página completa do lugar).
+- A **próxima carta espreita pela direita** e a **anterior fica à esquerda** (já
+  passou). Clicar numa carta lateral (fora de links) leva ela ao centro — avança ou
+  volta.
+- Navegação: **setas ‹ › no centro da foto**, **teclado (← →)**, **arrastar com o
+  mouse** no desktop e **arrastar/toque** no celular (scroll nativo com encaixe). O
+  contador mostra "Maravilha X de 7".
+- A página **`/lugares`** ("Ver todas as maravilhas") **não repete o baralho**: é
+  uma **listagem em grid** com as 7 maravilhas numeradas (01–07), cada uma com foto,
+  categoria, descrição e o botão "Ver detalhes".
 
 ### 2.3 Mapa interativo
 
@@ -92,18 +99,20 @@ Ao entrar, o **Dashboard** mostra:
 
 | Módulo | O que é | Observações |
 | --- | --- | --- |
-| **Pontos Turísticos** | Os lugares (praias, igrejas, fábricas...) | Upload de **capa, galeria e pictograma**; horários de funcionamento; flag "Apresentar em Maravilhas" + ordem |
-| **Categorias** | Agrupam os pontos (ex.: Patrimônio & História, Natureza) | Categoria define se aparece nas 7 Maravilhas |
+| **Conteúdo do site** | As **10 áreas do portal** no menu (Hero, Nossa Cidade, Cultura, Gastronomia, 7 Maravilhas, Agenda, Notícias, Roteiros, Mapa, Rodapé) | Cada área mostra **o que já está cadastrado em cards**, botão **"Cadastrar novo"** (abre **modal** sem recarregar), **"Ver todos"** (lista completa em nova aba) e os **textos/imagens** da área editáveis com dica e **prévia ao vivo**. Subnav com **"Ver seção no portal"** (abre a seção da home) e **"Prévia"** (iframe com a seção como fica). O Hero também gerencia os **slides do carrossel** inline |
+| **Pontos Turísticos** | Os lugares (praias, igrejas, fábricas...) | Upload de **capa, galeria e pictograma**; horários; abas de contexto **Todos | ✦ 7 Maravilhas | Mapa** (o mapa inclui também restaurantes, hotéis e praias); **clique no minimapa para posicionar** (campos X/Y preenchidos sozinhos, ocultos quando a categoria é de maravilha) |
+| **Categorias** | Agrupam os pontos (ex.: Patrimônio & História, Natureza) | A categoria define se o ponto entra nas **7 Maravilhas** (`ApresentarEmMaravilhas`) ou só no **Mapa** |
 | **Eventos** | Agenda cultural | Data/hora, local, descrição; exportação `.ics` automática |
 | **Slides** | Imagens do hero da home e da seção de história | Ordem define a sequência |
 | **Estatísticas** | Números exibidos na seção "Nossa Cidade" | Ex.: "192 anos, 68k habitantes" |
 | **Grupos Culturais** | Grupos (Reisado, Cacumbi...) | Aparecem em cultura/gastronomia |
 | **Pratos Turísticos** | Pratos típicos | Com foto e descrição |
 | **Tags Culturais** | Tags da cultura | Linkam para páginas de detalhe |
-| **Conteúdos** | Textos do portal (título do hero, descrições das seções) | Chave → valor; use `\n` para quebrar linha |
-| **Configurações** | Logotipo do portal, guia em PDF, vídeo institucional, título do site, SEO, contatos | O "Baixe o Guia" usa o arquivo configurado aqui |
+| **Conteúdos** | Textos do portal (chave → valor) | **Seletor de chave**: escolha a chave num select (as já em uso aparecem desabilitadas) em vez de digitar; **prévia ao vivo** do texto com `<strong>`/quebra de linha; na maioria das áreas os textos já estão organizados em "Conteúdo do site" |
+| **Configurações** | Logotipo do portal, guia em PDF, vídeo institucional, título do site, SEO, contatos | O "Baixe o Guia" usa o arquivo configurado aqui; seletor de chave no criar/editar |
+| **Tema e cores** | Paleta do portal (6 cores oficiais: vermelho, laranja, amarelo, verde, azul, rosa) | Altere as cores e **salve** — vale no portal, no painel e no login **sem recompilar**; botão "Restaurar paleta oficial" |
 | **Notícias** | Publicações do portal | Com publicação/destaque |
-| **Roteiros** | Roteiros de visitação | Itens do roteiro hoje vêm do seed (edição via CMS no roadmap) |
+| **Roteiros** | Roteiros de visitação | Itens do roteiro hoje são dados de referência no banco (edição via CMS no roadmap) |
 | **Avaliações** | Avaliações deixadas no portal | **Moderação**: aprovar/reprovar antes de publicar |
 | **Newsletter** | Lista de inscritos (com **busca**) | **Exportar CSV**; **disparo em massa**; ativar/inativar inscrito |
 
@@ -113,7 +122,7 @@ Ao entrar, o **Dashboard** mostra:
 > seção `Smtp` no `appsettings.json` (Host, Porta, Usuario, Senha, RemetenteEmail,
 > RemetenteNome). Sem essa configuração o botão aparece desabilitado com aviso
 > no painel — nada é enviado.
-| **Contatos** | Mensagens do formulário de contato | — |
+| **Contatos** | Mensagens do formulário de contato + contatos do rodapé | No cadastro/edição há **prévia do ícone em tempo real** com sugestões por tipo (endereço, telefone, rede social) — o rodapé do portal exibe os ícones por tipo (pin, telefone/WhatsApp, marcas sociais) |
 
 **Padrões de uso:**
 - Botões: o formulário tem botão primário **"Salvar"**; as listagens usam ações

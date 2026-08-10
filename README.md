@@ -8,27 +8,34 @@ de conteúdo. Construído em **ASP.NET Core 9** seguindo o padrão de arquitetur
 
 - **Portal público** (100% dinâmico):
   hero com slides, seção de história com estatísticas, cultura & gastronomia,
-  **vitrine das 7 Maravilhas** (postais com troca de foto, teclado e
-  acessibilidade), **mapa interativo** com os POIs (filtros, legenda, modal com
+  **vitrine das 7 Maravilhas** em **baralho de cartas com prévia** (carta central,
+  próxima espreitando à direita, anterior à esquerda; arrastar/toque, setas no
+  centro da foto, teclado ← → e contador — em `/lugares` a lista é uma grid
+  numerada 01–07), **mapa interativo** com os POIs (filtros, legenda, modal com
   avaliações), agenda de eventos com exportação **.ics**, roteiros, notícias e
-  rodapé com newsletter (LGPD).
+  rodapé com newsletter (LGPD) e **contatos com ícones por tipo** (endereço com
+  pin, telefone/WhatsApp e redes sociais detectadas pela URL).
 - **Mobile-first**: todo o portal é responsivo para celular (público principal)
   — grids em coluna única, navbar com menu hambúrguer, botão **voltar ao topo**
   e **preloader personalizado** com os 7 pictogramas das maravilhas.
 - **CMS** com dois perfis (policies por **claim**, nunca roles literais):
-  - **Gerenciador** — acesso total: categorias, pontos turísticos (mídias +
-    horários), eventos, slides, estatísticas, grupos culturais, pratos, tags,
-    textos do portal, configurações (guia/vídeo/SEO), contatos, notícias,
-    roteiros, moderação de avaliações, newsletter (CSV), usuários e o
-    **Dashboard de Analytics** (visitas, cliques, fontes de tráfego, rankings,
-    newsletter e SEO).
+  - **Gerenciador** — acesso total, organizado em **"Conteúdo do site"** com 10
+    áreas (Hero, Nossa Cidade, Cultura, Gastronomia, 7 Maravilhas, Agenda,
+    Notícias, Roteiros, Mapa, Rodapé): cada área mostra o que já está cadastrado,
+    cadastra novos itens em modal (sem recarregar), edita os textos e imagens da
+    área com seletor de chave e **prévia** da seção como fica no portal — além
+    de **Tema e cores** (paleta de 6 cores editável sem recompilar SCSS),
+    Configurações (guia/vídeo/SEO/logotipo), contatos, newsletter (busca + CSV +
+    disparo em massa), moderação de avaliações e o **Dashboard de Analytics**
+    (visitas, cliques, fontes de tráfego, rankings, newsletter e SEO).
+    *Acessos são liberados pela DTI — este projeto não cria nem gerencia usuários.*
   - **Operador** — restrito a **Eventos** e **Newsletter**.
 - **Analytics próprio** (anônimo, cookie de sessão `te_sessao`, sem dados
   pessoais): middleware rastreia visitas por rota/dispositivo e o portal envia
   cliques via `sendBeacon` para `POST /api/analytics/event`.
 - **SEO**: sitemap dinâmico, `title`/`meta description` por página via
   `SeoService`, Open Graph e Twitter Cards, com `noindex` configurável.
-- **Login próprio** (sem auto-registro público — contas criadas pelo Gerenciador).
+- **Login próprio** (sem auto-registro público — acessos provisionados pela DTI).
 
 ## 📚 Documentação
 
@@ -80,11 +87,12 @@ lê/grava o binário da mesma forma).
 ```
 TurismoEstancia.slnx
 ├── TurismoEstancia.Web/            # Entrada (MVC + Razor Pages + Areas)
-│   ├── Areas/Gerenciador/          # CMS completo (16 CRUDs)
+│   ├── Areas/Gerenciador/          # CMS (Conteúdo do site em 10 áreas + CRUDs)
 │   ├── Areas/Operador/             # Eventos + Newsletter
+│   ├── Components/                 # ViewComponents: LogoSite, ThemeSite, ContatosRodape
 │   ├── Controllers/                # Portal público + endpoints (.ics, arquivo, newsletter, avaliação)
 │   ├── Pages/                      # Notícias e Roteiros (Razor Pages)
-│   ├── Views/Home/                 # 10 partials do portal
+│   ├── Views/Home/                 # 11 partials do portal
 │   └── wwwroot/scss/               # SCSS do portal (compila p/ css no build)
 ├── TurismoEstancia.Domain/         # Entidades, enums, DTOs e AppDbContext (+ migrações)
 ├── TurismoEstancia.Services/       # 7 módulos de serviços (interface + implementação)
@@ -113,9 +121,9 @@ TurismoEstancia.slnx
 ## 📌 Roadmap v1.1 (sugestões)
 
 - Redefinição de senha de usuários (e-mail) e edição de perfil.
-- Edição dos **itens de roteiro** no CMS (hoje vêm do seed).
+- Edição dos **itens de roteiro** no CMS (hoje são dados de referência no banco).
 - Paginação nas listagens do painel (Newsletter/Avaliações).
-- Upload do **guia em PDF real** (o seed usa uma imagem como placeholder).
+- Upload do **guia em PDF real** (hoje a configuração `guia-pdf` aceita qualquer arquivo; um PDF válido substitui a imagem de exemplo).
 - Garantir **mínimo de 3 slides** no banco (a home só mostra as fotos polaroid
   da "Nossa Cidade" com 3+; com menos, a seção degrada sem quebrar).
 - Dashboard de analytics: filtros por período além de 7/30/90 dias e
