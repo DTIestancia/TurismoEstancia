@@ -65,6 +65,9 @@ que aparece ao rolar.
 
 - **Agenda**: cada evento tem data/hora, local e botão **"Adicionar ao calendário"**
   (gera arquivo `.ics`).
+- **Galeria de fotos** (`/galeria` e `/galeria/{categoria}`): fotos organizadas em
+  **categorias dinâmicas** com filtro em pílulas; clique numa foto para abrir o
+  **lightbox** e navegar com setas/teclado.
 - **Notícias** (`/noticias`) e **Roteiros** (`/roteiros`): listagens com páginas de
   detalhe.
 - **Newsletter**: o visitante informa e-mail + nome e marca a caixa LGPD para receber
@@ -94,6 +97,12 @@ Ao entrar, o **Dashboard** mostra:
 
 > Os dados são **anônimos** (cookie de sessão `te_sessao`, sem dados pessoais).
 > O período é trocado pelos botões 7/30/90 dias na tela.
+> Visualizações e curtidas de fotos da galeria também entram nos rankings.
+
+> **Proteção de imagens:** as fotos da galeria recebem **marca d'água** (listras +
+> logotipo) no upload, e o endpoint de imagens bloqueia **hotlink** (carregar a
+> imagem a partir de outro site). Acesso direto pela URL continua funcionando
+> (necessário para o compartilhamento em redes sociais).
 
 ### 3.2 Módulos de conteúdo (CRUDs)
 
@@ -101,6 +110,7 @@ Ao entrar, o **Dashboard** mostra:
 | --- | --- | --- |
 | **Conteúdo do site** | As **10 áreas do portal** no menu (Hero, Nossa Cidade, Cultura, Gastronomia, 7 Maravilhas, Agenda, Notícias, Roteiros, Mapa, Rodapé) | Cada área mostra **o que já está cadastrado em cards**, botão **"Cadastrar novo"** (abre **modal** sem recarregar), **"Ver todos"** (lista completa em nova aba) e os **textos/imagens** da área editáveis com dica e **prévia ao vivo**. Subnav com **"Ver seção no portal"** (abre a seção da home) e **"Prévia"** (iframe com a seção como fica). O Hero também gerencia os **slides do carrossel** inline |
 | **Pontos Turísticos** | Os lugares (praias, igrejas, fábricas...) | Upload de **capa, galeria e pictograma**; horários; abas de contexto **Todos | ✦ 7 Maravilhas | Mapa** (o mapa inclui também restaurantes, hotéis e praias); **clique no minimapa para posicionar** (campos X/Y preenchidos sozinhos, ocultos quando a categoria é de maravilha) |
+| **Galeria** | Fotos da estância em **categorias dinâmicas** (ex.: Praias, Patrimônio, Festas) | Crie/edite/exclua categorias (a **chave** vira a URL `/galeria/{chave}`) com **imagem de capa** (usada no card da categoria e no OG/SEO); em **"Fotos"** envie **várias imagens de uma vez** (JPG/PNG/WebP) — o sistema **redimensiona para 1600px, re-encoda JPEG, remove EXIF e aplica marca d'água** (foto de celular de 5 MB vira ~200–400 KB), gera **thumbnail** e permite **legenda**, **ocultar** (sem apagar o binário), **reordenar** (setas) e **excluir**. **Uma foto pode pertencer a várias categorias**: o bloco **"Vincular fotos já existentes"** reutiliza a imagem já otimizada (nenhum binário novo no banco); excluir de uma categoria só apaga os binários se nenhuma outra categoria usar a foto. No portal, cada foto mostra **curtidas ("Amei")** e **visualizações**; no **Dashboard** há rankings "Fotos mais visualizadas/curtidas" |
 | **Categorias** | Agrupam os pontos (ex.: Patrimônio & História, Natureza) | A categoria define se o ponto entra nas **7 Maravilhas** (`ApresentarEmMaravilhas`) ou só no **Mapa** |
 | **Eventos** | Agenda cultural | Data/hora, local, descrição; exportação `.ics` automática |
 | **Slides** | Imagens do hero da home e da seção de história | Ordem define a sequência |

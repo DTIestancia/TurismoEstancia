@@ -1,0 +1,154 @@
+@model GaleriaViewModel
+@{
+    ViewData["Title"] = Model.CategoriaAtual?.Nome ?? "Galeria de Fotos";
+    var emCategoria = Model.CategoriaAtual is not null;
+}
+<main class="paginas-page page-public paginas-page--galeria">
+    @await Html.PartialAsync("_PaginasHeader")
+
+    @{
+        // Capa da categoria vira o fundo do hero (com overlay escuro p/ contraste).
+        var estiloHero = emCategoria && Model.CategoriaAtual!.CapaArquivoId is long capaHero
+            ? $"background-image:linear-gradient(rgba(3,14,25,0.68),rgba(3,14,25,0.86)), url('/arquivo/{capaHero}');background-size:cover;background-position:center;"
+            : null;
+    }
+    <section class="paginas-hero" style="@estiloHero">
+        <div class="paginas-hero-inner">
+            <div class="pill pill-white" style="background:var(--color-white--15);">
+                <span style="font-size:12px;">✦</span>
+                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">Galeria de Estância</span>
+            </div>
+            <h1 class="paginas-hero-title">
+                @if (emCategoria)
+                {
+                    @Model.CategoriaAtual!.Nome
+                }
+                else
+                {
+                    <text>Fotos que contam <span class="secao-destaque">nossa história</span></text>
+                }
+            </h1>
+            @if (emCategoria && !string.IsNullOrWhiteSpace(Model.CategoriaAtual!.Descricao))
+            {
+                <p class="paginas-hero-subtitle">@Model.CategoriaAtual.Descricao</p>
+            }
+            else if (!emCategoria)
+            {
+                <p class="paginas-hero-subtitle">Praias, patrimônio, cultura e tradições — clique numa foto para ampliar e navegar pela galeria.</p>
+            }
+        </div>
+    </section>
+
+    <div class="paginas-container">
+        @if (Model.Categorias.Count == 0)
+        {
+            <div class="news-empty">A galeria ainda não tem fotos publicadas.</div>
+        }
+        else
+        {
+            @if (!emCategoria)
+            {
+                <section class="paginas-galeria-categorias" aria-label="Categorias da galeria">
+                    <h2 class="paginas-galeria-secao-titulo"><i data-lucide="folder-open" class="icon-lg"></i> Explore por categoria</h2>
+                    <div class="paginas-galeria-cards">
+                        @foreach (var categoria in Model.Categorias)
+                        {
+                            <a class="paginas-galeria-card" href="/galeria/@categoria.Chave" data-track="galeria-categoria" data-track-nome="@categoria.Nome">
+                                @if (categoria.CapaArquivoId is long capaCard)
+                                {
+                                    <img class="paginas-galeria-card-img" src="/arquivo/@capaCard" alt="Capa de @categoria.Nome" loading="lazy" decoding="async" />
+                                }
+                                else
+                                {
+                                    <div class="paginas-galeria-card-img paginas-galeria-card-img--placeholder"><i data-lucide="images"></i></div>
+                                }
+                                <div class="paginas-galeria-card-body">
+                                    <h3>@categoria.Nome</h3>
+                                    <span class="paginas-galeria-card-count">@categoria.QuantidadeFotos foto(s)</span>
+                                    @if (!string.IsNullOrWhiteSpace(categoria.Descricao))
+                                    {
+                                        <p>@categoria.Descricao</p>
+                                    }
+                                </div>
+                            </a>
+                        }
+                    </div>
+                </section>
+            }
+            <nav class="paginas-galeria-filtros" aria-label="Filtrar por categoria">
+                <a class="paginas-galeria-filtro @(emCategoria ? "" : "active")" href="/galeria" data-track="galeria-categoria" data-track-nome="todas">
+                    Todas <span class="paginas-galeria-count">@Model.Fotos.Count</span>
+                </a>
+                @foreach (var categoria in Model.Categorias)
+                {
+                    <a class="paginas-galeria-filtro @(Model.CategoriaAtual is not null && Model.CategoriaAtual.Id == categoria.Id ? "active" : "")"
+                       href="/galeria/@categoria.Chave" data-track="galeria-categoria" data-track-nome="@categoria.Nome">
+                        @categoria.Nome <span class="paginas-galeria-count">@categoria.QuantidadeFotos</span>
+                    </a>
+                }
+            </nav>
+
+            @if (Model.Fotos.Count == 0)
+            {
+                <div class="news-empty">Nenhuma foto publicada nesta categoria ainda.</div>
+            }
+            else
+            {
+                <div class="paginas-galeria-grid paginas-galeria-grid--fotos">
+                    @foreach (var midia in Model.Fotos)
+                    {
+                        var thumb = midia.ArquivoThumbId ?? midia.ArquivoId;
+                        <a class="galeria-item" href="/arquivo/@midia.ArquivoId"
+                           data-full="/arquivo/@midia.ArquivoId"
+                           data-titulo="@(midia.Titulo ?? (Model.CategoriaAtual?.Nome ?? midia.CategoriaNome))"
+                           data-id="@midia.Id"
+                           data-like="@midia.Curtidas"
+                           data-views="@midia.Visualizacoes"
+                           data-track="galeria-foto" data-track-id="@midia.Id" data-track-nome="@(midia.Titulo ?? midia.CategoriaNome)"
+                           aria-label="Ampliar foto: @(midia.Titulo ?? midia.CategoriaNome)">
+                            <img src="/arquivo/@thumb" alt="@(midia.Titulo ?? midia.CategoriaNome)" loading="lazy" decoding="async" />
+                            <span class="galeria-item-stats" title="Curtidas e visualizações">
+                                <i data-lucide="heart"></i> @midia.Curtidas
+                                <i data-lucide="eye"></i> @midia.Visualizacoes
+                            </span>
+                            @if (!emCategoria && !string.IsNullOrWhiteSpace(midia.CategoriaNome))
+                            {
+                                <span class="galeria-item-categoria">@midia.CategoriaNome</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(midia.Titulo))
+                            {
+                                <span class="galeria-item-legenda">@midia.Titulo</span>
+                            }
+                        </a>
+                    }
+                </div>
+            }
+        }
+
+        <div class="paginas-cta-row paginas-cta-row--center">
+            <a href="/" class="btn-secondary"><i data-lucide="home" class="icon-lg"></i> Voltar ao início</a>
+        </div>
+    </div>
+
+    <!-- Lightbox da galeria -->
+    <div class="galeria-lightbox" id="galeriaLightbox" aria-hidden="true" role="dialog" aria-label="Visualizador de fotos">
+        <button type="button" class="galeria-lightbox-fechar" id="galeriaLightboxFechar" aria-label="Fechar"><i data-lucide="x"></i></button>
+        <button type="button" class="galeria-lightbox-seta galeria-lightbox-seta--prev" id="galeriaLightboxPrev" aria-label="Foto anterior"><i data-lucide="chevron-left"></i></button>
+        <figure class="galeria-lightbox-figura">
+            <img id="galeriaLightboxImg" src="" alt="" />
+            <figcaption id="galeriaLightboxLegenda"></figcaption>
+            <div class="galeria-lightbox-acoes">
+                <button type="button" class="galeria-lightbox-curtir" id="galeriaLightboxCurtir" aria-pressed="false">
+                    <i data-lucide="heart"></i>
+                    <span id="galeriaLightboxCurtidas">0</span> Amei
+                </button>
+                <span class="galeria-lightbox-visualizacoes"><i data-lucide="eye"></i> <span id="galeriaLightboxVisualizacoes">0</span> visualizações</span>
+            </div>
+            @Html.AntiForgeryToken()
+        </figure>
+        <button type="button" class="galeria-lightbox-seta galeria-lightbox-seta--next" id="galeriaLightboxNext" aria-label="Próxima foto"><i data-lucide="chevron-right"></i></button>
+        <span class="galeria-lightbox-contador" id="galeriaLightboxContador"></span>
+    </div>
+
+    @await Html.PartialAsync("_PaginasFooter")
+</main>

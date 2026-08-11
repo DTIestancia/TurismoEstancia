@@ -46,7 +46,7 @@ public class AnalyticsService : IAnalyticsService
     private static string? Curto(string? valor, int max)
         => string.IsNullOrEmpty(valor) ? valor : valor.Length <= max ? valor : valor[..max];
 
-    public async Task<AnalyticsResumoDto> ObterResumoAsync(DateTime de, DateTime ate, CancellationToken ct = default)
+    public async Task<AnalyticsResumoDto> ObterResumoAsync(DateTime de, DateTime ate, int? galeriaCategoriaId = null, CancellationToken ct = default)
     {
         var fim = ate.Date.AddDays(1);
         var visitas = _db.AnalyticsEventos.AsNoTracking()
@@ -89,11 +89,47 @@ public class AnalyticsService : IAnalyticsService
                 .Select(g => new AnalyticsContagemDto { Rotulo = g.Key, Quantidade = g.Count() })
                 .OrderByDescending(x => x.Quantidade)
                 .Take(8)
-                .ToListAsync(ct)
+                .ToListAsync(ct),
+            TopFotosVistas = await FotosMaisEngajadasAsync("visualizacao-foto", de, fim, galeriaCategoriaId, ct),
+            TopFotosCurtidas = await FotosMaisEngajadasAsync("like-foto", de, fim, galeriaCategoriaId, ct)
         };
 
         await ClassificarFontesAsync(resumo, visitas, ct);
         return resumo;
+    }
+
+    /// <summary>Ranking de fotos da galeria por um evento de engajamento (visualização ou curtida).</summary>
+    private async Task<List<AnalyticsContagemDto>> FotosMaisEngajadasAsync(string evento, DateTime de, DateTime fim, int? categoriaId, CancellationToken ct)
+    {
+        var eventos = _db.AnalyticsEventos.AsNoTracking()
+            .Where(e => e.Tipo == "Clique" && e.Evento == evento && e.EntidadeId != null && e.Data >= de && e.Data < fim);
+
+        // Filtro por categoria: o evento guarda o Id do vínculo GaleriaMidia, então
+        // junta com a tabela de vínculo para restringir à categoria selecionada.
+        if (categoriaId is int cid)
+        {
+            eventos = eventos.Where(e => _db.GaleriaMidias.Any(gm => gm.Id == e.EntidadeId && gm.CategoriaId == cid));
+        }
+
+        var ranking = await eventos
+            .GroupBy(e => new { e.EntidadeId, e.EntidadeNome })
+            .Select(g => new
+            {
+                g.Key.EntidadeId,
+                g.Key.EntidadeNome,
+                Quantidade = g.Count()
+            })
+            .OrderByDescending(x => x.Quantidade)
+            .Take(10)
+            .ToListAsync(ct);
+
+        return ranking
+            .Select(r => new AnalyticsContagemDto
+            {
+                Rotulo = string.IsNullOrWhiteSpace(r.EntidadeNome) ? $"Foto #{r.EntidadeId}" : r.EntidadeNome!,
+                Quantidade = r.Quantidade
+            })
+            .ToList();
     }
 
     /// <summary>Busca os referrers e classifica em Buscas/Redes sociais/Direto/Outros.</summary>

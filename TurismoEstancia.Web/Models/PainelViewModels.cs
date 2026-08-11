@@ -39,4 +39,10 @@ public class DashboardAnalyticsViewModel
     /// <summary>Configurações de SEO atuais (título + meta descrição).</summary>
     public string? SeoTitulo { get; set; }
     public string? SeoDescricao { get; set; }
+
+    /// <summary>Categorias da galeria para o filtro do ranking de fotos (inclui inativas).</summary>
+    public IReadOnlyList<GaleriaCategoriaDto> GaleriaCategorias { get; set; } = Array.Empty<GaleriaCategoriaDto>();
+
+    /// <summary>Categoria selecionada no filtro do ranking (null = todas as categorias).</summary>
+    public int? GaleriaCategoriaId { get; set; }
 }

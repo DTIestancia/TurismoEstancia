@@ -28,6 +28,12 @@ public class AnalyticsResumoDto
 
     /// <summary>Cliques por tipo de evento.</summary>
     public List<AnalyticsContagemDto> TopEventos { get; set; } = new();
+
+    /// <summary>Fotos da galeria mais visualizadas no período (evento visualizacao-foto).</summary>
+    public List<AnalyticsContagemDto> TopFotosVistas { get; set; } = new();
+
+    /// <summary>Fotos da galeria mais curtidas no período (evento like-foto).</summary>
+    public List<AnalyticsContagemDto> TopFotosCurtidas { get; set; } = new();
 }
 
 /// <summary>Ponto de uma série temporal.</summary>

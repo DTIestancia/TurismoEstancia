@@ -133,6 +133,69 @@
     </div>
 </div>
 
+<!-- Filtro por categoria do ranking de fotos da galeria -->
+<form method="get" asp-action="Index" class="painel-galeria-filtro" id="filtroGaleriaForm">
+    <span><i data-lucide="images" width="15" height="15"></i> Fotos da galeria:</span>
+    <select name="galeriaCategoria" onchange="this.form.submit()">
+        <option value="">Todas as categorias</option>
+        @foreach (var c in Model.GaleriaCategorias)
+        {
+            <option value="@c.Id" selected="@(Model.GaleriaCategoriaId == c.Id)">@c.Nome</option>
+        }
+    </select>
+    <input type="hidden" name="dias" value="@Model.PeriodoDias" />
+</form>
+
+<div class="painel-charts-grid">
+    <div class="painel-card">
+        <div class="painel-card-title"><i data-lucide="image"></i> Fotos mais visualizadas (galeria)</div>
+        <div class="painel-table-wrap">
+            <table class="painel-table">
+                <thead><tr><th>#</th><th>Foto</th><th>Visualizações</th></tr></thead>
+                <tbody>
+                    @if (Model.Resumo.TopFotosVistas.Count == 0)
+                    {
+                        <tr><td colspan="3" class="painel-empty">Sem visualizações de fotos no período.</td></tr>
+                    }
+                    @for (var i = 0; i < Model.Resumo.TopFotosVistas.Count; i++)
+                    {
+                        var f = Model.Resumo.TopFotosVistas[i];
+                        <tr>
+                            <td>@(i + 1)</td>
+                            <td><strong>@f.Rotulo</strong></td>
+                            <td>@f.Quantidade</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="painel-card">
+        <div class="painel-card-title"><i data-lucide="heart"></i> Fotos mais curtidas (galeria)</div>
+        <div class="painel-table-wrap">
+            <table class="painel-table">
+                <thead><tr><th>#</th><th>Foto</th><th>Curtidas</th></tr></thead>
+                <tbody>
+                    @if (Model.Resumo.TopFotosCurtidas.Count == 0)
+                    {
+                        <tr><td colspan="3" class="painel-empty">Sem curtidas de fotos no período.</td></tr>
+                    }
+                    @for (var i = 0; i < Model.Resumo.TopFotosCurtidas.Count; i++)
+                    {
+                        var f = Model.Resumo.TopFotosCurtidas[i];
+                        <tr>
+                            <td>@(i + 1)</td>
+                            <td><strong>@f.Rotulo</strong></td>
+                            <td>@f.Quantidade</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <div class="painel-charts-grid">
     <div class="painel-card">
         <div class="painel-card-title"><i data-lucide="mail"></i> Newsletter</div>

@@ -2,6 +2,7 @@ using System.Xml;
 using Microsoft.AspNetCore.Mvc;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
 using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
+using TurismoEstancia.Services.Galeria.Interfaces;
 using TurismoEstancia.Services.Roteiro.Interfaces;
 using TurismoEstancia.Services.Turismo.Interfaces;
 using TurismoEstancia.Web.Models;
@@ -20,6 +21,7 @@ public class SeoController : Controller
     private readonly IGrupoCulturalService _grupos;
     private readonly IPratoTuristicoService _pratos;
     private readonly ITagCulturalService _tags;
+    private readonly IGaleriaService _galeria;
 
     public SeoController(
         IPontoTuristicoService pontos,
@@ -27,7 +29,8 @@ public class SeoController : Controller
         IRoteiroService roteiros,
         IGrupoCulturalService grupos,
         IPratoTuristicoService pratos,
-        ITagCulturalService tags)
+        ITagCulturalService tags,
+        IGaleriaService galeria)
     {
         _pontos = pontos;
         _noticias = noticias;
@@ -35,6 +38,7 @@ public class SeoController : Controller
         _grupos = grupos;
         _pratos = pratos;
         _tags = tags;
+        _galeria = galeria;
     }
 
     /// <summary>GET /sitemap.xml — todas as rotas públicas + detalhes do banco.</summary>
@@ -53,7 +57,8 @@ public class SeoController : Controller
             ($"{baseUrl}/gastronomia", 0.8, null),
             ($"{baseUrl}/lugares", 0.9, null),
             ($"{baseUrl}/noticias", 0.7, null),
-            ($"{baseUrl}/roteiros", 0.7, null)
+            ($"{baseUrl}/roteiros", 0.7, null),
+            ($"{baseUrl}/galeria", 0.7, null)
         };
 
         // Páginas de detalhe (conteúdo do banco)
@@ -91,6 +96,12 @@ public class SeoController : Controller
         foreach (var tag in tags.Where(t => t.Ativo))
         {
             urls.Add(($"{baseUrl}/cultura/{tag.Id}", 0.6, null));
+        }
+
+        var categoriasGaleria = await _galeria.ListarCategoriasAsync(incluirInativas: false, ct);
+        foreach (var categoria in categoriasGaleria)
+        {
+            urls.Add(($"{baseUrl}/galeria/{categoria.Chave}", 0.6, null));
         }
 
         using var ms = new MemoryStream();

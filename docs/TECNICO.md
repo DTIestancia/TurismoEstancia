@@ -157,6 +157,41 @@ Módulos atuais: **Turismo** (pontos, categorias, mídias, horários, avaliaçõ
   `ArquId`, `ArquUID` ROWGUIDCOL, `ArquFileName`, `ArquContentType`, `ArquSize`,
   `ArquBytes varbinary(max)`, `ArquMomento`, `ArquAutor`, `ArquAtivo`, `ArquOrigem`).
 - Servidas por **`GET /arquivo/{id}`** (`ArquivoController`) com Content-Type correto.
+- **Otimização de imagem** (`IArquivoService.SalvarImagemOtimizadaAsync` /
+  `SalvarThumbnailAsync`, **SixLabors.ImageSharp 3.1**): redimensiona para o máximo
+  indicado (1600px galeria / 400px thumbnail), **re-encoda JPEG** (qualidade 82/75,
+  `SkipMetadata` remove **EXIF/GPS** — LGPD) e grava na `Arquivos`; só reduz, nunca
+  amplia. Usada pela **Galeria** (2 registros por foto: imagem cheia + thumbnail).
+- **Marca d'água** (`comMarcaDagua: true` na otimização): listras diagonais sutis
+  (padrão gerado em baixa resolução + resize bilinear + alfa) + **logotipo do portal**
+  (configuração `logo-principal`) no canto inferior direito — só com o core do
+  ImageSharp, sem dependência extra. Falha silenciosamente (nunca derruba upload).
+- **Proteção contra hotlink** (`ArquivoController`): `Referer` de host diferente do
+  site → **403**; acesso sem Referer (nova aba, OG/redes sociais, crawlers) e do
+  próprio site continua liberado.
+- **Cache HTTP** (`ArquivoController`): os arquivos da tabela são imutáveis (upload
+  sempre cria um registro novo), então o `GET /arquivo/{id}` envia
+  `Cache-Control: public, max-age=31536000, immutable` para imagens (1 ano, sem
+  revalidação) e `max-age=604800` (7 dias) para as demais mídias + `ETag`
+  (`id-CriadoEm`) com suporte a `If-None-Match` → **304** e range requests. O 403
+  do hotlink nunca recebe cache.
+- **Galeria**: `GaleriaCategorias` (chave única → `/galeria/{chave}`, `CapaArquivoId`
+  opcional com FK `SetNull` — capa otimizada usada no card da categoria e OG/SEO) +
+  `GaleriaMidias` (**tabela de vínculo muitos-para-muitos**: a foto é o par
+  `ArquivoId`/`ArquivoThumbId` na tabela `Arquivos`, compartilhado entre categorias;
+  índice único `(CategoriaId, ArquivoId)` impede duplicar a mesma foto na mesma
+  categoria; FK Cascade p/ categoria, **Restrict** p/ `Arquivos`; `Ordem`/`Ativo`
+  por categoria, `Titulo` por vínculo). **Vincular fotos existentes** cria apenas o
+  vínculo (sem binário novo); excluir de uma categoria só apaga os binários se
+  nenhuma outra categoria referenciá-los (`EstaReferenciadoAsync`). Módulo
+  `Services/Galeria`; admin em `Areas/Gerenciador/Controllers/GaleriaController`;
+  portal em `Controllers/GaleriaController` (lightbox em `portal.js`,
+  `initGaleriaLightbox`; visão "Todas" deduplica a foto por `ArquivoId`).
+  **Lazy-load + placeholder**: as imagens usam `loading="lazy"` + `decoding="async"`
+  e começam transparentes sobre um **shimmer animado** (CSS `galeria-shimmer`); o JS
+  (`initGaleriaPlaceholder`) marca `.is-carregada` no evento `load` (fade-in, sem
+  layout shift — o `height` fixo reserva o espaço) e `.is-erro` se a imagem falhar.
+  O lightbox aplica o mesmo fade-in (`is-loaded`) a cada troca de foto.
 - Entidades guardam `long? XxxArquivoId` com FK `SetNull`.
 - **FILESTREAM**: a estrutura já está pronta. Quando o filegroup existir no servidor,
   execute [`Deploy/01-Filestream-Config.sql`](../Deploy/01-Filestream-Config.sql) para
@@ -193,10 +228,21 @@ Fluxo anônimo (sem dados pessoais):
    top rotas/entidades, fontes (referer) e dispositivos.
 
 > Eventos rastreados hoje: `ver-maravilha` (botão da vitrine), `roteiro` (cards de
-> roteiro) e `noticia` (cards de notícia). **Qualquer elemento com atributo
-> `data-track`** (+ opcionais `data-track-id`/`data-track-nome`) é rastreado
-> automaticamente pelo `portal.js` (linha ~803) — basta adicionar o atributo em
+> roteiro) e `noticia` (cards de notícia), `visualizacao-foto`/`like-foto` (galeria).
+> **Qualquer elemento com atributo `data-track`** (+ opcionais `data-track-id`/`data-track-nome`)
+> é rastreado automaticamente pelo `portal.js` — basta adicionar o atributo em
 > novos links/botões para começar a medir cliques.
+
+**Engajamento da galeria:** `GaleriaMidias` tem colunas `Visualizacoes`/`Curtidas`
+(int, default 0), incrementadas pelos endpoints `POST /galeria/visualizar/{id}` e
+`POST /galeria/curtir/{id}` (curtida com **dedup por sessão**: consulta `AnalyticsEvento`
+com `Evento = "like-foto"` + `EntidadeId` + `SessaoId` antes de incrementar). O Dashboard
+exibe **"Fotos mais visualizadas/curtidas"** no período, derivados dos eventos
+`visualizacao-foto`/`like-foto`. O ranking aceita **filtro por categoria**
+(`?galeriaCategoria=` no Dashboard — select que preserva o período `dias`): quando
+selecionado, `ObterResumoAsync` junta os eventos com `GaleriaMidias` (o evento guarda
+o Id do vínculo) e restringe o ranking à categoria (o filtro lista categorias ativas
+e inativas, para rankings antigos continuarem consultáveis).
 
 ---
 
@@ -227,7 +273,10 @@ Fluxo anônimo (sem dados pessoais):
 | `/cidade`, `/cultura`, `/grupos-populares`, `/gastronomia`, `/lugares` | `PaginasController` |
 | `/lugares/{id}/{slug}`, `/grupos-populares/{id}/{slug}`, `/gastronomia/{id}/{slug}`, `/cultura/{id}/{slug}` | detalhes |
 | `/noticias`, `/noticias/{slug}` e `/roteiros`, `/roteiros/{slug}` | Razor Pages (`Pages/`) |
-| `/arquivo/{id}` | download de mídia |
+| `/galeria`, `/galeria/{chave}` | `GaleriaController` (galeria de fotos por categoria) |
+| `POST /galeria/visualizar/{id}` | contabiliza visualização (lightbox) + evento `visualizacao-foto` |
+| `POST /galeria/curtir/{id}` | curtida "Amei" com dedup por sessão + evento `like-foto` |
+| `/arquivo/{id}` | download de mídia (bloqueia hotlink via Referer) |
 | `/evento/{id}.ics` | agenda → calendário |
 | `/api/analytics/event` | beacon de cliques |
 

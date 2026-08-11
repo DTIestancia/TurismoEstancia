@@ -83,6 +83,9 @@
                     <a class="painel-nav-link @(IsAreaSecao("rodape") || IsAreaPage("Gerenciador","Contatos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Rodape">
                         <i data-lucide="phone"></i> Rodapé
                     </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Galeria") ? "active" : "")" asp-area="Gerenciador" asp-controller="Galeria" asp-action="Index">
+                        <i data-lucide="camera"></i> Galeria
+                    </a>
 
                     <div class="painel-nav-title">Sistema</div>
                     <a class="painel-nav-link @(IsAreaPage("Gerenciador","Tema") ? "active" : "")" asp-area="Gerenciador" asp-controller="Tema" asp-action="Index">

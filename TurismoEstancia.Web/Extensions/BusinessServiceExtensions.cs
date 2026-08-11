@@ -10,6 +10,8 @@ using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Services.Conteudo.Services;
 using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
 using TurismoEstancia.Services.CulturaGastronomia.Services;
+using TurismoEstancia.Services.Galeria.Interfaces;
+using TurismoEstancia.Services.Galeria.Services;
 using TurismoEstancia.Services.Infra.Interfaces;
 using TurismoEstancia.Services.Infra.Services;
 using TurismoEstancia.Services.Roteiro.Interfaces;
@@ -60,6 +62,9 @@ public static class BusinessServiceExtensions
 
         // Módulo Avaliacao
         builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();
+
+        // Módulo Galeria
+        builder.Services.AddScoped<IGaleriaService, GaleriaService>();
 
         // Módulo Analytics: fila em memória + gravação em background (lote).
         builder.Services.AddSingleton(Channel.CreateBounded<AnalyticsEvento>(

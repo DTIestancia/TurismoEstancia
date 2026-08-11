@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TurismoEstancia.Domain.Data;
 
@@ -11,9 +12,11 @@ using TurismoEstancia.Domain.Data;
 namespace TurismoEstancia.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260811111510_AdicionaGaleriaEstancia")]
+    partial class AdicionaGaleriaEstancia
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -437,9 +440,6 @@ namespace TurismoEstancia.Domain.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<long?>("CapaArquivoId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Chave")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -458,8 +458,6 @@ namespace TurismoEstancia.Domain.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CapaArquivoId");
 
                     b.HasIndex("Chave")
                         .IsUnique();
@@ -491,22 +489,12 @@ namespace TurismoEstancia.Domain.Migrations
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Curtidas")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
                     b.Property<int>("Ordem")
                         .HasColumnType("int");
 
                     b.Property<string>("Titulo")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("Visualizacoes")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
@@ -515,9 +503,6 @@ namespace TurismoEstancia.Domain.Migrations
                     b.HasIndex("ArquivoThumbId");
 
                     b.HasIndex("CategoriaId");
-
-                    b.HasIndex("CategoriaId", "ArquivoId")
-                        .IsUnique();
 
                     b.ToTable("GaleriaMidias");
                 });
@@ -981,16 +966,6 @@ namespace TurismoEstancia.Domain.Migrations
                     b.Navigation("Arquivo");
                 });
 
-            modelBuilder.Entity("TurismoEstancia.Domain.Models.GaleriaCategoria", b =>
-                {
-                    b.HasOne("TurismoEstancia.Domain.Models.Arquivo", "Capa")
-                        .WithMany()
-                        .HasForeignKey("CapaArquivoId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Capa");
-                });
-
             modelBuilder.Entity("TurismoEstancia.Domain.Models.GaleriaMidia", b =>
                 {
                     b.HasOne("TurismoEstancia.Domain.Models.Arquivo", "Arquivo")
@@ -999,16 +974,16 @@ namespace TurismoEstancia.Domain.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TurismoEstancia.Domain.Models.Arquivo", "Thumb")
-                        .WithMany()
-                        .HasForeignKey("ArquivoThumbId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("TurismoEstancia.Domain.Models.GaleriaCategoria", "Categoria")
                         .WithMany("Midias")
                         .HasForeignKey("CategoriaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("TurismoEstancia.Domain.Models.Arquivo", "Thumb")
+                        .WithMany()
+                        .HasForeignKey("ArquivoThumbId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Arquivo");
 

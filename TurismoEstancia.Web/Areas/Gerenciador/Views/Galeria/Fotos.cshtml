@@ -1,0 +1,117 @@
+@model GaleriaCategoriaDto
+@{
+    ViewData["Title"] = $"Fotos — {Model.Nome}";
+    var ativas = Model.Midias.Count(m => m.Ativo);
+    var disponiveis = ViewData["FotosDisponiveis"] as IReadOnlyList<GaleriaMidiaDto> ?? Array.Empty<GaleriaMidiaDto>();
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Fotos — @Model.Nome</h1>
+        <p class="painel-page-desc">
+            <code>@Model.Chave</code> · @ativas foto(s) ativa(s) de @Model.Midias.Count no total.
+            Imagens são redimensionadas para 1600px e re-encodadas como JPEG (EXIF removido) — uma foto de celular de 5 MB vira ~200–400 KB no banco.
+        </p>
+    </div>
+    <a class="btn-painel btn-painel--ghost" href="/galeria/@Model.Chave" target="_blank" rel="noopener">
+        <i data-lucide="external-link"></i> Ver no portal
+    </a>
+</div>
+
+<div class="painel-card">
+    <form asp-action="AdicionarFotos" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <div class="painel-fotos-upload">
+            <input type="file" name="fotos" class="painel-input" multiple accept="image/jpeg,image/png,image/webp" required />
+            <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="upload"></i> Enviar fotos</button>
+        </div>
+        <p class="painel-hint">JPG, PNG ou WebP — várias de uma vez. Cada foto vira imagem otimizada + thumbnail.</p>
+    </form>
+</div>
+
+@if (disponiveis.Count > 0)
+{
+    <div class="painel-card">
+        <form asp-action="VincularFotos" asp-route-id="@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+            <h3 style="margin-bottom:4px;"><i data-lucide="link"></i> Vincular fotos já existentes</h3>
+            <p class="painel-hint" style="margin-bottom:12px;">Fotos de outras categorias — a mesma imagem otimizada é reutilizada (nenhum binário novo no banco).</p>
+            <div class="painel-vincular-grid">
+                @foreach (var foto in disponiveis)
+                {
+                    var nome = foto.Titulo ?? foto.CategoriaNome ?? "Foto";
+                    <label class="painel-vincular-item" title="@nome">
+                        <input type="checkbox" name="arquivoIds" value="@foto.ArquivoId" />
+                        <img src="/arquivo/@(foto.ArquivoThumbId ?? foto.ArquivoId)" alt="@nome" loading="lazy" />
+                        <span>@nome</span>
+                    </label>
+                }
+            </div>
+            <div class="painel-foto-acoes" style="margin-top:14px;">
+                <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="link"></i> Vincular selecionadas</button>
+            </div>
+        </form>
+    </div>
+}
+
+@if (Model.Midias.Count == 0)
+{
+    <div class="painel-empty">Nenhuma foto nesta categoria — envie as primeiras acima.</div>
+}
+else
+{
+    <div class="painel-fotos-grid">
+        @foreach (var midia in Model.Midias.OrderBy(m => m.Ordem))
+        {
+            var thumbnail = midia.ArquivoThumbId ?? midia.ArquivoId;
+            <div class="painel-foto-card @(midia.Ativo ? "" : "is-inativa")">
+                <a href="/arquivo/@midia.ArquivoId" target="_blank" rel="noopener" class="painel-foto-thumb" title="Abrir imagem em tamanho cheio">
+                    <img src="/arquivo/@thumbnail" alt="@(midia.Titulo ?? Model.Nome)" loading="lazy" />
+                    <span class="painel-foto-ordem">@midia.Ordem</span>
+                </a>
+                <div class="painel-foto-stats">
+                    <span><i data-lucide="heart"></i> @midia.Curtidas</span>
+                    <span><i data-lucide="eye"></i> @midia.Visualizacoes</span>
+                    <span class="painel-foto-stats-rotulo">curtidas · visualizações</span>
+                </div>
+                <form class="painel-foto-form" asp-action="AtualizarFoto" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Id" value="@midia.Id" />
+                    <input type="hidden" name="CategoriaId" value="@Model.Id" />
+                    <input type="text" name="Titulo" class="painel-input" value="@midia.Titulo" maxlength="200" placeholder="Legenda da foto" />
+                    <label class="painel-checkbox">
+                        <input type="checkbox" name="Ativo" value="true" @(midia.Ativo ? "checked" : "") /> Visível no portal
+                    </label>
+                    <div class="painel-foto-acoes">
+                        <button type="submit" class="btn-painel btn-painel--ghost btn-painel--xs" title="Salvar legenda/visibilidade"><i data-lucide="save"></i></button>
+                    </div>
+                </form>
+                <div class="painel-foto-botoes">
+                    <form asp-action="MoverFoto" method="post" title="Mover para cima">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@midia.Id" />
+                        <input type="hidden" name="direcao" value="-1" />
+                        <input type="hidden" name="categoriaId" value="@Model.Id" />
+                        <button type="submit" class="btn-painel btn-painel--ghost btn-painel--xs"><i data-lucide="chevron-up"></i></button>
+                    </form>
+                    <form asp-action="MoverFoto" method="post" title="Mover para baixo">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@midia.Id" />
+                        <input type="hidden" name="direcao" value="1" />
+                        <input type="hidden" name="categoriaId" value="@Model.Id" />
+                        <button type="submit" class="btn-painel btn-painel--ghost btn-painel--xs"><i data-lucide="chevron-down"></i></button>
+                    </form>
+                    <form asp-action="ExcluirFoto" method="post" class="js-confirm" data-confirm="Remover esta foto desta categoria? O binário só é apagado do banco se nenhuma outra categoria usar a foto.">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@midia.Id" />
+                        <input type="hidden" name="categoriaId" value="@Model.Id" />
+                        <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="painel-form-actions" style="margin-top:24px;">
+    <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="arrow-left"></i> Voltar às categorias</a>
+</div>
