@@ -1,7 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 using TurismoEstancia.Domain.Data;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Domain.Models;

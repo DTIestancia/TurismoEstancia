@@ -143,7 +143,10 @@ public class AnalyticsService : IAnalyticsService
 
         var contagem = new Dictionary<string, int>
         {
-            ["Buscas"] = 0, ["Redes sociais"] = 0, ["Outros sites"] = 0, ["Acesso direto"] = 0
+            ["Buscas"] = 0,
+            ["Redes sociais"] = 0,
+            ["Outros sites"] = 0,
+            ["Acesso direto"] = 0
         };
 
         foreach (var item in porHost)

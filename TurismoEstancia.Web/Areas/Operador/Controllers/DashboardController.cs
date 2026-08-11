@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
-using TurismoEstancia.Web.Models;
 using TurismoEstancia.Services.Turismo.Interfaces;
+using TurismoEstancia.Web.Models;
 
 namespace TurismoEstancia.Web.Areas.Operador.Controllers;
 

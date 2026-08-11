@@ -1,5 +1,3 @@
-using TurismoEstancia.Domain.Models;
-
 using System.ComponentModel.DataAnnotations;
 
 namespace TurismoEstancia.Domain.DTOs;

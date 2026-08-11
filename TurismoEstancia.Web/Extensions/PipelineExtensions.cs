@@ -1,5 +1,5 @@
-using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 using TurismoEstancia.Web.Middleware;
 
 namespace TurismoEstancia.Web.Extensions;

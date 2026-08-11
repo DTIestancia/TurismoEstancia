@@ -1,12 +1,10 @@
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
 using TurismoEstancia.Domain.DTOs;
-using TurismoEstancia.Services.Avaliacao.Interfaces;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
-using TurismoEstancia.Services.Infra.Interfaces;
 using TurismoEstancia.Services.Roteiro.Interfaces;
 using TurismoEstancia.Services.Turismo.Interfaces;
 using TurismoEstancia.Web.Models;

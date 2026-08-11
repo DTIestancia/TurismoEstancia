@@ -1,5 +1,5 @@
-using System.Xml;
 using Microsoft.AspNetCore.Mvc;
+using System.Xml;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
 using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
 using TurismoEstancia.Services.Galeria.Interfaces;

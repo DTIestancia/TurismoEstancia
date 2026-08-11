@@ -64,7 +64,7 @@
         var inputOutra = document.getElementById('chaveOutraInput');
         var inputReal = document.querySelector('[name="@campo"]');
         if (!inputReal) return;
-        var tipoSelect = @(campoTipoId is null ? "null" : $"document.getElementById('{campoTipoId}')");
+        var tipoSelect = @Html.Raw(campoTipoId is null ? "null" : $"document.getElementById('{campoTipoId}')");
 
         // Mantém o valor inicial do model (ex.: edição de um registro existente).
         var valorInicial = inputReal.value;

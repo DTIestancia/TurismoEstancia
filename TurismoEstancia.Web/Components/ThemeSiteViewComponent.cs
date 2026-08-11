@@ -1,7 +1,7 @@
-using System.Text;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
+using System.Text;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 
 namespace TurismoEstancia.Web.Components;

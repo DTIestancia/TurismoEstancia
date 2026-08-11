@@ -461,8 +461,16 @@ public class SecoesController : PainelController
             var arquivo = Request.Form.Files.GetFile("imagem_" + i.Chave);
             if (arquivo is { Length: > 0 })
             {
+                var antigoId = long.TryParse(i.Valor, out var antigo) && antigo > 0
+                    ? antigo
+                    : (long?)null;
+
                 var id = await _arquivos.SalvarAsync(arquivo, ct);
                 await _conteudos.SalvarPorChaveAsync(i.Chave, i.Nome, id.ToString(), ct);
+
+                // Remove a imagem antiga só após o commit do novo valor.
+                if (antigoId.HasValue)
+                    await _arquivos.ExcluirAsync(antigoId.Value, ct);
             }
         }
     }
