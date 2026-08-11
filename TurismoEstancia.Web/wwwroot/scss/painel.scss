@@ -4,6 +4,78 @@
 @use 'tokens' as *;
 @use 'base' as *;
 
+// ===== Fallback :root (paleta oficial) =====
+// O painel não carrega o _portal.scss (que tem o :root do portal). Sem este
+// bloco, var(--color-*) fica indefinido → botões com gradiente transparentes
+// e acentos sumidos (ex.: tela de login). O ThemeSite do Gerenciador
+// sobrescreve estas variáveis em runtime quando um tema está configurado.
+:root {
+  --color-white-solid: #{$color-white-solid};
+  --color-white--95: #{$color-white--95};
+  --color-white--90: #{$color-white--90};
+  --color-white--85: #{$color-white--85};
+  --color-white--80: #{$color-white--80};
+  --color-white--75: #{$color-white--75};
+  --color-white--70: #{$color-white--70};
+  --color-white--65: #{$color-white--65};
+  --color-white--60: #{$color-white--60};
+  --color-white--55: #{$color-white--55};
+  --color-white--50: #{$color-white--50};
+  --color-white--45: #{$color-white--45};
+  --color-white--40: #{$color-white--40};
+  --color-white--30: #{$color-white--30};
+  --color-white--20: #{$color-white--20};
+  --color-white--15: #{$color-white--15};
+  --color-white--12: #{$color-white--12};
+  --color-white--10: #{$color-white--10};
+  --color-white--8: #{$color-white--8};
+  --color-white--5: #{$color-white--5};
+  --color-white--4: #{$color-white--4};
+  --color-white--0_2: #{$color-white--0_2};
+
+  --color-black-solid: #{$color-black-solid};
+  --color-black--70: #{$color-black--70};
+  --color-black--20: #{$color-black--20};
+  --color-black--0: #{$color-black--0};
+
+  --color-grey-97: #{$color-grey-97};
+  --color-grey-94: #{$color-grey-94};
+  --color-grey-92-30: #{$color-grey-92-30};
+
+  --color-azure-5: #{$color-azure-5};
+  --color-azure-7: #{$color-azure-7};
+  --color-azure-8-70: #{$color-azure-8-70};
+  --color-azure-37: #{$color-azure-37};
+  --color-azure-87-60: #{$color-azure-87-60};
+
+  --color-orange-34: #{$color-orange-34};
+  --color-orange-35: #{$color-orange-35};
+  --color-orange-47: #{$color-orange-47};
+  --color-orange-48: #{$color-orange-48};
+  --color-orange-48-10: #{$color-orange-48-10};
+  --color-orange-48-20: #{$color-orange-48-20};
+  --color-orange-51: #{$color-orange-51};
+  --color-orange-57: #{$color-orange-57};
+
+  --color-red-11-85: #{$color-red-11-85};
+  --color-red-14: #{$color-red-14};
+  --color-red-14-75_3: #{$color-red-14-75_3};
+  --color-red-19: #{$color-red-19};
+  --color-red-19-80: #{$color-red-19-80};
+  --color-red-43-40: #{$color-red-43-40};
+  --color-red-43-0: #{$color-red-43-0};
+  --color-red-49: #{$color-red-49};
+  --color-red-54: #{$color-red-54};
+
+  --color-rose-42: #{$color-rose-42};
+  --color-rose-42-0: #{$color-rose-42-0};
+  --color-rose-46: #{$color-rose-46};
+
+  --color-cyan-41: #{$color-cyan-41};
+  --color-spring-green-29: #{$color-spring-green-29};
+  --color-yellow-50: #{$color-yellow-50};
+}
+
 // ===== Base do painel =====
 .painel-body {
   background: $color-azure-5;
@@ -824,6 +896,7 @@
 .login-page {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 24px;
@@ -831,6 +904,27 @@
     radial-gradient(circle at 20% 15%, rgba(247, 100, 0, 0.12) 0%, transparent 40%),
     radial-gradient(circle at 85% 85%, rgba(0, 150, 98, 0.10) 0%, transparent 40%),
     $color-azure-5;
+}
+
+// Link "Voltar ao site" abaixo do card: discreto, acende no laranja da
+// paleta (o :root do painel garante que a variável existe mesmo sem tema).
+.login-back {
+  margin-top: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: $color-white--55;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s, transform 0.2s;
+
+  i { width: 16px; height: 16px; }
+
+  &:hover {
+    color: var(--color-orange-48);
+    transform: translateX(-2px);
+  }
 }
 
 .login-card {
@@ -853,6 +947,7 @@
     font-size: 24px;
     font-weight: 700;
     color: $color-white-solid;
+    text-align: center;
   }
 
   .login-subtitle {
@@ -860,6 +955,7 @@
     font-size: 13.5px;
     color: $color-white--55;
     margin-bottom: 24px;
+    text-align: center;
   }
 
   .login-form {

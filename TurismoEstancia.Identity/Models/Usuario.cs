@@ -1,11 +1,18 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
-namespace TurismoEstancia.Identity.Models;
-
-/// <summary>
-/// Usuário do sistema. O perfil (Gerenciador/Operador) é atribuído via claims.
-/// </summary>
-public class Usuario : IdentityUser
+namespace TurismoEstancia.IdentityClass.Models
 {
-    public string NomeCompleto { get; set; } = string.Empty;
+    public class Usuario : IdentityUser
+    {
+
+        [Display(Name = "Documento")]
+        [Required(ErrorMessage = "Campo {0} requerido.")]
+        [Remote("VerificarCpfCnpjExist", "Account", "Gerenciador", HttpMethod = "POST", ErrorMessage = "Documento já cadastrado.")]
+        public string CpfCnpj { get; set; }
+        public string Nome { get; set; }
+        public byte[] FotoPerfil { get; set; }
+
+    }
 }

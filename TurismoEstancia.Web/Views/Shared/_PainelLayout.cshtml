@@ -1,14 +1,12 @@
 @using TurismoEstancia.Authorization.Services
-@using TurismoEstancia.Identity.Models
+@using TurismoEstancia.IdentityClass.Models
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<Usuario> SignInManager
 @inject UserManager<Usuario> UserManager
 @{
     var usuario = await UserManager.GetUserAsync(User);
-    var nome = usuario?.NomeCompleto ?? User.Identity?.Name ?? "Usuário";
-    var inicial = string.IsNullOrWhiteSpace(nome) ? "?" : nome.Trim().Substring(0, 1).ToUpperInvariant();
-    var perfil = User.FindFirst(Perfis.TipoClaim)?.Value ?? "";
-    var gerenciador = perfil == Perfis.Gerenciador;
+    // Com múltiplas claims (Gerenciador + Operador), o maior privilégio vence.
+    var gerenciador = User.FindAll(Perfis.TipoClaim).Any(c => c.Value == Perfis.Gerenciador);
     // Modo embutido (?embutido=1): o formulário de Criar abre dentro do modal
     // das telas de lista — esconde sidebar/topbar/subnav para o iframe mostrar
     // só o formulário, sem duplicar views.
@@ -126,8 +124,6 @@
             <header class="painel-topbar">
                 <div class="painel-topbar-title">@ViewData["Title"]</div>
                 <div class="painel-topbar-user">
-                    <span>@nome</span>
-                    <div class="painel-avatar">@inicial</div>
                     <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="painel-actions">
                         <button type="submit" class="btn-painel btn-painel--ghost btn-painel--sm" title="Sair">
                             <i data-lucide="log-out"></i> Sair
