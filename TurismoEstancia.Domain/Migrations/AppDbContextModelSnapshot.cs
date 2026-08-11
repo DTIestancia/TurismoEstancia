@@ -424,6 +424,104 @@ namespace TurismoEstancia.Domain.Migrations
                     b.ToTable("Eventos");
                 });
 
+            modelBuilder.Entity("TurismoEstancia.Domain.Models.GaleriaCategoria", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Ativo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<long?>("CapaArquivoId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Chave")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Descricao")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Ordem")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CapaArquivoId");
+
+                    b.HasIndex("Chave")
+                        .IsUnique();
+
+                    b.HasIndex("Ordem");
+
+                    b.ToTable("GaleriaCategorias");
+                });
+
+            modelBuilder.Entity("TurismoEstancia.Domain.Models.GaleriaMidia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<long>("ArquivoId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("ArquivoThumbId")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("Ativo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<int>("CategoriaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Curtidas")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("Ordem")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Titulo")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Visualizacoes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArquivoId");
+
+                    b.HasIndex("ArquivoThumbId");
+
+                    b.HasIndex("CategoriaId");
+
+                    b.HasIndex("CategoriaId", "ArquivoId")
+                        .IsUnique();
+
+                    b.ToTable("GaleriaMidias");
+                });
+
             modelBuilder.Entity("TurismoEstancia.Domain.Models.GrupoCultural", b =>
                 {
                     b.Property<int>("Id")
@@ -883,6 +981,42 @@ namespace TurismoEstancia.Domain.Migrations
                     b.Navigation("Arquivo");
                 });
 
+            modelBuilder.Entity("TurismoEstancia.Domain.Models.GaleriaCategoria", b =>
+                {
+                    b.HasOne("TurismoEstancia.Domain.Models.Arquivo", "Capa")
+                        .WithMany()
+                        .HasForeignKey("CapaArquivoId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Capa");
+                });
+
+            modelBuilder.Entity("TurismoEstancia.Domain.Models.GaleriaMidia", b =>
+                {
+                    b.HasOne("TurismoEstancia.Domain.Models.Arquivo", "Arquivo")
+                        .WithMany()
+                        .HasForeignKey("ArquivoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TurismoEstancia.Domain.Models.Arquivo", "Thumb")
+                        .WithMany()
+                        .HasForeignKey("ArquivoThumbId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TurismoEstancia.Domain.Models.GaleriaCategoria", "Categoria")
+                        .WithMany("Midias")
+                        .HasForeignKey("CategoriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Arquivo");
+
+                    b.Navigation("Categoria");
+
+                    b.Navigation("Thumb");
+                });
+
             modelBuilder.Entity("TurismoEstancia.Domain.Models.GrupoCultural", b =>
                 {
                     b.HasOne("TurismoEstancia.Domain.Models.Arquivo", "Imagem")
@@ -1007,6 +1141,11 @@ namespace TurismoEstancia.Domain.Migrations
             modelBuilder.Entity("TurismoEstancia.Domain.Models.CategoriaPontoTuristico", b =>
                 {
                     b.Navigation("PontosTuristicos");
+                });
+
+            modelBuilder.Entity("TurismoEstancia.Domain.Models.GaleriaCategoria", b =>
+                {
+                    b.Navigation("Midias");
                 });
 
             modelBuilder.Entity("TurismoEstancia.Domain.Models.PontoTuristico", b =>

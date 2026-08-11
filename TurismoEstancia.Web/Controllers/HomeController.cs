@@ -116,7 +116,7 @@ public class HomeController : Controller
     /// Monta o JSON consumido pelo portal.js (formato do allPois do protótipo):
     /// categorias com chave/label/cor/ícone + pontos com posição e metadados.
     /// </summary>
-    private static string SerializarMapa(
+    private string SerializarMapa(
         IReadOnlyList<CategoriaPontoTuristicoDto> categorias,
         IReadOnlyList<PontoTuristicoDto> pontos)
     {
@@ -153,7 +153,7 @@ public class HomeController : Controller
                 title = p.Nome,
                 desc = p.Descricao,
                 detail = p.Detalhe,
-                img = p.CapaArquivoId is long capaId ? $"/arquivo/{capaId}" : "",
+                img = p.CapaArquivoId is long capaId ? Url.Content($"~/arquivo/{capaId}") : "",
                 icon = p.Icone ?? "map-pin",
                 tag = p.Tag,
                 address = p.Endereco,

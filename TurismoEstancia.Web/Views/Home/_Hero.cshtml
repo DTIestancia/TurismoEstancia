@@ -22,7 +22,7 @@
         <div class="loader-picto-row">
             @for (var i = 0; i < pictogramas.Count; i++)
             {
-                <img src="/arquivo/@pictogramas[i]" alt="" class="loader-picto" aria-hidden="true" />
+                <img src="@Url.Content($"~/arquivo/{pictogramas[i]}")" alt="" class="loader-picto" aria-hidden="true" />
             }
         </div>
         <div class="page-loader-bar-track">
@@ -75,7 +75,7 @@
         var i = 0;
         foreach (var slide in slides)
         {
-            <img class="hero-slide@(i == 0 ? " active" : "")" src="/arquivo/@(slide.ImagemArquivoId is long imgId ? imgId.ToString() : "")" alt="@(slide.Titulo ?? "Estância")" data-index="@i" />
+            <img class="hero-slide@(i == 0 ? " active" : "")" src="@Url.Content($"~/arquivo/{(slide.ImagemArquivoId is long imgId ? imgId.ToString() : "")}")" alt="@(slide.Titulo ?? "Estância")" data-index="@i" />
             i++;
         }
     }

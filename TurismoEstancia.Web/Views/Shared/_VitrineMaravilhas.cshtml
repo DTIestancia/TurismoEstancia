@@ -21,7 +21,7 @@ else
                         <figure class="vitrine-foto">
                             @if (ponto.CapaArquivoId is long capa)
                             {
-                                <img src="/arquivo/@capa" alt="@ponto.Nome" loading="lazy" />
+                                <img src="@Url.Content($"~/arquivo/{capa}")" alt="@ponto.Nome" loading="lazy" />
                             }
                             else
                             {
@@ -40,7 +40,7 @@ else
                                         <span class="vitrine-tag">@ponto.Tag</span>
                                     }
                                     <a class="btn-primary vitrine-btn"
-                                       href="/lugares/@ponto.Id/@Slug.De(ponto.Nome)"
+                                       href="@Url.Content($"~/lugares/{ponto.Id}/{Slug.De(ponto.Nome)}")"
                                        data-track="ver-maravilha" data-track-id="@ponto.Id" data-track-nome="@ponto.Nome">
                                         Ver detalhes <i data-lucide="arrow-right" class="icon-lg"></i>
                                     </a>

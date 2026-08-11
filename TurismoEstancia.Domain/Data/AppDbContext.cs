@@ -34,6 +34,8 @@ public class AppDbContext : DbContext
     public DbSet<Avaliacao> Avaliacoes => Set<Avaliacao>();
     public DbSet<Roteiro> Roteiros => Set<Roteiro>();
     public DbSet<RoteiroItem> RoteiroItens => Set<RoteiroItem>();
+    public DbSet<GaleriaCategoria> GaleriaCategorias => Set<GaleriaCategoria>();
+    public DbSet<GaleriaMidia> GaleriaMidias => Set<GaleriaMidia>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -59,6 +61,8 @@ public class AppDbContext : DbContext
         ConfigureAvaliacao(modelBuilder);
         ConfigureRoteiro(modelBuilder);
         ConfigureRoteiroItem(modelBuilder);
+        ConfigureGaleriaCategoria(modelBuilder);
+        ConfigureGaleriaMidia(modelBuilder);
     }
 
     /// <summary>
@@ -401,6 +405,65 @@ public class AppDbContext : DbContext
                   .WithMany()
                   .HasForeignKey(e => e.PontoTuristicoId)
                   .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    private static void ConfigureGaleriaCategoria(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<GaleriaCategoria>(entity =>
+        {
+            entity.Property(e => e.Nome).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Chave).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Descricao).HasMaxLength(500);
+            entity.Property(e => e.Ativo).HasDefaultValue(true);
+
+            // Chave única: a URL /galeria/{chave} depende dela.
+            entity.HasIndex(e => e.Chave).IsUnique();
+            entity.HasIndex(e => e.Ordem);
+
+            // Capa opcional (Arquivo compartilhado): SetNull, como nas demais
+            // imagens de conteúdo (GrupoCultural, PratoTuristico, Noticia...).
+            entity.HasOne(e => e.Capa)
+                  .WithMany()
+                  .HasForeignKey(e => e.CapaArquivoId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+    }
+
+    private static void ConfigureGaleriaMidia(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<GaleriaMidia>(entity =>
+        {
+            entity.Property(e => e.Titulo).HasMaxLength(200);
+            entity.Property(e => e.Ativo).HasDefaultValue(true);
+            entity.Property(e => e.Visualizacoes).HasDefaultValue(0);
+            entity.Property(e => e.Curtidas).HasDefaultValue(0);
+
+            // Filho próprio da categoria: Cascade.
+            entity.HasOne(e => e.Categoria)
+                  .WithMany(c => c.Midias)
+                  .HasForeignKey(e => e.CategoriaId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            // Referências compartilhadas (Arquivo): Restrict — os binários são
+            // apagados explicitamente pelo serviço após remover a mídia.
+            entity.HasOne(e => e.Arquivo)
+                  .WithMany()
+                  .HasForeignKey(e => e.ArquivoId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Thumb)
+                  .WithMany()
+                  .HasForeignKey(e => e.ArquivoThumbId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            // Consultas por categoria (grid/lightbox) e ordenação por Ordem.
+            entity.HasIndex(e => e.CategoriaId);
+
+            // Uma foto (ArquivoId) só pode ser vinculada UMA vez por categoria:
+            // a mesma foto em várias categorias vira várias linhas, cada uma
+            // apontando para o MESMO binário otimizado na tabela Arquivo.
+            entity.HasIndex(e => new { e.CategoriaId, e.ArquivoId }).IsUnique();
         });
     }
 }

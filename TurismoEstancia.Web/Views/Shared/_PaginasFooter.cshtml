@@ -9,12 +9,12 @@
             @await Component.InvokeAsync("ContatosRodape")
         </div>
         <nav class="paginas-footer-links" aria-label="Navegação do rodapé">
-            <a href="/cidade">Nossa Cidade</a>
-            <a href="/cultura">Nossa Cultura</a>
-            <a href="/grupos-populares">Grupos Populares</a>
-            <a href="/gastronomia">Gastronomia</a>
-            <a href="/lugares">Lugares que Encantam</a>
-            <a href="/">← Voltar ao início</a>
+            <a href="@Url.Content("~/cidade")">Nossa Cidade</a>
+            <a href="@Url.Content("~/cultura")">Nossa Cultura</a>
+            <a href="@Url.Content("~/grupos-populares")">Grupos Populares</a>
+            <a href="@Url.Content("~/gastronomia")">Gastronomia</a>
+            <a href="@Url.Content("~/lugares")">Lugares que Encantam</a>
+            <a href="@Url.Content("~/")">← Voltar ao início</a>
         </nav>
     </div>
     <div class="paginas-footer-bottom">

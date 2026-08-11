@@ -33,7 +33,7 @@ public class LogoSiteViewComponent : ViewComponent
             logo = await _configuracoes.ObterPorChaveAsync(ChaveLogo, HttpContext.RequestAborted);
 
         var url = logo?.ArquivoId is long arquivoId
-            ? $"/arquivo/{arquivoId}"
+            ? Url.Content($"~/arquivo/{arquivoId}")
             : Url.Content(Fallback);
 
         return View(new LogoSiteModel

@@ -1,0 +1,55 @@
+@model GaleriaCategoriaDto
+@{
+    ViewData["Title"] = "Nova categoria";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Nova categoria da galeria</h1>
+        <p class="painel-page-desc">Ex.: Praias, Patrimônio, Festas e Tradições. A chave vira a URL pública /galeria/{chave}.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Criar" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Nome"></label>
+            <input asp-for="Nome" class="painel-input" maxlength="100" placeholder="Praias" />
+            <span asp-validation-for="Nome" class="field-validation-error"></span>
+        </div>
+        <div class="painel-field">
+            <label asp-for="Chave"></label>
+            <input asp-for="Chave" class="painel-input" maxlength="100" placeholder="praias" />
+            <span class="painel-hint">URL pública (/galeria/{chave}). Se vazio, é gerada a partir do nome.</span>
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Descricao"></label>
+        <input asp-for="Descricao" class="painel-input" maxlength="500" placeholder="Fotos das praias de Estância" />
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label>Imagem de capa</label>
+            <input type="file" name="capa" accept="image/jpeg,image/png,image/webp" class="painel-input" />
+            <span class="painel-hint">Otimizada para 1600px — usada no card da categoria e no compartilhamento (OG/SEO).</span>
+        </div>
+        <div class="painel-field">
+            <label asp-for="Ordem"></label>
+            <input asp-for="Ordem" class="painel-input" type="number" />
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label class="painel-checkbox">
+            <input asp-for="Ativo" /> Categoria ativa no portal
+        </label>
+    </div>
+
+    <div class="painel-form-actions">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>

@@ -1,0 +1,63 @@
+@model GaleriaCategoriaDto
+@{
+    ViewData["Title"] = "Editar categoria";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Editar categoria</h1>
+        <p class="painel-page-desc">Alterar a chave muda a URL pública — links antigos deixam de funcionar.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Editar" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Nome"></label>
+            <input asp-for="Nome" class="painel-input" maxlength="100" />
+            <span asp-validation-for="Nome" class="field-validation-error"></span>
+        </div>
+        <div class="painel-field">
+            <label asp-for="Chave"></label>
+            <input asp-for="Chave" class="painel-input" maxlength="100" />
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Descricao"></label>
+        <input asp-for="Descricao" class="painel-input" maxlength="500" />
+    </div>
+
+    <div class="painel-field">
+        <label>Imagem de capa</label>
+        @if (Model.CapaArquivoId is long capaId)
+        {
+            <div class="painel-capa-preview">
+                <img src="@Url.Content($"~/arquivo/{capaId}")" alt="Capa atual de @Model.Nome" />
+                <span>Envie outra imagem para substituir.</span>
+            </div>
+        }
+        <input type="file" name="capa" accept="image/jpeg,image/png,image/webp" class="painel-input" />
+        <span class="painel-hint">Otimizada para 1600px — usada no card da categoria e no compartilhamento (OG/SEO).</span>
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Ordem"></label>
+            <input asp-for="Ordem" class="painel-input" type="number" />
+        </div>
+        <div class="painel-field">
+            <label class="painel-checkbox">
+                <input asp-for="Ativo" /> Categoria ativa no portal
+            </label>
+        </div>
+    </div>
+
+    <div class="painel-form-actions">
+        <a class="btn-painel btn-painel--ghost" asp-action="Fotos" asp-route-id="@Model.Id"><i data-lucide="images"></i> Gerenciar fotos</a>
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>

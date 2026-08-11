@@ -32,10 +32,10 @@
             {
                 @foreach (var prato in Model.Pratos)
                 {
-                    <a class="paginas-card" href="/gastronomia/@prato.Id/@Slug.De(prato.Nome)">
+                    <a class="paginas-card" href="@Url.Content($"~/gastronomia/{prato.Id}/{Slug.De(prato.Nome)}")">
                         @if (prato.ImagemArquivoId is long img)
                         {
-                            <img class="paginas-card-img" src="/arquivo/@img" alt="@prato.Nome" loading="lazy" />
+                            <img class="paginas-card-img" src="@Url.Content($"~/arquivo/{img}")" alt="@prato.Nome" loading="lazy" />
                         }
                         <div class="paginas-card-body">
                             <h3 class="paginas-card-title">@prato.Nome</h3>

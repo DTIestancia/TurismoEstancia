@@ -45,9 +45,9 @@
                 <div class="ig-highlights reveal reveal-delay-1">
                     @foreach (var m in maravilhasPicto)
                     {
-                        <a class="ig-highlight" href="/lugares/@m.Id" title="Ver detalhes: @m.Nome">
+                        <a class="ig-highlight" href="@Url.Content($"~/lugares/{m.Id}")" title="Ver detalhes: @m.Nome">
                             <span class="ig-highlight-ring">
-                                <img src="/arquivo/@m.PictogramaArquivoId" alt="" loading="lazy" />
+                                <img src="@Url.Content($"~/arquivo/{m.PictogramaArquivoId}")" alt="" loading="lazy" />
                             </span>
                             <span class="ig-highlight-nome">@m.Nome</span>
                         </a>
@@ -65,7 +65,7 @@
                         <span class="ig-post-foto">
                             @if (noticia.ImagemArquivoId is long imgId)
                             {
-                                <img class="ig-post-img" src="/arquivo/@imgId" alt="@noticia.Titulo" loading="lazy" />
+                                <img class="ig-post-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@noticia.Titulo" loading="lazy" />
                             }
                             else
                             {

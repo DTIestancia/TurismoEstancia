@@ -4,7 +4,7 @@
         @if (Model.VideoArquivoId is long videoId)
         {
             <video preload="metadata" playsinline id="heroVideo">
-                <source src="/arquivo/@videoId" type="video/mp4" />
+                <source src="@Url.Content($"~/arquivo/{videoId}")" type="video/mp4" />
                 Seu navegador não suporta vídeo HTML5.
             </video>
         }

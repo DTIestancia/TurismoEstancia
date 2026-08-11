@@ -30,12 +30,12 @@
                 {
                     var ponto = Model.Maravilhas[i];
                     var cor = ponto.CategoriaCor ?? "#F97E31";
-                    <a class="paginas-card paginas-card--maravilha" href="/lugares/@ponto.Id/@Slug.De(ponto.Nome)"
+                    <a class="paginas-card paginas-card--maravilha" href="@Url.Content($"~/lugares/{ponto.Id}/{Slug.De(ponto.Nome)}")"
                        data-track="ver-maravilha" data-track-id="@ponto.Id" data-track-nome="@ponto.Nome">
                         <figure class="paginas-card-figure">
                             @if (ponto.CapaArquivoId is long capa)
                             {
-                                <img class="paginas-card-img" src="/arquivo/@capa" alt="@ponto.Nome" loading="lazy" />
+                                <img class="paginas-card-img" src="@Url.Content($"~/arquivo/{capa}")" alt="@ponto.Nome" loading="lazy" />
                             }
                             else
                             {
@@ -63,7 +63,7 @@
         }
 
         <div class="paginas-cta-row paginas-cta-row--center">
-            <a href="/" class="btn-secondary"><i data-lucide="map" class="icon-lg"></i> Ver tudo no mapa da home</a>
+            <a href="@Url.Content("~/")" class="btn-secondary"><i data-lucide="map" class="icon-lg"></i> Ver tudo no mapa da home</a>
         </div>
     </div>
 

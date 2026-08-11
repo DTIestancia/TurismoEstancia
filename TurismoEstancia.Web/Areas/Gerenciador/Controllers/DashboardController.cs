@@ -4,6 +4,7 @@ using TurismoEstancia.Services.Avaliacao.Interfaces;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
+using TurismoEstancia.Services.Galeria.Interfaces;
 using TurismoEstancia.Services.Roteiro.Interfaces;
 using TurismoEstancia.Services.Turismo.Interfaces;
 using TurismoEstancia.Web.Models;
@@ -28,6 +29,7 @@ public class DashboardController : PainelController
     private readonly IAnalyticsService _analytics;
     private readonly IConfiguracaoSiteService _configs;
     private readonly ITagCulturalService _tags;
+    private readonly IGaleriaService _galeria;
 
     public DashboardController(
         IServiceProvider services,
@@ -42,7 +44,8 @@ public class DashboardController : PainelController
         ICategoriaPontoTuristicoService categorias,
         IAnalyticsService analytics,
         IConfiguracaoSiteService configs,
-        ITagCulturalService tags)
+        ITagCulturalService tags,
+        IGaleriaService galeria)
         : base(services)
     {
         _pontos = pontos;
@@ -57,9 +60,10 @@ public class DashboardController : PainelController
         _analytics = analytics;
         _configs = configs;
         _tags = tags;
+        _galeria = galeria;
     }
 
-    public async Task<IActionResult> Index(int dias, CancellationToken ct)
+    public async Task<IActionResult> Index(int dias, int? galeriaCategoria, CancellationToken ct)
     {
         ViewData["Title"] = "Dashboard";
         if (dias is not (7 or 30 or 90)) dias = 30;
@@ -67,7 +71,11 @@ public class DashboardController : PainelController
         var de = DateTime.Today.AddDays(-(dias - 1));
         var ate = DateTime.Today;
 
-        var resumo = await _analytics.ObterResumoAsync(de, ate, ct);
+        var resumo = await _analytics.ObterResumoAsync(de, ate, galeriaCategoria, ct);
+
+        // Categorias da galeria para o filtro do ranking de fotos (inclui inativas,
+        // para o ranking de uma categoria desativada continuar consultável).
+        var galeriaCategorias = await _galeria.ListarCategoriasAsync(incluirInativas: true, ct);
 
         var inscricoes = await _newsletter.ListarAsync(incluirInativos: true, ct);
         var novasNoPeriodo = inscricoes.Count(i => i.DataInscricao.Date >= de.Date && i.DataInscricao.Date <= ate.Date);
@@ -110,7 +118,9 @@ public class DashboardController : PainelController
             Conteudos = itens,
             RotasIndexaveis = rotasIndexaveis,
             SeoTitulo = seoTitulo,
-            SeoDescricao = seoDescricao
+            SeoDescricao = seoDescricao,
+            GaleriaCategorias = galeriaCategorias,
+            GaleriaCategoriaId = galeriaCategoria
         };
 
         return View(vm);

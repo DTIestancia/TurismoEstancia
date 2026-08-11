@@ -30,7 +30,7 @@
                        data-track="noticia" data-track-id="@noticia.Id" data-track-nome="@noticia.Titulo">
                         @if (noticia.ImagemArquivoId is long imgId)
                         {
-                            <img class="news-card-img" src="/arquivo/@imgId" alt="@noticia.Titulo" loading="lazy" />
+                            <img class="news-card-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@noticia.Titulo" loading="lazy" />
                         }
                         <div class="news-card-body">
                             <div class="news-card-date">@noticia.DataPublicacao.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"))</div>

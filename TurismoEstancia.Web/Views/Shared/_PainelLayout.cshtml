@@ -17,7 +17,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="@Url.Content("~/favicon.svg")" />
     <title>@ViewData["Title"] - Painel Turismo Estância</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -82,6 +82,9 @@
                     </a>
                     <a class="painel-nav-link @(IsAreaSecao("rodape") || IsAreaPage("Gerenciador","Contatos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Rodape">
                         <i data-lucide="phone"></i> Rodapé
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Galeria") ? "active" : "")" asp-area="Gerenciador" asp-controller="Galeria" asp-action="Index">
+                        <i data-lucide="camera"></i> Galeria
                     </a>
 
                     <div class="painel-nav-title">Sistema</div>

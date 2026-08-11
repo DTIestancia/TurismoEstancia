@@ -28,7 +28,7 @@
             </header>
             @if (Model.Roteiro.ImagemArquivoId is long imgId)
             {
-                <img class="news-article-img" src="/arquivo/@imgId" alt="@Model.Roteiro.Titulo" />
+                <img class="news-article-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@Model.Roteiro.Titulo" />
             }
 
             <div class="roteiro-itens">

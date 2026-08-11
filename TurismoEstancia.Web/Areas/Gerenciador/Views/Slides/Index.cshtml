@@ -26,7 +26,7 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td><img class="painel-item-thumb" src="/arquivo/@item.ImagemArquivoId" alt="" /></td>
+                        <td><img class="painel-item-thumb" src="@Url.Content($"~/arquivo/{item.ImagemArquivoId}")" alt="" /></td>
                         <td><strong>@(item.Titulo ?? "Sem título")</strong></td>
                         <td>@item.Ordem</td>
                         <td>

@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!avaliacaoPontoId) return;
     avaliacaoPontoId.value = pontoId;
     if (!modalAvaliacoes) return;
-    fetch('/Avaliacao/ListarPorPonto/' + pontoId)
+    fetch(appBase() + 'Avaliacao/ListarPorPonto/' + pontoId)
       .then(function (r) { return r.json(); })
       .then(renderAvaliacoes)
       .catch(function () { if (modalAvaliacoes) modalAvaliacoes.hidden = true; });
@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var token = newsletterForm.querySelector('input[name="__RequestVerificationToken"]').value;
       if (!consentimento) { alert('É necessário consentir com a LGPD para receber a newsletter.'); return; }
 
-      fetch('/Newsletter/Inscrever', {
+      fetch(appBase() + 'Newsletter/Inscrever', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -845,9 +845,197 @@ document.addEventListener('DOMContentLoaded', function () {
 
   initWondersVitrine();
 
+  // ===== Galeria: lightbox =====
+  // As fotos da galeria (/galeria) abrem num visualizador fullscreen com
+  // navegação por setas/teclado; o grid usa os thumbnails e o lightbox
+  // carrega a imagem otimizada (1600px) sob demanda.
+  (function initGaleriaLightbox() {
+    const lightbox = document.getElementById('galeriaLightbox');
+    if (!lightbox) return;
+
+    const img = document.getElementById('galeriaLightboxImg');
+    const legenda = document.getElementById('galeriaLightboxLegenda');
+    const contador = document.getElementById('galeriaLightboxContador');
+    const fechar = document.getElementById('galeriaLightboxFechar');
+    const prevBtn = document.getElementById('galeriaLightboxPrev');
+    const nextBtn = document.getElementById('galeriaLightboxNext');
+    const curtirBtn = document.getElementById('galeriaLightboxCurtir');
+    const curtidasEl = document.getElementById('galeriaLightboxCurtidas');
+    const visualizacoesEl = document.getElementById('galeriaLightboxVisualizacoes');
+    const itens = Array.prototype.slice.call(document.querySelectorAll('.galeria-item'));
+    if (!itens.length) return;
+    let atual = -1;
+
+    // Ids curtidos nesta sessão (memória local — só para o estado visual do
+    // botão; o dedup real é server-side por cookie de sessão).
+    let curtidos = new Set();
+    try {
+      const salvo = JSON.parse(sessionStorage.getItem('galeriaCurtidas') || '[]');
+      curtidos = new Set(salvo);
+    } catch (e) { /* sessionStorage indisponível */ }
+
+    function salvarCurtidos() {
+      try { sessionStorage.setItem('galeriaCurtidas', JSON.stringify(Array.from(curtidos))); } catch (e) { /* noop */ }
+    }
+
+    function tokenAntiForgery() {
+      const el = lightbox.querySelector('input[name="__RequestVerificationToken"]');
+      return el ? el.value : '';
+    }
+
+    function atualizarCurtir(item) {
+      if (!curtirBtn) return;
+      const curtidas = parseInt(item.getAttribute('data-like'), 10) || 0;
+      const jaCurtiu = curtidos.has(item.getAttribute('data-id'));
+      curtidasEl.textContent = String(curtidas);
+      curtirBtn.classList.toggle('is-curtido', jaCurtiu);
+      curtirBtn.setAttribute('aria-pressed', jaCurtiu ? 'true' : 'false');
+      curtirBtn.disabled = jaCurtiu;
+    }
+
+    function abrir(indice) {
+      if (indice < 0 || indice >= itens.length) return;
+      atual = indice;
+      const item = itens[atual];
+      // Fade-in da foto no lightbox: esconde até o load disparar.
+      img.classList.remove('is-loaded');
+      img.onload = function () { img.classList.add('is-loaded'); };
+      img.src = item.getAttribute('data-full') || '';
+      img.alt = item.getAttribute('data-titulo') || '';
+      legenda.textContent = item.getAttribute('data-titulo') || '';
+      contador.textContent = (atual + 1) + ' / ' + itens.length;
+      visualizacoesEl.textContent = item.getAttribute('data-views') || '0';
+      atualizarCurtir(item);
+      lightbox.classList.add('active');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      registrarVisualizacao(item);
+    }
+
+    // Visualização (lightbox aberto): conta no servidor + evento de analytics.
+    function registrarVisualizacao(item) {
+      const id = item.getAttribute('data-id');
+      trackAnalytics('visualizacao-foto', id, item.getAttribute('data-titulo'));
+      if (!navigator.sendBeacon && !window.fetch) return;
+      // App pode rodar sob sub-pasta (ex.: /turismo) — usa o base do PathBase.
+      const base = lightbox.getAttribute('data-app-base') || '';
+      fetch(base + 'galeria/visualizar/' + id, {
+        method: 'POST',
+        headers: {
+          'RequestVerificationToken': tokenAntiForgery(),
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      }).then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          if (d && d.visualizacoes) {
+            item.setAttribute('data-views', String(d.visualizacoes));
+            visualizacoesEl.textContent = String(d.visualizacoes);
+          }
+        })
+        .catch(function () { /* contagem é não-crítica */ });
+    }
+
+    // Curtida "Amei": dedup por sessão no servidor.
+    if (curtirBtn) {
+      curtirBtn.addEventListener('click', function () {
+        if (curtirBtn.disabled) return;
+        const item = itens[atual];
+        const id = item.getAttribute('data-id');
+        const base = lightbox.getAttribute('data-app-base') || '';
+        fetch(base + 'galeria/curtir/' + id, {
+          method: 'POST',
+          headers: {
+            'RequestVerificationToken': tokenAntiForgery(),
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        }).then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (d) {
+            if (!d) return;
+            item.setAttribute('data-like', String(d.curtidas));
+            curtidasEl.textContent = String(d.curtidas);
+            if (d.jaCurtiu) {
+              curtidos.add(id);
+              salvarCurtidos();
+              atualizarCurtir(item);
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+          })
+          .catch(function () { /* noop */ });
+      });
+    }
+
+    function fecharLightbox() {
+      lightbox.classList.remove('active');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      img.src = '';
+    }
+
+    function navegar(delta) {
+      abrir((atual + delta + itens.length) % itens.length);
+    }
+
+    itens.forEach(function (item, i) {
+      item.addEventListener('click', function (e) {
+        e.preventDefault();
+        trackAnalytics('galeria-foto', item.getAttribute('data-id'), item.getAttribute('data-titulo'));
+        abrir(i);
+      });
+    });
+
+    if (fechar) fechar.addEventListener('click', fecharLightbox);
+    if (prevBtn) prevBtn.addEventListener('click', function () { navegar(-1); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { navegar(1); });
+    lightbox.addEventListener('click', function (e) {
+      if (e.target === lightbox) fecharLightbox();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!lightbox.classList.contains('active')) return;
+      if (e.key === 'Escape') fecharLightbox();
+      if (e.key === 'ArrowLeft') navegar(-1);
+      if (e.key === 'ArrowRight') navegar(1);
+    });
+  })();
+
+  // ===== Galeria: placeholder + fade-in das imagens =====
+  // As fotos do grid e as capas dos cards começam transparentes sobre um
+  // shimmer (CSS) e ganham .is-carregada quando o load dispara — sem flash
+  // branco e sem layout shift. Cobre também o caso de imagem já em cache
+  // (complete + naturalWidth) e o de imagem indisponível (.is-erro).
+  (function initGaleriaPlaceholder() {
+    const imgs = document.querySelectorAll('.paginas-galeria-grid--fotos .galeria-item img, .paginas-galeria-cards .paginas-galeria-card img');
+    if (!imgs.length) return;
+
+    function marcarCarregada(img) {
+      img.classList.add('is-loaded');
+      const item = img.closest('.galeria-item, .paginas-galeria-card');
+      if (item) item.classList.add('is-carregada');
+    }
+
+    imgs.forEach(function (img) {
+      if (img.complete && img.naturalWidth > 0) {
+        marcarCarregada(img);
+      } else {
+        img.addEventListener('load', function () { marcarCarregada(img); });
+        img.addEventListener('error', function () {
+          const item = img.closest('.galeria-item, .paginas-galeria-card');
+          if (item) item.classList.add('is-erro');
+        });
+      }
+    });
+  })();
+
   // ===== Analytics: beacon de cliques (anônimo, LGPD-safe) =====
   // Envia o clique via sendBeacon — nunca bloqueia a navegação. A sessão
   // anônima vem do cookie te_sessao; nada pessoal trafega no payload.
+  // O app pode rodar sob sub-pasta (ex.: /turismo) — a base vem do <body>.
+  function appBase() {
+    var b = document.body && document.body.getAttribute('data-app-base');
+    if (b) return b;
+    var lb = document.getElementById('galeriaLightbox');
+    return (lb && lb.getAttribute('data-app-base')) || '';
+  }
+
   function trackAnalytics(evento, entidadeId, entidadeNome) {
     try {
       if (!navigator.sendBeacon) return;
@@ -857,7 +1045,7 @@ document.addEventListener('DOMContentLoaded', function () {
         entidadeNome: entidadeNome || null,
         rota: window.location.pathname
       });
-      navigator.sendBeacon('/api/analytics/event', new Blob([payload], { type: 'application/json' }));
+      navigator.sendBeacon(appBase() + 'api/analytics/event', new Blob([payload], { type: 'application/json' }));
     } catch (e) { /* nunca bloqueia o clique */ }
   }
 

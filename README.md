@@ -7,6 +7,14 @@ de conteúdo. Construído em **ASP.NET Core 9** seguindo o padrão de arquitetur
 ## ✨ O que o sistema faz
 
 - **Portal público** (100% dinâmico):
+  **galeria de fotos por categorias dinâmicas** (`/galeria`, com lightbox e
+  thumbnails — as fotos são **otimizadas no upload**: redimensionadas para
+  1600px, re-encodadas como JPEG e sem metadados EXIF, gerando também um
+  thumbnail de 400px; uma foto de celular de 5 MB vira ~200–400 KB no banco;
+  cada foto tem botão **"Amei"** (curtida com dedup por sessão) e contador de
+  **visualizações**, com rankings no dashboard de analytics; as imagens cheias
+  recebem **marca d'água** do portal e o endpoint `/arquivo/{id}` bloqueia
+  **hotlink** de outros sites via Referer),
   hero com slides, seção de história com estatísticas, cultura & gastronomia,
   **vitrine das 7 Maravilhas** em **baralho de cartas com prévia** (carta central,
   próxima espreitando à direita, anterior à esquerda; arrastar/toque, setas no
@@ -21,7 +29,8 @@ de conteúdo. Construído em **ASP.NET Core 9** seguindo o padrão de arquitetur
 - **CMS** com dois perfis (policies por **claim**, nunca roles literais):
   - **Gerenciador** — acesso total, organizado em **"Conteúdo do site"** com 10
     áreas (Hero, Nossa Cidade, Cultura, Gastronomia, 7 Maravilhas, Agenda,
-    Notícias, Roteiros, Mapa, Rodapé): cada área mostra o que já está cadastrado,
+    Notícias, Roteiros, Mapa, Rodapé) + **Galeria** (categorias dinâmicas com
+    upload múltiplo de fotos otimizado no servidor): cada área mostra o que já está cadastrado,
     cadastra novos itens em modal (sem recarregar), edita os textos e imagens da
     área com seletor de chave e **prévia** da seção como fica no portal — além
     de **Tema e cores** (paleta de 6 cores editável sem recompilar SCSS),
@@ -74,6 +83,10 @@ dotnet run --project TurismoEstancia.Web
 | `TurismoEstanciaIdentityDb` | `TurismoEstanciaIdentity`              | ASP.NET Identity (usuários) |
 
 Mídias (imagens, vídeo, guia) ficam em **byte[] no banco**, servidas por `GET /arquivo/{id}`.
+A otimização de imagens usa **SixLabors.ImageSharp 3.1** (resize + re-encode JPEG + remoção
+EXIF) — aplicada nos uploads da Galeria (`IArquivoService.SalvarImagemOtimizadaAsync`), com
+**marca d'água** opcional (listras diagonais + logotipo do portal no canto) para proteção
+contra download.
 A tabela `Arquivos` segue o padrão **`PrefeituraDigital.Arquivo`** (colunas `ArquId`,
 `ArquUID` ROWGUIDCOL, `ArquFileName`, `ArquContentType`, `ArquSize`, `ArquBytes`
 `varbinary(max)`, `ArquMomento`, `ArquAutor`, `ArquAtivo`, `ArquOrigem`) e está **pronta

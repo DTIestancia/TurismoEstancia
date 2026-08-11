@@ -1,8 +1,8 @@
 -- ============================================================================
 -- TurismoEstancia — Configuração do FILESTREAM (executar no servidor de produção)
 -- ----------------------------------------------------------------------------
--- A tabela [Arquivos] já nasce preparada para FILESTREAM pelo padrão adotado:
---   • ArquId          bigint identity (PK)
+-- A tabela [Arquivos] nasce preparada para FILESTREAM pelo padrão adotado:
+--   • ArquId          bigint identity (PK, em fg_dados)
 --   • ArquUID         uniqueidentifier NOT NULL DEFAULT NEWID()  → ROWGUIDCOL
 --   • ArquFileName    nvarchar(255)
 --   • ArquContentType nvarchar(100)
@@ -13,76 +13,53 @@
 --   • ArquAtivo       bit DEFAULT 1
 --   • ArquOrigem      nvarchar(50)
 --
--- Este script segue o padrão do banco PrefeituraDigital (filegroup
--- FG_Arquivos_Stream, arquivo lógico fg_TurismoEstancia). Executar com
--- privilégios de sysadmin, com o FILESTREAM habilitado na instância.
--- É um script de execução ÚNICA (a conversão do item 3 não é reversível
--- sem copiar os bytes de volta). As etapas 1 e 2 são guardadas para poder
--- ser reexecutadas com segurança.
+-- Banco real: **portalTurismo** (sqlserver01.estancia.local). Os filegroups já
+-- estão configurados no servidor:
+--   • fg_dados            — filegroup de DADOS (default)  → dados da tabela
+--   • fg_portalTurismo    — filegroup FILESTREAM (default) → binários
+--
+-- ⚠️ PRÉ-REQUISITO (erro 5505): a coluna ROWGUIDCOL (ArquUID) precisa de uma
+-- **constraint UNIQUE** (um índice único puro NÃO satisfaz o SQL Server).
+-- O EF Core não modela isso — a constraint entra via SQL, como o ROWGUIDCOL.
+--
+-- ⚠️ A conversão é de execução ÚNICA e usa batches separados (GO): o SQL Server
+-- compila cada batch antes de executar, então não se pode referenciar no mesmo
+-- batch uma coluna criada nele. Rodar com privilégios de sysadmin e FILESTREAM
+-- habilitado na instância (sp_configure 'filestream_access_level', 2).
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
--- 1) Habilitar FILESTREAM na instância (uma única vez por servidor)
---    Valores: 0 = desabilitado | 1 = somente T-SQL | 2 = T-SQL + acesso de
---    streaming do Win32 (recomendado). Pode exigir restart da instância.
+-- 0) Pré-requisito: constraint UNIQUE no ROWGUIDCOL (ArquUID)
+--    Se ainda não existir (a tabela recém-migrada pelo EF não tem):
 -- ----------------------------------------------------------------------------
-EXEC sp_configure 'filestream_access_level', 2;
-RECONFIGURE;
-GO
-
--- Confirma o nível de acesso atual
-SELECT * FROM sys.configurations WHERE name = 'filestream_access_level';
-GO
-
--- ----------------------------------------------------------------------------
--- 2) Criar o filegroup FILESTREAM e o arquivo de dados
---    O diretório 'D:\MSSQL\TurismoEstancia_FS' PRECISA existir e estar vazio
---    (criar na unidade D:, como no padrão PrefeituraDigital).
--- ----------------------------------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM sys.filegroups WHERE name = 'FG_Arquivos_Stream')
+IF NOT EXISTS (SELECT 1 FROM sys.key_constraints
+               WHERE parent_object_id = OBJECT_ID('dbo.Arquivos')
+                 AND name = 'UQ_Arquivos_ArquUID')
 BEGIN
-    ALTER DATABASE [TurismoEstanciaDb]
-        ADD FILEGROUP [FG_Arquivos_Stream] CONTAINS FILESTREAM;
-END
-GO
-
-IF NOT EXISTS (SELECT 1 FROM sys.database_files WHERE name = 'fg_TurismoEstancia')
-BEGIN
-    ALTER DATABASE [TurismoEstanciaDb]
-        ADD FILE
-        (
-            NAME       = fg_TurismoEstancia,
-            FILENAME   = N'D:\MSSQL\TurismoEstancia_FS'
-        )
-        TO FILEGROUP [FG_Arquivos_Stream];
+    ALTER TABLE dbo.Arquivos ADD CONSTRAINT [UQ_Arquivos_ArquUID] UNIQUE NONCLUSTERED (ArquUID);
 END
 GO
 
 -- ----------------------------------------------------------------------------
--- 3) Converter ArquBytes para varbinary(max) FILESTREAM
---    A tabela já possui o ROWGUIDCOL (ArquUID), requisito do SQL Server.
---    A conversão copia os bytes atuais e troca a coluna em uma transação.
+-- 1) Converter ArquBytes para varbinary(max) FILESTREAM
+--    A coluna nova vai para o filegroup FILESTREAM padrão (fg_portalTurismo);
+--    o UPDATE copia o binário já gravado (vazio em banco recém-migrado).
 -- ----------------------------------------------------------------------------
-BEGIN TRANSACTION;
+ALTER TABLE dbo.Arquivos ADD [ArquBytesFilestream] varbinary(max) FILESTREAM;
+GO
 
-    -- Coluna nova FILESTREAM (vai para o filegroup FG_Arquivos_Stream)
-    ALTER TABLE [dbo].[Arquivos]
-        ADD [ArquBytesFilestream] varbinary(max) FILESTREAM;
+UPDATE dbo.Arquivos SET [ArquBytesFilestream] = [ArquBytes] WHERE [ArquBytes] IS NOT NULL;
+GO
 
-    -- Migra o binário já gravado (imagens/vídeos do seed e do CMS)
-    UPDATE [dbo].[Arquivos]
-       SET [ArquBytesFilestream] = [ArquBytes]
-     WHERE [ArquBytes] IS NOT NULL;
+ALTER TABLE dbo.Arquivos DROP COLUMN [ArquBytes];
+EXEC sp_rename N'dbo.Arquivos.ArquBytesFilestream', N'ArquBytes', N'COLUMN';
+GO
 
-    -- Remove a coluna antiga (dados de linha) e renomeia a nova
-    ALTER TABLE [dbo].[Arquivos] DROP COLUMN [ArquBytes];
-    EXEC sp_rename N'[dbo].[Arquivos].[ArquBytesFilestream]', N'ArquBytes', N'COLUMN';
-
-COMMIT TRANSACTION;
+ALTER TABLE dbo.Arquivos ALTER COLUMN [ArquBytes] varbinary(max) FILESTREAM NOT NULL;
 GO
 
 -- ----------------------------------------------------------------------------
--- 4) Verificação
+-- 2) Verificação — ArquBytes deve sair is_filestream = 1 e ArquUID is_rowguidcol = 1
 -- ----------------------------------------------------------------------------
 SELECT t.name AS Tabela,
        fg.name AS Filegroup,

@@ -34,7 +34,7 @@
                 <p class="paginas-cultura-extra">@Html.Raw(culturaExtra)</p>
                 @if (!string.IsNullOrWhiteSpace(culturaImagem))
                 {
-                    <img class="paginas-cultura-img" src="/arquivo/@culturaImagem" alt="Estância — símbolo cultural" loading="lazy" />
+                    <img class="paginas-cultura-img" src="@Url.Content($"~/arquivo/{culturaImagem}")" alt="Estância — símbolo cultural" loading="lazy" />
                 }
             </div>
             <blockquote class="paginas-cultura-quote">@Html.Raw(culturaCitacao)</blockquote>
@@ -49,10 +49,10 @@
             {
                 @foreach (var tag in Model.Tags)
                 {
-                    <a class="paginas-card" href="/cultura/@tag.Id/@Slug.De(tag.Nome)">
+                    <a class="paginas-card" href="@Url.Content($"~/cultura/{tag.Id}/{Slug.De(tag.Nome)}")">
                         @if (tag.ImagemArquivoId is long img)
                         {
-                            <img class="paginas-card-img" src="/arquivo/@img" alt="@tag.Nome" loading="lazy" />
+                            <img class="paginas-card-img" src="@Url.Content($"~/arquivo/{img}")" alt="@tag.Nome" loading="lazy" />
                         }
                         <div class="paginas-card-body">
                             <h3 class="paginas-card-title">@tag.Nome</h3>
