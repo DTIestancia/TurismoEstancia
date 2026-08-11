@@ -32,11 +32,11 @@
                 </div>
                 @if (historiaImagem is not null && !historiaImagem.StartsWith("{{"))
                 {
-                    <img class="paginas-cidade-card-img" src="/arquivo/@historiaImagem" alt="Vista de Estância" loading="lazy" />
+                    <img class="paginas-cidade-card-img" src="@Url.Content($"~/arquivo/{historiaImagem}")" alt="Vista de Estância" loading="lazy" />
                 }
                 else if (Model.Slides.Count > 0)
                 {
-                    <img class="paginas-cidade-card-img" src="/arquivo/@Model.Slides[0].ImagemArquivoId" alt="Vista de Estância" loading="lazy" />
+                    <img class="paginas-cidade-card-img" src="@Url.Content($"~/arquivo/{Model.Slides[0].ImagemArquivoId}")" alt="Vista de Estância" loading="lazy" />
                 }
                 <div class="paginas-cidade-card-text">
                     @Html.Raw(historiaTexto)
@@ -71,10 +71,10 @@
                 </div>
 
                 <div class="paginas-cta-row">
-                    <a href="/lugares" class="btn-primary">
+                    <a href="@Url.Content("~/lugares")" class="btn-primary">
                         Explorar as 7 Maravilhas <i data-lucide="arrow-right" class="icon-lg"></i>
                     </a>
-                    <a href="/cultura" class="btn-secondary"><i data-lucide="sparkles" class="icon-lg"></i> Nossa Cultura</a>
+                    <a href="@Url.Content("~/cultura")" class="btn-secondary"><i data-lucide="sparkles" class="icon-lg"></i> Nossa Cultura</a>
                 </div>
             </div>
         </div>
@@ -86,7 +86,7 @@
                 <div class="paginas-galeria-grid">
                     @foreach (var slide in Model.Slides)
                     {
-                        <img src="/arquivo/@slide.ImagemArquivoId" alt="@(slide.Titulo ?? "Estância")" loading="lazy" />
+                        <img src="@Url.Content($"~/arquivo/{slide.ImagemArquivoId}")" alt="@(slide.Titulo ?? "Estância")" loading="lazy" />
                     }
                 </div>
             </div>

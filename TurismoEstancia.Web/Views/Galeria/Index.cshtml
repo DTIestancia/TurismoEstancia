@@ -9,7 +9,7 @@
     @{
         // Capa da categoria vira o fundo do hero (com overlay escuro p/ contraste).
         var estiloHero = emCategoria && Model.CategoriaAtual!.CapaArquivoId is long capaHero
-            ? $"background-image:linear-gradient(rgba(3,14,25,0.68),rgba(3,14,25,0.86)), url('/arquivo/{capaHero}');background-size:cover;background-position:center;"
+            ? $"background-image:linear-gradient(rgba(3,14,25,0.68),rgba(3,14,25,0.86)), url('{Url.Content($"~/arquivo/{capaHero}")}');background-size:cover;background-position:center;"
             : null;
     }
     <section class="paginas-hero" style="@estiloHero">
@@ -53,10 +53,10 @@
                     <div class="paginas-galeria-cards">
                         @foreach (var categoria in Model.Categorias)
                         {
-                            <a class="paginas-galeria-card" href="/galeria/@categoria.Chave" data-track="galeria-categoria" data-track-nome="@categoria.Nome">
+                            <a class="paginas-galeria-card" href="@Url.Content($"~/galeria/{categoria.Chave}")" data-track="galeria-categoria" data-track-nome="@categoria.Nome">
                                 @if (categoria.CapaArquivoId is long capaCard)
                                 {
-                                    <img class="paginas-galeria-card-img" src="/arquivo/@capaCard" alt="Capa de @categoria.Nome" loading="lazy" decoding="async" />
+                                    <img class="paginas-galeria-card-img" src="@Url.Content($"~/arquivo/{capaCard}")" alt="Capa de @categoria.Nome" loading="lazy" decoding="async" />
                                 }
                                 else
                                 {
@@ -76,13 +76,13 @@
                 </section>
             }
             <nav class="paginas-galeria-filtros" aria-label="Filtrar por categoria">
-                <a class="paginas-galeria-filtro @(emCategoria ? "" : "active")" href="/galeria" data-track="galeria-categoria" data-track-nome="todas">
+                <a class="paginas-galeria-filtro @(emCategoria ? "" : "active")" href="@Url.Content("~/galeria")" data-track="galeria-categoria" data-track-nome="todas">
                     Todas <span class="paginas-galeria-count">@Model.Fotos.Count</span>
                 </a>
                 @foreach (var categoria in Model.Categorias)
                 {
                     <a class="paginas-galeria-filtro @(Model.CategoriaAtual is not null && Model.CategoriaAtual.Id == categoria.Id ? "active" : "")"
-                       href="/galeria/@categoria.Chave" data-track="galeria-categoria" data-track-nome="@categoria.Nome">
+                       href="@Url.Content($"~/galeria/{categoria.Chave}")" data-track="galeria-categoria" data-track-nome="@categoria.Nome">
                         @categoria.Nome <span class="paginas-galeria-count">@categoria.QuantidadeFotos</span>
                     </a>
                 }
@@ -98,15 +98,15 @@
                     @foreach (var midia in Model.Fotos)
                     {
                         var thumb = midia.ArquivoThumbId ?? midia.ArquivoId;
-                        <a class="galeria-item" href="/arquivo/@midia.ArquivoId"
-                           data-full="/arquivo/@midia.ArquivoId"
+                        <a class="galeria-item" href="@Url.Content($"~/arquivo/{midia.ArquivoId}")"
+                           data-full="@Url.Content($"~/arquivo/{midia.ArquivoId}")"
                            data-titulo="@(midia.Titulo ?? (Model.CategoriaAtual?.Nome ?? midia.CategoriaNome))"
                            data-id="@midia.Id"
                            data-like="@midia.Curtidas"
                            data-views="@midia.Visualizacoes"
                            data-track="galeria-foto" data-track-id="@midia.Id" data-track-nome="@(midia.Titulo ?? midia.CategoriaNome)"
                            aria-label="Ampliar foto: @(midia.Titulo ?? midia.CategoriaNome)">
-                            <img src="/arquivo/@thumb" alt="@(midia.Titulo ?? midia.CategoriaNome)" loading="lazy" decoding="async" />
+                            <img src="@Url.Content($"~/arquivo/{thumb}")" alt="@(midia.Titulo ?? midia.CategoriaNome)" loading="lazy" decoding="async" />
                             <span class="galeria-item-stats" title="Curtidas e visualizações">
                                 <i data-lucide="heart"></i> @midia.Curtidas
                                 <i data-lucide="eye"></i> @midia.Visualizacoes
@@ -126,12 +126,12 @@
         }
 
         <div class="paginas-cta-row paginas-cta-row--center">
-            <a href="/" class="btn-secondary"><i data-lucide="home" class="icon-lg"></i> Voltar ao início</a>
+            <a href="@Url.Content("~/")" class="btn-secondary"><i data-lucide="home" class="icon-lg"></i> Voltar ao início</a>
         </div>
     </div>
 
     <!-- Lightbox da galeria -->
-    <div class="galeria-lightbox" id="galeriaLightbox" aria-hidden="true" role="dialog" aria-label="Visualizador de fotos">
+    <div class="galeria-lightbox" id="galeriaLightbox" data-app-base="@Url.Content("~/")" aria-hidden="true" role="dialog" aria-label="Visualizador de fotos">
         <button type="button" class="galeria-lightbox-fechar" id="galeriaLightboxFechar" aria-label="Fechar"><i data-lucide="x"></i></button>
         <button type="button" class="galeria-lightbox-seta galeria-lightbox-seta--prev" id="galeriaLightboxPrev" aria-label="Foto anterior"><i data-lucide="chevron-left"></i></button>
         <figure class="galeria-lightbox-figura">

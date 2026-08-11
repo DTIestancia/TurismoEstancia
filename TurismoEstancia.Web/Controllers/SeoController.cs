@@ -46,7 +46,9 @@ public class SeoController : Controller
     [Produces("application/xml")]
     public async Task<IActionResult> Sitemap(CancellationToken ct)
     {
-        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        // PathBase: sob sub-aplicação IIS (ex.: /turismo), o sitemap precisa
+        // do caminho completo — senão as URLs apontam para a raiz do site.
+        var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
 
         var urls = new List<(string Loc, double Prioridade, DateTime? LastMod)>
         {
@@ -134,7 +136,7 @@ public class SeoController : Controller
     [Route("robots.txt")]
     public IActionResult Robots()
     {
-        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
         var corpo = $"User-agent: *\nAllow: /\n\nSitemap: {baseUrl}/sitemap.xml\n";
         return Content(corpo, "text/plain");
     }

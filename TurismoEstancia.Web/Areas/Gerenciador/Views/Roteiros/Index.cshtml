@@ -32,7 +32,7 @@
                         <td>
                             @if (item.ImagemArquivoId is long imgId)
                             {
-                                <img class="painel-item-thumb" src="/arquivo/@imgId" alt="" />
+                                <img class="painel-item-thumb" src="@Url.Content($"~/arquivo/{imgId}")" alt="" />
                             }
                         </td>
                         <td><strong>@item.Titulo</strong></td>

@@ -1,20 +1,20 @@
 <header class="paginas-nav">
     <div class="paginas-nav-inner">
-        <a href="/" class="paginas-brand">
+        <a href="@Url.Content("~/")" class="paginas-brand">
             @await Component.InvokeAsync("LogoSite", new { altura = 34 })
         </a>
         <button class="paginas-nav-toggle" id="paginasNavToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="paginasNavLinks">
             <span class="paginas-nav-toggle-icon" aria-hidden="true"></span>
         </button>
         <nav class="paginas-nav-links" id="paginasNavLinks" aria-label="Seções do portal">
-            <a href="/cidade">Nossa Cidade</a>
-            <a href="/cultura">Cultura</a>
-            <a href="/grupos-populares">Grupos</a>
-            <a href="/gastronomia">Gastronomia</a>
-            <a href="/lugares">7 Maravilhas</a>
-            <a href="/galeria">Galeria</a>
-            <a href="/" class="paginas-nav-home paginas-nav-home-menu"><i data-lucide="arrow-left" class="icon-lg"></i> Início</a>
+            <a href="@Url.Content("~/cidade")">Nossa Cidade</a>
+            <a href="@Url.Content("~/cultura")">Cultura</a>
+            <a href="@Url.Content("~/grupos-populares")">Grupos</a>
+            <a href="@Url.Content("~/gastronomia")">Gastronomia</a>
+            <a href="@Url.Content("~/lugares")">7 Maravilhas</a>
+            <a href="@Url.Content("~/galeria")">Galeria</a>
+            <a href="@Url.Content("~/")" class="paginas-nav-home paginas-nav-home-menu"><i data-lucide="arrow-left" class="icon-lg"></i> Início</a>
         </nav>
-        <a href="/" class="paginas-nav-home paginas-nav-home-top"><i data-lucide="arrow-left" class="icon-lg"></i> Início</a>
+        <a href="@Url.Content("~/")" class="paginas-nav-home paginas-nav-home-top"><i data-lucide="arrow-left" class="icon-lg"></i> Início</a>
     </div>
 </header>

@@ -10,7 +10,7 @@
     <div class="section-agenda-bg">
         @if (Model.Slides.Count >= 1)
         {
-            <img src="/arquivo/@Model.Slides[0].ImagemArquivoId" alt="" aria-hidden="true" loading="lazy" />
+            <img src="@Url.Content($"~/arquivo/{Model.Slides[0].ImagemArquivoId}")" alt="" aria-hidden="true" loading="lazy" />
         }
     </div>
     <div class="section-agenda-inner">

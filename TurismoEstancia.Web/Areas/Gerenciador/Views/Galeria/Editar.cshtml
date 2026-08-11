@@ -35,7 +35,7 @@
         @if (Model.CapaArquivoId is long capaId)
         {
             <div class="painel-capa-preview">
-                <img src="/arquivo/@capaId" alt="Capa atual de @Model.Nome" />
+                <img src="@Url.Content($"~/arquivo/{capaId}")" alt="Capa atual de @Model.Nome" />
                 <span>Envie outra imagem para substituir.</span>
             </div>
         }

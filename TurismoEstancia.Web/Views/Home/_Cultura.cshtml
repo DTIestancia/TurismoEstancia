@@ -26,7 +26,7 @@
                 <div class="extra-text">
                     @Html.Raw(culturaExtra)
                 </div>
-                <a href="/cultura" class="btn-primary" style="margin-top:22px;align-self:flex-start;">
+                <a href="@Url.Content("~/cultura")" class="btn-primary" style="margin-top:22px;align-self:flex-start;">
                     Explorar nossa cultura <i data-lucide="arrow-right" class="icon-lg"></i>
                 </a>
                 <div class="culture-tags">
@@ -54,7 +54,7 @@
                     <div class="culture-card-img-wrapper">
                         @if (Model.Slides.Count >= 1)
                         {
-                            <img src="/arquivo/@Model.Slides[0].ImagemArquivoId" alt="Estância — símbolo cultural" loading="lazy" />
+                            <img src="@Url.Content($"~/arquivo/{Model.Slides[0].ImagemArquivoId}")" alt="Estância — símbolo cultural" loading="lazy" />
                         }
                         <div class="culture-card-overlay"></div>
                     </div>

@@ -27,7 +27,7 @@
             </header>
             @if (Model.Noticia.ImagemArquivoId is long imgId)
             {
-                <img class="news-article-img" src="/arquivo/@imgId" alt="@Model.Noticia.Titulo" />
+                <img class="news-article-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@Model.Noticia.Titulo" />
             }
             <div class="news-article-body">
                 @Html.Raw(Model.Noticia.Corpo)

@@ -29,7 +29,7 @@
                     </div>
                     @if (historiaImagem is not null && !historiaImagem.StartsWith("{{"))
                     {
-                        <img src="/arquivo/@historiaImagem" alt="Vista da Catedral de Estância" loading="lazy" />
+                        <img src="@Url.Content($"~/arquivo/{historiaImagem}")" alt="Vista da Catedral de Estância" loading="lazy" />
                     }
                     else
                     {
@@ -55,10 +55,10 @@
                     @if (Model.Slides.Count >= 3)
                     {
                         <div class="history-photo">
-                            <img src="/arquivo/@Model.Slides[1].ImagemArquivoId" alt="Estância" loading="lazy" />
+                            <img src="@Url.Content($"~/arquivo/{Model.Slides[1].ImagemArquivoId}")" alt="Estância" loading="lazy" />
                         </div>
                         <div class="history-photo">
-                            <img src="/arquivo/@Model.Slides[2].ImagemArquivoId" alt="Estância" loading="lazy" />
+                            <img src="@Url.Content($"~/arquivo/{Model.Slides[2].ImagemArquivoId}")" alt="Estância" loading="lazy" />
                         </div>
                     }
                 </div>
@@ -77,7 +77,7 @@
                     @Html.Raw(historiaDescricao)
                 </div>
 
-                <a href="/cidade" class="btn-primary reveal reveal-delay-2" style="margin-top:26px;align-self:flex-start;">
+                <a href="@Url.Content("~/cidade")" class="btn-primary reveal reveal-delay-2" style="margin-top:26px;align-self:flex-start;">
                     Conheça nossa cidade <i data-lucide="arrow-right" class="icon-lg"></i>
                 </a>
 

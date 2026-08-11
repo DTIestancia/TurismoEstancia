@@ -12,7 +12,7 @@
             Imagens são redimensionadas para 1600px e re-encodadas como JPEG (EXIF removido) — uma foto de celular de 5 MB vira ~200–400 KB no banco.
         </p>
     </div>
-    <a class="btn-painel btn-painel--ghost" href="/galeria/@Model.Chave" target="_blank" rel="noopener">
+    <a class="btn-painel btn-painel--ghost" href="@Url.Content($"~/galeria/{Model.Chave}")" target="_blank" rel="noopener">
         <i data-lucide="external-link"></i> Ver no portal
     </a>
 </div>
@@ -41,7 +41,7 @@
                     var nome = foto.Titulo ?? foto.CategoriaNome ?? "Foto";
                     <label class="painel-vincular-item" title="@nome">
                         <input type="checkbox" name="arquivoIds" value="@foto.ArquivoId" />
-                        <img src="/arquivo/@(foto.ArquivoThumbId ?? foto.ArquivoId)" alt="@nome" loading="lazy" />
+                        <img src="@Url.Content($"~/arquivo/{foto.ArquivoThumbId ?? foto.ArquivoId}")" alt="@nome" loading="lazy" />
                         <span>@nome</span>
                     </label>
                 }
@@ -64,8 +64,8 @@ else
         {
             var thumbnail = midia.ArquivoThumbId ?? midia.ArquivoId;
             <div class="painel-foto-card @(midia.Ativo ? "" : "is-inativa")">
-                <a href="/arquivo/@midia.ArquivoId" target="_blank" rel="noopener" class="painel-foto-thumb" title="Abrir imagem em tamanho cheio">
-                    <img src="/arquivo/@thumbnail" alt="@(midia.Titulo ?? Model.Nome)" loading="lazy" />
+                <a href="@Url.Content($"~/arquivo/{midia.ArquivoId}")" target="_blank" rel="noopener" class="painel-foto-thumb" title="Abrir imagem em tamanho cheio">
+                    <img src="@Url.Content($"~/arquivo/{thumbnail}")" alt="@(midia.Titulo ?? Model.Nome)" loading="lazy" />
                     <span class="painel-foto-ordem">@midia.Ordem</span>
                 </a>
                 <div class="painel-foto-stats">

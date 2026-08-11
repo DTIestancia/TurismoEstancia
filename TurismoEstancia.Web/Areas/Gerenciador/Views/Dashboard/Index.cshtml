@@ -231,10 +231,10 @@
             <span>@Model.RotasIndexaveis rotas públicas no sitemap</span>
         </div>
         <div class="painel-actions" style="margin-top:14px;">
-            <a class="btn-painel btn-painel--ghost btn-painel--sm" href="/sitemap.xml" target="_blank">
+            <a class="btn-painel btn-painel--ghost btn-painel--sm" href="@Url.Content("~/sitemap.xml")" target="_blank">
                 <i data-lucide="file-code"></i> sitemap.xml
             </a>
-            <a class="btn-painel btn-painel--ghost btn-painel--sm" href="/robots.txt" target="_blank">
+            <a class="btn-painel btn-painel--ghost btn-painel--sm" href="@Url.Content("~/robots.txt")" target="_blank">
                 <i data-lucide="file-text"></i> robots.txt
             </a>
             <a class="btn-painel btn-painel--ghost btn-painel--sm" asp-controller="Configuracoes" asp-action="Index">

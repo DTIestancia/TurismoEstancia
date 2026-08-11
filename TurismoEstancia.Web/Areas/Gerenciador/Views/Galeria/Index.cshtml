@@ -33,7 +33,7 @@
                         <td>
                             @if (item.CapaArquivoId is long capaId)
                             {
-                                <img class="painel-item-thumb" src="/arquivo/@capaId" alt="Capa de @item.Nome" />
+                                <img class="painel-item-thumb" src="@Url.Content($"~/arquivo/{capaId}")" alt="Capa de @item.Nome" />
                             }
                             else
                             {

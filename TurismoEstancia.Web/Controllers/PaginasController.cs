@@ -150,7 +150,7 @@ public class PaginasController : Controller
         var roteiros = await _roteiros.ListarAsync(ct);
 
         DefinirSeo(lugar.Nome, lugar.Descricao,
-            lugar.CapaArquivoId is long capaId ? $"/arquivo/{capaId}" : null);
+            lugar.CapaArquivoId is long capaId ? Url.Content($"~/arquivo/{capaId}") : null);
 
         var vm = new DetalheLugarViewModel
         {
@@ -176,7 +176,7 @@ public class PaginasController : Controller
             return RedirectToAction(nameof(DetalheGrupo), "Paginas", new { id, slug = slugCorreto });
 
         DefinirSeo(grupo.Nome, grupo.Descricao,
-            grupo.ImagemArquivoId is long imgId ? $"/arquivo/{imgId}" : null);
+            grupo.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}") : null);
         return View(grupo);
     }
 
@@ -193,7 +193,7 @@ public class PaginasController : Controller
             return RedirectToAction(nameof(DetalhePrato), "Paginas", new { id, slug = slugCorreto });
 
         DefinirSeo(prato.Nome, prato.Descricao,
-            prato.ImagemArquivoId is long imgId ? $"/arquivo/{imgId}" : null);
+            prato.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}") : null);
         return View(prato);
     }
 
@@ -210,7 +210,7 @@ public class PaginasController : Controller
             return RedirectToAction(nameof(DetalheTag), "Paginas", new { id, slug = slugCorreto });
 
         DefinirSeo(tag.Nome, tag.Descricao,
-            tag.ImagemArquivoId is long imgId ? $"/arquivo/{imgId}" : null);
+            tag.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}") : null);
         return View(tag);
     }
 

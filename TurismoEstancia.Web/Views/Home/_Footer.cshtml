@@ -24,9 +24,9 @@
                 <div class="footer-pictos-row">
                     @foreach (var maravilha in maravilhasPicto)
                     {
-                        <a class="footer-picto" href="/lugares/@maravilha.Id" title="Ver detalhes: @maravilha.Nome">
+                        <a class="footer-picto" href="@Url.Content($"~/lugares/{maravilha.Id}")" title="Ver detalhes: @maravilha.Nome">
                             <span class="footer-picto-tile">
-                                <img src="/arquivo/@(maravilha.PictogramaArquivoId)" alt="" loading="lazy" />
+                                <img src="@Url.Content($"~/arquivo/{(maravilha.PictogramaArquivoId)}")" alt="" loading="lazy" />
                             </span>
                             <span class="footer-picto-nome">@maravilha.Nome</span>
                         </a>
@@ -50,11 +50,11 @@
             <div class="footer-pages">
                 <div class="footer-pages-title">Navegue</div>
                 <div class="footer-pages-grid">
-                    <a href="/cidade">Nossa Cidade</a>
-                    <a href="/cultura">Nossa Cultura</a>
-                    <a href="/grupos-populares">Grupos Populares</a>
-                    <a href="/gastronomia">Gastronomia</a>
-                    <a href="/lugares">Lugares que Encantam</a>
+                    <a href="@Url.Content("~/cidade")">Nossa Cidade</a>
+                    <a href="@Url.Content("~/cultura")">Nossa Cultura</a>
+                    <a href="@Url.Content("~/grupos-populares")">Grupos Populares</a>
+                    <a href="@Url.Content("~/gastronomia")">Gastronomia</a>
+                    <a href="@Url.Content("~/lugares")">Lugares que Encantam</a>
                     <a href="/Noticias">Notícias</a>
                 </div>
             </div>

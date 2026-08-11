@@ -28,10 +28,10 @@
             {
                 @foreach (var grupo in Model.Grupos)
                 {
-                    <a class="paginas-card" href="/grupos-populares/@grupo.Id/@Slug.De(grupo.Nome)">
+                    <a class="paginas-card" href="@Url.Content($"~/grupos-populares/{grupo.Id}/{Slug.De(grupo.Nome)}")">
                         @if (grupo.ImagemArquivoId is long img)
                         {
-                            <img class="paginas-card-img" src="/arquivo/@img" alt="@grupo.Nome" loading="lazy" />
+                            <img class="paginas-card-img" src="@Url.Content($"~/arquivo/{img}")" alt="@grupo.Nome" loading="lazy" />
                         }
                         <div class="paginas-card-body">
                             <h3 class="paginas-card-title">@grupo.Nome</h3>

@@ -31,7 +31,7 @@ public class GaleriaController : Controller
 
         DefinirSeo("Galeria de Fotos",
             "As imagens que contam a história de Estância: praias, patrimônio, cultura e tradições.",
-            fotos.FirstOrDefault()?.ArquivoId is long capa ? $"/arquivo/{capa}" : null);
+            fotos.FirstOrDefault()?.ArquivoId is long capa ? Url.Content($"~/arquivo/{capa}") : null);
 
         return View(new GaleriaViewModel
         {
@@ -52,8 +52,8 @@ public class GaleriaController : Controller
 
         // OG/SEO: a capa da categoria tem precedência; sem capa, usa a 1ª foto.
         var imagemSeo = categoria.CapaArquivoId is long capa
-            ? $"/arquivo/{capa}"
-            : categoria.Midias.FirstOrDefault()?.ArquivoId is long foto ? $"/arquivo/{foto}" : null;
+            ? Url.Content($"~/arquivo/{capa}")
+            : categoria.Midias.FirstOrDefault()?.ArquivoId is long foto ? Url.Content($"~/arquivo/{foto}") : null;
 
         DefinirSeo(categoria.Nome,
             categoria.Descricao ?? $"Fotos da categoria {categoria.Nome} da Galeria de Estância.",

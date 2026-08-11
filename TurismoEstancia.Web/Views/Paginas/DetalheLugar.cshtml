@@ -23,7 +23,7 @@
     <section class="lugar-hero">
         @if (lugar.CapaArquivoId is long capa)
         {
-            <img class="lugar-hero-bg" src="/arquivo/@capa" alt="@lugar.Nome" />
+            <img class="lugar-hero-bg" src="@Url.Content($"~/arquivo/{capa}")" alt="@lugar.Nome" />
         }
         <div class="lugar-hero-overlay"></div>
         <div class="lugar-hero-content">
@@ -33,7 +33,7 @@
             </div>
             @if (lugar.PictogramaArquivoId is long picto)
             {
-                <img class="lugar-hero-picto" src="/arquivo/@picto" alt="" />
+                <img class="lugar-hero-picto" src="@Url.Content($"~/arquivo/{picto}")" alt="" />
             }
             <h1 class="lugar-hero-title">@lugar.Nome</h1>
             @if (!string.IsNullOrWhiteSpace(lugar.Tag))
@@ -127,7 +127,7 @@
                 <div class="lugar-galeria">
                     @foreach (var midia in galeria)
                     {
-                        <img src="/arquivo/@midia.ArquivoId" alt="@lugar.Nome" loading="lazy" />
+                        <img src="@Url.Content($"~/arquivo/{midia.ArquivoId}")" alt="@lugar.Nome" loading="lazy" />
                     }
                 </div>
             </section>
@@ -199,8 +199,8 @@
         }
 
         <div class="paginas-cta-row">
-            <a href="/lugares" class="btn-primary"><i data-lucide="arrow-left" class="icon-lg"></i> Ver outras maravilhas</a>
-            <a href="/" class="btn-secondary"><i data-lucide="home" class="icon-lg"></i> Voltar ao início</a>
+            <a href="@Url.Content("~/lugares")" class="btn-primary"><i data-lucide="arrow-left" class="icon-lg"></i> Ver outras maravilhas</a>
+            <a href="@Url.Content("~/")" class="btn-secondary"><i data-lucide="home" class="icon-lg"></i> Voltar ao início</a>
         </div>
     </div>
 

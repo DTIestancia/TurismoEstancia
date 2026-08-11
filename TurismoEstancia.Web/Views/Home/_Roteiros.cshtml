@@ -29,7 +29,7 @@
                        data-track="roteiro" data-track-id="@roteiro.Id" data-track-nome="@roteiro.Titulo">
                         @if (roteiro.ImagemArquivoId is long imgId)
                         {
-                            <img class="roteiro-card-img" src="/arquivo/@imgId" alt="@roteiro.Titulo" loading="lazy" />
+                            <img class="roteiro-card-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@roteiro.Titulo" loading="lazy" />
                         }
                         <div class="roteiro-card-body">
                             <h3 class="roteiro-card-title">@roteiro.Titulo</h3>

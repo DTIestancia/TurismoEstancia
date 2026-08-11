@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="@Url.Content("~/favicon.svg")" />
     <script>
         // A página abre sempre no topo: o navegador (sobretudo no celular) tende a
         // restaurar a rolagem da visita anterior e "pular" para o meio da página.
@@ -91,7 +91,7 @@
     <link rel="stylesheet" href="~/css/main.css" asp-append-version="true" />
     @await Component.InvokeAsync("ThemeSite")
 </head>
-<body>
+<body data-app-base="@Url.Content("~/")">
     @RenderBody()
 
     <!-- Botão voltar ao topo (aparece após rolar a página) -->

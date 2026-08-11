@@ -25,8 +25,8 @@
             <div class="gastronomy-desc reveal reveal-delay-1">
                 <p>@Html.Raw(gastroDesc)</p>
                 <div class="gastronomy-desc-actions">
-                    <a href="/gastronomia" class="btn-primary">Ver gastronomia <i data-lucide="arrow-right" class="icon-lg"></i></a>
-                    <a href="/grupos-populares" class="btn-secondary"><i data-lucide="users" class="icon-lg"></i> Grupos populares</a>
+                    <a href="@Url.Content("~/gastronomia")" class="btn-primary">Ver gastronomia <i data-lucide="arrow-right" class="icon-lg"></i></a>
+                    <a href="@Url.Content("~/grupos-populares")" class="btn-secondary"><i data-lucide="users" class="icon-lg"></i> Grupos populares</a>
                 </div>
             </div>
         </div>
@@ -40,7 +40,7 @@
                         {
                             // Usa o último slide disponível como imagem de fundo da gastronomia.
                             var slideGastro = Model.Slides[Math.Min(3, Model.Slides.Count - 1)];
-                            <img src="/arquivo/@(slideGastro.ImagemArquivoId is long gId ? gId.ToString() : "")" alt="Sabores do litoral sergipano" loading="lazy" />
+                            <img src="@Url.Content($"~/arquivo/{(slideGastro.ImagemArquivoId is long gId ? gId.ToString() : "")}")" alt="Sabores do litoral sergipano" loading="lazy" />
                         }
                         <div class="gastronomy-card-overlay"></div>
                         <div class="gastronomy-card-content">

@@ -30,7 +30,7 @@
                        data-track="roteiro" data-track-id="@roteiro.Id" data-track-nome="@roteiro.Titulo">
                         @if (roteiro.ImagemArquivoId is long imgId)
                         {
-                            <img class="news-card-img" src="/arquivo/@imgId" alt="@roteiro.Titulo" loading="lazy" />
+                            <img class="news-card-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@roteiro.Titulo" loading="lazy" />
                         }
                         <div class="news-card-body">
                             <div class="news-card-date">@roteiro.Itens.Count dia(s) de roteiro</div>

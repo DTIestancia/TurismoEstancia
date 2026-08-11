@@ -42,7 +42,7 @@
         <label>Substituir arquivo (opcional)</label>
         @if (Model.ArquivoId is long id)
         {
-            <a href="/arquivo/@id" target="_blank" style="font-size:13px;">Arquivo atual: @(Model.ArquivoNome ?? "baixar")</a>
+            <a href="@Url.Content($"~/arquivo/{id}")" target="_blank" style="font-size:13px;">Arquivo atual: @(Model.ArquivoNome ?? "baixar")</a>
         }
         <input type="file" name="arquivo" class="painel-input" style="margin-top:6px;" />
     </div>

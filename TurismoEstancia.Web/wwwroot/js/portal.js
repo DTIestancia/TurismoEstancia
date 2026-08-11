@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!avaliacaoPontoId) return;
     avaliacaoPontoId.value = pontoId;
     if (!modalAvaliacoes) return;
-    fetch('/Avaliacao/ListarPorPonto/' + pontoId)
+    fetch(appBase() + 'Avaliacao/ListarPorPonto/' + pontoId)
       .then(function (r) { return r.json(); })
       .then(renderAvaliacoes)
       .catch(function () { if (modalAvaliacoes) modalAvaliacoes.hidden = true; });
@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var token = newsletterForm.querySelector('input[name="__RequestVerificationToken"]').value;
       if (!consentimento) { alert('É necessário consentir com a LGPD para receber a newsletter.'); return; }
 
-      fetch('/Newsletter/Inscrever', {
+      fetch(appBase() + 'Newsletter/Inscrever', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -917,7 +917,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const id = item.getAttribute('data-id');
       trackAnalytics('visualizacao-foto', id, item.getAttribute('data-titulo'));
       if (!navigator.sendBeacon && !window.fetch) return;
-      fetch('/galeria/visualizar/' + id, {
+      // App pode rodar sob sub-pasta (ex.: /turismo) — usa o base do PathBase.
+      const base = lightbox.getAttribute('data-app-base') || '';
+      fetch(base + 'galeria/visualizar/' + id, {
         method: 'POST',
         headers: {
           'RequestVerificationToken': tokenAntiForgery(),
@@ -939,7 +941,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (curtirBtn.disabled) return;
         const item = itens[atual];
         const id = item.getAttribute('data-id');
-        fetch('/galeria/curtir/' + id, {
+        const base = lightbox.getAttribute('data-app-base') || '';
+        fetch(base + 'galeria/curtir/' + id, {
           method: 'POST',
           headers: {
             'RequestVerificationToken': tokenAntiForgery(),
@@ -1025,6 +1028,14 @@ document.addEventListener('DOMContentLoaded', function () {
   // ===== Analytics: beacon de cliques (anônimo, LGPD-safe) =====
   // Envia o clique via sendBeacon — nunca bloqueia a navegação. A sessão
   // anônima vem do cookie te_sessao; nada pessoal trafega no payload.
+  // O app pode rodar sob sub-pasta (ex.: /turismo) — a base vem do <body>.
+  function appBase() {
+    var b = document.body && document.body.getAttribute('data-app-base');
+    if (b) return b;
+    var lb = document.getElementById('galeriaLightbox');
+    return (lb && lb.getAttribute('data-app-base')) || '';
+  }
+
   function trackAnalytics(evento, entidadeId, entidadeNome) {
     try {
       if (!navigator.sendBeacon) return;
@@ -1034,7 +1045,7 @@ document.addEventListener('DOMContentLoaded', function () {
         entidadeNome: entidadeNome || null,
         rota: window.location.pathname
       });
-      navigator.sendBeacon('/api/analytics/event', new Blob([payload], { type: 'application/json' }));
+      navigator.sendBeacon(appBase() + 'api/analytics/event', new Blob([payload], { type: 'application/json' }));
     } catch (e) { /* nunca bloqueia o clique */ }
   }
 
