@@ -62,7 +62,12 @@ public class ConfiguracaoSiteService : IConfiguracaoSiteService
                 Chave = dto.Chave,
                 Nome = dto.Nome,
                 Tipo = dto.Tipo,
-                ValorTexto = dto.ValorTexto
+                ValorTexto = dto.ValorTexto,
+                // O upload escolhido no formulário também vale na criação —
+                // antes o arquivo era descartado e a config nascia sem ArquivoId.
+                ArquivoId = arquivo is { Length: > 0 }
+                    ? await _arquivos.SalvarAsync(arquivo, ct)
+                    : null
             });
         }
         else
