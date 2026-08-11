@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 
 
-namespace Mensageria.Services
+namespace TurismoEstancia.Mail
 {
     public class MensageServico
     {

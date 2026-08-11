@@ -542,6 +542,268 @@
   margin-top: 44px;
 }
 
+// ===== Notícias estilo Instagram (referência: @vempraestancia) =====
+// A seção vira um “perfil” de Instagram: cabeçalho com avatar em anel
+// (gradiente da marca), destaques com os 7 pictogramas (stories) e o feed
+// em grade quadrada 3×N. O anel usa as 6 cores oficiais, como a logo.
+.section-instagram {
+  --ig-ring: conic-gradient(from 210deg, #F97E31, #E9568A, #ED2027, #0095F6, #FCBB0F, #F97E31);
+
+  .ig-profile {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 30px;
+    max-width: 640px;
+  }
+
+  .ig-avatar-ring {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    padding: 3px;
+    background: var(--ig-ring);
+    flex-shrink: 0;
+  }
+
+  .ig-avatar-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #0A1420;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    img { max-width: 74%; height: auto; }
+  }
+
+  .ig-profile-info { min-width: 0; flex: 1; }
+
+  .ig-handle-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .ig-handle {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--color-white-solid);
+    margin: 0;
+  }
+
+  .ig-follow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    background: linear-gradient(90deg,
+      color-mix(in srgb, var(--color-orange-48) 72%, #000),
+      color-mix(in srgb, var(--color-red-54) 76%, #000));
+    color: var(--color-white-solid);
+    text-decoration: none;
+    transition: transform 0.2s, filter 0.2s;
+
+    &:hover { transform: translateY(-1px); filter: brightness(1.08); }
+  }
+
+  .ig-name {
+    margin-top: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-white--85);
+  }
+
+  .ig-bio {
+    margin-top: 2px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-white--60);
+    max-width: 460px;
+  }
+
+  // Destaques (stories): pictogramas das 7 maravilhas em círculos com anel
+  .ig-highlights {
+    display: flex;
+    gap: 18px;
+    margin-top: 30px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  .ig-highlight {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 74px;
+    flex-shrink: 0;
+    text-decoration: none;
+  }
+
+  .ig-highlight-ring {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    padding: 2.5px;
+    background: var(--ig-ring);
+    display: block;
+  }
+
+  .ig-highlight-ring img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #0A1420;
+    padding: 8px; // pictogramas são ícones — respiro dentro do círculo
+    box-sizing: border-box;
+  }
+
+  .ig-highlight-nome {
+    font-size: 11px;
+    color: var(--color-white--65);
+    text-align: center;
+    max-width: 74px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // Feed: grade quadrada como o perfil do Instagram
+  .ig-feed {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 30px;
+  }
+
+  // Post: foto quadrada em cima + texto (data e título) sempre exposto embaixo,
+  // como a legenda de um post do Instagram.
+  .ig-post {
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--color-white--10);
+    background: var(--color-white--5);
+    text-decoration: none;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+      border-color: var(--color-orange-48-20);
+    }
+  }
+
+  .ig-post-foto {
+    position: relative;
+    display: block;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--color-white--5);
+  }
+
+  .ig-post-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .ig-post:hover .ig-post-img { transform: scale(1.05); }
+
+  .ig-post-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white--40);
+  }
+
+  // Badge "Ver notícia" sobre a foto (hover no desktop, sempre no toque)
+  .ig-post-ver {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--color-white-solid);
+    background: rgba(8, 12, 20, 0.72);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .ig-post:hover .ig-post-ver { opacity: 1; transform: translateY(0); }
+
+  .ig-post-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px 14px;
+  }
+
+  .ig-post-date {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-white--70);
+  }
+
+  .ig-post-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--color-white-solid);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  // Em telas de toque o badge "Ver notícia" fica sempre visível (não há hover)
+  @media (hover: none) {
+    .ig-post-ver { opacity: 1; transform: none; }
+  }
+}
+
+// Notícias no celular: feed compacto como o aplicativo do Instagram
+@media (max-width: 640px) {
+  .section-instagram {
+    .ig-profile { gap: 14px; }
+    .ig-avatar-ring { width: 72px; height: 72px; }
+    .ig-handle { font-size: 20px; }
+    .ig-feed { gap: 8px; }
+    .ig-post { border-radius: 12px; }
+    .ig-post-texto { padding: 10px 12px 12px; }
+    .ig-post-title { font-size: 12.5px; -webkit-line-clamp: 2; }
+    .ig-post-date { font-size: 9.5px; }
+    .ig-post-ver { font-size: 11px; padding: 5px 10px; }
+  }
+}
+
 // --- Seção Roteiros ---
 .section-roteiros {
   background: var(--color-azure-7);
@@ -754,6 +1016,18 @@
     display: flex;
     justify-content: center;
     padding-top: 16px;
+  }
+
+  .news-share-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  @media (max-width: 640px) {
+    .news-share-row { flex-direction: column; align-items: stretch; }
+    .news-share-row .btn-secondary, .news-share-row .btn-primary { width: 100%; justify-content: center; }
   }
 }
 
@@ -2127,3 +2401,44 @@
   border-color: var(--secao-cor);
   background: rgba(255, 255, 255, 0.06);
 }
+
+// ===== Contraste de cores (textos, itens e fundos) =====
+// As seções coloridas (laranja/azul/rosa) usam os MESMOS fundos nos dois
+// temas; no claro o texto branco/vermelho vivo perdia contraste (1.1–3.4:1).
+// Os ajustes abaixo garantem AA (>=4.5:1 texto normal; >=3:1 texto grande),
+// mantendo a paleta oficial e o tema editável (color-mix segue os tokens).
+
+// Botão primário: o gradiente laranja->vermelho oficial com texto branco dava
+// ~2.6–4:1. Escurecido via color-mix, o branco passa AA em todo o gradiente.
+.btn-primary {
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--color-orange-48) 72%, #000) 0%,
+    color-mix(in srgb, var(--color-red-54) 76%, #000) 100%);
+}
+
+// Nossa Cidade (fundo laranja): o "descubra" e o destaque "acende" eram
+// vermelho vivo sobre laranja (~1.3:1). No claro, vermelho profundo; no
+// escuro (fundo marrom), tom claro — acompanha o resto do texto do tema.
+.section-history .history-text-content .cursive {
+  color: var(--color-red-14); // #39150F — ~5:1 sobre o laranja
+}
+.section-history .history-text-content .headline .highlight-red {
+  color: #7A0C00; // vermelho profundo — ~3.3:1 (texto grande) sobre o laranja
+}
+[data-theme="dark"] .section-history .history-text-content .cursive {
+  color: var(--color-white--90);
+}
+[data-theme="dark"] .section-history .history-text-content .headline .highlight-red {
+  color: #FF8A5C; // ~5:1 sobre o marrom escuro (mesmo tom das citações)
+}
+
+// Cultura (fundo azul): fundo mais profundo para o texto branco passar AA
+// e os acentos em amarelo claro (o rosa ficava invisível sobre o azul, 1.1:1).
+.section-culture { background: #0072BD; }
+.section-culture .cursive { color: var(--color-white-solid); }
+.section-culture .headline-yellow { color: #FFD633; }
+
+// Agenda: pill "Programação Oficial" e data dos cards usavam branco sobre o
+// laranja oficial (~2.6:1). Texto escuro sobre o laranja passa com folga.
+.agenda-pill,
+.section-agenda .agenda-card-date { color: #241C07; }

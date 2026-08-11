@@ -33,9 +33,65 @@
                 @Html.Raw(Model.Noticia.Corpo)
             </div>
             <footer class="news-article-footer">
-                <a class="btn-primary" asp-page="Index"><i data-lucide="arrow-left" class="icon-lg"></i> Voltar às notícias</a>
+                <div class="news-share-row">
+                    <button type="button" class="btn-secondary js-compartilhar-noticia"
+                            data-url="@(Request.Scheme)://@(Request.Host)@Request.Path"
+                            data-titulo="@Model.Noticia.Titulo"
+                            title="Compartilhar no Instagram (copia link + legenda)">
+                        <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                        </svg>
+                        Compartilhar no Instagram
+                    </button>
+                    <a class="btn-primary" asp-page="Index"><i data-lucide="arrow-left" class="icon-lg"></i> Voltar às notícias</a>
+                </div>
             </footer>
         </article>
     }
 </main>
 @await Html.PartialAsync("_PaginasFooter")
+
+@section Scripts {
+    <script>
+        // Compartilhar a notícia no Instagram: no celular abre a folha de
+        // compartilhamento do sistema (Instagram entre as opções); no desktop
+        // copia link + legenda prontos para colar no Instagram.
+        (function () {
+            var btn = document.querySelector('.js-compartilhar-noticia');
+            if (!btn) return;
+            var url = btn.getAttribute('data-url');
+            var titulo = btn.getAttribute('data-titulo');
+            var rotuloOriginal = btn.innerHTML;
+
+            btn.addEventListener('click', function () {
+                var texto = titulo + '\n' + url + '\n#VemPraEstância #Estância';
+
+                function copiado() {
+                    btn.innerHTML = '<svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Link e legenda copiados!';
+                    setTimeout(function () { btn.innerHTML = rotuloOriginal; }, 2600);
+                }
+
+                // No celular, o sistema oferece o Instagram como destino.
+                if (navigator.share) {
+                    navigator.share({ title: titulo, text: texto, url: url }).catch(function () { /* cancelado */ });
+                }
+
+                // Sempre copia link + legenda (fallback no desktop e garantia no celular).
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(texto).then(copiado).catch(function () { /* sem permissão */ });
+                } else {
+                    var ta = document.createElement('textarea');
+                    ta.value = texto;
+                    ta.style.position = 'fixed';
+                    ta.style.opacity = '0';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    try { document.execCommand('copy'); copiado(); } catch (e) { /* noop */ }
+                    ta.remove();
+                }
+            });
+        })();
+    </script>
+}

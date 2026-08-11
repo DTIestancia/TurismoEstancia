@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using TurismoEstancia.Authorization.Services;
-using TurismoEstancia.Identity.Data;
-using TurismoEstancia.Identity.Models;
+using TurismoEstancia.IdentityClass.Data;
+using TurismoEstancia.IdentityClass.Models;
 
 namespace TurismoEstancia.Web.Extensions;
 

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TurismoEstancia.Authorization.Services;
-using TurismoEstancia.Identity.Models;
+using TurismoEstancia.IdentityClass.Models;
 using TurismoEstancia.Web.Models;
 
 namespace TurismoEstancia.Web.Controllers;
@@ -69,8 +69,10 @@ public class AccountController : Controller
 
             // Determina a área pelo perfil do usuário no banco (o principal da
             // request pode não estar atualizado imediatamente após o sign-in).
+            // Com múltiplas claims (Gerenciador + Operador), o maior privilégio vence.
             var claims = await _userManager.GetClaimsAsync(usuario);
-            var perfil = claims.FirstOrDefault(c => c.Type == Perfis.TipoClaim)?.Value;
+            var perfil = claims.FirstOrDefault(c => c.Type == Perfis.TipoClaim && c.Value == Perfis.Gerenciador)?.Value
+                ?? claims.FirstOrDefault(c => c.Type == Perfis.TipoClaim)?.Value;
             return perfil == Perfis.Gerenciador
                 ? RedirectToAction("Index", "Dashboard", new { area = "Gerenciador" })
                 : RedirectToAction("Index", "Dashboard", new { area = "Operador" });

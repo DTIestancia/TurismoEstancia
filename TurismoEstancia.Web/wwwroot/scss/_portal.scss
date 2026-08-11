@@ -1559,8 +1559,18 @@
     }
 
     @media (max-width: 1024px) {
+      /* O inner tinha align-items: center e ficava com largura de conteúdo
+         (~473px) centralizada. Stretch faz ele ocupar a seção toda, e o
+         layout de cards acompanha. */
+      .section-gastronomy-inner {
+        align-items: stretch;
+      }
+
       .gastronomy-layout {
         flex-direction: column;
+        /* Mesmo tratamento do "descubra": em coluna, stretch faz os cards
+           ocuparem a largura toda (sem isso ficavam numa coluna estreita). */
+        align-items: stretch;
       }
 
       .gastronomy-side {
@@ -1576,6 +1586,43 @@
     @media (max-width: 640px) {
       .section-gastronomy {
         padding: 64px 16px;
+      }
+
+      // Título empilhado (Grupos / populares / & / gastronomia.) mais
+      // compacto: o min-height 290px do desktop virava um vão enorme.
+      // (O 290px está no wrap aninhado, dentro do editável.)
+      .gastronomy-title-wrap-editavel,
+      .gastronomy-title-wrap {
+        min-height: 0;
+      }
+
+      .gastronomy-title-line {
+        font-size: clamp(2.25rem, 9.5vw, 2.75rem);
+      }
+
+      // Cadeia header → desc tinha align-items: center e ficava na largura
+      // do conteúdo (~252px). Esticar faz os botões ocuparem a seção toda.
+      .gastronomy-header {
+        align-items: stretch;
+        width: 100%;
+      }
+
+      .gastronomy-desc {
+        width: 100%;
+      }
+
+      // Botões emparelhados viram full-width empilhados (mesmo padrão
+      // dos CTAs do hero e do "descubra").
+      .gastronomy-desc-actions {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+      }
+
+      .gastronomy-desc-actions .btn-primary,
+      .gastronomy-desc-actions .btn-secondary {
+        width: 100%;
+        justify-content: center;
       }
 
       .gastronomy-side {
@@ -3339,6 +3386,10 @@
       .history-layout,
       .culture-layout {
         flex-direction: column;
+        /* No desktop o bloco de texto fica do lado do card (flex-start evita
+           esticá-lo na vertical). Em coluna, stretch faz o texto ocupar a
+           largura toda — sem isso o headline ficava numa coluna estreita. */
+        align-items: stretch;
       }
 
       .history-text-content,
@@ -3509,12 +3560,42 @@
         justify-content: center;
       }
 
+      // Stats em linha compacta (192 · 68k · 7 lado a lado) em vez de
+      // três cards empilhados de ponta a ponta.
       .stats-row {
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
       }
 
       .stat-card {
         flex: none;
+        padding: 14px 6px 12px;
+        border-radius: 16px;
+      }
+
+      .stat-value {
+        font-size: clamp(1.5rem, 8.5vw, 2rem);
+        line-height: 1.1;
+      }
+
+      .stat-label {
+        font-size: 9px;
+        letter-spacing: 0.4px;
+        line-height: 12px;
+      }
+
+      // "descubra" — headline mais compacto e CTA em largura total,
+      // equilibrado com a faixa de stats abaixo.
+      .history-text-content .headline {
+        font-size: clamp(2rem, 9.5vw, 2.375rem);
+        line-height: 1.06;
+      }
+
+      .history-text-content .btn-primary,
+      .culture-text-content .btn-primary {
+        width: 100%;
+        justify-content: center;
       }
 
       .video-info {

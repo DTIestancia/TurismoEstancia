@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TurismoEstancia.Domain.Data;
-using TurismoEstancia.Identity.Data;
+using TurismoEstancia.IdentityClass.Data;
 
 namespace TurismoEstancia.Web.Extensions;
 
