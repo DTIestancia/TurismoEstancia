@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using TurismoEstancia.Domain.Data;
@@ -43,6 +44,36 @@ public class ArquivoService : IArquivoService
     {
         using var imagem = await CarregarImagemAsync(arquivo, ct);
         return await SalvarImagemCoreAsync(imagem, arquivo.FileName, maxDimensao, qualidade, ct);
+    }
+
+    public async Task<long> SalvarFaviconAsync(IFormFile arquivo, int dimensao = 64, CancellationToken ct = default)
+    {
+        try
+        {
+            using var imagem = await CarregarImagemAsync(arquivo, ct);
+
+            // Redimensiona só para reduzir (nunca amplia), encaixando em um
+            // quadrado dimensao×dimensao — PNG quadrado de fonte vira 64×64.
+            if (imagem.Width > dimensao || imagem.Height > dimensao)
+            {
+                imagem.Mutate(x => x.Resize(new ResizeOptions
+                {
+                    Mode = ResizeMode.Max,
+                    Size = new Size(dimensao, dimensao)
+                }));
+            }
+
+            using var ms = new MemoryStream();
+            await imagem.SaveAsync(ms, new PngEncoder { SkipMetadata = true }, ct);
+            return await SalvarBytesAsync(arquivo.FileName, "image/png", ms.ToArray(), ct);
+        }
+        catch (OperationCanceledException) { throw; }
+        catch
+        {
+            // Não-imagem (ex.: .ico) ou decode falhou: salva como está — o
+            // favicon nunca deve travar por causa de um formato inesperado.
+            return await SalvarAsync(arquivo, ct);
+        }
     }
 
     /// <summary>

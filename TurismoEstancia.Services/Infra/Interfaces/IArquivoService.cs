@@ -22,6 +22,14 @@ public interface IArquivoService
     /// <summary>Gera o thumbnail (400px) da imagem e grava na tabela Arquivo. Retorna o novo Id.</summary>
     Task<long> SalvarThumbnailAsync(IFormFile arquivo, int maxDimensao = 400, int qualidade = 75, CancellationToken ct = default);
 
+    /// <summary>
+    /// Favicon do site: redimensiona a imagem (nunca amplia) para caber em
+    /// <paramref name="dimensao"/>px (padrão 64×64) e grava como PNG otimizado
+    /// (sem metadados EXIF). Se o upload não for uma imagem decodificável
+    /// (ex.: arquivo .ico), salva como está. Retorna o novo Id.
+    /// </summary>
+    Task<long> SalvarFaviconAsync(IFormFile arquivo, int dimensao = 64, CancellationToken ct = default);
+
     /// <summary>Obtém o arquivo para servir com Content-Type correto. Lança se não existir.</summary>
     Task<Arquivo> ObterAsync(long id, CancellationToken ct = default);
 
