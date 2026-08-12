@@ -45,5 +45,8 @@ public enum TipoContato
     Telefone,
 
     /// <summary>Link de rede social (Instagram, Facebook, YouTube, WhatsApp).</summary>
-    RedesSocial
+    RedesSocial,
+
+    /// <summary>E-mail de contato (renderizado com ícone de envelope e link mailto).</summary>
+    Email
 }

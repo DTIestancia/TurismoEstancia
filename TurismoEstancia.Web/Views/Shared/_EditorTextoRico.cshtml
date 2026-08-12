@@ -1,0 +1,79 @@
+@* Editor rico (Quill 2) para campos de texto HTML do painel.
+   Uso — dentro do formulário, logo após o <textarea>:
+       @await Html.PartialAsync("_EditorTextoRico", "IdDoTextarea")
+   Opcional: ViewData["EditorTextoAltura"] (int) controla a altura em px.
+   O textarea continua sendo a fonte da verdade para o POST (fica oculto e é
+   sincronizado a cada alteração do editor) — o servidor não muda nada. *@
+@model string
+@{
+    var textareaId = Model;
+    var altura = ViewData["EditorTextoAltura"] is int a ? a : 260;
+}
+@if (ViewData["QuillCarregado"] is not true)
+{
+    ViewData["QuillCarregado"] = true;
+    <link rel="stylesheet" href="~/lib/quill/quill.snow.css" asp-append-version="true" />
+    <script src="~/lib/quill/quill.min.js" asp-append-version="true"></script>
+    <script>
+        // ===== Editor rico (Quill) — inicializa todos os .painel-editor-rico =====
+        // Tamanhos de fonte personalizados (style inline — renderiza no portal via Html.Raw)
+        // e paleta de cores do tema, com as mesmas hex da tela "Tema e cores".
+        window.InicializarEditoresRicos = function () {
+            if (typeof Quill === 'undefined') return;
+
+            var Size = Quill.import('attributors/style/size');
+            Size.whitelist = ['12px', '14px', '16px', '18px', '22px', '28px', '36px'];
+            Quill.register(Size, true);
+
+            var PALETA = ['#ED2027', '#F97E31', '#FCBB0F', '#658746', '#0095F6', '#E9568A', '#FFFFFF', '#0B1B26'];
+
+            document.querySelectorAll('.painel-editor-rico').forEach(function (container) {
+                if (container.getAttribute('data-inicializado') === '1') return;
+                container.setAttribute('data-inicializado', '1');
+
+                var textarea = document.getElementById(container.getAttribute('data-textarea'));
+                if (!textarea) return;
+
+                var quill = new Quill(container, {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ size: Size.whitelist }],
+                            [{ color: PALETA }],
+                            [{ list: 'ordered' }, { list: 'bullet' }],
+                            ['link', 'blockquote', 'clean']
+                        ]
+                    },
+                    placeholder: 'Escreva o texto aqui…'
+                });
+
+                // Expõe a instância para debug/automação (window.__EditoresQuill).
+                window.__EditoresQuill = window.__EditoresQuill || {};
+                window.__EditoresQuill[container.getAttribute('data-textarea')] = quill;
+
+                // Conteúdo inicial vem do textarea (a fonte para o POST).
+                if (textarea.value && textarea.value.trim()) {
+                    quill.clipboard.dangerouslyPasteHTML(0, textarea.value);
+                }
+
+                // Sincroniza o HTML do editor de volta para o textarea a cada
+                // mudança — o formulário posta pelo textarea, nada muda no servidor.
+                quill.on('text-change', function () {
+                    textarea.value = quill.root.innerHTML;
+                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+
+                // Oculta o textarea (o editor o substitui visualmente).
+                textarea.style.display = 'none';
+            });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', window.InicializarEditoresRicos);
+        } else {
+            window.InicializarEditoresRicos();
+        }
+    </script>
+}
+<div class="painel-editor-rico" data-textarea="@textareaId" style="height:@(altura)px;"></div>

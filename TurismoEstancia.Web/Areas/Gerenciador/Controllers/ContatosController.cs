@@ -95,7 +95,11 @@ public class ContatosController : PainelController
             new() { Chave = "YouTube", Nome = "YouTube", Grupo = "Rede social", EmUso = emUso.Contains("YouTube") },
             new() { Chave = "WhatsApp", Nome = "WhatsApp", Grupo = "Rede social", EmUso = emUso.Contains("WhatsApp") },
             new() { Chave = "TikTok", Nome = "TikTok", Grupo = "Rede social", EmUso = emUso.Contains("TikTok") },
-            new() { Chave = "X (Twitter)", Nome = "X (Twitter)", Grupo = "Rede social", EmUso = emUso.Contains("X (Twitter)") }
+            new() { Chave = "X (Twitter)", Nome = "X (Twitter)", Grupo = "Rede social", EmUso = emUso.Contains("X (Twitter)") },
+            new() { Chave = "Cultura", Nome = "Cultura", Grupo = "E-mail", EmUso = emUso.Contains("Cultura") },
+            new() { Chave = "Turismo", Nome = "Turismo", Grupo = "E-mail", EmUso = emUso.Contains("Turismo") },
+            new() { Chave = "Imprensa", Nome = "Imprensa", Grupo = "E-mail", EmUso = emUso.Contains("Imprensa") },
+            new() { Chave = "Contato Geral", Nome = "Contato Geral", Grupo = "E-mail", EmUso = emUso.Contains("Contato Geral") }
         };
     }
 

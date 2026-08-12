@@ -31,6 +31,8 @@ public class NoticiaService : INoticiaService
             Resumo = n.Resumo,
             Corpo = n.Corpo,
             ImagemArquivoId = n.ImagemArquivoId,
+            GaleriaCategoriaId = n.GaleriaCategoriaId,
+            GaleriaNome = n.Galeria != null ? n.Galeria.Nome : null,
             DataPublicacao = n.DataPublicacao,
             Slug = n.Slug,
             Publicada = n.Publicada,
@@ -82,6 +84,7 @@ public class NoticiaService : INoticiaService
                 Titulo = dto.Titulo,
                 Resumo = dto.Resumo,
                 Corpo = dto.Corpo,
+                GaleriaCategoriaId = dto.GaleriaCategoriaId,
                 DataPublicacao = dto.DataPublicacao == default ? DateTime.Now : dto.DataPublicacao,
                 Slug = dto.Slug,
                 Publicada = dto.Publicada,
@@ -105,6 +108,7 @@ public class NoticiaService : INoticiaService
             entidade.Titulo = dto.Titulo;
             entidade.Resumo = dto.Resumo;
             entidade.Corpo = dto.Corpo;
+            entidade.GaleriaCategoriaId = dto.GaleriaCategoriaId;
             entidade.Slug = dto.Slug;
             entidade.Publicada = dto.Publicada;
             entidade.Ordem = dto.Ordem;

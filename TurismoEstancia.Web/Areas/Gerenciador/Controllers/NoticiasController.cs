@@ -1,15 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
+using TurismoEstancia.Services.Galeria.Interfaces;
 
 namespace TurismoEstancia.Web.Areas.Gerenciador.Controllers;
 
 public class NoticiasController : PainelController
 {
     private readonly INoticiaService _noticias;
+    private readonly IGaleriaService _galeria;
 
-    public NoticiasController(IServiceProvider services, INoticiaService noticias)
-        : base(services) => _noticias = noticias;
+    public NoticiasController(IServiceProvider services, INoticiaService noticias, IGaleriaService galeria)
+        : base(services)
+    {
+        _noticias = noticias;
+        _galeria = galeria;
+    }
 
     public async Task<IActionResult> Index(CancellationToken ct)
     {
@@ -21,6 +28,7 @@ public class NoticiasController : PainelController
     public async Task<IActionResult> Criar(CancellationToken ct)
     {
         ViewData["AreaAtiva"] = "noticias";
+        await PreencherGaleriaAsync(ViewData, ct);
         return View(new NoticiaDto { DataPublicacao = DateTime.Now });
     }
 
@@ -47,7 +55,9 @@ public class NoticiasController : PainelController
         ViewData["Title"] = "Editar notícia";
         ViewData["AreaAtiva"] = "noticias";
         var dto = await _noticias.ObterPorIdAsync(id, ct);
-        return dto is null ? NotFound() : View(dto);
+        if (dto is null) return NotFound();
+        await PreencherGaleriaAsync(ViewData, ct);
+        return View(dto);
     }
 
     [HttpPost]
@@ -75,5 +85,12 @@ public class NoticiasController : PainelController
         await _noticias.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Notícia excluída.";
         return RedirectToAction(nameof(Index));
+    }
+
+    /// <summary>Categorias ativas da galeria para o select "Galeria relacionada".</summary>
+    private async Task PreencherGaleriaAsync(ViewDataDictionary viewData, CancellationToken ct)
+    {
+        var categorias = await _galeria.ListarCategoriasAsync(incluirInativas: false, ct);
+        viewData["GaleriaCategorias"] = categorias;
     }
 }

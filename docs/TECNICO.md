@@ -296,11 +296,24 @@ com espaçadores `::before/::after` (o `%` do flex-basis e o padding resolvem co
 boxes diferentes). **`/lugares` é uma listagem** (grid `paginas-card--maravilha`
 numerada 01–07) — não usa o baralho.
 
+**Notícias** — `NoticiaService` + `Pages/Noticias` (`Index`/`Detalhe`). A notícia
+pode **vincular uma galeria já salva** (`Noticia.GaleriaCategoriaId` → `GaleriaCategorias`,
+SetNull, migração `AdicionaGaleriaNoticia`): o formulário do Gerenciador tem o
+select "Galeria relacionada" e a página de detalhe renderiza a faixa com até **8
+fotos** da galeria + botão "Ver galeria completa" (`/galeria/{chave}`). O `Corpo`
+é editado com o **editor rico Quill 2** (`_EditorTextoRico` partial, lib em
+`wwwroot/lib/quill/`) — negrito/itálico/sublinhado/tachado, **tamanho de fonte**
+(12–36px via style inline), **cor da paleta** (hex do tema), listas, link e
+citação; o HTML é sincronizado para o textarea oculto no submit. Ajuste no DTO:
+`Slug` é anulável (gerado no servidor no cadastro — evita o `[Required]`
+implícito de tipos não anuláveis que quebrava o Criar).
+
 **Contatos do rodapé** — `Components/ContatosRodapeViewComponent` + view `Default`
 (com **cache por request** via `HttpContext.Items` — a home invoca o componente 3×
 mas faz 1 consulta): endereços com `map-pin`, telefones com ícone por contato e
 **detecção de WhatsApp** (`wa.me`/`whatsapp` → link `https://wa.me/<nº>`), redes
-sociais com **detecção pela URL** (instagram/facebook/youtube/tiktok/x/linkedin).
+sociais com **detecção pela URL** (instagram/facebook/youtube/tiktok/x/linkedin)
+e **e-mails** (`TipoContato.Email` → ícone de envelope `mail` + link `mailto:`).
 Usado no `_Footer` (home) e no `_PaginasFooter` (páginas internas) — única fonte de
 verdade para a marcação dos contatos.
 
@@ -320,7 +333,8 @@ Roteiros, Mapa, Rodapé). Cada ação monta um `AreaSiteViewModel` com:
   "Cadastrar novo" que abre o **modal de cadastro** do CRUD correspondente
   (`dialog` com fade+escala, `FecharDialogPainel` no `painel.js`) e "Ver todos"
   (lista completa em nova aba);
-- **Textos** da área (chave → valor, com dica e `PrevisualizarTexto` ao vivo);
+- **Textos** da área (chave → valor, com dica e `PrevisualizarTexto` ao vivo —
+  textarea simples; o **editor rico é exclusivo das notícias**);
 - **Imagens** da área (upload substitui a atual);
 - **Slides do hero** (gestão inline na área Hero) e **estatísticas** (chips na área
   Cidade);
