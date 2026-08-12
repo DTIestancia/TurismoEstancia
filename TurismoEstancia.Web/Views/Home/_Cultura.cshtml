@@ -8,6 +8,13 @@
         "Quadrilhas que arrastam multidões, batucadas que ecoam no peito, forró que dura até o sol raiar — cada festa é um pedaço da alma estanciana. <em>Patrimônio que se sente na pele.</em>");
     var culturaCitacao = Model.Conteudos.GetValueOrDefault("cultura-citacao",
         "<strong>“Estância respira cultura.</strong> Cada festa é um encontro de gerações, cada tradição é um elo com o passado e um abraço no futuro.”");
+
+    // Foto dedicada do card (Painel > Cultura). Se não houver, cai no comportamento
+    // antigo: primeira imagem do carrossel do hero.
+    long.TryParse(Model.Conteudos.GetValueOrDefault("cultura-imagem"), out var culturaImagemId);
+    var culturaImagemArquivoId = culturaImagemId > 0
+        ? (long?)culturaImagemId
+        : (Model.Slides.Count >= 1 ? Model.Slides[0].ImagemArquivoId : null);
 }
 
 <section class="section-culture section-3d section-divider" id="section-cultura" data-section="cultura">
@@ -52,9 +59,9 @@
             <div class="culture-card-wrapper">
                 <div class="culture-card">
                     <div class="culture-card-img-wrapper">
-                        @if (Model.Slides.Count >= 1)
+                        @if (culturaImagemArquivoId is long culturaId)
                         {
-                            <img src="@Url.Content($"~/arquivo/{Model.Slides[0].ImagemArquivoId}")" alt="Estância — símbolo cultural" loading="lazy" />
+                            <img src="@Url.Content($"~/arquivo/{culturaId}")" alt="Estância — símbolo cultural" loading="lazy" />
                         }
                         <div class="culture-card-overlay"></div>
                     </div>

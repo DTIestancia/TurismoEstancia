@@ -13,4 +13,7 @@ public class GaleriaViewModel
 
     /// <summary>Fotos exibidas no grid/lightbox (com thumbnail + imagem cheia).</summary>
     public IReadOnlyList<GaleriaMidiaDto> Fotos { get; set; } = Array.Empty<GaleriaMidiaDto>();
+
+    /// <summary>Total real de fotos (para o contador, mesmo quando a exibição é limitada).</summary>
+    public int FotosTotal { get; set; }
 }

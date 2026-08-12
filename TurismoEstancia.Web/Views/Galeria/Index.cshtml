@@ -77,7 +77,7 @@
             }
             <nav class="paginas-galeria-filtros" aria-label="Filtrar por categoria">
                 <a class="paginas-galeria-filtro @(emCategoria ? "" : "active")" href="@Url.Content("~/galeria")" data-track="galeria-categoria" data-track-nome="todas">
-                    Todas <span class="paginas-galeria-count">@Model.Fotos.Count</span>
+                    Todas <span class="paginas-galeria-count">@Model.FotosTotal</span>
                 </a>
                 @foreach (var categoria in Model.Categorias)
                 {

@@ -36,7 +36,9 @@ public class GaleriaController : Controller
         return View(new GaleriaViewModel
         {
             Categorias = categorias,
-            Fotos = fotos
+            FotosTotal = fotos.Count,
+            // Grid limitado às 12 mais visualizadas primeiro.
+            Fotos = fotos.OrderByDescending(f => f.Visualizacoes).Take(12).ToList()
         });
     }
 
@@ -63,7 +65,9 @@ public class GaleriaController : Controller
         {
             Categorias = categorias,
             CategoriaAtual = categoria,
-            Fotos = categoria.Midias
+            FotosTotal = categoria.Midias.Count,
+            // Grid limitado às 12 mais visualizadas primeiro.
+            Fotos = categoria.Midias.OrderByDescending(m => m.Visualizacoes).Take(12).ToList()
         });
     }
 

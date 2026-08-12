@@ -143,7 +143,7 @@ public class SecoesController : PainelController
                 T("cultura-extra", "Texto extra", "Complemento exibido abaixo"),
                 T("cultura-citacao", "Citação", "Frase de efeito")
             ],
-            imagens: [],
+            imagens: [I("cultura-imagem", "Foto do card")],
             ancora: "#section-cultura");
         var grupos = await _grupos.ListarAsync(ct);
         vm.Itens = new ItensAreaViewModel
@@ -178,7 +178,7 @@ public class SecoesController : PainelController
                 T("gastronomia-main-texto", "Texto do card principal", "O prato em destaque"),
                 T("gastronomia-grupos-texto", "Texto dos grupos populares", "Usado na home e na página Grupos Populares")
             ],
-            imagens: [],
+            imagens: [I("gastronomia-imagem", "Foto do card principal")],
             ancora: "#section-gastronomia");
         var pratos = await _pratos.ListarAsync(ct);
         vm.Itens = new ItensAreaViewModel

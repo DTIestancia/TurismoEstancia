@@ -8,6 +8,13 @@
         "Moqueca de peixe, arroz de polvo, caldeirada de camarão, tapioca recheada e a inesquecível cocada puxa.");
     var gastroGruposTexto = Model.Conteudos.GetValueOrDefault("gastronomia-grupos-texto",
         "Reisados, cacumbis, samba de coco e batucadas que mantêm vivas as raízes afro-brasileiras e nordestinas da cidade.");
+
+    // Foto dedicada do card principal (Painel > Gastronomia). Se não houver,
+    // cai no comportamento antigo: última imagem do carrossel do hero.
+    long.TryParse(Model.Conteudos.GetValueOrDefault("gastronomia-imagem"), out var gastroImagemId);
+    var gastroImagemArquivoId = gastroImagemId > 0
+        ? (long?)gastroImagemId
+        : (Model.Slides.Count > 0 ? Model.Slides[Math.Min(3, Model.Slides.Count - 1)].ImagemArquivoId : null);
 }
 
 <section class="section-gastronomy section-3d section-divider" id="section-gastronomia" data-section="gastronomia">
@@ -36,11 +43,9 @@
             <div class="gastronomy-card-main">
                 <div class="gastronomy-card">
                     <div class="gastronomy-card-img-wrap">
-                        @if (Model.Slides.Count > 0)
+                        @if (gastroImagemArquivoId is long gastroId)
                         {
-                            // Usa o último slide disponível como imagem de fundo da gastronomia.
-                            var slideGastro = Model.Slides[Math.Min(3, Model.Slides.Count - 1)];
-                            <img src="@Url.Content($"~/arquivo/{(slideGastro.ImagemArquivoId is long gId ? gId.ToString() : "")}")" alt="Sabores do litoral sergipano" loading="lazy" />
+                            <img src="@Url.Content($"~/arquivo/{gastroId}")" alt="Sabores do litoral sergipano" loading="lazy" />
                         }
                         <div class="gastronomy-card-overlay"></div>
                         <div class="gastronomy-card-content">

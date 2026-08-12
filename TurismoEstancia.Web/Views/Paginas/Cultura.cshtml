@@ -7,7 +7,11 @@
         "Quadrilhas que arrastam multidões, batucadas que ecoam no peito, forró que dura até o sol raiar — cada festa é um pedaço da alma estanciana. <em>Patrimônio que se sente na pele.</em>");
     var culturaCitacao = Model.Conteudos.GetValueOrDefault("cultura-citacao",
         "<strong>“Estância respira cultura.</strong> Cada festa é um encontro de gerações, cada tradição é um elo com o passado e um abraço no futuro.”");
-    var culturaImagem = Model.Slides.Count > 0 ? Model.Slides[0].ImagemArquivoId.ToString() : "";
+    // Foto dedicada (Painel > Cultura); se não houver, usa a primeira imagem do hero.
+    long.TryParse(Model.Conteudos.GetValueOrDefault("cultura-imagem"), out var culturaImagemId);
+    var culturaImagem = culturaImagemId > 0
+        ? culturaImagemId.ToString()
+        : (Model.Slides.Count > 0 ? Model.Slides[0].ImagemArquivoId.ToString() : "");
 }
 <main class="paginas-page page-public paginas-page--cultura">
     @await Html.PartialAsync("_PaginasHeader")
