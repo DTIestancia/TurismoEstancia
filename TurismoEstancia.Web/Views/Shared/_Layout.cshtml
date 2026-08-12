@@ -1,10 +1,25 @@
+@using TurismoEstancia.Services.Conteudo.Interfaces
 @inject SeoService SeoService
+@inject IConfiguracaoSiteService Configuracoes
+@{
+    // Favicon exclusivo (configuração "favicon", tipo Arquivo): quando existe um
+    // PNG enviado, o <link rel="icon"> aponta direto para ele; sem ele, usa o
+    // /favicon.svg estático (o middleware redireciona para a logo, se houver).
+    var faviconConfig = await Configuracoes.ObterPorChaveAsync("favicon", Context.RequestAborted);
+}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="@Url.Content("~/favicon.svg")" />
+    @if (faviconConfig?.ArquivoId is long faviconId)
+    {
+        <link rel="icon" type="image/png" href="@Url.Content($"~/arquivo/{faviconId}")" />
+    }
+    else
+    {
+        <link rel="icon" type="image/svg+xml" href="@Url.Content("~/favicon.svg")" />
+    }
     <script>
         // A página abre sempre no topo: o navegador (sobretudo no celular) tende a
         // restaurar a rolagem da visita anterior e "pular" para o meio da página.

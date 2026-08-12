@@ -539,6 +539,8 @@
 .section-noticias-link {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-top: 44px;
 }
 

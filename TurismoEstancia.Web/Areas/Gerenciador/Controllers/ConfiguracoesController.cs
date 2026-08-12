@@ -98,6 +98,7 @@ public class ConfiguracoesController : PainelController
         {
             new() { Chave = "logo-principal", Nome = "Logotipo do portal (navbar e favicon)", EhArquivo = true, EmUso = emUso.Contains("logo-principal") },
             new() { Chave = "logo", Nome = "Logotipo do rodapé (e imagem do SEO)", EhArquivo = true, EmUso = emUso.Contains("logo") },
+            new() { Chave = "favicon", Nome = "Favicon do site (PNG quadrado, ex.: 64x64)", EhArquivo = true, EmUso = emUso.Contains("favicon") },
             new() { Chave = "guia-pdf", Nome = "Guia do turista em PDF", EhArquivo = true, EmUso = emUso.Contains("guia-pdf") },
             new() { Chave = "video-institucional", Nome = "Vídeo institucional", EhArquivo = true, EmUso = emUso.Contains("video-institucional") },
             new() { Chave = "site-titulo", Nome = "Título do site (SEO e navegador)", EhArquivo = false, EmUso = emUso.Contains("site-titulo") },

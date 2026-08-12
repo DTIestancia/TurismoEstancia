@@ -66,7 +66,7 @@ public class ConfiguracaoSiteService : IConfiguracaoSiteService
                 // O upload escolhido no formulário também vale na criação —
                 // antes o arquivo era descartado e a config nascia sem ArquivoId.
                 ArquivoId = arquivo is { Length: > 0 }
-                    ? await _arquivos.SalvarAsync(arquivo, ct)
+                    ? await SalvarArquivoDaConfiguracaoAsync(dto, arquivo, ct)
                     : null
             });
         }
@@ -83,7 +83,7 @@ public class ConfiguracaoSiteService : IConfiguracaoSiteService
             if (arquivo is { Length: > 0 })
             {
                 antigoId = entidade.ArquivoId;
-                entidade.ArquivoId = await _arquivos.SalvarAsync(arquivo, ct);
+                entidade.ArquivoId = await SalvarArquivoDaConfiguracaoAsync(dto, arquivo, ct);
             }
 
             await _db.SaveChangesAsync(ct);
@@ -96,6 +96,15 @@ public class ConfiguracaoSiteService : IConfiguracaoSiteService
 
         await _db.SaveChangesAsync(ct);
     }
+
+    /// <summary>
+    /// Favicon do site é otimizado ao salvar (redimensionado para 64×64 e
+    /// re-encodado como PNG); as demais configurações seguem o upload bruto.
+    /// </summary>
+    private async Task<long> SalvarArquivoDaConfiguracaoAsync(ConfiguracaoSiteDto dto, IFormFile arquivo, CancellationToken ct) =>
+        dto.Chave == "favicon"
+            ? await _arquivos.SalvarFaviconAsync(arquivo, ct: ct)
+            : await _arquivos.SalvarAsync(arquivo, ct);
 
     public async Task ExcluirAsync(int id, CancellationToken ct = default)
     {

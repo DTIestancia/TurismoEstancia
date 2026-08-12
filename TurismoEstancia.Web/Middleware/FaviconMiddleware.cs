@@ -13,6 +13,12 @@ public class FaviconMiddleware
 {
     private static readonly string[] Caminhos = ["/favicon.svg", "/favicon.ico"];
 
+    /// <summary>
+    /// Chave da configuração do favicon exclusivo do site (tipo Arquivo, PNG
+    /// quadrado). Quando configurada, tem prioridade sobre o logotipo.
+    /// </summary>
+    public const string ChaveFavicon = "favicon";
+
     private readonly RequestDelegate _next;
 
     public FaviconMiddleware(RequestDelegate next)
@@ -26,9 +32,20 @@ public class FaviconMiddleware
     {
         if (Caminhos.Any(c => context.Request.Path.Equals(c, StringComparison.OrdinalIgnoreCase)))
         {
+            // 1) Favicon exclusivo (configuração "favicon").
+            var favicon = await configuracoes.ObterPorChaveAsync(
+                ChaveFavicon, context.RequestAborted);
+            if (favicon?.ArquivoId is long faviconId)
+            {
+                context.Response.StatusCode = StatusCodes.Status302Found;
+                context.Response.Headers.Location = context.Request.PathBase + $"/arquivo/{faviconId}";
+                context.Response.Headers.CacheControl = "public, max-age=3600";
+                return;
+            }
+
+            // 2) Fallback: logotipo do portal (comportamento anterior).
             var logo = await configuracoes.ObterPorChaveAsync(
                 LogoSiteViewComponent.ChaveLogo, context.RequestAborted);
-
             if (logo?.ArquivoId is long arquivoId)
             {
                 context.Response.StatusCode = StatusCodes.Status302Found;
@@ -38,8 +55,8 @@ public class FaviconMiddleware
                 return;
             }
 
-            // Sem logo configurada: /favicon.ico (navegadores antigos) cai no
-            // /favicon.svg estático, que segue para os arquivos estáticos.
+            // Sem favicon nem logo configurados: /favicon.ico (navegadores antigos)
+            // cai no /favicon.svg estático, que segue para os arquivos estáticos.
             if (context.Request.Path.Equals("/favicon.ico", StringComparison.OrdinalIgnoreCase))
             {
                 context.Response.StatusCode = StatusCodes.Status302Found;
