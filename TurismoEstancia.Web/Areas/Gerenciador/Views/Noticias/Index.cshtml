@@ -50,7 +50,7 @@
                         <td>
                             <div class="painel-actions" style="justify-content:flex-end;">
                                 <button type="button" class="btn-painel btn-painel--ghost btn-painel--xs js-compartilhar-noticia"
-                                        data-url="@(Context.Request.Scheme)://@(Context.Request.Host)/Noticias/Detalhe/@item.Slug"
+                                        data-url="@(Context.Request.Scheme)://@(Context.Request.Host)@(Context.Request.PathBase)/Noticias/Detalhe/@item.Slug"
                                         data-titulo="@item.Titulo"
                                         title="Copiar link + legenda para postar no Instagram">
                                     <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

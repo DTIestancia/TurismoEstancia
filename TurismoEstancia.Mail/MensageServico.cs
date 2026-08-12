@@ -1,7 +1,5 @@
 ﻿using MailKit.Net.Smtp;
 using MimeKit;
-using System.IO;
-using System.Threading.Tasks;
 
 
 namespace TurismoEstancia.Mail

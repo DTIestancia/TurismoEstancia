@@ -1,5 +1,5 @@
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 using TurismoEstancia.Services.Turismo.Interfaces;
 
 namespace TurismoEstancia.Web.Controllers;

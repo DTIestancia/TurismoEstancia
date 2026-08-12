@@ -27,7 +27,7 @@
     @{
         var seo = await SeoService.ObterMetaAsync(ViewData["Seo"] as SeoMeta);
         var baseUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
-        var canonical = baseUrl + Context.Request.Path;
+        var canonical = baseUrl + Context.Request.PathBase + Context.Request.Path;
         var tituloPagina = !string.IsNullOrWhiteSpace(seo.Titulo) ? seo.Titulo : ViewData["Title"]?.ToString();
         var tituloFinal = string.IsNullOrWhiteSpace(tituloPagina) ? seo.NomeSite : $"{tituloPagina} — {seo.NomeSite}";
         // og:title/twitter:title curtos (sem o sufixo do site) — recomendado até ~70 caracteres.

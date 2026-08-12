@@ -148,8 +148,11 @@ public class ConteudosController : PainelController
         }
         try
         {
-            await AplicarImagemAsync(dto, imagem, ct);
+            var antigoId = await AplicarImagemAsync(dto, imagem, ct);
             await _conteudos.SalvarAsync(dto, ct);
+            // Remove a imagem antiga só após o commit do novo valor.
+            if (antigoId.HasValue)
+                await _arquivos.ExcluirAsync(antigoId.Value, ct);
             TempData["PainelOk"] = "Texto salvo.";
             return RedirectToAction(nameof(Index));
         }
@@ -181,8 +184,11 @@ public class ConteudosController : PainelController
         }
         try
         {
-            await AplicarImagemAsync(dto, imagem, ct);
+            var antigoId = await AplicarImagemAsync(dto, imagem, ct);
             await _conteudos.SalvarAsync(dto, ct);
+            // Remove a imagem antiga só após o commit do novo valor.
+            if (antigoId.HasValue)
+                await _arquivos.ExcluirAsync(antigoId.Value, ct);
             TempData["PainelOk"] = "Texto atualizado.";
             return RedirectToAction(nameof(Index));
         }
@@ -203,13 +209,23 @@ public class ConteudosController : PainelController
         "historia-imagem"
     };
 
-    private async Task AplicarImagemAsync(ConteudoSiteDto dto, IFormFile? imagem, CancellationToken ct)
+    /// <summary>
+    /// Salva o upload como o valor da chave de imagem. Retorna o id do arquivo
+    /// antigo (quando a chave já tinha uma imagem) para o chamador excluí-lo
+    /// após o commit — antes isso vazava um binário órfão a cada troca.
+    /// </summary>
+    private async Task<long?> AplicarImagemAsync(ConteudoSiteDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ChavesImagem.Contains(dto.Chave) || imagem is null || imagem.Length == 0)
-            return;
+            return null;
+
+        var antigoId = dto.Id != 0 && long.TryParse(dto.Texto, out var antigo) && antigo > 0
+            ? antigo
+            : (long?)null;
 
         var id = await _arquivos.SalvarAsync(imagem, ct);
         dto.Texto = id.ToString();
+        return antigoId;
     }
 
     /// <summary>

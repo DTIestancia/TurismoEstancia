@@ -1,5 +1,5 @@
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
 
 namespace TurismoEstancia.Web.Controllers;

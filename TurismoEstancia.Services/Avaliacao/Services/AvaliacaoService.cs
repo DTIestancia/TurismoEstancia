@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using TurismoEstancia.Domain.Data;
 using TurismoEstancia.Domain.DTOs;
-using TurismoEstancia.Domain.Models;
 using TurismoEstancia.Services.Avaliacao.Interfaces;
 using AvaliacaoEntity = TurismoEstancia.Domain.Models.Avaliacao;
 

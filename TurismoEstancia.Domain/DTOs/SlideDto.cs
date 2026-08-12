@@ -1,5 +1,3 @@
-using TurismoEstancia.Domain.Models;
-
 namespace TurismoEstancia.Domain.DTOs;
 
 /// <summary>DTO de slide do hero.</summary>

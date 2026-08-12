@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using TurismoEstancia.Domain.DTOs;
-using TurismoEstancia.Domain.Models;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Web.Models;
 

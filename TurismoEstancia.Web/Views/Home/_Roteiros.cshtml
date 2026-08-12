@@ -25,7 +25,7 @@
             <div class="roteiros-grid">
                 @foreach (var roteiro in Model.Roteiros)
                 {
-                    <a class="roteiro-card reveal" href="/Roteiros/@roteiro.Id"
+                    <a class="roteiro-card reveal" href="~/Roteiros/@roteiro.Id"
                        data-track="roteiro" data-track-id="@roteiro.Id" data-track-nome="@roteiro.Titulo">
                         @if (roteiro.ImagemArquivoId is long imgId)
                         {
