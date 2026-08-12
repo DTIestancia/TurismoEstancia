@@ -24,7 +24,7 @@ public class DetalheModel : PageModel
             Titulo = Noticia.Titulo,
             // Sem tags HTML no meta description: usa o resumo ou o corpo sem marcação.
             Descricao = Noticia.Resumo ?? RemoverTagsHtml(Noticia.Corpo),
-            ImagemUrl = Noticia.ImagemArquivoId is long img ? $"/arquivo/{img}" : null,
+            ImagemUrl = Noticia.ImagemArquivoId is long img ? Request.PathBase + $"/arquivo/{img}" : null,
             Tipo = "article",
             DataPublicacao = Noticia.DataPublicacao.ToString("o")
         };

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Web.Models;
 
@@ -12,12 +13,14 @@ public class SeoService
 {
     private readonly IConfiguracaoSiteService _configs;
     private readonly ILogger<SeoService> _logger;
+    private readonly IHttpContextAccessor _http;
     private SeoMeta? _padrao;
 
-    public SeoService(IConfiguracaoSiteService configs, ILogger<SeoService> logger)
+    public SeoService(IConfiguracaoSiteService configs, ILogger<SeoService> logger, IHttpContextAccessor http)
     {
         _configs = configs;
         _logger = logger;
+        _http = http;
     }
 
     /// <summary>Meta final da página: padrões das configurações + override da página.</summary>
@@ -48,8 +51,9 @@ public class SeoService
             var configs = await _configs.ListarAsync(ct);
             _padrao.NomeSite = configs.FirstOrDefault(c => c.Chave == "site-titulo")?.ValorTexto ?? "Descubra Estância";
             _padrao.SiteDescricao = configs.FirstOrDefault(c => c.Chave == "meta-descricao")?.ValorTexto;
+            var basePath = _http.HttpContext?.Request.PathBase.Value ?? "";
             _padrao.ImagemUrl = configs.FirstOrDefault(c => c.Chave == "logo")?.ArquivoId is long id
-                ? $"/arquivo/{id}"
+                ? basePath + $"/arquivo/{id}"
                 : null;
         }
         catch (Exception ex)

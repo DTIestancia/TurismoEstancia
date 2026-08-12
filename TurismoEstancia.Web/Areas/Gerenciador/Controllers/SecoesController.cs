@@ -119,7 +119,7 @@ public class SecoesController : PainelController
             imagens: [I("historia-imagem", "Foto da cidade")],
             ancora: "#section-historia");
         vm.Estatisticas = await _estatisticas.ListarAsync(ct);
-        vm.Links = [Link("Estatísticas da seção", "Números exibidos no card (anos, habitantes, maravilhas).", "/Gerenciador/Estatisticas", "bar-chart-3")];
+        vm.Links = [Link("Estatísticas da seção", "Números exibidos no card (anos, habitantes, maravilhas).", Url.Action("Index", "Estatisticas", new { area = "Gerenciador" }) ?? "/Gerenciador/Estatisticas", "bar-chart-3")];
         return View("Editar", vm);
     }
 
@@ -150,8 +150,8 @@ public class SecoesController : PainelController
         {
             Titulo = "Grupos culturais cadastrados",
             RotuloBotao = "Cadastrar novo grupo",
-            UrlCriar = "/Gerenciador/GruposCulturais/Criar",
-            UrlLista = "/Gerenciador/GruposCulturais",
+            UrlCriar = Url.Action("Criar", "GruposCulturais", new { area = "Gerenciador" }) ?? "/Gerenciador/GruposCulturais/Criar",
+            UrlLista = Url.Action("Index", "GruposCulturais", new { area = "Gerenciador" }) ?? "/Gerenciador/GruposCulturais",
             Icone = "music",
             Itens = grupos.Select(g => new ItemAreaViewModel { Id = g.Id, Nome = g.Nome, Detalhe = g.Descricao, ImagemArquivoId = g.ImagemArquivoId, Ativo = g.Ativo }).ToList()
         };
@@ -185,8 +185,8 @@ public class SecoesController : PainelController
         {
             Titulo = "Pratos turísticos cadastrados",
             RotuloBotao = "Cadastrar novo prato",
-            UrlCriar = "/Gerenciador/PratosTuristicos/Criar",
-            UrlLista = "/Gerenciador/PratosTuristicos",
+            UrlCriar = Url.Action("Criar", "PratosTuristicos", new { area = "Gerenciador" }) ?? "/Gerenciador/PratosTuristicos/Criar",
+            UrlLista = Url.Action("Index", "PratosTuristicos", new { area = "Gerenciador" }) ?? "/Gerenciador/PratosTuristicos",
             Icone = "utensils",
             Itens = pratos.Select(p => new ItemAreaViewModel { Id = p.Id, Nome = p.Nome, Detalhe = p.Descricao, ImagemArquivoId = p.ImagemArquivoId, Ativo = p.Ativo }).ToList()
         };
@@ -220,8 +220,8 @@ public class SecoesController : PainelController
         {
             Titulo = "7 Maravilhas cadastradas",
             RotuloBotao = "Cadastrar nova maravilha",
-            UrlCriar = "/Gerenciador/PontosTuristicos/Criar",
-            UrlLista = "/Gerenciador/PontosTuristicos?contexto=maravilhas",
+            UrlCriar = Url.Action("Criar", "PontosTuristicos", new { area = "Gerenciador" }) ?? "/Gerenciador/PontosTuristicos/Criar",
+            UrlLista = Url.Action("Index", "PontosTuristicos", new { area = "Gerenciador", contexto = "maravilhas" }) ?? "/Gerenciador/PontosTuristicos?contexto=maravilhas",
             Icone = "gem",
             Itens = maravilhas.Select(p => new ItemAreaViewModel { Id = p.Id, Nome = p.Nome, Detalhe = p.CategoriaNome, ImagemArquivoId = p.CapaArquivoId, Ativo = p.Ativo }).ToList()
         };
@@ -254,8 +254,8 @@ public class SecoesController : PainelController
         {
             Titulo = "Eventos cadastrados",
             RotuloBotao = "Cadastrar novo evento",
-            UrlCriar = "/Gerenciador/Eventos/Criar",
-            UrlLista = "/Gerenciador/Eventos",
+            UrlCriar = Url.Action("Criar", "Eventos", new { area = "Gerenciador" }) ?? "/Gerenciador/Eventos/Criar",
+            UrlLista = Url.Action("Index", "Eventos", new { area = "Gerenciador" }) ?? "/Gerenciador/Eventos",
             Icone = "calendar",
             Itens = eventos.Select(e => new ItemAreaViewModel { Id = e.Id, Nome = e.Titulo, Detalhe = e.Local, Ativo = e.Ativo }).ToList()
         };
@@ -287,8 +287,8 @@ public class SecoesController : PainelController
         {
             Titulo = "Notícias cadastradas",
             RotuloBotao = "Cadastrar nova notícia",
-            UrlCriar = "/Gerenciador/Noticias/Criar",
-            UrlLista = "/Gerenciador/Noticias",
+            UrlCriar = Url.Action("Criar", "Noticias", new { area = "Gerenciador" }) ?? "/Gerenciador/Noticias/Criar",
+            UrlLista = Url.Action("Index", "Noticias", new { area = "Gerenciador" }) ?? "/Gerenciador/Noticias",
             Icone = "newspaper",
             Itens = noticias.Select(n => new ItemAreaViewModel { Id = n.Id, Nome = n.Titulo, Detalhe = n.DataPublicacao.ToString("dd/MM/yyyy"), ImagemArquivoId = n.ImagemArquivoId, Ativo = n.Ativo }).ToList()
         };
@@ -320,8 +320,8 @@ public class SecoesController : PainelController
         {
             Titulo = "Roteiros cadastrados",
             RotuloBotao = "Cadastrar novo roteiro",
-            UrlCriar = "/Gerenciador/Roteiros/Criar",
-            UrlLista = "/Gerenciador/Roteiros",
+            UrlCriar = Url.Action("Criar", "Roteiros", new { area = "Gerenciador" }) ?? "/Gerenciador/Roteiros/Criar",
+            UrlLista = Url.Action("Index", "Roteiros", new { area = "Gerenciador" }) ?? "/Gerenciador/Roteiros",
             Icone = "route",
             Itens = roteiros.Select(r => new ItemAreaViewModel { Id = r.Id, Nome = r.Titulo, Detalhe = r.Descricao, ImagemArquivoId = r.ImagemArquivoId, Ativo = r.Ativo }).ToList()
         };
@@ -356,8 +356,8 @@ public class SecoesController : PainelController
         {
             Titulo = "Pontos no mapa",
             RotuloBotao = "Cadastrar novo ponto",
-            UrlCriar = "/Gerenciador/PontosTuristicos/Criar",
-            UrlLista = "/Gerenciador/PontosTuristicos?contexto=mapa",
+            UrlCriar = Url.Action("Criar", "PontosTuristicos", new { area = "Gerenciador" }) ?? "/Gerenciador/PontosTuristicos/Criar",
+            UrlLista = Url.Action("Index", "PontosTuristicos", new { area = "Gerenciador", contexto = "mapa" }) ?? "/Gerenciador/PontosTuristicos?contexto=mapa",
             Icone = "map",
             Itens = mapa.Select(p => new ItemAreaViewModel { Id = p.Id, Nome = p.Nome, Detalhe = p.CategoriaNome, ImagemArquivoId = p.CapaArquivoId, Ativo = p.Ativo }).ToList()
         };
@@ -386,8 +386,8 @@ public class SecoesController : PainelController
         {
             Titulo = "Contatos do rodapé cadastrados",
             RotuloBotao = "Cadastrar novo contato",
-            UrlCriar = "/Gerenciador/Contatos/Criar",
-            UrlLista = "/Gerenciador/Contatos",
+            UrlCriar = Url.Action("Criar", "Contatos", new { area = "Gerenciador" }) ?? "/Gerenciador/Contatos/Criar",
+            UrlLista = Url.Action("Index", "Contatos", new { area = "Gerenciador" }) ?? "/Gerenciador/Contatos",
             Icone = "phone",
             Itens = contatos.Select(c => new ItemAreaViewModel
             {
@@ -422,7 +422,7 @@ public class SecoesController : PainelController
             Area = area,
             Titulo = titulo,
             Descricao = descricao,
-            VerSecaoUrl = ancora is null ? null : "/" + ancora
+            VerSecaoUrl = ancora is null ? null : Url.Content("~/" + ancora.TrimStart('/'))
         };
 
         foreach (var t in textos)

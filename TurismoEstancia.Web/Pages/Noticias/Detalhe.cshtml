@@ -35,7 +35,7 @@
             <footer class="news-article-footer">
                 <div class="news-share-row">
                     <button type="button" class="btn-secondary js-compartilhar-noticia"
-                            data-url="@(Request.Scheme)://@(Request.Host)@Request.Path"
+                            data-url="@(Request.Scheme)://@(Request.Host)@(Request.PathBase)@Request.Path"
                             data-titulo="@Model.Noticia.Titulo"
                             title="Compartilhar no Instagram (copia link + legenda)">
                         <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

@@ -32,7 +32,7 @@ public class FaviconMiddleware
             if (logo?.ArquivoId is long arquivoId)
             {
                 context.Response.StatusCode = StatusCodes.Status302Found;
-                context.Response.Headers.Location = $"/arquivo/{arquivoId}";
+                context.Response.Headers.Location = context.Request.PathBase + $"/arquivo/{arquivoId}";
                 // Favicon é cacheado pelo navegador; 1h mantém a troca de logo rápida.
                 context.Response.Headers.CacheControl = "public, max-age=3600";
                 return;
@@ -43,7 +43,7 @@ public class FaviconMiddleware
             if (context.Request.Path.Equals("/favicon.ico", StringComparison.OrdinalIgnoreCase))
             {
                 context.Response.StatusCode = StatusCodes.Status302Found;
-                context.Response.Headers.Location = "/favicon.svg";
+                context.Response.Headers.Location = context.Request.PathBase + "/favicon.svg";
                 context.Response.Headers.CacheControl = "public, max-age=86400";
                 return;
             }

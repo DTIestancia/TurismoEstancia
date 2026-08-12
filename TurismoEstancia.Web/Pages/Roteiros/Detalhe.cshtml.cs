@@ -32,7 +32,7 @@ public class DetalheModel : PageModel
         {
             Titulo = Roteiro.Titulo,
             Descricao = Roteiro.Descricao,
-            ImagemUrl = Roteiro.ImagemArquivoId is long img ? $"/arquivo/{img}" : null,
+            ImagemUrl = Roteiro.ImagemArquivoId is long img ? Request.PathBase + $"/arquivo/{img}" : null,
             Tipo = "article"
         };
         return Page();

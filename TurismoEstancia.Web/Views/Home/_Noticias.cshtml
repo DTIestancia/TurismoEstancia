@@ -60,7 +60,7 @@
             <div class="ig-feed reveal reveal-delay-1">
                 @foreach (var noticia in Model.Noticias)
                 {
-                    <a class="ig-post" href="/Noticias/Detalhe/@noticia.Slug"
+                    <a class="ig-post" href="~/Noticias/Detalhe/@noticia.Slug"
                        data-track="noticia" data-track-id="@noticia.Id" data-track-nome="@noticia.Titulo">
                         <span class="ig-post-foto">
                             @if (noticia.ImagemArquivoId is long imgId)
@@ -82,7 +82,7 @@
             </div>
 
             <div class="section-noticias-link reveal reveal-delay-2">
-                <a href="/Noticias" class="btn-primary">Ver todas as notícias <i data-lucide="arrow-right" class="icon-lg"></i></a>
+                <a href="~/Noticias" class="btn-primary">Ver todas as notícias <i data-lucide="arrow-right" class="icon-lg"></i></a>
                 <a href="https://www.instagram.com/vempraestancia" target="_blank" rel="noopener" class="btn-secondary">
                     <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
