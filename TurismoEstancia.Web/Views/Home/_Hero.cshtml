@@ -1,6 +1,9 @@
 @model HomeViewModel
 @{
-    var heroTitulo = Model.Conteudos.GetValueOrDefault("hero-titulo", "Explore as Cores, a História e a Tradição de Estância");
+    // Título do hero editável pelo painel (Hero → "Título"). Aceita o mesmo
+    // HTML de animação: <span class="animate-text">palavra</span> + <br />.
+    var heroTitulo = Model.Conteudos.GetValueOrDefault("hero-titulo",
+        "<span class=\"animate-text\">Explore as</span><br /><span class=\"animate-text highlight-orange\">Cores</span><span class=\"animate-text\">, a</span><br /><span class=\"animate-text highlight-green\">História</span><span class=\"animate-text\">&nbsp;e a</span><br /><span class=\"animate-text highlight-coral\">Tradição</span><span class=\"animate-text\">&nbsp;de Estância</span>");
     var heroSubtitulo = Model.Conteudos.GetValueOrDefault("hero-subtitulo",
         "Entre dunas douradas e céus que viram arte, Estância te chama pra viver uma experiência que acende todos os sentidos. O Nordeste está aqui, mais vibrante do que nunca.") ?? "";
     var slides = Model.Slides.Any() ? Model.Slides : null;
@@ -92,10 +95,7 @@
             </div>
             <div class="hero-particles" id="heroParticles"></div>
             <h1 class="hero-title">
-                <span class="animate-text">Explore as</span><br />
-                <span class="animate-text highlight-orange">Cores</span><span class="animate-text">, a</span><br />
-                <span class="animate-text highlight-green">História</span><span class="animate-text">&nbsp;e a</span><br />
-                <span class="animate-text highlight-coral">Tradição</span><span class="animate-text">&nbsp;de Estância</span>
+                @Html.Raw(heroTitulo)
             </h1>
             <p class="hero-subtitle">
                 @Html.Raw(heroSubtitulo.Replace("\n", "<br />"))

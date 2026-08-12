@@ -166,6 +166,12 @@ Módulos atuais: **Turismo** (pontos, categorias, mídias, horários, avaliaçõ
   (padrão gerado em baixa resolução + resize bilinear + alfa) + **logotipo do portal**
   (configuração `logo-principal`) no canto inferior direito — só com o core do
   ImageSharp, sem dependência extra. Falha silenciosamente (nunca derruba upload).
+- **Marca d'água no visualizador** (partial `_LightboxGaleria`, usado em `/galeria` e
+  na faixa da notícia): o lightbox exibe sobre a foto (canto inferior esquerdo) um
+  selo com câmera + "Foto: Portal de Turismo de Estância · Capital Sergipana da
+  Cultura" linkando para a raiz do site (`data-track="marca-dagua"`). A marca é
+  overlay CSS — vale para qualquer imagem aberta no visualizador, inclusive as de
+  notícias (que não recebem a marca embutida no upload).
 - **Proteção contra hotlink** (`ArquivoController`): `Referer` de host diferente do
   site → **403**; acesso sem Referer (nova aba, OG/redes sociais, crawlers) e do
   próprio site continua liberado.
@@ -299,14 +305,24 @@ numerada 01–07) — não usa o baralho.
 **Notícias** — `NoticiaService` + `Pages/Noticias` (`Index`/`Detalhe`). A notícia
 pode **vincular uma galeria já salva** (`Noticia.GaleriaCategoriaId` → `GaleriaCategorias`,
 SetNull, migração `AdicionaGaleriaNoticia`): o formulário do Gerenciador tem o
-select "Galeria relacionada" e a página de detalhe renderiza a faixa com até **8
-fotos** da galeria + botão "Ver galeria completa" (`/galeria/{chave}`). O `Corpo`
-é editado com o **editor rico Quill 2** (`_EditorTextoRico` partial, lib em
-`wwwroot/lib/quill/`) — negrito/itálico/sublinhado/tachado, **tamanho de fonte**
-(12–36px via style inline), **cor da paleta** (hex do tema), listas, link e
-citação; o HTML é sincronizado para o textarea oculto no submit. Ajuste no DTO:
-`Slug` é anulável (gerado no servidor no cadastro — evita o `[Required]`
-implícito de tipos não anuláveis que quebrava o Criar).
+select "Galeria relacionada" e a página de detalhe renderiza a faixa com **no
+máximo 6 fotos** (a 6ª ganha overlay "+N") + botão "Ver todas as fotos (N)"; o
+clique em qualquer foto, no overlay ou no botão abre o **lightbox** (mesmo da
+`/galeria`) que navega por **todas** as fotos — com curtida e contagem de
+visualização — sem sair da página. A **imagem de capa tem recorte ajustável** no
+Gerenciador (`_AjusteImagem` partial): sliders de **zoom (100–250%)**, **posição
+vertical e horizontal (0–100%)** com prévia ao vivo em janela 16:9; os valores
+são gravados em `Noticia.ImagemZoom/ImagemPosicaoX/ImagemPosicaoY` (migração
+`AdicionaAjusteImagemNoticia`) e aplicados no portal via `object-position` +
+`transform: scale(var(--noticia-zoom))` com `transform-origin` no foco — no
+detalhe (wrapper 16:9 com `overflow:hidden`), nos cards do home (`ig-post-img`)
+e na listagem (`news-card-img-wrap`). O `Corpo` é editado com o **editor rico
+Quill 2** (`_EditorTextoRico` partial, lib em `wwwroot/lib/quill/`) —
+negrito/itálico/sublinhado/tachado, **tamanho de fonte** (12–36px via style
+inline), **cor da paleta** (hex do tema), listas, link e citação; o HTML é
+sincronizado para o textarea oculto no submit. Ajuste no DTO: `Slug` é anulável
+(gerado no servidor no cadastro — evita o `[Required]` implícito de tipos não
+anuláveis que quebrava o Criar).
 
 **Contatos do rodapé** — `Components/ContatosRodapeViewComponent` + view `Default`
 (com **cache por request** via `HttpContext.Items` — a home invoca o componente 3×

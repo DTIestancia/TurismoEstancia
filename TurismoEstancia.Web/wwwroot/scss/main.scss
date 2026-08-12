@@ -682,16 +682,15 @@
     text-overflow: ellipsis;
   }
 
-  // Feed: grade quadrada como o perfil do Instagram
+  // Feed de notícias: cards editoriais (foto 4:3 com badge de data, título,
+  // resumo e "Ler notícia" sempre visível)
   .ig-feed {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
+    gap: 18px;
     margin-top: 30px;
   }
 
-  // Post: foto quadrada em cima + texto (data e título) sempre exposto embaixo,
-  // como a legenda de um post do Instagram.
   .ig-post {
     display: flex;
     flex-direction: column;
@@ -700,18 +699,19 @@
     border: 1px solid var(--color-white--10);
     background: var(--color-white--5);
     text-decoration: none;
-    transition: transform 0.25s ease, border-color 0.25s ease;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 
     &:hover {
-      transform: translateY(-3px);
+      transform: translateY(-4px);
       border-color: var(--color-orange-48-20);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
     }
   }
 
   .ig-post-foto {
     position: relative;
     display: block;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
     background: var(--color-white--5);
   }
@@ -722,56 +722,80 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transform-origin: 50% 50%;
+    transform: scale(var(--noticia-zoom, 100%));
     transition: transform 0.4s ease;
   }
 
-  .ig-post:hover .ig-post-img { transform: scale(1.05); }
+  // Zoom + hover: o zoom salvo no painel compõe com o efeito de hover.
+  .ig-post:hover .ig-post-img { transform: scale(var(--noticia-zoom, 100%)) scale(1.05); }
 
+  // Sem foto: gradiente suave da paleta + ícone, para o card não ficar vazio
   .ig-post-fallback {
     position: absolute;
     inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-white--40);
+    color: var(--color-white--45);
+    background: linear-gradient(135deg, rgba(0, 149, 246, 0.16), rgba(249, 126, 49, 0.10)), var(--color-azure-7);
+
+    i { width: 34px; height: 34px; }
   }
 
-  // Badge "Ver notícia" sobre a foto (hover no desktop, sempre no toque)
-  .ig-post-ver {
+  // Badge de data sobre a foto (canto superior esquerdo, vidro fosco)
+  .ig-post-date {
     position: absolute;
+    top: 10px;
     left: 10px;
-    bottom: 10px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
+    padding: 5px 11px;
     border-radius: 999px;
-    font-size: 11.5px;
+    font-size: 11px;
     font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
     color: var(--color-white-solid);
-    background: rgba(8, 12, 20, 0.72);
-    backdrop-filter: blur(4px);
-    opacity: 0;
-    transform: translateY(4px);
-    transition: opacity 0.25s ease, transform 0.25s ease;
+    background: rgba(8, 12, 20, 0.66);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
-
-  .ig-post:hover .ig-post-ver { opacity: 1; transform: translateY(0); }
 
   .ig-post-texto {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 12px 14px 14px;
+    flex: 1;
+    gap: 6px;
+    padding: 14px 16px 16px;
   }
 
-  .ig-post-date {
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--color-white--70);
+  .ig-post-resumo {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--color-white--60);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
+
+  .ig-post-ler {
+    margin-top: auto;
+    padding-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-orange-48);
+    transition: gap 0.2s ease;
+
+    i { width: 15px; height: 15px; }
+  }
+
+  .ig-post:hover .ig-post-ler { gap: 9px; }
 
   .ig-post-title {
     font-family: 'Fraunces', serif;
@@ -785,24 +809,20 @@
     overflow: hidden;
   }
 
-  // Em telas de toque o badge "Ver notícia" fica sempre visível (não há hover)
-  @media (hover: none) {
-    .ig-post-ver { opacity: 1; transform: none; }
-  }
 }
 
-// Notícias no celular: feed compacto como o aplicativo do Instagram
+// Notícias no celular: uma coluna para os cards respirar
 @media (max-width: 640px) {
   .section-instagram {
     .ig-profile { gap: 14px; }
     .ig-avatar-ring { width: 72px; height: 72px; }
     .ig-handle { font-size: 20px; }
-    .ig-feed { gap: 8px; }
+    .ig-feed { grid-template-columns: 1fr; gap: 14px; }
     .ig-post { border-radius: 12px; }
-    .ig-post-texto { padding: 10px 12px 12px; }
-    .ig-post-title { font-size: 12.5px; -webkit-line-clamp: 2; }
-    .ig-post-date { font-size: 9.5px; }
-    .ig-post-ver { font-size: 11px; padding: 5px 10px; }
+    .ig-post-foto { aspect-ratio: 16 / 9; }
+    .ig-post-texto { padding: 12px 14px 14px; }
+    .ig-post-title { font-size: 15px; }
+    .ig-post-date { font-size: 10.5px; }
   }
 }
 
@@ -935,10 +955,19 @@
     box-shadow: $shadow-card;
   }
 
-  .news-card-img {
+  .news-card-img-wrap {
+    display: block;
     width: 100%;
     height: 190px;
+    overflow: hidden;
+  }
+
+  .news-card-img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    transform-origin: 50% 50%;
+    transform: scale(var(--noticia-zoom, 100%));
   }
 
   .news-card-body { padding: 18px 20px 22px; display: flex; flex-direction: column; gap: 8px; }
@@ -997,11 +1026,21 @@
     font-style: italic;
   }
 
+  .news-article-img-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 420px;
+    overflow: hidden;
+    border-radius: 18px;
+    margin-bottom: 24px;
+  }
+
   .news-article-img {
     width: 100%;
-    border-radius: 18px;
-    max-height: 420px;
+    height: 100%;
     object-fit: cover;
+    transform-origin: 50% 50%;
+    transform: scale(var(--noticia-zoom, 100%));
   }
 
   .news-article-body {
@@ -1064,6 +1103,43 @@
       gap: 8px;
 
       i { color: var(--color-orange-48); }
+    }
+
+    // A faixa da notícia mostra no máximo 6 fotos; as demais ficam no DOM
+    // (ocultas) para o lightbox navegar pela galeria inteira sem sair da página.
+    .news-galeria-grid .galeria-item--extra { display: none; }
+
+    // Tile "+N fotos" sobre a 6ª foto quando a galeria tem mais de 6.
+    .galeria-item-mais {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      background: rgba(3, 14, 25, 0.72);
+      backdrop-filter: blur(2px);
+      color: var(--color-white-solid);
+      cursor: zoom-in;
+      transition: background 0.2s;
+
+      .galeria-item-mais-num {
+        font-family: 'Fraunces', serif;
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .galeria-item-mais-rotulo {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        color: var(--color-white--65);
+      }
+
+      &:hover { background: rgba(3, 14, 25, 0.85); }
     }
   }
 
@@ -2761,6 +2837,12 @@ img.paginas-galeria-card-img {
     align-items: center;
     gap: 12px;
 
+    .galeria-lightbox-foto {
+      position: relative;
+      display: flex;
+      max-width: 100%;
+    }
+
     img {
       max-width: 100%;
       max-height: 76vh;
@@ -2779,6 +2861,54 @@ img.paginas-galeria-card-img {
       color: var(--color-white--75);
       text-align: center;
       min-height: 20px;
+    }
+  }
+
+  // Marca d'água sobre a foto (canto inferior esquerdo): crédito + link do site.
+  .galeria-lightbox-marca {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 14px;
+    border-radius: 12px;
+    background: rgba(3, 10, 20, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(6px);
+    color: var(--color-white--80);
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+
+    i {
+      width: 16px;
+      height: 16px;
+      color: var(--color-orange-48);
+      flex-shrink: 0;
+    }
+
+    .galeria-lightbox-marca-texto {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+
+      strong {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--color-white-solid);
+      }
+
+      small {
+        font-size: 10.5px;
+        color: var(--color-white--60);
+      }
+    }
+
+    &:hover {
+      background: rgba(3, 10, 20, 0.8);
+      transform: translateY(-1px);
     }
   }
 
@@ -2921,4 +3051,13 @@ img.paginas-galeria-card-img {
   }
 
   .galeria-lightbox-fechar { top: 12px; right: 12px; }
+
+  .galeria-lightbox-marca {
+    left: 10px;
+    bottom: 10px;
+    padding: 6px 10px;
+
+    .galeria-lightbox-marca-texto strong { font-size: 11px; }
+    .galeria-lightbox-marca-texto small { font-size: 10px; }
+  }
 }

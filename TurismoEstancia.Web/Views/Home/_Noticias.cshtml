@@ -55,27 +55,33 @@
                 </div>
             }
 
-            <!-- Feed estilo Instagram: as 3 últimas notícias em grade quadrada,
-                 com a foto em cima e o texto (data + título) sempre exposto -->
+            <!-- Feed de notícias: cards editoriais com foto (badge de data sobre
+                 a imagem), título, resumo e link "Ler notícia" -->
             <div class="ig-feed reveal reveal-delay-1">
                 @foreach (var noticia in Model.Noticias)
                 {
+                    var dataBadge = noticia.DataPublicacao.ToString("dd MMM", new System.Globalization.CultureInfo("pt-BR"));
                     <a class="ig-post" href="~/Noticias/Detalhe/@noticia.Slug"
                        data-track="noticia" data-track-id="@noticia.Id" data-track-nome="@noticia.Titulo">
                         <span class="ig-post-foto">
                             @if (noticia.ImagemArquivoId is long imgId)
                             {
-                                <img class="ig-post-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@noticia.Titulo" loading="lazy" />
+                                <img class="ig-post-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@noticia.Titulo" loading="lazy"
+                                     style="--noticia-zoom:@(noticia.ImagemZoom)%;object-position:@(noticia.ImagemPosicaoX)% @(noticia.ImagemPosicaoY)%;transform-origin:@(noticia.ImagemPosicaoX)% @(noticia.ImagemPosicaoY)%;" />
                             }
                             else
                             {
                                 <span class="ig-post-fallback" aria-hidden="true"><i data-lucide="newspaper" class="icon-xl"></i></span>
                             }
-                            <span class="ig-post-ver">Ver notícia <i data-lucide="arrow-right" class="icon-lg"></i></span>
+                            <span class="ig-post-date">@dataBadge</span>
                         </span>
                         <span class="ig-post-texto">
-                            <span class="ig-post-date">@noticia.DataPublicacao.ToString("dd 'de' MMMM", new System.Globalization.CultureInfo("pt-BR"))</span>
                             <span class="ig-post-title">@noticia.Titulo</span>
+                            @if (!string.IsNullOrWhiteSpace(noticia.Resumo))
+                            {
+                                <span class="ig-post-resumo">@noticia.Resumo</span>
+                            }
+                            <span class="ig-post-ler">Ler notícia <i data-lucide="arrow-right" class="icon-lg"></i></span>
                         </span>
                     </a>
                 }

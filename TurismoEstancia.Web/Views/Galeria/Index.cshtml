@@ -130,25 +130,8 @@
         </div>
     </div>
 
-    <!-- Lightbox da galeria -->
-    <div class="galeria-lightbox" id="galeriaLightbox" data-app-base="@Url.Content("~/")" aria-hidden="true" role="dialog" aria-label="Visualizador de fotos">
-        <button type="button" class="galeria-lightbox-fechar" id="galeriaLightboxFechar" aria-label="Fechar"><i data-lucide="x"></i></button>
-        <button type="button" class="galeria-lightbox-seta galeria-lightbox-seta--prev" id="galeriaLightboxPrev" aria-label="Foto anterior"><i data-lucide="chevron-left"></i></button>
-        <figure class="galeria-lightbox-figura">
-            <img id="galeriaLightboxImg" src="" alt="" />
-            <figcaption id="galeriaLightboxLegenda"></figcaption>
-            <div class="galeria-lightbox-acoes">
-                <button type="button" class="galeria-lightbox-curtir" id="galeriaLightboxCurtir" aria-pressed="false">
-                    <i data-lucide="heart"></i>
-                    <span id="galeriaLightboxCurtidas">0</span> Amei
-                </button>
-                <span class="galeria-lightbox-visualizacoes"><i data-lucide="eye"></i> <span id="galeriaLightboxVisualizacoes">0</span> visualizações</span>
-            </div>
-            @Html.AntiForgeryToken()
-        </figure>
-        <button type="button" class="galeria-lightbox-seta galeria-lightbox-seta--next" id="galeriaLightboxNext" aria-label="Próxima foto"><i data-lucide="chevron-right"></i></button>
-        <span class="galeria-lightbox-contador" id="galeriaLightboxContador"></span>
-    </div>
+    <!-- Lightbox da galeria (com marca d'água de crédito + link do portal) -->
+    @await Html.PartialAsync("_LightboxGaleria")
 
     @await Html.PartialAsync("_PaginasFooter")
 </main>

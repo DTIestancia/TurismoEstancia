@@ -23,7 +23,7 @@ public class DetalheModel : PageModel
     /// <summary>Galeria relacionada à notícia (quando vinculada no painel).</summary>
     public GaleriaCategoriaDto? Galeria { get; private set; }
 
-    /// <summary>Fotos ativas da galeria relacionada (até 8, para a faixa da notícia).</summary>
+    /// <summary>Fotos ativas da galeria relacionada (todas — o lightbox navega pela galeria inteira sem sair da notícia).</summary>
     public IReadOnlyList<GaleriaMidiaDto> GaleriaFotos { get; private set; } = Array.Empty<GaleriaMidiaDto>();
 
     public async Task<IActionResult> OnGetAsync(string slug, CancellationToken ct)

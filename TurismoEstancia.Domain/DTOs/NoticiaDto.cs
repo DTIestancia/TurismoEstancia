@@ -14,6 +14,15 @@ public class NoticiaDto
     public string? Corpo { get; set; }
     public long? ImagemArquivoId { get; set; }
 
+    /// <summary>Zoom (%) do recorte da imagem de capa (100–250).</summary>
+    public int ImagemZoom { get; set; } = 100;
+
+    /// <summary>Posição horizontal do foco (object-position X, 0–100).</summary>
+    public int ImagemPosicaoX { get; set; } = 50;
+
+    /// <summary>Posição vertical do foco (object-position Y, 0–100).</summary>
+    public int ImagemPosicaoY { get; set; } = 50;
+
     /// <summary>Galeria (categoria da Galeria de Estância) relacionada — opcional.</summary>
     public int? GaleriaCategoriaId { get; set; }
 

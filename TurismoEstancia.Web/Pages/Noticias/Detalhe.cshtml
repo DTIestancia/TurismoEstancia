@@ -27,31 +27,54 @@
             </header>
             @if (Model.Noticia.ImagemArquivoId is long imgId)
             {
-                <img class="news-article-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@Model.Noticia.Titulo" />
+                <div class="news-article-img-wrap">
+                    <img class="news-article-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@Model.Noticia.Titulo"
+                         style="--noticia-zoom:@(Model.Noticia.ImagemZoom)%;object-position:@(Model.Noticia.ImagemPosicaoX)% @(Model.Noticia.ImagemPosicaoY)%;transform-origin:@(Model.Noticia.ImagemPosicaoX)% @(Model.Noticia.ImagemPosicaoY)%;" />
+                </div>
             }
             <div class="news-article-body">
                 @Html.Raw(Model.Noticia.Corpo)
             </div>
             @if (Model.Galeria is not null)
             {
+                var totalFotos = Model.GaleriaFotos.Count;
+                const int fotosVisiveis = 6;
                 <section class="news-galeria" data-section="galeria">
                     <div class="news-galeria-header">
                         <h2 class="news-galeria-titulo"><i data-lucide="camera" class="icon-lg"></i> Galeria: @Model.Galeria.Nome</h2>
-                        <a class="btn-primary" href="@Url.Content($"~/galeria/{Model.Galeria.Chave}")"
-                           data-track="galeria-categoria" data-track-nome="@Model.Galeria.Nome">
-                            Ver galeria completa <i data-lucide="arrow-right" class="icon-lg"></i>
-                        </a>
+                        @if (totalFotos > 0)
+                        {
+                            <button type="button" class="btn-primary js-ver-todas-fotos" data-abrir-em="0"
+                                    data-track="galeria-categoria" data-track-nome="@Model.Galeria.Nome">
+                                Ver todas as fotos @(totalFotos > fotosVisiveis ? $"({totalFotos})" : "") <i data-lucide="expand" class="icon-lg"></i>
+                            </button>
+                        }
                     </div>
-                    @if (Model.GaleriaFotos.Count > 0)
+                    @if (totalFotos > 0)
                     {
-                        <div class="paginas-galeria-grid paginas-galeria-grid--fotos">
-                            @foreach (var midia in Model.GaleriaFotos.Take(8))
+                        <div class="paginas-galeria-grid paginas-galeria-grid--fotos news-galeria-grid">
+                            @for (var i = 0; i < totalFotos; i++)
                             {
+                                var midia = Model.GaleriaFotos[i];
                                 var thumb = midia.ArquivoThumbId ?? midia.ArquivoId;
-                                <a class="galeria-item" href="@Url.Content($"~/arquivo/{midia.ArquivoId}")" target="_blank" rel="noopener"
+                                <a class="galeria-item @(i >= fotosVisiveis ? "galeria-item--extra" : "")"
+                                   href="@Url.Content($"~/arquivo/{midia.ArquivoId}")"
+                                   data-full="@Url.Content($"~/arquivo/{midia.ArquivoId}")"
+                                   data-titulo="@(midia.Titulo ?? Model.Galeria.Nome)"
+                                   data-id="@midia.Id"
+                                   data-like="@midia.Curtidas"
+                                   data-views="@midia.Visualizacoes"
                                    data-track="galeria-foto" data-track-id="@midia.Id"
                                    aria-label="Ampliar foto: @(midia.Titulo ?? Model.Galeria.Nome)" title="@(midia.Titulo ?? Model.Galeria.Nome)">
                                     <img src="@Url.Content($"~/arquivo/{thumb}")" alt="@(midia.Titulo ?? Model.Galeria.Nome)" loading="lazy" decoding="async" />
+                                    @if (i == fotosVisiveis - 1 && totalFotos > fotosVisiveis)
+                                    {
+                                        <span class="galeria-item-mais" data-abrir-em="@fotosVisiveis" role="button"
+                                              aria-label="Ver as @(totalFotos - fotosVisiveis) fotos restantes">
+                                            <span class="galeria-item-mais-num">+@(totalFotos - fotosVisiveis)</span>
+                                            <span class="galeria-item-mais-rotulo">ver todas as fotos</span>
+                                        </span>
+                                    }
                                     @if (!string.IsNullOrWhiteSpace(midia.Titulo))
                                     {
                                         <span class="galeria-item-legenda">@midia.Titulo</span>
@@ -80,10 +103,46 @@
             </footer>
         </article>
     }
+
+    <!-- Lightbox da galeria (mesmo padrão da página /galeria): navega por TODAS as fotos sem sair da notícia -->
+    @await Html.PartialAsync("_LightboxGaleria")
 </main>
 @await Html.PartialAsync("_PaginasFooter")
 
 @section Scripts {
+    <script>
+        // Galeria da notícia: "Ver todas as fotos" (botão do cabeçalho) e o
+        // tile "+N" (6ª foto quando há mais de 6) abrem o lightbox na posição
+        // pedida — o lightbox (portal.js) navega por TODAS as fotos, sem sair
+        // da página. O .click() dispara o listener que o portal.js já registrou
+        // em cada .galeria-item (o portal.js roda antes deste bloco).
+        (function () {
+            var itens = document.querySelectorAll('.news-galeria .galeria-item');
+            if (!itens.length) return;
+
+            function abrirNo(indice) {
+                if (itens[indice]) itens[indice].click();
+            }
+
+            // Tile "+N fotos": abre na primeira foto extra (escondida).
+            var tileMais = document.querySelector('.news-galeria .galeria-item-mais');
+            if (tileMais) {
+                tileMais.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    abrirNo(parseInt(tileMais.getAttribute('data-abrir-em'), 10) || 6);
+                });
+            }
+
+            // Botão "Ver todas as fotos" do cabeçalho: abre na primeira foto.
+            var botao = document.querySelector('.news-galeria .js-ver-todas-fotos');
+            if (botao) {
+                botao.addEventListener('click', function () {
+                    abrirNo(parseInt(botao.getAttribute('data-abrir-em'), 10) || 0);
+                });
+            }
+        })();
+    </script>
     <script>
         // Compartilhar a notícia no Instagram: no celular abre a folha de
         // compartilhamento do sistema (Instagram entre as opções); no desktop
