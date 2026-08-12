@@ -22,9 +22,12 @@ public class GaleriaController : Controller
         _analytics = analytics;
     }
 
-    /// <summary>GET /galeria — todas as fotos das categorias ativas.</summary>
+    /// <summary>Fotos por página no grid (com paginação).</summary>
+    private const int FotosPorPagina = 12;
+
+    /// <summary>GET /galeria — todas as fotos das categorias ativas, paginadas.</summary>
     [Route("galeria")]
-    public async Task<IActionResult> Index(CancellationToken ct)
+    public async Task<IActionResult> Index(CancellationToken ct, int pagina = 1)
     {
         var categorias = await _galeria.ListarCategoriasAsync(incluirInativas: false, ct);
         var fotos = await _galeria.ListarFotosTodasAsync(apenasAtivos: true, ct);
@@ -33,18 +36,12 @@ public class GaleriaController : Controller
             "As imagens que contam a história de Estância: praias, patrimônio, cultura e tradições.",
             fotos.FirstOrDefault()?.ArquivoId is long capa ? Url.Content($"~/arquivo/{capa}") : null);
 
-        return View(new GaleriaViewModel
-        {
-            Categorias = categorias,
-            FotosTotal = fotos.Count,
-            // Grid limitado às 12 mais visualizadas primeiro.
-            Fotos = fotos.OrderByDescending(f => f.Visualizacoes).Take(12).ToList()
-        });
+        return View(MontarViewModel(categorias, null, fotos, pagina));
     }
 
-    /// <summary>GET /galeria/{chave} — fotos de uma categoria específica.</summary>
+    /// <summary>GET /galeria/{chave} — fotos de uma categoria específica, paginadas.</summary>
     [Route("galeria/{chave}")]
-    public async Task<IActionResult> Categoria(string chave, CancellationToken ct)
+    public async Task<IActionResult> Categoria(string chave, CancellationToken ct, int pagina = 1)
     {
         var categoria = await _galeria.ObterCategoriaPorChaveAsync(chave, ct);
         if (categoria is null)
@@ -61,14 +58,35 @@ public class GaleriaController : Controller
             categoria.Descricao ?? $"Fotos da categoria {categoria.Nome} da Galeria de Estância.",
             imagemSeo);
 
-        return View("Index", new GaleriaViewModel
+        return View("Index", MontarViewModel(categorias, categoria, categoria.Midias, pagina));
+    }
+
+    /// <summary>Ordena por mais visualizadas e pagina o grid (preserva o total real no contador).</summary>
+    private GaleriaViewModel MontarViewModel(
+        IReadOnlyList<GaleriaCategoriaDto> categorias,
+        GaleriaCategoriaDto? categoriaAtual,
+        IReadOnlyList<GaleriaMidiaDto> fotos,
+        int pagina)
+    {
+        var total = fotos.Count;
+        var totalPaginas = Math.Max(1, (int)Math.Ceiling(total / (double)FotosPorPagina));
+        var paginaAtual = Math.Clamp(pagina, 1, totalPaginas);
+
+        return new GaleriaViewModel
         {
             Categorias = categorias,
-            CategoriaAtual = categoria,
-            FotosTotal = categoria.Midias.Count,
-            // Grid limitado às 12 mais visualizadas primeiro.
-            Fotos = categoria.Midias.OrderByDescending(m => m.Visualizacoes).Take(12).ToList()
-        });
+            CategoriaAtual = categoriaAtual,
+            FotosTotal = total,
+            PaginaAtual = paginaAtual,
+            PaginasTotal = totalPaginas,
+            TamanhoPagina = FotosPorPagina,
+            // Grid paginado, mais visualizadas primeiro.
+            Fotos = fotos
+                .OrderByDescending(f => f.Visualizacoes)
+                .Skip((paginaAtual - 1) * FotosPorPagina)
+                .Take(FotosPorPagina)
+                .ToList()
+        };
     }
 
     /// <summary>

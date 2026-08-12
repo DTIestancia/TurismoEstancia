@@ -122,6 +122,19 @@
                         </a>
                     }
                 </div>
+
+                @if (Model.PaginasTotal > 1)
+                {
+                    <div class="paginas-galeria-paginacao">
+                        @await Html.PartialAsync("_Paginacao", new PaginacaoViewModel
+                        {
+                            PaginaAtual = Model.PaginaAtual,
+                            TotalPaginas = Model.PaginasTotal,
+                            UrlBase = emCategoria ? Url.Content($"~/galeria/{Model.CategoriaAtual!.Chave}") : Url.Content("~/galeria")
+                        })
+                        <p class="paginas-galeria-total">@Model.FotosTotal fotos em @Model.PaginasTotal página(s)</p>
+                    </div>
+                }
             }
         }
 

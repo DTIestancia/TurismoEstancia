@@ -267,44 +267,34 @@ window.addEventListener('message', function (e) {
 // ===== Newsletter: busca ao vivo + dialog de disparo =====
 // (elementos existem apenas na página de newsletter do painel)
 
-// Busca: filtra as linhas da tabela por e-mail/origem, mostrando o contador.
+// Busca da newsletter: pesquisa no SERVIDOR (com debounce) para combinar com a
+// paginação — cada tecla reinicia na página 1 com o termo ?busca=.
 var newsletterSearch = document.getElementById('newsletterSearch');
-var newsletterEmpty = document.getElementById('newsletterEmpty');
-var newsletterCount = document.getElementById('newsletterCount');
+var newsletterForm = document.getElementById('newsletterBuscaForm');
 
-function atualizarBuscaNewsletter() {
-  if (!newsletterSearch || !newsletterCount) return;
-  var linhas = document.querySelectorAll('#newsletterTable tbody tr');
-  var termo = newsletterSearch.value.trim().toLowerCase();
-  var visiveis = 0;
-  var total = linhas.length;
-
-  linhas.forEach(function (linha) {
-    var mostrar = !termo || (linha.getAttribute('data-search') || '').indexOf(termo) !== -1;
-    linha.style.display = mostrar ? '' : 'none';
-    if (mostrar) visiveis++;
+if (newsletterSearch && newsletterForm) {
+  var timerBusca = null;
+  newsletterSearch.addEventListener('input', function () {
+    clearTimeout(timerBusca);
+    timerBusca = setTimeout(function () {
+      var url = new URL(newsletterForm.getAttribute('action') || location.pathname, location.origin);
+      url.searchParams.set('busca', newsletterSearch.value.trim());
+      url.searchParams.delete('pagina');
+      location.href = url.toString();
+    }, 450);
   });
 
-  newsletterCount.textContent = termo
-    ? visiveis + ' de ' + total + ' inscrição' + (total === 1 ? '' : 'ões')
-    : total + ' inscrição' + (total === 1 ? '' : 'ões');
-
-  if (newsletterEmpty) {
-    if (total === 0) {
-      newsletterEmpty.textContent = 'Nenhuma inscrição recebida ainda.';
-      newsletterEmpty.style.display = '';
-    } else if (visiveis === 0) {
-      newsletterEmpty.textContent = 'Nenhuma inscrição encontrada para a busca.';
-      newsletterEmpty.style.display = '';
-    } else {
-      newsletterEmpty.style.display = 'none';
+  // Enter submete direto (sem o debounce aguardar).
+  newsletterSearch.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      clearTimeout(timerBusca);
+      var url = new URL(newsletterForm.getAttribute('action') || location.pathname, location.origin);
+      url.searchParams.set('busca', newsletterSearch.value.trim());
+      url.searchParams.delete('pagina');
+      location.href = url.toString();
     }
-  }
-}
-
-if (newsletterSearch) {
-  newsletterSearch.addEventListener('input', atualizarBuscaNewsletter);
-  atualizarBuscaNewsletter();
+  });
 }
 
 // Dialog de disparo: abre via data-dialog-open, fecha via data-dialog-close,

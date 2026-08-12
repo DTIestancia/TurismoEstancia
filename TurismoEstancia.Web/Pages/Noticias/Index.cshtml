@@ -46,6 +46,13 @@
                     </a>
                 }
             </div>
+
+            @await Html.PartialAsync("_Paginacao", new PaginacaoViewModel
+            {
+                PaginaAtual = Model.PaginaAtual,
+                TotalPaginas = Model.PaginasTotal,
+                UrlBase = Url.Content("~/Noticias")
+            })
         }
     </div>
 </main>

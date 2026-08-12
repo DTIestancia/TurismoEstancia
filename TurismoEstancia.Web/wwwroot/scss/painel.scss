@@ -2249,3 +2249,55 @@
     }
   }
 }
+
+// --- Paginação (listagens do Gerenciador) ---
+.paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+
+  .paginacao-item,
+  .paginacao-seta {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    border: 1px solid $color-white--12;
+    background: $color-white--8;
+    color: $color-white--80;
+    font-size: 13.5px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+
+    &:hover {
+      border-color: var(--color-orange-48);
+      color: $color-white-solid;
+    }
+
+    &.is-active {
+      background: var(--color-orange-48);
+      border-color: var(--color-orange-48);
+      color: #fff;
+      cursor: default;
+    }
+
+    &.is-disabled {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+  }
+
+  .paginacao-seta { padding: 0 9px; }
+
+  .paginacao-reticencias {
+    color: $color-white--45;
+    padding: 0 4px;
+  }
+}

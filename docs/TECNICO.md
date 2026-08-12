@@ -436,7 +436,22 @@ dotnet ef database update --project TurismoEstancia.Domain --startup-project Tur
 
 - **Itens de roteiro** editáveis no CMS (hoje são dados de referência no banco — ver
   `RoteiroItem`).
-- **Paginação** em Newsletter/Avaliações no painel.
+- **Paginação reutilizável** — `PaginacaoViewModel` + partial `_Paginacao`
+  (janela de páginas com reticências, setas prev/next e estado ativo). Já aplicada
+  em **/galeria** (12 fotos/página, mais visualizadas primeiro — `?pagina=N`),
+  **/Noticias** (12/página), **/Agenda** (12/página) e, no painel, **Notícias**,
+  **Newsletter** e **Avaliações** (15/página); tamanhos em `Infrastructure/PaginaService`.
+  A busca da Newsletter é server-side (debounce) para combinar com a paginação; as
+  estatísticas (cards) e o contador de avaliações pendentes são calculados sobre a
+  lista completa, não a página.
+- **Página pública /Agenda** (`Pages/Agenda`) — agenda completa (antes só os próximos
+  apareciam na home) em duas seções:  **Próximos eventos** (futuros, em ordem de data)
+  e **Já aconteceu** (encerrados, mais recentes primeiro), cada uma com paginação
+  própria (12/página) e parâmetros independentes (`?pagina=` e `?paginaPassados=`,
+  preservados mutuamente ao navegar). Reutiliza os cards `agenda-card` da seção do
+  home, com exportação `.ics` por evento. O evento mais próximo (1º card dos próximos
+  na página 1) ganha destaque visual — borda laranja + selo "Próximo evento". Link no
+  navbar, no header das páginas internas e no rodapé.
 - **Testes automatizados** (xUnit) para services e controllers — hoje a validação é
   build + smoke manual.
 - **Redefinição de senha** por e-mail (`TurismoEstancia.Mail` está reservado para isso).

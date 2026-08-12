@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Mail;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
+using TurismoEstancia.Web.Infrastructure;
 using TurismoEstancia.Web.Models;
 
 namespace TurismoEstancia.Web.Areas.Gerenciador.Controllers;
@@ -24,14 +26,42 @@ public class NewsletterController : PainelController
         _smtp = smtp.Value;
     }
 
-    public async Task<IActionResult> Index(CancellationToken ct)
+    public async Task<IActionResult> Index(CancellationToken ct, string? busca = null, int pagina = 1)
     {
         ViewData["Title"] = "Newsletter";
-        var inscricoes = await _newsletter.ListarAsync(incluirInativos: true, ct);
+        var todas = await _newsletter.ListarAsync(incluirInativos: true, ct);
+
+        // Filtro de busca (e-mail ou origem) aplicado ANTES da paginação.
+        IReadOnlyList<InscricaoNewsletterDto> filtradas = todas;
+        if (!string.IsNullOrWhiteSpace(busca))
+        {
+            filtradas = todas
+                .Where(i =>
+                    i.Email.Contains(busca, StringComparison.OrdinalIgnoreCase) ||
+                    (i.Origem?.Contains(busca, StringComparison.OrdinalIgnoreCase) ?? false))
+                .ToList();
+        }
+
+        var totalPaginas = Math.Max(1, (int)Math.Ceiling(filtradas.Count / (double)PaginaService.TamanhoPainel));
+        var paginaAtual = Math.Clamp(pagina, 1, totalPaginas);
+
         var destinatarios = await _newsletter.ListarEmailsAtivosAsync(ct);
+
+        ViewData["PaginaAtual"] = paginaAtual;
+        ViewData["PaginasTotal"] = totalPaginas;
+        ViewData["Busca"] = busca;
+        ViewData["TotalFiltradas"] = filtradas.Count;
+
         return View(new NewsletterIndexViewModel
         {
-            Inscricoes = inscricoes,
+            // Estatísticas sempre sobre a lista completa (globais da página).
+            Inscricoes = filtradas
+                .Skip((paginaAtual - 1) * PaginaService.TamanhoPainel)
+                .Take(PaginaService.TamanhoPainel)
+                .ToList(),
+            Total = todas.Count,
+            Ativas = todas.Count(i => i.Ativo),
+            Inativas = todas.Count(i => !i.Ativo),
             Destinatarios = destinatarios.Count,
             SmtpConfigurado = _smtp.Configurado
         });

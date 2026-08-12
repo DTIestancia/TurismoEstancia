@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
+using TurismoEstancia.Web.Infrastructure;
 using TurismoEstancia.Web.Models;
 
 namespace TurismoEstancia.Web.Pages.Noticias;
@@ -11,11 +12,24 @@ public class IndexModel : PageModel
 
     public IndexModel(INoticiaService noticias) => _noticias = noticias;
 
+    /// <summary>Notícias publicadas da página atual (12 por página).</summary>
     public IReadOnlyList<NoticiaDto> Noticias { get; private set; } = Array.Empty<NoticiaDto>();
 
-    public async Task OnGetAsync(CancellationToken ct)
+    /// <summary>Total real de notícias publicadas.</summary>
+    public int TotalNoticias { get; private set; }
+
+    public int PaginaAtual { get; private set; } = 1;
+
+    public int PaginasTotal { get; private set; } = 1;
+
+    public async Task OnGetAsync(CancellationToken ct, int pagina = 1)
     {
-        Noticias = await _noticias.ListarAsync(apenasPublicadas: true, ct);
+        var todas = await _noticias.ListarAsync(apenasPublicadas: true, ct);
+        TotalNoticias = todas.Count;
+        PaginasTotal = Math.Max(1, (int)Math.Ceiling(TotalNoticias / (double)PaginaService.Tamanho));
+        PaginaAtual = Math.Clamp(pagina, 1, PaginasTotal);
+        Noticias = todas.Skip((PaginaAtual - 1) * PaginaService.Tamanho).Take(PaginaService.Tamanho).ToList();
+
         ViewData["Seo"] = new SeoMeta
         {
             Titulo = "Notícias",
@@ -23,3 +37,4 @@ public class IndexModel : PageModel
         };
     }
 }
+

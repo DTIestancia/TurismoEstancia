@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
 using TurismoEstancia.Services.Galeria.Interfaces;
+using TurismoEstancia.Web.Infrastructure;
 
 namespace TurismoEstancia.Web.Areas.Gerenciador.Controllers;
 
@@ -18,11 +19,18 @@ public class NoticiasController : PainelController
         _galeria = galeria;
     }
 
-    public async Task<IActionResult> Index(CancellationToken ct)
+    public async Task<IActionResult> Index(CancellationToken ct, int pagina = 1)
     {
         ViewData["Title"] = "Notícias";
         ViewData["AreaAtiva"] = "noticias";
-        return View(await _noticias.ListarAsync(apenasPublicadas: false, ct));
+
+        var todas = await _noticias.ListarAsync(apenasPublicadas: false, ct);
+        var totalPaginas = Math.Max(1, (int)Math.Ceiling(todas.Count / (double)PaginaService.TamanhoPainel));
+        var paginaAtual = Math.Clamp(pagina, 1, totalPaginas);
+
+        ViewData["PaginaAtual"] = paginaAtual;
+        ViewData["PaginasTotal"] = totalPaginas;
+        return View(todas.Skip((paginaAtual - 1) * PaginaService.TamanhoPainel).Take(PaginaService.TamanhoPainel).ToList());
     }
 
     public async Task<IActionResult> Criar(CancellationToken ct)
