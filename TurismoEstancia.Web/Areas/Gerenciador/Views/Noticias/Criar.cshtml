@@ -24,12 +24,25 @@
         <div class="painel-field">
             <label asp-for="Corpo"></label>
             <textarea asp-for="Corpo" class="painel-textarea"></textarea>
-            <span class="painel-hint">Parágrafos separados por linha em branco. Quebras de linha são preservadas.</span>
+            @await Html.PartialAsync("_EditorTextoRico", "Corpo")
+            <span class="painel-hint">Editor rico — negrito, itálico, tamanho de fonte, cor, listas e links. Enter cria parágrafo.</span>
         </div>
 
         <div class="painel-field">
             <label>Imagem de capa (opcional)</label>
             <input type="file" name="imagem" accept="image/*" class="painel-input" />
+        </div>
+
+        <div class="painel-field">
+            <label asp-for="GaleriaCategoriaId">Galeria relacionada (opcional)</label>
+            <select asp-for="GaleriaCategoriaId" class="painel-select">
+                <option value="">— Nenhuma galeria —</option>
+                @foreach (var galeria in (ViewData["GaleriaCategorias"] as IReadOnlyList<GaleriaCategoriaDto>) ?? Array.Empty<GaleriaCategoriaDto>())
+                {
+                    <option value="@galeria.Id">@galeria.Nome</option>
+                }
+            </select>
+            <span class="painel-hint">Vincule a notícia a uma galeria já salva (ex.: Praia do Saco) — ela aparece na página da notícia com as fotos e o link para a galeria completa.</span>
         </div>
 
         <div class="painel-form-grid">

@@ -1012,6 +1012,59 @@
     p { margin-bottom: 16px; }
     strong { color: var(--color-white-solid); }
     a { color: var(--color-orange-48); }
+
+    // Conteúdo do editor rico (Quill): listas, citação e tamanho/cor inline.
+    ul, ol {
+      margin: 0 0 16px;
+      padding-left: 24px;
+
+      li { margin-bottom: 6px; }
+    }
+
+    blockquote {
+      margin: 0 0 16px;
+      padding: 10px 16px;
+      border-left: 4px solid var(--color-orange-48);
+      background: var(--color-white--5);
+      border-radius: 0 10px 10px 0;
+      color: var(--color-white--75);
+      font-style: italic;
+    }
+
+    h2, h3, h4 {
+      font-family: 'Fraunces', serif;
+      color: var(--color-white-solid);
+      margin: 24px 0 12px;
+    }
+  }
+
+  // Galeria relacionada à notícia (vinculada no painel).
+  .news-galeria {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--color-white--10);
+
+    .news-galeria-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .news-galeria-titulo {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-white-solid);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      i { color: var(--color-orange-48); }
+    }
   }
 
   .news-article-footer {

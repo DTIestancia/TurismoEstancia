@@ -1812,3 +1812,327 @@
     text-overflow: ellipsis;
   }
 }
+
+// ===== Ajuda para edição de textos (topbar do Gerenciador → "Ajuda textos") =====
+// Modal com tags seguras, classes reais do tema e paleta de cores configurável,
+// para quem edita os textos do portal pelo painel.
+.painel-ajuda-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: $color-white-solid;
+  width: min(880px, calc(100vw - 24px));
+  height: min(780px, calc(100vh - 24px));
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+
+  &::backdrop {
+    background: rgba(3, 14, 25, 0.82);
+    backdrop-filter: blur(4px);
+  }
+
+  .painel-dialog-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: $color-azure-5;
+    border: 1px solid $color-white--12;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .painel-ajuda-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 20px;
+    border-bottom: 1px solid $color-white--10;
+    background: rgba(3, 14, 25, 0.6);
+
+    .painel-ajuda-title {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+
+      i { width: 18px; height: 18px; color: var(--color-orange-48); }
+    }
+
+    .painel-ajuda-close {
+      margin-left: auto;
+      background: $color-white--8;
+      border: 1px solid $color-white--15;
+      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $color-white--70;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover { color: $color-white-solid; border-color: $color-white--40; }
+    }
+  }
+
+  .painel-ajuda-corpo {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 18px 24px 28px;
+  }
+}
+
+.painel-ajuda-secao {
+  margin-bottom: 22px;
+
+  > h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    i { width: 16px; height: 16px; color: var(--color-orange-48); }
+  }
+
+  > p {
+    color: $color-white--70;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0 0 10px;
+  }
+}
+
+.painel-ajuda-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th, td {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid $color-white--10;
+  }
+
+  th {
+    color: $color-white--50;
+    font-weight: 400;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  td:first-child {
+    color: var(--color-orange-48);
+    font-family: 'Cascadia Code', Consolas, monospace;
+    white-space: nowrap;
+  }
+}
+
+.painel-ajuda-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+
+  .painel-ajuda-chip {
+    background: $color-white--8;
+    border: 1px solid $color-white--15;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 13px;
+
+    code {
+      color: var(--color-orange-48);
+      font-family: 'Cascadia Code', Consolas, monospace;
+      font-size: 12px;
+    }
+
+    span {
+      display: block;
+      color: $color-white--60;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+  }
+}
+
+.painel-ajuda-cores {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 8px;
+}
+
+.painel-ajuda-cor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $color-white--5;
+  border: 1px solid $color-white--10;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12px;
+
+  .painel-ajuda-cor-amostra {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1px solid $color-white--20;
+    flex-shrink: 0;
+  }
+
+  code {
+    color: $color-white--80;
+    font-family: 'Cascadia Code', Consolas, monospace;
+    margin-left: auto;
+  }
+
+  strong { color: $color-white-solid; font-weight: 600; }
+}
+
+.painel-ajuda-exemplo {
+  margin-bottom: 12px;
+
+  .painel-ajuda-exemplo-titulo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+
+    span { font-size: 12px; color: $color-white--60; }
+  }
+
+  pre {
+    background: rgba(3, 14, 25, 0.7);
+    border: 1px solid $color-white--12;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin: 0;
+    overflow-x: auto;
+    font-family: 'Cascadia Code', Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: $color-white--90;
+  }
+}
+
+.painel-ajuda-atencao {
+  display: flex;
+  gap: 10px;
+  background: rgba(237, 32, 39, 0.08);
+  border: 1px solid rgba(237, 32, 39, 0.35);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: $color-white--80;
+
+  i { color: var(--color-red-54); flex-shrink: 0; margin-top: 2px; }
+
+  p { margin: 0 0 8px; }
+  p:last-child { margin-bottom: 0; }
+
+  code {
+    color: var(--color-red-54);
+    font-family: 'Cascadia Code', Consolas, monospace;
+    font-size: 12px;
+  }
+}
+
+// ===== Editor rico (Quill 2) nos campos de texto do painel =====
+// Tema snow adaptado ao painel escuro: toolbar escura + área de edição clara
+// (bom contraste para escrever). A altura vem do inline style da div.
+.painel-editor-rico {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+
+  .ql-toolbar.ql-snow {
+    flex-shrink: 0;
+    background: $color-white--5;
+    border: 1px solid $color-white--15;
+    border-radius: 12px 12px 0 0;
+    padding: 8px 10px;
+
+    .ql-formats { margin-right: 10px; }
+
+    button {
+      color: $color-white--70;
+
+      &:hover { color: $color-white-solid; }
+
+      &.ql-active {
+        color: var(--color-orange-48);
+        background: rgba(249, 126, 49, 0.12);
+        border-radius: 6px;
+      }
+    }
+
+    .ql-picker {
+      color: $color-white--70;
+
+      .ql-picker-label { border-color: transparent; }
+      &:hover .ql-picker-label { color: $color-white-solid; }
+
+      .ql-picker-options {
+        background: $color-azure-5;
+        border: 1px solid $color-white--15;
+        border-radius: 10px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      }
+
+      .ql-picker-item {
+        color: $color-white--80;
+        &:hover, &.ql-selected { color: var(--color-orange-48); }
+      }
+    }
+  }
+
+  .ql-container.ql-snow {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+    background: $color-white-solid;
+    border: 1px solid $color-white--15;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    color: $color-black-solid;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+
+    .ql-editor {
+      color: $color-black-solid;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+
+      &.ql-blank::before {
+        color: #8b9aa8;
+        font-style: italic;
+      }
+
+      a { color: var(--color-cyan-41); }
+      blockquote { border-left-color: var(--color-orange-48); }
+    }
+
+    .ql-tooltip {
+      background: $color-azure-5;
+      border: 1px solid $color-white--15;
+      border-radius: 10px;
+      color: $color-white-solid;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+
+      input { background: $color-white--8; color: $color-white-solid; border: 1px solid $color-white--15; }
+      a { color: var(--color-orange-48); }
+    }
+  }
+}

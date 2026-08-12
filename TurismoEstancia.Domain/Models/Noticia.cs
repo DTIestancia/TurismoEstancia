@@ -18,6 +18,11 @@ public class Noticia
 
     public Arquivo? Imagem { get; set; }
 
+    /// <summary>Galeria (categoria da Galeria de Estância) relacionada à notícia — exibida na página de detalhe.</summary>
+    public int? GaleriaCategoriaId { get; set; }
+
+    public GaleriaCategoria? Galeria { get; set; }
+
     public DateTime DataPublicacao { get; set; }
 
     /// <summary>Slug único para a URL amigável (ex.: "barco-de-fogo-2026").</summary>

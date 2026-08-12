@@ -4,6 +4,7 @@
     var enderecos = Model.Contatos.Where(c => c.Tipo == TipoContato.Endereco).ToList();
     var telefones = Model.Contatos.Where(c => c.Tipo == TipoContato.Telefone).ToList();
     var redes = Model.Contatos.Where(c => c.Tipo == TipoContato.RedesSocial).ToList();
+    var emails = Model.Contatos.Where(c => c.Tipo == TipoContato.Email).ToList();
     var mostraEnderecos = Model.Bloco is "todos" or "enderecos";
     var mostraTelefones = Model.Bloco is "todos" or "telefones";
     var mostraRedes = Model.Bloco is "todos" or "redes";
@@ -21,6 +22,24 @@
                     <strong>@(end.Rotulo):</strong>
                 }
                 <span>@Html.Raw(end.Valor.Replace("\n", "<br />"))</span>
+            </div>
+        }
+    </div>
+}
+
+@if (mostraEnderecos && emails.Count > 0)
+{
+    <div class="footer-address">
+        @foreach (var email in emails)
+        {
+            var mailto = email.Valor.Trim();
+            <div class="footer-contact-item">
+                <i data-lucide="mail" class="icon-lg" aria-hidden="true"></i>
+                @if (!string.IsNullOrWhiteSpace(email.Rotulo))
+                {
+                    <strong>@(email.Rotulo):</strong>
+                }
+                <span><a href="mailto:@mailto" style="color:inherit;text-decoration:none;">@email.Valor</a></span>
             </div>
         }
     </div>

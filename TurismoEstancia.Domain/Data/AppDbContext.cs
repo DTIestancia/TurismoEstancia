@@ -351,6 +351,13 @@ public class AppDbContext : DbContext
                   .WithMany()
                   .HasForeignKey(e => e.ImagemArquivoId)
                   .OnDelete(DeleteBehavior.SetNull);
+
+            // Galeria relacionada (opcional): SetNull — a notícia continua
+            // publicável mesmo se a categoria da galeria for removida.
+            entity.HasOne(e => e.Galeria)
+                  .WithMany()
+                  .HasForeignKey(e => e.GaleriaCategoriaId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
     }
 

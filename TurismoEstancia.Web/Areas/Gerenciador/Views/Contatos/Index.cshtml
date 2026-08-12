@@ -30,8 +30,8 @@
                 {
                     <tr>
                         <td>
-                            <span class="painel-badge @(item.Tipo == TipoContato.Telefone ? "painel-badge--green" : item.Tipo == TipoContato.RedesSocial ? "painel-badge--cyan" : "painel-badge--orange")">
-                                @(item.Tipo == TipoContato.Telefone ? "Telefone" : item.Tipo == TipoContato.RedesSocial ? "Rede social" : "Endereço")
+                            <span class="painel-badge @(item.Tipo == TipoContato.Telefone ? "painel-badge--green" : item.Tipo is TipoContato.RedesSocial or TipoContato.Email ? "painel-badge--cyan" : "painel-badge--orange")">
+                                @(item.Tipo == TipoContato.Telefone ? "Telefone" : item.Tipo == TipoContato.RedesSocial ? "Rede social" : item.Tipo == TipoContato.Email ? "E-mail" : "Endereço")
                             </span>
                         </td>
                         <td><strong>@(item.Rotulo ?? "—")</strong></td>

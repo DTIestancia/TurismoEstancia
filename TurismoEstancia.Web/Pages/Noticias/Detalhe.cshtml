@@ -32,6 +32,36 @@
             <div class="news-article-body">
                 @Html.Raw(Model.Noticia.Corpo)
             </div>
+            @if (Model.Galeria is not null)
+            {
+                <section class="news-galeria" data-section="galeria">
+                    <div class="news-galeria-header">
+                        <h2 class="news-galeria-titulo"><i data-lucide="camera" class="icon-lg"></i> Galeria: @Model.Galeria.Nome</h2>
+                        <a class="btn-primary" href="@Url.Content($"~/galeria/{Model.Galeria.Chave}")"
+                           data-track="galeria-categoria" data-track-nome="@Model.Galeria.Nome">
+                            Ver galeria completa <i data-lucide="arrow-right" class="icon-lg"></i>
+                        </a>
+                    </div>
+                    @if (Model.GaleriaFotos.Count > 0)
+                    {
+                        <div class="paginas-galeria-grid paginas-galeria-grid--fotos">
+                            @foreach (var midia in Model.GaleriaFotos.Take(8))
+                            {
+                                var thumb = midia.ArquivoThumbId ?? midia.ArquivoId;
+                                <a class="galeria-item" href="@Url.Content($"~/arquivo/{midia.ArquivoId}")" target="_blank" rel="noopener"
+                                   data-track="galeria-foto" data-track-id="@midia.Id"
+                                   aria-label="Ampliar foto: @(midia.Titulo ?? Model.Galeria.Nome)" title="@(midia.Titulo ?? Model.Galeria.Nome)">
+                                    <img src="@Url.Content($"~/arquivo/{thumb}")" alt="@(midia.Titulo ?? Model.Galeria.Nome)" loading="lazy" decoding="async" />
+                                    @if (!string.IsNullOrWhiteSpace(midia.Titulo))
+                                    {
+                                        <span class="galeria-item-legenda">@midia.Titulo</span>
+                                    }
+                                </a>
+                            }
+                        </div>
+                    }
+                </section>
+            }
             <footer class="news-article-footer">
                 <div class="news-share-row">
                     <button type="button" class="btn-secondary js-compartilhar-noticia"

@@ -1,0 +1,166 @@
+@* Ajuda para edição de textos do portal — aberta pelo botão "Ajuda textos" no
+   topbar do Gerenciador. Mostra as tags seguras, as classes reais do tema e a
+   paleta de cores configurável (variáveis CSS), com exemplos prontos para copiar. *@
+<dialog class="painel-ajuda-dialog" id="ajudaTextosDialog" aria-label="Ajuda para edição de textos do portal">
+    <div class="painel-dialog-inner">
+        <div class="painel-ajuda-header">
+            <h3 class="painel-ajuda-title"><i data-lucide="book-open"></i> Ajuda para edição de textos</h3>
+            <button type="button" class="painel-ajuda-close" data-dialog-close title="Fechar">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+
+        <div class="painel-ajuda-corpo">
+            <div class="painel-ajuda-secao">
+                <h4><i data-lucide="type"></i> Formatação básica</h4>
+                <p>Você pode usar HTML simples nos campos de texto. As tags abaixo são seguras e funcionam em todas as seções:</p>
+                <table class="painel-ajuda-tabela">
+                    <thead>
+                        <tr><th>Código</th><th>Resultado</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>&lt;strong&gt;texto&lt;/strong&gt;</td><td><strong>texto em negrito</strong></td></tr>
+                        <tr><td>&lt;em&gt;texto&lt;/em&gt;</td><td><em>texto em itálico</em></td></tr>
+                        <tr><td>&lt;br /&gt;</td><td>quebra de linha</td></tr>
+                        <tr><td>&lt;p&gt;texto&lt;/p&gt;</td><td>parágrafo (separa blocos de texto)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="painel-ajuda-secao">
+                <h4><i data-lucide="palette"></i> Classes do tema (destaques prontos)</h4>
+                <p>Use nos títulos e descrições para destacar uma palavra com o tom da seção — são as classes reais usadas no portal:</p>
+                <div class="painel-ajuda-chips">
+                    <div class="painel-ajuda-chip">
+                        <code>&lt;span class="secao-destaque"&gt;palavra&lt;/span&gt;</code>
+                        <span>Destaque em amarelo/tom da seção (ex.: "Encontre as <span class="secao-destaque">7 Maravilhas</span>")</span>
+                    </div>
+                    <div class="painel-ajuda-chip">
+                        <code>&lt;span class="vitrine-accent"&gt;palavra&lt;/span&gt;</code>
+                        <span>Acento do tema (ex.: "Lugares que <span class="vitrine-accent">encantam</span>")</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="painel-ajuda-secao">
+                <h4><i data-lucide="droplet"></i> Cores da paleta (style inline)</h4>
+                <p>As cores são configuráveis em <strong>Tema e cores</strong>. Para acompanhar a paleta, use as variáveis CSS — assim a cor muda junto com o tema:</p>
+                <div class="painel-ajuda-cores">
+                    <div class="painel-ajuda-cor">
+                        <span class="painel-ajuda-cor-amostra" style="background:#ED2027;"></span>
+                        <strong>Vermelho</strong>
+                        <code>var(--color-red-54)</code>
+                    </div>
+                    <div class="painel-ajuda-cor">
+                        <span class="painel-ajuda-cor-amostra" style="background:#F97E31;"></span>
+                        <strong>Laranja</strong>
+                        <code>var(--color-orange-48)</code>
+                    </div>
+                    <div class="painel-ajuda-cor">
+                        <span class="painel-ajuda-cor-amostra" style="background:#FCBB0F;"></span>
+                        <strong>Amarelo</strong>
+                        <code>var(--color-yellow-50)</code>
+                    </div>
+                    <div class="painel-ajuda-cor">
+                        <span class="painel-ajuda-cor-amostra" style="background:#658746;"></span>
+                        <strong>Verde</strong>
+                        <code>var(--color-spring-green-29)</code>
+                    </div>
+                    <div class="painel-ajuda-cor">
+                        <span class="painel-ajuda-cor-amostra" style="background:#0095F6;"></span>
+                        <strong>Azul</strong>
+                        <code>var(--color-cyan-41)</code>
+                    </div>
+                    <div class="painel-ajuda-cor">
+                        <span class="painel-ajuda-cor-amostra" style="background:#E9568A;"></span>
+                        <strong>Rosa</strong>
+                        <code>var(--color-rose-46)</code>
+                    </div>
+                </div>
+                <p style="margin-top:10px;">Exemplo: <code style="color:var(--color-orange-48);">&lt;span style="color:var(--color-orange-48)"&gt;texto&lt;/span&gt;</code></p>
+            </div>
+
+            <div class="painel-ajuda-secao">
+                <h4><i data-lucide="copy"></i> Exemplos prontos para copiar</h4>
+
+                <div class="painel-ajuda-exemplo">
+                    <div class="painel-ajuda-exemplo-titulo">
+                        <span>Parágrafo com negrito + destaque da seção</span>
+                        <button type="button" class="btn-painel btn-painel--ghost btn-painel--xs js-copiar-exemplo"><i data-lucide="copy"></i> <span>Copiar</span></button>
+                    </div>
+                    <pre>&lt;p&gt;Conheça a &lt;strong&gt;Capital Sergipana da Cultura&lt;/strong&gt;, onde a tradição &lt;span class="secao-destaque"&gt;encanta&lt;/span&gt; quem visita.&lt;/p&gt;</pre>
+                </div>
+
+                <div class="painel-ajuda-exemplo">
+                    <div class="painel-ajuda-exemplo-titulo">
+                        <span>Endereço com quebras de linha e cor</span>
+                        <button type="button" class="btn-painel btn-painel--ghost btn-painel--xs js-copiar-exemplo"><i data-lucide="copy"></i> <span>Copiar</span></button>
+                    </div>
+                    <pre>Rua Divaldo Carvalho Costa, 335&lt;br /&gt;Centro, Estância/SE&lt;br /&gt;&lt;span style="color:var(--color-orange-48)"&gt;Segunda a sábado, 8h às 18h&lt;/span&gt;</pre>
+                </div>
+
+                <div class="painel-ajuda-exemplo">
+                    <div class="painel-ajuda-exemplo-titulo">
+                        <span>Itálico + acento do tema em um parágrafo</span>
+                        <button type="button" class="btn-painel btn-painel--ghost btn-painel--xs js-copiar-exemplo"><i data-lucide="copy"></i> <span>Copiar</span></button>
+                    </div>
+                    <pre>&lt;p&gt;&lt;strong&gt;Grupos populares&lt;/strong&gt;: o &lt;em&gt;forró&lt;/em&gt; e o &lt;span class="vitrine-accent"&gt;encanto&lt;/span&gt; que só Estância tem.&lt;/p&gt;</pre>
+                </div>
+
+                <div class="painel-ajuda-exemplo">
+                    <div class="painel-ajuda-exemplo-titulo">
+                        <span>Blocos agrupados com div (duas frases)</span>
+                        <button type="button" class="btn-painel btn-painel--ghost btn-painel--xs js-copiar-exemplo"><i data-lucide="copy"></i> <span>Copiar</span></button>
+                    </div>
+                    <pre>&lt;div&gt;&lt;p&gt;Entre dunas douradas e &lt;strong&gt;céus azuis&lt;/strong&gt;.&lt;/p&gt;&lt;p&gt;Estância, a &lt;span class="secao-destaque"&gt;Princesinha do Sul Sergipano&lt;/span&gt;.&lt;/p&gt;&lt;/div&gt;</pre>
+                </div>
+            </div>
+
+            <div class="painel-ajuda-secao">
+                <h4><i data-lucide="alert-triangle"></i> Atenção</h4>
+                <div class="painel-ajuda-atencao">
+                    <i data-lucide="alert-triangle"></i>
+                    <div>
+                        <p style="margin:0 0 8px;"><strong>Não use</strong> <code>class="text-yellow"</code> — essa classe não existe no tema e o destaque fica sem efeito. Prefira <code>secao-destaque</code> ou cor inline.</p>
+                        <p style="margin:0 0 8px;"><strong>Não cole HTML de sites externos</strong> (WordPress, Wix, etc.) — as classes deles não existem aqui e podem quebrar o layout.</p>
+                        <p style="margin:0 0 8px;"><strong>&lt;div&gt; agrupa blocos</strong>, mas os campos de texto já ficam dentro de espaços com estilo próprio — para a maioria dos casos use &lt;p&gt; e &lt;span&gt;; um &lt;div&gt; simples (sem classe) só quando precisar agrupar.</p>
+                        <p style="margin:0;"><strong>Evite &lt;h1&gt;/&lt;h2&gt;</strong> dentro dos textos — o título da seção já é o título da página. Use &lt;strong&gt; para destacar.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</dialog>
+
+<script>
+    // Copiar exemplo para a área de transferência (botões .js-copiar-exemplo).
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.js-copiar-exemplo').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var bloco = btn.closest('.painel-ajuda-exemplo');
+                if (!bloco) return;
+                var codigo = bloco.querySelector('pre').innerText;
+                var rotulo = btn.querySelector('span');
+                function avisar() {
+                    if (rotulo) rotulo.textContent = 'Copiado!';
+                    setTimeout(function () { if (rotulo) rotulo.textContent = 'Copiar'; }, 1600);
+                }
+                function copiarFallback() {
+                    var area = document.createElement('textarea');
+                    area.value = codigo;
+                    area.style.position = 'fixed';
+                    area.style.opacity = '0';
+                    document.body.appendChild(area);
+                    area.select();
+                    try { document.execCommand('copy'); avisar(); } catch (e) { /* nada */ }
+                    document.body.removeChild(area);
+                }
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(codigo).then(avisar, copiarFallback);
+                } else {
+                    copiarFallback();
+                }
+            });
+        });
+    });
+</script>
