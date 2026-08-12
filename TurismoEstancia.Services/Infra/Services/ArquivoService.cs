@@ -197,6 +197,34 @@ public class ArquivoService : IArquivoService
         return arquivo;
     }
 
+    public async Task<byte[]?> GerarPngRedimensionadoAsync(long arquivoId, int maxDimensao, CancellationToken ct = default)
+    {
+        try
+        {
+            var arquivo = await _db.Arquivos.AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == arquivoId, ct);
+            if (arquivo?.Bytes is not { Length: > 0 })
+                return null;
+
+            using var imagem = await Image.LoadAsync(new MemoryStream(arquivo.Bytes), ct);
+            imagem.Mutate(x => x.Resize(new ResizeOptions
+            {
+                Mode = ResizeMode.Max,
+                Size = new Size(maxDimensao, maxDimensao)
+            }));
+
+            using var ms = new MemoryStream();
+            await imagem.SaveAsync(ms, new PngEncoder { SkipMetadata = true }, ct);
+            return ms.ToArray();
+        }
+        catch (OperationCanceledException) { throw; }
+        catch
+        {
+            // Não-imagem (ex.: .ico): impossível derivar um PNG — sinaliza com null.
+            return null;
+        }
+    }
+
     public async Task ExcluirAsync(long id, CancellationToken ct = default)
     {
         if (await EstaReferenciadoAsync(id, ct))

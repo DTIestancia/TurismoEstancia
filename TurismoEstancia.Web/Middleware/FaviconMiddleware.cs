@@ -1,4 +1,5 @@
 using TurismoEstancia.Services.Conteudo.Interfaces;
+using TurismoEstancia.Services.Infra.Interfaces;
 using TurismoEstancia.Web.Components;
 
 namespace TurismoEstancia.Web.Middleware;
@@ -13,6 +14,11 @@ public class FaviconMiddleware
 {
     private static readonly string[] Caminhos = ["/favicon.svg", "/favicon.ico"];
 
+    // Apple Touch Icon: o iOS pede /apple-touch-icon.png na raiz do site (e
+    // variações); servimos o PNG 180×180 derivado do favicon configurado.
+    private static readonly string[] CaminhosAppleTouch =
+        ["/apple-touch-icon.png", "/apple-touch-icon-180x180.png", "/apple-touch-icon-precomposed.png"];
+
     /// <summary>
     /// Chave da configuração do favicon exclusivo do site (tipo Arquivo, PNG
     /// quadrado). Quando configurada, tem prioridade sobre o logotipo.
@@ -26,9 +32,9 @@ public class FaviconMiddleware
         _next = next;
     }
 
-    // IConfiguracaoSiteService é scoped — vem como parâmetro do InvokeAsync para
-    // ser resolvido no escopo do request (middleware não recebe scoped no construtor).
-    public async Task InvokeAsync(HttpContext context, IConfiguracaoSiteService configuracoes)
+    // Serviços scoped — vêm como parâmetros do InvokeAsync para serem resolvidos
+    // no escopo do request (middleware não recebe scoped no construtor).
+    public async Task InvokeAsync(HttpContext context, IConfiguracaoSiteService configuracoes, IArquivoService arquivos)
     {
         if (Caminhos.Any(c => context.Request.Path.Equals(c, StringComparison.OrdinalIgnoreCase)))
         {
@@ -64,6 +70,32 @@ public class FaviconMiddleware
                 context.Response.Headers.CacheControl = "public, max-age=86400";
                 return;
             }
+        }
+
+        // ===== Apple Touch Icon (180×180) =====
+        if (CaminhosAppleTouch.Any(c => context.Request.Path.Equals(c, StringComparison.OrdinalIgnoreCase)))
+        {
+            var favicon = await configuracoes.ObterPorChaveAsync(
+                ChaveFavicon, context.RequestAborted);
+            var arquivoId = favicon?.ArquivoId
+                ?? (await configuracoes.ObterPorChaveAsync(
+                    LogoSiteViewComponent.ChaveLogo, context.RequestAborted))?.ArquivoId;
+
+            if (arquivoId is long id)
+            {
+                var png = await arquivos.GerarPngRedimensionadoAsync(id, 180, context.RequestAborted);
+                if (png is not null)
+                {
+                    context.Response.StatusCode = StatusCodes.Status200OK;
+                    context.Response.ContentType = "image/png";
+                    // iOS faz cache do ícone por um bom tempo; 1 dia mantém a troca rápida.
+                    context.Response.Headers.CacheControl = "public, max-age=86400";
+                    await context.Response.Body.WriteAsync(png, context.RequestAborted);
+                    return;
+                }
+            }
+
+            // Sem fonte utilizável: deixa o pipeline seguir (404 dos estáticos).
         }
 
         await _next(context);

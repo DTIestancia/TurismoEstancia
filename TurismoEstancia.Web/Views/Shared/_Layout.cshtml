@@ -15,6 +15,7 @@
     @if (faviconConfig?.ArquivoId is long faviconId)
     {
         <link rel="icon" type="image/png" href="@Url.Content($"~/arquivo/{faviconId}")" />
+        <link rel="apple-touch-icon" href="@Url.Content("~/apple-touch-icon.png")" />
     }
     else
     {
