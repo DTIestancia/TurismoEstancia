@@ -1743,21 +1743,10 @@
     object-fit: cover;
     display: block;
     transition: opacity 0.35s ease;
-  }
+  }}
 
-  .vitrine-foto-num {
-    position: absolute;
-    right: 16px;
-    bottom: 10px;
-    font-family: 'Baloo 2', sans-serif;
-    font-weight: 800;
-    font-size: clamp(56px, 6vw, 84px);
-    line-height: 1;
-    color: rgba(255, 255, 255, 0.95);
-    text-shadow: 0 3px 14px rgba(0, 0, 0, 0.55);
-    pointer-events: none;
-  }
-}
+
+
 
 .vitrine-info {
   display: flex;

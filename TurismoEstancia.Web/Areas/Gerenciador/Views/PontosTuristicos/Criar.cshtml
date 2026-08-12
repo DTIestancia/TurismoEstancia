@@ -172,21 +172,9 @@
             });
         });
 
-        // Posição no mapa é exclusiva do mapa: some quando a categoria escolhida
-        // é uma das 7 Maravilhas (a posição delas é definida na seção 7 Maravilhas).
-        var selectCategoria = document.getElementById('CategoriaId');
-        var campoPosicao = document.getElementById('campoPosicaoMapa');
-        function atualizarPosicao() {
-            var opt = selectCategoria && selectCategoria.options[selectCategoria.selectedIndex];
-            var ehMaravilha = opt && opt.getAttribute('data-maravilha') === 'true';
-            campoPosicao.style.display = ehMaravilha ? 'none' : '';
-        }
-        if (selectCategoria && campoPosicao) {
-            selectCategoria.addEventListener('change', atualizarPosicao);
-            atualizarPosicao();
-        }
-
-        // Mapa interativo: clique posiciona o marcador e atualiza X/Y.
+        // Mapa interativo: clique posiciona o marcador e atualiza X/Y. O mapa
+        // vale para todos os pontos — inclusive as 7 Maravilhas, que também
+        // aparecem no mapa do portal (usam LeftPercent/TopPercent).
         if (window.InicializarMapaPonto) {
             window.InicializarMapaPonto({
                 mapaId: 'painelMapa',
