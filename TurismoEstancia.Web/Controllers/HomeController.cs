@@ -60,6 +60,8 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index(CancellationToken ct)
     {
+        var eventosProximos = await _eventos.ListarAsync(apenasProximos: true, ct);
+
         var vm = new HomeViewModel
         {
             Conteudos = await _conteudos.ObterDicionarioAsync(ct),
@@ -71,7 +73,8 @@ public class HomeController : Controller
             GruposCulturais = await _grupos.ListarAsync(ct),
             PratosTuristicos = await _pratos.ListarAsync(ct),
             TagsCulturais = await _tags.ListarAsync(ct),
-            EventosProximos = await _eventos.ListarAsync(apenasProximos: true, ct),
+            EventosProximosTotal = eventosProximos.Count,
+            EventosProximos = eventosProximos.Take(3).ToList(),
             Roteiros = await _roteiros.ListarAsync(ct),
             Noticias = (await _noticias.ListarAsync(apenasPublicadas: true, ct)).Take(3).ToList(),
             Contatos = await _contatos.ListarAsync(null, ct)
