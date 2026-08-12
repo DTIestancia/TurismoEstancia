@@ -33,7 +33,8 @@
                             <img class="news-card-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@roteiro.Titulo" loading="lazy" />
                         }
                         <div class="news-card-body">
-                            <div class="news-card-date">@roteiro.Itens.Count dia(s) de roteiro</div>
+                            @{ var totalDias = roteiro.Itens.Select(i => i.Dia).Distinct().Count(); }
+                            <div class="news-card-date">@totalDias @(totalDias == 1 ? "dia" : "dias") de roteiro</div>
                             <h2 class="news-card-title">@roteiro.Titulo</h2>
                             @if (!string.IsNullOrWhiteSpace(roteiro.Descricao))
                             {

@@ -18,6 +18,15 @@ public class Noticia
 
     public Arquivo? Imagem { get; set; }
 
+    /// <summary>Zoom (%) aplicado ao recorte da imagem de capa (100 = sem zoom, até 250).</summary>
+    public int ImagemZoom { get; set; } = 100;
+
+    /// <summary>Posição horizontal do foco do recorte (object-position X, 0–100).</summary>
+    public int ImagemPosicaoX { get; set; } = 50;
+
+    /// <summary>Posição vertical do foco do recorte (object-position Y, 0–100).</summary>
+    public int ImagemPosicaoY { get; set; } = 50;
+
     /// <summary>Galeria (categoria da Galeria de Estância) relacionada à notícia — exibida na página de detalhe.</summary>
     public int? GaleriaCategoriaId { get; set; }
 

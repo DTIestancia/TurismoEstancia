@@ -1,0 +1,109 @@
+@page
+@model TurismoEstancia.Web.Pages.Agenda.IndexModel
+@{
+    ViewData["Title"] = "Agenda de Eventos";
+    // Cada paginador usa um parâmetro próprio e preserva o da outra listagem.
+    var urlProximos = Url.Page("Index") + (Model.PaginaPassadosAtual > 1 ? "?paginaPassados=" + Model.PaginaPassadosAtual : "");
+    var urlPassados = Url.Page("Index") + (Model.PaginaAtual > 1 ? "?pagina=" + Model.PaginaAtual : "");
+}
+@await Html.PartialAsync("_PaginasHeader")
+<main class="news-index page-public pagina-agenda">
+    <section class="news-hero">
+        <div class="news-hero-inner">
+            <div class="pill pill-white" style="background:var(--color-orange-48);">
+                <i data-lucide="calendar" class="icon-lg"></i>
+                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">Programação Oficial</span>
+            </div>
+            <h1 class="news-hero-title">Agenda de <span class="secao-destaque">Eventos</span></h1>
+            <p class="news-hero-subtitle">Fique por dentro de tudo que acontece em Estância — Capital Sergipana da Cultura.</p>
+        </div>
+    </section>
+
+    <div class="news-container">
+        <h2 class="agenda-secao-titulo">
+            <span class="agenda-secao-pill"><i data-lucide="sparkles" class="icon-lg"></i> Em cartaz</span>
+            Próximos eventos
+        </h2>
+
+        @if (Model.Eventos.Count == 0)
+        {
+            <div class="news-empty">Nenhum evento próximo por enquanto — volte em breve!</div>
+        }
+        else
+        {
+            <div class="agenda-grid agenda-grid--pagina">
+                @foreach (var evento in Model.Eventos)
+                {
+                    var ehProximo = Model.PaginaAtual == 1 && ReferenceEquals(evento, Model.Eventos[0]);
+                    <div class="agenda-card @(ehProximo ? "agenda-card--destaque" : "")">
+                        @if (ehProximo)
+                        {
+                            <span class="agenda-card-selo"><i data-lucide="sparkles" class="icon-lg"></i> Próximo evento</span>
+                        }
+                        <div class="agenda-card-row">
+                            <span class="agenda-card-date">@evento.DataInicio.ToString("dd/MM")</span>
+                            <span class="agenda-card-time"><i data-lucide="clock" class="icon-lg"></i> @evento.DataInicio.ToString("HH'h'")</span>
+                        </div>
+                        <h3 class="agenda-card-title">@evento.Titulo</h3>
+                        <p class="agenda-card-desc">@evento.Descricao</p>
+                        @if (!string.IsNullOrWhiteSpace(evento.Local))
+                        {
+                            <div class="agenda-card-location">
+                                <i data-lucide="map-pin" class="icon-lg"></i> @evento.Local
+                            </div>
+                        }
+                        <a class="agenda-card-btn" href="~/Evento/@evento.Id/ics" title="Adicionar à sua agenda (arquivo .ics)"
+                           data-track="agenda-ics" data-track-id="@evento.Id" data-track-nome="@evento.Titulo">
+                            <i data-lucide="calendar-plus" class="icon-lg"></i> Adicionar à Agenda
+                        </a>
+                    </div>
+                }
+            </div>
+
+            @await Html.PartialAsync("_Paginacao", new PaginacaoViewModel
+            {
+                PaginaAtual = Model.PaginaAtual,
+                TotalPaginas = Model.PaginasTotal,
+                UrlBase = urlProximos,
+                Parametro = "pagina"
+            })
+        }
+
+        @if (Model.TotalEventosPassados > 0)
+        {
+            <h2 class="agenda-secao-titulo agenda-secao-titulo--passada">
+                <span class="agenda-secao-pill"><i data-lucide="history" class="icon-lg"></i> Arquivo</span>
+                Já aconteceu
+            </h2>
+
+            <div class="agenda-grid agenda-grid--pagina agenda-grid--passada">
+                @foreach (var evento in Model.EventosPassados)
+                {
+                    <div class="agenda-card">
+                        <div class="agenda-card-row">
+                            <span class="agenda-card-date">@evento.DataInicio.ToString("dd/MM/yyyy")</span>
+                            <span class="agenda-card-time"><i data-lucide="clock" class="icon-lg"></i> @evento.DataInicio.ToString("HH'h'")</span>
+                        </div>
+                        <h3 class="agenda-card-title">@evento.Titulo</h3>
+                        <p class="agenda-card-desc">@evento.Descricao</p>
+                        @if (!string.IsNullOrWhiteSpace(evento.Local))
+                        {
+                            <div class="agenda-card-location">
+                                <i data-lucide="map-pin" class="icon-lg"></i> @evento.Local
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            @await Html.PartialAsync("_Paginacao", new PaginacaoViewModel
+            {
+                PaginaAtual = Model.PaginaPassadosAtual,
+                TotalPaginas = Model.PaginasTotalPassados,
+                UrlBase = urlPassados,
+                Parametro = "paginaPassados"
+            })
+        }
+    </div>
+</main>
+@await Html.PartialAsync("_PaginasFooter")

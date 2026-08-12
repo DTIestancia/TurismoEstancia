@@ -25,7 +25,7 @@
             <div class="roteiros-grid">
                 @foreach (var roteiro in Model.Roteiros)
                 {
-                    <a class="roteiro-card reveal" href="~/Roteiros/@roteiro.Id"
+                    <a class="roteiro-card reveal" href="~/Roteiros/Detalhe/@roteiro.Id"
                        data-track="roteiro" data-track-id="@roteiro.Id" data-track-nome="@roteiro.Titulo">
                         @if (roteiro.ImagemArquivoId is long imgId)
                         {
@@ -34,7 +34,8 @@
                         <div class="roteiro-card-body">
                             <h3 class="roteiro-card-title">@roteiro.Titulo</h3>
                             <p class="roteiro-card-desc">@roteiro.Descricao</p>
-                            <span class="roteiro-card-dias">@roteiro.Itens.Count @(roteiro.Itens.Count == 1 ? "dia" : "dias") de roteiro →</span>
+                            @{ var totalDias = roteiro.Itens.Select(i => i.Dia).Distinct().Count(); }
+                            <span class="roteiro-card-dias">@totalDias @(totalDias == 1 ? "dia" : "dias") de roteiro →</span>
                         </div>
                     </a>
                 }

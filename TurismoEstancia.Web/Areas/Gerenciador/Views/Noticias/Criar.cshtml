@@ -31,6 +31,7 @@
         <div class="painel-field">
             <label>Imagem de capa (opcional)</label>
             <input type="file" name="imagem" accept="image/*" class="painel-input" />
+            @await Html.PartialAsync("_AjusteImagem", Model)
         </div>
 
         <div class="painel-field">

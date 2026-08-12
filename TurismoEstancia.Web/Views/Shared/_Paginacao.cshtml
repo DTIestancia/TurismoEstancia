@@ -1,0 +1,43 @@
+@model PaginacaoViewModel
+@if (Model.TotalPaginas > 1)
+{
+    <nav class="paginacao" aria-label="Paginação">
+        @if (Model.PaginaAtual > 1)
+        {
+            <a class="paginacao-seta" href="@PaginacaoViewModel.Url(Model.PaginaAtual - 1, Model.UrlBase, Model.Parametro)" rel="prev" aria-label="Página anterior">
+                <i data-lucide="chevron-left"></i>
+            </a>
+        }
+        else
+        {
+            <span class="paginacao-seta is-disabled" aria-hidden="true"><i data-lucide="chevron-left"></i></span>
+        }
+
+        @foreach (var p in Model.Paginas)
+        {
+            if (p == -1)
+            {
+                <span class="paginacao-reticencias" aria-hidden="true">…</span>
+            }
+            else if (p == Model.PaginaAtual)
+            {
+                <span class="paginacao-item is-active" aria-current="page">@p</span>
+            }
+            else
+            {
+                <a class="paginacao-item" href="@PaginacaoViewModel.Url(p, Model.UrlBase, Model.Parametro)">@p</a>
+            }
+        }
+
+        @if (Model.PaginaAtual < Model.TotalPaginas)
+        {
+            <a class="paginacao-seta" href="@PaginacaoViewModel.Url(Model.PaginaAtual + 1, Model.UrlBase, Model.Parametro)" rel="next" aria-label="Próxima página">
+                <i data-lucide="chevron-right"></i>
+            </a>
+        }
+        else
+        {
+            <span class="paginacao-seta is-disabled" aria-hidden="true"><i data-lucide="chevron-right"></i></span>
+        }
+    </nav>
+}

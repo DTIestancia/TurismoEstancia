@@ -1,0 +1,34 @@
+@* Lightbox da galeria — usado na página /galeria e na galeria da notícia.
+   O portal.js (initGaleriaLightbox) o ativa sozinho quando encontra
+   #galeriaLightbox + .galeria-item com data-full/data-titulo/data-id.
+   Inclui a marca d'água textual (crédito + link do site) sobre a foto. *@
+<div class="galeria-lightbox" id="galeriaLightbox" data-app-base="@Url.Content("~/")" aria-hidden="true" role="dialog" aria-label="Visualizador de fotos">
+    <button type="button" class="galeria-lightbox-fechar" id="galeriaLightboxFechar" aria-label="Fechar"><i data-lucide="x"></i></button>
+    <button type="button" class="galeria-lightbox-seta galeria-lightbox-seta--prev" id="galeriaLightboxPrev" aria-label="Foto anterior"><i data-lucide="chevron-left"></i></button>
+    <figure class="galeria-lightbox-figura">
+        <span class="galeria-lightbox-foto">
+            <img id="galeriaLightboxImg" src="" alt="" />
+
+            @* Marca d'água: crédito da foto + link do portal (abre o site). *@
+            <a class="galeria-lightbox-marca" href="@Url.Content("~/")" target="_blank" rel="noopener"
+               title="Abrir o Portal de Turismo de Estância" data-track="marca-dagua">
+                <i data-lucide="camera"></i>
+                <span class="galeria-lightbox-marca-texto">
+                    <strong>Foto: Portal de Turismo de Estância</strong>
+                    <small>Capital Sergipana da Cultura · Estância/SE</small>
+                </span>
+            </a>
+        </span>
+        <figcaption id="galeriaLightboxLegenda"></figcaption>
+        <div class="galeria-lightbox-acoes">
+            <button type="button" class="galeria-lightbox-curtir" id="galeriaLightboxCurtir" aria-pressed="false">
+                <i data-lucide="heart"></i>
+                <span id="galeriaLightboxCurtidas">0</span> Amei
+            </button>
+            <span class="galeria-lightbox-visualizacoes"><i data-lucide="eye"></i> <span id="galeriaLightboxVisualizacoes">0</span> visualizações</span>
+        </div>
+        @Html.AntiForgeryToken()
+    </figure>
+    <button type="button" class="galeria-lightbox-seta galeria-lightbox-seta--next" id="galeriaLightboxNext" aria-label="Próxima foto"><i data-lucide="chevron-right"></i></button>
+    <span class="galeria-lightbox-contador" id="galeriaLightboxContador"></span>
+</div>

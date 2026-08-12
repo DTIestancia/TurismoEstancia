@@ -31,6 +31,9 @@ public class NoticiaService : INoticiaService
             Resumo = n.Resumo,
             Corpo = n.Corpo,
             ImagemArquivoId = n.ImagemArquivoId,
+            ImagemZoom = n.ImagemZoom,
+            ImagemPosicaoX = n.ImagemPosicaoX,
+            ImagemPosicaoY = n.ImagemPosicaoY,
             GaleriaCategoriaId = n.GaleriaCategoriaId,
             GaleriaNome = n.Galeria != null ? n.Galeria.Nome : null,
             DataPublicacao = n.DataPublicacao,
@@ -84,6 +87,9 @@ public class NoticiaService : INoticiaService
                 Titulo = dto.Titulo,
                 Resumo = dto.Resumo,
                 Corpo = dto.Corpo,
+                ImagemZoom = dto.ImagemZoom is >= 100 and <= 250 ? dto.ImagemZoom : 100,
+                ImagemPosicaoX = dto.ImagemPosicaoX is >= 0 and <= 100 ? dto.ImagemPosicaoX : 50,
+                ImagemPosicaoY = dto.ImagemPosicaoY is >= 0 and <= 100 ? dto.ImagemPosicaoY : 50,
                 GaleriaCategoriaId = dto.GaleriaCategoriaId,
                 DataPublicacao = dto.DataPublicacao == default ? DateTime.Now : dto.DataPublicacao,
                 Slug = dto.Slug,
@@ -108,6 +114,9 @@ public class NoticiaService : INoticiaService
             entidade.Titulo = dto.Titulo;
             entidade.Resumo = dto.Resumo;
             entidade.Corpo = dto.Corpo;
+            entidade.ImagemZoom = dto.ImagemZoom is >= 100 and <= 250 ? dto.ImagemZoom : 100;
+            entidade.ImagemPosicaoX = dto.ImagemPosicaoX is >= 0 and <= 100 ? dto.ImagemPosicaoX : 50;
+            entidade.ImagemPosicaoY = dto.ImagemPosicaoY is >= 0 and <= 100 ? dto.ImagemPosicaoY : 50;
             entidade.GaleriaCategoriaId = dto.GaleriaCategoriaId;
             entidade.Slug = dto.Slug;
             entidade.Publicada = dto.Publicada;

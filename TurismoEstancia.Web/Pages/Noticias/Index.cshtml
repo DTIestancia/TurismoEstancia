@@ -30,7 +30,10 @@
                        data-track="noticia" data-track-id="@noticia.Id" data-track-nome="@noticia.Titulo">
                         @if (noticia.ImagemArquivoId is long imgId)
                         {
-                            <img class="news-card-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@noticia.Titulo" loading="lazy" />
+                            <span class="news-card-img-wrap">
+                                <img class="news-card-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@noticia.Titulo" loading="lazy"
+                                     style="--noticia-zoom:@(noticia.ImagemZoom)%;object-position:@(noticia.ImagemPosicaoX)% @(noticia.ImagemPosicaoY)%;transform-origin:@(noticia.ImagemPosicaoX)% @(noticia.ImagemPosicaoY)%;" />
+                            </span>
                         }
                         <div class="news-card-body">
                             <div class="news-card-date">@noticia.DataPublicacao.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"))</div>
@@ -43,6 +46,13 @@
                     </a>
                 }
             </div>
+
+            @await Html.PartialAsync("_Paginacao", new PaginacaoViewModel
+            {
+                PaginaAtual = Model.PaginaAtual,
+                TotalPaginas = Model.PaginasTotal,
+                UrlBase = Url.Content("~/Noticias")
+            })
         }
     </div>
 </main>

@@ -38,11 +38,12 @@
     </div>
 </div>
 
-<div class="painel-search">
+<form class="painel-search" method="get" id="newsletterBuscaForm" action="@Url.Action("Index", "Newsletter")">
     <i data-lucide="search" class="painel-search-icon"></i>
-    <input type="search" id="newsletterSearch" class="painel-search-input" placeholder="Buscar por e-mail ou origem..." autocomplete="off" aria-label="Buscar inscrições" />
-    <span class="painel-search-count" id="newsletterCount"></span>
-</div>
+    <input type="search" name="busca" id="newsletterSearch" class="painel-search-input"
+           value="@(ViewData["Busca"])" placeholder="Buscar por e-mail ou origem..." autocomplete="off" aria-label="Buscar inscrições" />
+    <span class="painel-search-count" id="newsletterCount">@ViewData["TotalFiltradas"] de @Model.Total inscriç@(Model.Total == 1 ? "ão" : "ões")</span>
+</form>
 
 <div class="painel-card">
     <div class="painel-table-wrap">
@@ -97,7 +98,26 @@
             </tbody>
         </table>
     </div>
-    <div class="painel-empty" id="newsletterEmpty"></div>
+    @if (Model.Inscricoes.Count == 0)
+    {
+        <div class="painel-empty" id="newsletterEmpty">
+            @(string.IsNullOrWhiteSpace(ViewData["Busca"] as string)
+                ? "Nenhuma inscrição recebida ainda."
+                : "Nenhuma inscrição encontrada para a busca.")
+        </div>
+    }
+    else
+    {
+        @await Html.PartialAsync("_Paginacao", new PaginacaoViewModel
+        {
+            PaginaAtual = (int)(ViewData["PaginaAtual"] ?? 1),
+            TotalPaginas = (int)(ViewData["PaginasTotal"] ?? 1),
+            UrlBase = Url.Action("Index", "Newsletter")
+                + (string.IsNullOrWhiteSpace(ViewData["Busca"] as string)
+                    ? ""
+                    : "?busca=" + Uri.EscapeDataString((string)ViewData["Busca"]!))
+        })
+    }
 </div>
 
 <dialog id="dialogEnviarDisparo" class="painel-dialog">

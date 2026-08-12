@@ -6,11 +6,15 @@ namespace TurismoEstancia.Web.Models;
 /// <summary>Página de gerenciamento da newsletter: lista + contadores.</summary>
 public class NewsletterIndexViewModel
 {
+    /// <summary>Inscrições da página atual (paginadas).</summary>
     public IReadOnlyList<InscricaoNewsletterDto> Inscricoes { get; set; } = Array.Empty<InscricaoNewsletterDto>();
 
-    public int Total => Inscricoes.Count;
-    public int Ativas => Inscricoes.Count(i => i.Ativo);
-    public int Inativas => Inscricoes.Count(i => !i.Ativo);
+    /// <summary>Totais globais (calculados sobre a lista completa, não só a página).</summary>
+    public int Total { get; set; }
+
+    public int Ativas { get; set; }
+
+    public int Inativas { get; set; }
 
     /// <summary>Destinatários do disparo (ativas com consentimento LGPD).</summary>
     public int Destinatarios { get; set; }
