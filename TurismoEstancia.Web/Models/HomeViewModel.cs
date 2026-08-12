@@ -34,8 +34,11 @@ public class HomeViewModel
     public IReadOnlyList<PontoTuristicoDto> PontosParaMapa { get; set; } = Array.Empty<PontoTuristicoDto>();
     public IReadOnlyList<CategoriaPontoTuristicoDto> CategoriasMapa { get; set; } = Array.Empty<CategoriaPontoTuristicoDto>();
 
-    // Agenda (eventos futuros)
+    // Agenda (eventos futuros — home mostra só os 3 mais próximos)
     public IReadOnlyList<EventoDto> EventosProximos { get; set; } = Array.Empty<EventoDto>();
+
+    /// <summary>Total de eventos futuros (para decidir se mostra o botão "Ver todas").</summary>
+    public int EventosProximosTotal { get; set; }
 
     // Roteiros
     public IReadOnlyList<RoteiroDto> Roteiros { get; set; } = Array.Empty<RoteiroDto>();

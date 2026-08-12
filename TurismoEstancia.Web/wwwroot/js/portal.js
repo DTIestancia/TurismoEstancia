@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
       setTimeout(function () {
         slides[prev].classList.remove('fade-out');
         isTransitioning = false;
-      }, 1200);
+      }, 1100);
     }
 
     function nextSlide() { goToSlide((current + 1) % slides.length); }
@@ -85,20 +85,31 @@ document.addEventListener('DOMContentLoaded', function () {
     function startAutoplay() { stopAutoplay(); interval = setInterval(nextSlide, AUTOPLAY_DELAY); }
     function stopAutoplay() { if (interval) { clearInterval(interval); interval = null; } }
 
-    if (nextBtn) nextBtn.addEventListener('click', function () { stopAutoplay(); nextSlide(); startAutoplay(); });
-    if (prevBtn) prevBtn.addEventListener('click', function () { stopAutoplay(); prevSlide(); startAutoplay(); });
+    // Pausa/resume o autoplay e a barra de progresso dos dots (classe que o
+    // CSS usa para congelar a animação no mesmo instante do timer).
+    function pausar() { stopAutoplay(); if (hero) hero.classList.add('carousel-paused'); }
+    function retomar() { if (hero) hero.classList.remove('carousel-paused'); startAutoplay(); }
+
+    if (nextBtn) nextBtn.addEventListener('click', function () { pausar(); nextSlide(); retomar(); });
+    if (prevBtn) prevBtn.addEventListener('click', function () { pausar(); prevSlide(); retomar(); });
 
     dots.forEach(function (dot) {
       dot.addEventListener('click', function () {
         var idx = parseInt(this.getAttribute('data-slide'), 10);
-        if (!isNaN(idx)) { stopAutoplay(); goToSlide(idx); startAutoplay(); }
+        if (!isNaN(idx)) { pausar(); goToSlide(idx); retomar(); }
       });
     });
 
     if (hero) {
-      hero.addEventListener('mouseenter', stopAutoplay);
-      hero.addEventListener('mouseleave', startAutoplay);
+      hero.addEventListener('mouseenter', pausar);
+      hero.addEventListener('mouseleave', retomar);
     }
+
+    // Não troca slide com a aba oculta (economiza GPU e evita "pular" slides).
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) pausar(); else retomar();
+    });
+
     startAutoplay();
   })();
 

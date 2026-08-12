@@ -194,20 +194,29 @@
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: opacity, transform;
+      transition: opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1);
       z-index: 0;
     }
 
     .hero-slide.active {
       opacity: 1;
       z-index: 2;
-      animation: kenBurns 10s ease-out forwards;
+      animation: kenBurns 12s ease-out forwards;
     }
 
+    /* A saída some rápido (0.55s) para o slide novo aparecer logo, enquanto o
+       zoom do Ken Burns "assenta" lentamente — transição com profundidade,
+       sem o aspecto embarrado de um crossfade lento duplo. Um blur sutil
+       acompanha o fade, suavizando a troca. Fica abaixo do overlay (z-2) para
+       o efeito da frente nunca sumir durante a troca. */
     .hero-slide.fade-out {
-      z-index: 3;
+      z-index: 1;
       opacity: 0;
+      transform: scale(1.03);
+      filter: blur(5px);
       animation: none;
+      transition: opacity 0.55s ease, transform 1.6s ease, filter 0.55s ease;
     }
 
     /* Ken Burns effect — slow cinematic zoom with varied origins */
@@ -333,15 +342,46 @@
     }
 
     .carousel-dot {
-      width: 8px;
-      height: 8px;
+      position: relative;
+      width: 10px;
+      height: 10px;
       border-radius: 9999px;
       background: var(--color-white--40);
+      overflow: hidden;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .carousel-dot:hover {
+      background: var(--color-white--75);
+      transform: scale(1.2);
     }
 
     .carousel-dot.active {
-      width: 32px;
+      width: 34px;
+      background: var(--color-white--25);
+    }
+
+    /* Barra de progresso do slide atual, sincronizada com o autoplay (5s).
+       Pausa junto com o carrossel quando o cursor está sobre o hero ou a aba
+       fica oculta (classe .carousel-paused controlada pelo portal.js). */
+    .carousel-dot.active::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
       background: var(--color-white-solid);
+      transform-origin: left;
+      animation: dotProgress 5s linear forwards;
+    }
+
+    .hero.carousel-paused .carousel-dot.active::after {
+      animation-play-state: paused;
+    }
+
+    @keyframes dotProgress {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
     }
 
     .carousel-btn {
@@ -1836,6 +1876,25 @@
 
     .agenda-card-btn:hover {
       background: var(--color-white--15);
+    }
+
+    .agenda-ver-todas {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 9999px;
+      border: 1px solid var(--color-orange-48);
+      color: var(--color-white-solid);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .agenda-ver-todas:hover {
+      background: var(--color-orange-48);
+      transform: translateY(-2px);
     }
 
     @media (max-width: 1024px) {
@@ -3377,6 +3436,19 @@
       }
 
       .navbar-links.open {
+        animation: none;
+      }
+
+      .hero-slide,
+      .hero-slide.active,
+      .hero-slide.fade-out {
+        transition: opacity 0.4s ease;
+        animation: none !important;
+        transform: none !important;
+        filter: none !important;
+      }
+
+      .carousel-dot.active::after {
         animation: none;
       }
     }

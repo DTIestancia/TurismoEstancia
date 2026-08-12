@@ -60,5 +60,12 @@
                 }
             }
         </div>
+
+        @if (Model.EventosProximosTotal > Model.EventosProximos.Count)
+        {
+            <a href="~/Agenda" class="agenda-ver-todas reveal" data-track="agenda-ver-todas">
+                Ver toda a programação <i data-lucide="arrow-right" class="icon-lg"></i>
+            </a>
+        }
     </div>
 </section>

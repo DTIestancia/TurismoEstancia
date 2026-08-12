@@ -290,6 +290,14 @@ e inativas, para rankings antigos continuarem consultáveis).
 `_Historia`, `_Cultura`, `_Gastronomia`, `_Maravilhas` (vitrine),
 `_Agenda`, `_Mapa`, `_Roteiros`, `_Noticias`, `_Video`, `_Footer`, `Privacy`.
 
+**Carrossel do hero** (`portal.js` + `_portal.scss`) — crossfade com Ken Burns
+(saída em 0.55s "assentando" o zoom + blur sutil + entrada suave em 1.1s), dots
+com barra de progresso de 5s sincronizada com o autoplay, pausa no hover/aba
+oculta (classe `.carousel-paused` congela o timer e a barra) e
+`prefers-reduced-motion` respeitado. O slide que sai fica abaixo do overlay
+(`z-index` 1 < 2) para o efeito da frente nunca sumir durante a troca. O
+carrossel é oculto em telas < 1024px.
+
 **Vitrine das 7 Maravilhas** — `Views/Shared/_VitrineMaravilhas.cshtml`, JS em
 `portal.js` (`initWondersVitrine`): **baralho de cartas com prévia** via scroll-snap
 horizontal — a carta mais próxima do centro do deck é a atual (`is-atual`; escala 1,
@@ -451,7 +459,9 @@ dotnet ef database update --project TurismoEstancia.Domain --startup-project Tur
   preservados mutuamente ao navegar). Reutiliza os cards `agenda-card` da seção do
   home, com exportação `.ics` por evento. O evento mais próximo (1º card dos próximos
   na página 1) ganha destaque visual — borda laranja + selo "Próximo evento". Link no
-  navbar, no header das páginas internas e no rodapé.
+  navbar, no header das páginas internas e no rodapé. A **seção da home** mostra só os
+  **3 próximos eventos** com botão "Ver toda a programação" (aparece quando há mais de
+  3 futuros) levando a `/agenda`.
 - **Testes automatizados** (xUnit) para services e controllers — hoje a validação é
   build + smoke manual.
 - **Redefinição de senha** por e-mail (`TurismoEstancia.Mail` está reservado para isso).
