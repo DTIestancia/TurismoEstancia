@@ -30,6 +30,14 @@ public interface IArquivoService
     /// </summary>
     Task<long> SalvarFaviconAsync(IFormFile arquivo, int dimensao = 64, CancellationToken ct = default);
 
+    /// <summary>
+    /// Gera um PNG (sem EXIF) a partir de um arquivo existente, redimensionado
+    /// para caber em <paramref name="maxDimensao"/>px no maior lado (ex.: o
+    /// apple-touch-icon 180×180). Retorna <c>null</c> se o arquivo não existir
+    /// ou não for uma imagem decodificável.
+    /// </summary>
+    Task<byte[]?> GerarPngRedimensionadoAsync(long arquivoId, int maxDimensao, CancellationToken ct = default);
+
     /// <summary>Obtém o arquivo para servir com Content-Type correto. Lança se não existir.</summary>
     Task<Arquivo> ObterAsync(long id, CancellationToken ct = default);
 
