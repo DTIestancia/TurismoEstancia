@@ -27,7 +27,6 @@ else
                             {
                                 <img src="" alt="@ponto.Nome" loading="lazy" />
                             }
-                            <span class="vitrine-foto-num">@((i + 1).ToString("00"))</span>
                         </figure>
                         <div class="vitrine-info">
                             <span class="vitrine-cat" style="color:color-mix(in srgb, @cor 70%, #fff);border-color:@cor;background:@(cor + "26");">@ponto.CategoriaNome</span>
@@ -59,6 +58,6 @@ else
             </button>
         </div>
 
-        <p class="vitrine-hint" id="vitrineCounter">Maravilha 1 de @Model.Count — arraste ou use as setas para conhecer as maravilhas</p>
+        <p class="vitrine-hint" id="vitrineCounter">Arraste ou use as setas para conhecer as maravilhas</p>
     </div>
 }

@@ -65,8 +65,11 @@
                     <a class="painel-nav-link @(IsAreaSecao("gastronomia") || IsAreaPage("Gerenciador","PratosTuristicos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Gastronomia">
                         <i data-lucide="utensils"></i> Gastronomia
                     </a>
-                    <a class="painel-nav-link @(IsAreaSecao("maravilhas") || IsAreaPage("Gerenciador","Categorias") || IsAreaPage("Gerenciador","PontosTuristicos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Maravilhas">
+                    <a class="painel-nav-link @(IsAreaSecao("maravilhas") || IsAreaPage("Gerenciador","PontosTuristicos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Maravilhas">
                         <i data-lucide="gem"></i> 7 Maravilhas
+                    </a>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Categorias") ? "active" : "")" asp-area="Gerenciador" asp-controller="Categorias" asp-action="Index">
+                        <i data-lucide="tag"></i> Categorias
                     </a>
                     <a class="painel-nav-link @(IsAreaSecao("agenda") || IsAreaPage("Gerenciador","Eventos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Agenda">
                         <i data-lucide="calendar"></i> Agenda

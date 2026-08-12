@@ -719,7 +719,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const total = cartas.length;
     if (total === 0 || !deck) return;
 
-    const counter = document.getElementById('vitrineCounter');
     let atual = 0;
 
     // A carta mais próxima do centro do deck é a atual: ela escala para 1,
@@ -742,7 +741,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (ativa) c.setAttribute('aria-current', 'true');
         else c.removeAttribute('aria-current');
       });
-      if (counter) counter.textContent = 'Maravilha ' + (melhor + 1) + ' de ' + total + ' — arraste ou use as setas';
     }
 
     function noScroll() {

@@ -8,9 +8,14 @@
         <h1 class="painel-page-title">Pontos turísticos</h1>
         <p class="painel-page-desc">Locais do portal. As 7 Maravilhas e o Mapa mostram conjuntos diferentes: o mapa inclui também restaurantes, hotéis, praias e demais pontos.</p>
     </div>
-    <button type="button" class="btn-painel btn-painel--primary js-abrir-criar" data-titulo="Novo ponto turístico" data-url="@Url.Action("Criar")">
-        <i data-lucide="plus"></i> Novo ponto
-    </button>
+    <div style="display:flex;gap:8px;">
+        <button type="button" class="btn-painel btn-painel--primary js-abrir-criar" data-titulo="Novo ponto turístico" data-url="@Url.Action("Criar")">
+            <i data-lucide="plus"></i> Novo ponto
+        </button>
+        <a class="btn-painel btn-painel--ghost" asp-controller="Categorias" asp-action="Index" title="Cadastrar e editar as categorias dos pontos">
+            <i data-lucide="tag"></i> Categorias
+        </a>
+    </div>
 </div>
 
 <div class="painel-periodo" style="margin-bottom:16px;">
