@@ -384,21 +384,34 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ===== Video player =====
-  // Robusto para iOS Safari: o play() é uma Promise que pode rejeitar quando o
-  // vídeo ainda não foi baixado (preload=metadata, Low Data Mode, estado
-  // "stalled"). Nesses casos o Safari iOS costuma destravar com um load()
-  // explícito antes de tentar de novo; se mesmo assim falhar, mantemos o botão
-  // visível e oferecemos abrir o MP4 no player nativo em outra aba.
+  // Autoplay ao passar pela seção: o vídeo começa MUDO (única forma de autoplay
+  // permitida por todos os navegadores, inclusive Safari iOS com playsinline),
+  // toca em loop enquanto a seção estiver visível e pausa ao sair. O play() é
+  // tratado como Promise — no Safari iOS ele rejeita quando o vídeo ainda não
+  // foi baixado (preload=metadata, Low Data Mode, estado "stalled"); um load()
+  // explícito destrava, e se falhar de novo mantemos o botão + fallback.
   const videoFull = document.getElementById('videoFull');
   if (videoFull) {
     const videoEl = document.getElementById('heroVideo');
     const playBtn = document.getElementById('cinemaPlayBtn');
+    const muteBtn = document.getElementById('videoMuteBtn');
     const fallbackLink = document.getElementById('videoFallbackLink');
 
     function mostrarFallback(mostrar) {
       if (fallbackLink) fallbackLink.style.display = mostrar ? 'flex' : 'none';
     }
     mostrarFallback(false);
+
+    function atualizarMute() {
+      if (!muteBtn || !videoEl) return;
+      var mudo = videoEl.muted;
+      muteBtn.setAttribute('aria-pressed', String(!mudo));
+      muteBtn.setAttribute('aria-label', mudo ? 'Ativar som do vídeo' : 'Silenciar vídeo');
+      // O lucide troca o <i> por <svg> — busca qualquer elemento com data-lucide.
+      var icone = muteBtn.querySelector('[data-lucide]');
+      if (icone) icone.setAttribute('data-lucide', mudo ? 'volume-x' : 'volume-2');
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
 
     function tentarReproduzir() {
       if (!videoEl || !videoEl.querySelector('source') && !videoEl.getAttribute('src')) {
@@ -418,22 +431,33 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    function toggleVideo() {
-      if (videoEl.paused) {
-        // Esconde o botão na hora (feedback imediato); se o play falhar, o
-        // catch devolve o botão e mostra o fallback.
-        videoFull.classList.add('playing');
-        tentarReproduzir().then(function () {
-          if (!videoEl.paused) videoFull.classList.add('playing');
-        }).catch(function () {
-          videoFull.classList.remove('playing');
-          mostrarFallback(true);
-        });
-      } else {
-        videoEl.pause();
+    function tocar() {
+      if (!videoEl) return;
+      tentarReproduzir().then(function () {
+        if (!videoEl.paused) videoFull.classList.add('playing');
+      }).catch(function () {
         videoFull.classList.remove('playing');
-      }
+        mostrarFallback(true);
+      });
     }
+
+    function pausar() {
+      if (videoEl) videoEl.pause();
+      videoFull.classList.remove('playing');
+    }
+
+    function toggleVideo() {
+      if (videoEl.paused) tocar();
+      else pausar();
+    }
+
+    function naViewport() {
+      if (!videoFull) return false;
+      var r = videoFull.getBoundingClientRect();
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      return r.top < vh * 0.9 && r.bottom > vh * 0.1;
+    }
+
     if (playBtn) playBtn.addEventListener('click', toggleVideo);
     if (videoEl) {
       videoEl.addEventListener('click', toggleVideo);
@@ -448,12 +472,33 @@ document.addEventListener('DOMContentLoaded', function () {
         if (videoEl.ended) return;
         videoFull.classList.remove('playing');
       });
+      if (muteBtn) muteBtn.addEventListener('click', function () {
+        videoEl.muted = !videoEl.muted;
+        atualizarMute();
+      });
     }
     videoFull.addEventListener('mouseenter', function () {
       if (!videoEl.paused) videoFull.querySelector('.video-full-gradient').style.opacity = '1';
     });
     videoFull.addEventListener('mouseleave', function () {
       if (!videoEl.paused) videoFull.querySelector('.video-full-gradient').style.opacity = '';
+    });
+
+    // Autoplay: toca quando a seção entra na viewport, pausa quando sai.
+    if (videoEl && 'IntersectionObserver' in window) {
+      var observadorVideo = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) tocar();
+          else pausar();
+        });
+      }, { threshold: 0.35 });
+      observadorVideo.observe(videoFull);
+    }
+
+    // Aba oculta: pausa; ao voltar, retoma se a seção ainda estiver na tela.
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) pausar();
+      else if (naViewport() && videoEl && videoEl.paused) tocar();
     });
   }
 

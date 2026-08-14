@@ -3,10 +3,16 @@
     <div class="video-full" id="videoFull">
         @if (Model.VideoArquivoId is long videoId)
         {
-            <video preload="metadata" playsinline webkit-playsinline id="heroVideo">
+            @* muted + loop + playsinline: autoplay permitido por todos os navegadores
+               (inclusive Safari iOS) — o vídeo toca sozinho ao passar pela seção. *@
+            <video preload="metadata" muted loop playsinline webkit-playsinline id="heroVideo">
                 <source src="@Url.Content($"~/arquivo/{videoId}")" type="video/mp4" />
                 Seu navegador não suporta vídeo HTML5.
             </video>
+            @* Botão de som: o autoplay começa mudo; um toque ativa/desativa o áudio. *@
+            <button type="button" id="videoMuteBtn" class="video-mute-btn" aria-label="Ativar som do vídeo" aria-pressed="false">
+                <i data-lucide="volume-x" class="icon-lg"></i>
+            </button>
             @* Fallback para iPhone/iPad: se o Safari não conseguir reproduzir inline
                (codec/estado stalled/Low Data Mode), oferece abrir no player nativo
                em nova aba — o MP4 (H.264) roda direto no Safari. *@
@@ -18,7 +24,7 @@
         }
         else
         {
-            <video preload="metadata" playsinline webkit-playsinline id="heroVideo">
+            <video preload="metadata" muted loop playsinline webkit-playsinline id="heroVideo">
                 Seu navegador não suporta vídeo HTML5.
             </video>
         }
