@@ -384,19 +384,70 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ===== Video player =====
+  // Robusto para iOS Safari: o play() é uma Promise que pode rejeitar quando o
+  // vídeo ainda não foi baixado (preload=metadata, Low Data Mode, estado
+  // "stalled"). Nesses casos o Safari iOS costuma destravar com um load()
+  // explícito antes de tentar de novo; se mesmo assim falhar, mantemos o botão
+  // visível e oferecemos abrir o MP4 no player nativo em outra aba.
   const videoFull = document.getElementById('videoFull');
   if (videoFull) {
     const videoEl = document.getElementById('heroVideo');
     const playBtn = document.getElementById('cinemaPlayBtn');
+    const fallbackLink = document.getElementById('videoFallbackLink');
+
+    function mostrarFallback(mostrar) {
+      if (fallbackLink) fallbackLink.style.display = mostrar ? 'flex' : 'none';
+    }
+    mostrarFallback(false);
+
+    function tentarReproduzir() {
+      if (!videoEl || !videoEl.querySelector('source') && !videoEl.getAttribute('src')) {
+        return Promise.reject();
+      }
+      // Se ainda não há dados suficientes (Safari iOS com preload reduzido),
+      // um load() explícito força o navegador a buscar o vídeo antes do play.
+      if (videoEl.readyState < 2) videoEl.load();
+      var p = videoEl.play();
+      if (!p || typeof p.catch !== 'function') return Promise.resolve();
+      return p.catch(function () {
+        // 1ª tentativa falhou: recarrega e tenta uma vez mais.
+        videoEl.load();
+        var p2 = videoEl.play();
+        if (!p2 || typeof p2.catch !== 'function') return Promise.resolve();
+        return p2.catch(function () { return Promise.reject(); });
+      });
+    }
 
     function toggleVideo() {
-      if (videoEl.paused) { videoEl.play(); videoFull.classList.add('playing'); }
-      else { videoEl.pause(); videoFull.classList.remove('playing'); }
+      if (videoEl.paused) {
+        // Esconde o botão na hora (feedback imediato); se o play falhar, o
+        // catch devolve o botão e mostra o fallback.
+        videoFull.classList.add('playing');
+        tentarReproduzir().then(function () {
+          if (!videoEl.paused) videoFull.classList.add('playing');
+        }).catch(function () {
+          videoFull.classList.remove('playing');
+          mostrarFallback(true);
+        });
+      } else {
+        videoEl.pause();
+        videoFull.classList.remove('playing');
+      }
     }
     if (playBtn) playBtn.addEventListener('click', toggleVideo);
     if (videoEl) {
       videoEl.addEventListener('click', toggleVideo);
       videoEl.addEventListener('ended', function () { videoFull.classList.remove('playing'); });
+      // Se o navegador reproduzir mesmo com o fallback visível (ex.: voltou o
+      // sinal), esconde o fallback automaticamente.
+      videoEl.addEventListener('playing', function () {
+        mostrarFallback(false);
+        videoFull.classList.add('playing');
+      });
+      videoEl.addEventListener('pause', function () {
+        if (videoEl.ended) return;
+        videoFull.classList.remove('playing');
+      });
     }
     videoFull.addEventListener('mouseenter', function () {
       if (!videoEl.paused) videoFull.querySelector('.video-full-gradient').style.opacity = '1';

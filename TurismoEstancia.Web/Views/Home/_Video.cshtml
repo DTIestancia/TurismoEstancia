@@ -3,14 +3,22 @@
     <div class="video-full" id="videoFull">
         @if (Model.VideoArquivoId is long videoId)
         {
-            <video preload="metadata" playsinline id="heroVideo">
+            <video preload="metadata" playsinline webkit-playsinline id="heroVideo">
                 <source src="@Url.Content($"~/arquivo/{videoId}")" type="video/mp4" />
                 Seu navegador não suporta vídeo HTML5.
             </video>
+            @* Fallback para iPhone/iPad: se o Safari não conseguir reproduzir inline
+               (codec/estado stalled/Low Data Mode), oferece abrir no player nativo
+               em nova aba — o MP4 (H.264) roda direto no Safari. *@
+            <a href="@Url.Content($"~/arquivo/{videoId}")" target="_blank" rel="noopener"
+               id="videoFallbackLink" class="video-fallback-link" style="display:none;">
+                <i data-lucide="external-link" class="icon-lg"></i>
+                <span>Não reproduziu? Abrir vídeo em nova aba</span>
+            </a>
         }
         else
         {
-            <video preload="metadata" playsinline id="heroVideo">
+            <video preload="metadata" playsinline webkit-playsinline id="heroVideo">
                 Seu navegador não suporta vídeo HTML5.
             </video>
         }
