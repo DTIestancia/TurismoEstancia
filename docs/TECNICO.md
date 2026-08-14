@@ -298,6 +298,14 @@ oculta (classe `.carousel-paused` congela o timer e a barra) e
 (`z-index` 1 < 2) para o efeito da frente nunca sumir durante a troca. O
 carrossel é oculto em telas < 1024px.
 
+**Vídeo institucional** (`_Video` + `portal.js`) — o `<video>` usa
+`playsinline` + `webkit-playsinline` (iOS antigo) e o play é robusto para
+Safari iOS: `play()` tratado como Promise com retry via `load()` quando o vídeo
+ainda não foi baixado (preload reduzido / Low Data Mode); se falhar, o botão
+volta e aparece o link "Abrir vídeo em nova aba" (`/arquivo/{id}`) para o
+player nativo. O MP4 atual é H.264+AAC (compatível com iPhone) e o endpoint
+`/arquivo/{id}` responde `Accept-Ranges`/`206` — requisitos do Safari iOS.
+
 **Vitrine das 7 Maravilhas** — `Views/Shared/_VitrineMaravilhas.cshtml`, JS em
 `portal.js` (`initWondersVitrine`): **baralho de cartas com prévia** via scroll-snap
 horizontal — a carta mais próxima do centro do deck é a atual (`is-atual`; escala 1,
