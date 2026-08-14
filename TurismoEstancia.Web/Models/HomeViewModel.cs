@@ -53,6 +53,13 @@ public class HomeViewModel
     public bool GuiaDisponivel => Guia?.ArquivoId is > 0;
     public long? VideoArquivoId => VideoInstitucional?.ArquivoId;
 
+    /// <summary>
+    /// Poster do vídeo institucional (imagem do 1º slide do hero): evita a
+    /// "tela preta" no Safari iOS enquanto o vídeo carrega/não renderiza o
+    /// primeiro frame.
+    /// </summary>
+    public long? VideoPosterArquivoId => Slides.FirstOrDefault()?.ImagemArquivoId;
+
     /// <summary>JSON do mapa (categorias + POIs) serializado no controller.</summary>
     public string MapaJson { get; set; } = "{}";
 

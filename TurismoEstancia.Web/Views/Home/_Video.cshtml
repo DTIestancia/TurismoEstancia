@@ -1,11 +1,19 @@
 @model HomeViewModel
+@{
+    // Poster do vídeo (imagem do 1º slide do hero): evita "tela preta" no
+    // Safari iOS enquanto o vídeo carrega/não renderiza o primeiro frame.
+    var videoPoster = Model.VideoPosterArquivoId is long posterId
+        ? Url.Content($"~/arquivo/{posterId}")
+        : null;
+}
 <section class="section-video section-divider" id="institutionalVideo" data-section="cidade">
     <div class="video-full" id="videoFull">
         @if (Model.VideoArquivoId is long videoId)
         {
             @* muted + loop + playsinline: autoplay permitido por todos os navegadores
                (inclusive Safari iOS) — o vídeo toca sozinho ao passar pela seção. *@
-            <video preload="metadata" muted loop playsinline webkit-playsinline id="heroVideo">
+            <video preload="metadata" muted loop playsinline webkit-playsinline
+                   id="heroVideo" poster="@videoPoster">
                 <source src="@Url.Content($"~/arquivo/{videoId}")" type="video/mp4" />
                 Seu navegador não suporta vídeo HTML5.
             </video>

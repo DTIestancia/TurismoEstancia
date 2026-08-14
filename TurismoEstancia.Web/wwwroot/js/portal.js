@@ -431,9 +431,19 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+    function comTimeout(promise, ms) {
+      return new Promise(function (resolver, rejeitar) {
+        var t = setTimeout(function () { rejeitar(new Error('timeout')); }, ms);
+        promise.then(function (v) { clearTimeout(t); resolver(v); }, function (e) { clearTimeout(t); rejeitar(e); });
+      });
+    }
+
     function tocar() {
       if (!videoEl) return;
-      tentarReproduzir().then(function () {
+      // Timeout de segurança: se o play não começar em 6s (Safari iOS com o
+      // vídeo ainda não baixado), trata como falha e mostra o fallback em vez
+      // de deixar a seção em tela preta sem feedback.
+      comTimeout(tentarReproduzir(), 6000).then(function () {
         if (!videoEl.paused) videoFull.classList.add('playing');
       }).catch(function () {
         videoFull.classList.remove('playing');
@@ -472,6 +482,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (videoEl.ended) return;
         videoFull.classList.remove('playing');
       });
+      // Falha de carregamento/decodificação: mostra o fallback (nunca tela preta).
+      videoEl.addEventListener('error', function () {
+        videoFull.classList.remove('playing');
+        mostrarFallback(true);
+      });
       if (muteBtn) muteBtn.addEventListener('click', function () {
         videoEl.muted = !videoEl.muted;
         atualizarMute();
@@ -484,14 +499,24 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!videoEl.paused) videoFull.querySelector('.video-full-gradient').style.opacity = '';
     });
 
-    // Autoplay: toca quando a seção entra na viewport, pausa quando sai.
+    // Autoplay: quando a seção APROXIMA da viewport (200px antes), começa a
+    // baixar o vídeo (preload auto + load) para o play destravar na hora — o
+    // Safari iOS com preload=metadata costuma "stall" o play por falta de
+    // dados. Entrando na tela de verdade, toca; saindo, pausa.
     if (videoEl && 'IntersectionObserver' in window) {
       var observadorVideo = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
-          if (entry.isIntersecting) tocar();
-          else pausar();
+          if (entry.isIntersecting) {
+            if (videoEl.preload !== 'auto') {
+              videoEl.preload = 'auto';
+              videoEl.load();
+            }
+            if (naViewport()) tocar();
+          } else {
+            pausar();
+          }
         });
-      }, { threshold: 0.35 });
+      }, { threshold: 0, rootMargin: '200px 0px' });
       observadorVideo.observe(videoFull);
     }
 
