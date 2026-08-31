@@ -1,11 +1,11 @@
 @model HomeViewModel
+@using TurismoEstancia.Domain.Models
 @{
-    // Título do hero editável pelo painel (Hero → "Título"). Aceita o mesmo
-    // HTML de animação: <span class="animate-text">palavra</span> + <br />.
-    var heroTitulo = Model.Conteudos.GetValueOrDefault("hero-titulo",
-        "<span class=\"animate-text\">Explore as</span><br /><span class=\"animate-text highlight-orange\">Cores</span><span class=\"animate-text\">, a</span><br /><span class=\"animate-text highlight-green\">História</span><span class=\"animate-text\">&nbsp;e a</span><br /><span class=\"animate-text highlight-coral\">Tradição</span><span class=\"animate-text\">&nbsp;de Estância</span>");
+    // Título do hero editável pelo painel (Hero → "Título"). Fonte vazada
+    // (esboçada) sobre o vídeo, como no print: uma só palavra em destaque.
+    var heroTitulo = Model.Conteudos.GetValueOrDefault("hero-titulo", "ESTÂNCIA");
     var heroSubtitulo = Model.Conteudos.GetValueOrDefault("hero-subtitulo",
-        "Entre dunas douradas e céus que viram arte, Estância te chama pra viver uma experiência que acende todos os sentidos. O Nordeste está aqui, mais vibrante do que nunca.") ?? "";
+        "Explore as Cores, a História e a Tradição de Estância") ?? "";
     var slides = Model.Slides.Any() ? Model.Slides : null;
 
     // Pictogramas das 7 maravilhas para o preloader personalizado.
@@ -14,6 +14,9 @@
         .Select(p => p.PictogramaArquivoId!.Value)
         .Distinct()
         .ToList();
+
+    // Redes sociais exibidas na navbar — mesma fonte do rodapé (Contatos).
+    var redesSociais = Model.Contatos.Where(c => c.Tipo == TipoContato.RedesSocial).ToList();
 }
 
 <!-- ===== Reading Progress Bar ===== -->
@@ -46,14 +49,35 @@
             <span class="navbar-toggle-icon" aria-hidden="true"></span>
         </button>
         <div class="navbar-links" id="navLinks">
-            <a href="#section-cidade" class="navbar-link" data-section="cidade">Nossa Cidade</a>
-            <a href="#section-cultura" class="navbar-link" data-section="cultura">Cultura</a>
-            <a href="#section-gastronomia" class="navbar-link" data-section="gastronomia">Gastronomia</a>
+            <a href="#section-historia" class="navbar-link" data-section="cidade">Nossa Cidade</a>
+            <a href="#section-conheca" class="navbar-link" data-section="conheca">Conheça Estância</a>
             <a href="#section-maravilhas" class="navbar-link" data-section="maravilhas">7 Maravilhas</a>
-            <a href="~/Noticias" class="navbar-link">Notícias</a>
+            <a href="#section-noticias" class="navbar-link" data-section="noticias">Notícias</a>
             <a href="~/galeria" class="navbar-link">Galeria</a>
             <a href="~/Agenda" class="navbar-link">Agenda</a>
             <a href="#section-servicos" class="navbar-link" data-section="servicos">Serviços ao Turista</a>
+
+            @if (redesSociais.Count > 0)
+            {
+                <div class="navbar-social" aria-label="Redes sociais">
+                    @foreach (var rede in redesSociais)
+                    {
+                        <a href="@rede.Valor" target="_blank" rel="noopener" class="navbar-social-link" aria-label="@rede.Rotulo" title="@rede.Rotulo">
+                            @await Html.PartialAsync("_IconeRedeSocial", rede)
+                        </a>
+                    }
+                </div>
+            }
+
+            <label class="navbar-lang" title="Idioma do site">
+                <i data-lucide="globe" class="icon-lg"></i>
+                <select id="siteLang" class="navbar-lang-select" aria-label="Idioma do site">
+                    <option value="pt-BR">PT</option>
+                    <option value="en">EN</option>
+                    <option value="es">ES</option>
+                </select>
+            </label>
+
             <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema claro/escuro" title="Alternar tema">
                 <i data-lucide="moon" class="icon-lg" id="themeToggleIcon"></i>
             </button>
@@ -75,51 +99,42 @@
 
 <!-- ===== Hero Section ===== -->
 <section class="hero section-blend" id="section-cidade" data-section="cidade">
-    @if (slides is not null)
+    @if (Model.VideoArquivoId is long videoId)
     {
-        var i = 0;
-        foreach (var slide in slides)
+        var poster = Model.VideoPosterArquivoId is long posterId ? Url.Content($"~/arquivo/{posterId}") : null;
+        <video class="hero-bg" id="heroBgVideo" autoplay muted loop playsinline webkit-playsinline poster="@poster">
+            <source src="@Url.Content($"~/arquivo/{videoId}")" type="video/mp4" />
+            Seu navegador não suporta vídeo HTML5.
+        </video>
+    }
+    else if (slides is not null)
+    {
+        long imgId = 0;
+        var tituloCapa = "Estância";
+        foreach (var s in slides)
         {
-            <img class="hero-slide@(i == 0 ? " active" : "")" src="@Url.Content($"~/arquivo/{(slide.ImagemArquivoId is long imgId ? imgId.ToString() : "")}")" alt="@(slide.Titulo ?? "Estância")" data-index="@i" />
-            i++;
+            if (s.ImagemArquivoId is long id)
+            {
+                imgId = id;
+                tituloCapa = s.Titulo ?? "Estância";
+                break;
+            }
+        }
+        @if (imgId > 0)
+        {
+            <img class="hero-bg" src="@Url.Content($"~/arquivo/{imgId}")" alt="@tituloCapa" />
         }
     }
     <div class="hero-overlay"></div>
     <div class="hero-vignette"></div>
     <div class="hero-content">
         <div class="hero-text">
-            <div class="hero-badge" style="margin-bottom:20px;">
-                <div class="pill pill-white">
-                    <i data-lucide="star" class="icon-lg" style="color:var(--color-white-solid);"></i>
-                    <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;line-height:16px;">Capital Sergipana da Cultura</span>
-                </div>
-            </div>
-            <div class="hero-particles" id="heroParticles"></div>
-            <h1 class="hero-title">
-                @Html.Raw(heroTitulo)
-            </h1>
-            <p class="hero-subtitle">
-                @Html.Raw(heroSubtitulo.Replace("\n", "<br />"))
-            </p>
-            <div class="hero-actions">
-                <a href="#section-maravilhas" class="btn-primary">Explorar as 7 Maravilhas <i data-lucide="arrow-right" class="icon-lg"></i></a>
-                <a href="#institutionalVideo" class="btn-secondary"><i data-lucide="play" class="icon-lg"></i> Ver Estância em Movimento</a>
-            </div>
+            <h1 class="hero-title hero-title-outline">@Html.Raw(heroTitulo)</h1>
+            <p class="hero-subtitle">@Html.Raw(heroSubtitulo.Replace("\n", "<br />"))</p>
         </div>
     </div>
     <div class="hero-scroll-indicator">
         <span>Role para explorar</span>
         <i data-lucide="chevron-down" class="icon-lg"></i>
     </div>
-    @if (slides is not null)
-    {
-        <div class="hero-carousel" id="heroCarousel">
-            <button class="carousel-btn" id="carouselPrev" aria-label="Anterior">‹</button>
-            @for (var i = 0; i < slides.Count; i++)
-            {
-                <span class="carousel-dot@(i == 0 ? " active" : "")" data-slide="@i"></span>
-            }
-            <button class="carousel-btn" id="carouselNext" aria-label="Próximo">›</button>
-        </div>
-    }
 </section>

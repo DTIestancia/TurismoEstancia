@@ -54,6 +54,16 @@ public class ConteudosController : PainelController
                 },
                 new ConteudosCatalogViewModel.SecaoTextos
                 {
+                    Titulo = "Conheça Estância",
+                    Descricao = "Explorador da home (História, Cultura, Gastronomia, Experiências).",
+                    Itens = Itens(cadastrados,
+                        ("conheca-titulo", "Título", "Aceita <strong> para destacar; ex.: Conheça <strong>Estância</strong>"),
+                        ("conheca-descricao", "Descrição", "Chamada da seção"),
+                        ("conheca-historia-categoria", "Categoria-chave — História", "Chave da categoria de pontos exibida na aba História (padrão: heritage)"),
+                        ("conheca-experiencias-categoria", "Categoria-chave — Experiências", "Chave da categoria de pontos exibida na aba Experiências (padrão: nature)"))
+                },
+                new ConteudosCatalogViewModel.SecaoTextos
+                {
                     Titulo = "Cultura",
                     Descricao = "Seção Cultura da home e página de cultura.",
                     Itens = Itens(cadastrados,

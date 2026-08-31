@@ -46,6 +46,9 @@ public class HomeViewModel
     // Notícias (últimas publicadas, para a seção da home)
     public IReadOnlyList<NoticiaDto> Noticias { get; set; } = Array.Empty<NoticiaDto>();
 
+    // Explorador "Conheça Estância" (História, Cultura, Gastronomia, Experiências)
+    public IReadOnlyList<ConhecaEstanciaTab> ConhecaEstancia { get; set; } = Array.Empty<ConhecaEstanciaTab>();
+
     // Contatos do rodapé
     public IReadOnlyList<ContatoDto> Contatos { get; set; } = Array.Empty<ContatoDto>();
 
@@ -97,4 +100,25 @@ public class CategoriaMaravilhasViewModel
 {
     public CategoriaPontoTuristicoDto Categoria { get; set; } = null!;
     public IReadOnlyList<PontoTuristicoDto> Pontos { get; set; } = Array.Empty<PontoTuristicoDto>();
+}
+
+/// <summary>
+/// Uma aba do explorador "Conheça Estância" (História, Cultura, Gastronomia,
+/// Experiências) com seus itens exibidos no carrossel de foto + explicação.
+/// </summary>
+public class ConhecaEstanciaTab
+{
+    public string Chave { get; set; } = "";
+    public string Rotulo { get; set; } = "";
+    public string? Icone { get; set; }
+    public IReadOnlyList<ConhecaEstanciaItem> Itens { get; set; } = Array.Empty<ConhecaEstanciaItem>();
+}
+
+/// <summary>Um item do explorador (foto + título + descrição + link de detalhe).</summary>
+public class ConhecaEstanciaItem
+{
+    public string Nome { get; set; } = "";
+    public string? Descricao { get; set; }
+    public long? ImagemArquivoId { get; set; }
+    public string? Url { get; set; }
 }

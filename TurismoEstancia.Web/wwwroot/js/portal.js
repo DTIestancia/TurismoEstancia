@@ -50,67 +50,134 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
-  // ===== Hero Background Carousel =====
-  (function initHeroCarousel() {
-    var slides = document.querySelectorAll('.hero-slide');
-    var dots = document.querySelectorAll('.carousel-dot');
-    var prevBtn = document.getElementById('carouselPrev');
-    var nextBtn = document.getElementById('carouselNext');
-    var hero = document.querySelector('.hero');
-    if (!slides.length || !dots.length) return;
+  // ===== Hero Background Video (autoplay mudo, em loop) =====
+  // O vídeo do hero é configurado no Gerenciador (video-institucional). Toca
+  // sozinho, mudo e em loop; um load()+play() explícito destrava o Safari iOS.
+  (function initHeroVideo() {
+    var video = document.getElementById('heroBgVideo');
+    if (!video) return;
 
-    var current = 0;
-    var interval;
-    var AUTOPLAY_DELAY = 5000;
-    var isTransitioning = false;
-
-    function goToSlide(index) {
-      if (isTransitioning || index === current) return;
-      isTransitioning = true;
-      var prev = current;
-      current = index;
-      slides[prev].classList.remove('active');
-      slides[prev].classList.add('fade-out');
-      slides[current].classList.add('active');
-      slides[current].classList.remove('fade-out');
-      dots.forEach(function (d, i) { d.classList.toggle('active', i === current); });
-      setTimeout(function () {
-        slides[prev].classList.remove('fade-out');
-        isTransitioning = false;
-      }, 1100);
+    function tentarPlay() {
+      var p = video.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(function () {
+          video.muted = true;
+          video.play().catch(function () {});
+        });
+      }
     }
 
-    function nextSlide() { goToSlide((current + 1) % slides.length); }
-    function prevSlide() { goToSlide((current - 1 + slides.length) % slides.length); }
-    function startAutoplay() { stopAutoplay(); interval = setInterval(nextSlide, AUTOPLAY_DELAY); }
-    function stopAutoplay() { if (interval) { clearInterval(interval); interval = null; } }
+    video.addEventListener('canplay', tentarPlay);
+    window.addEventListener('load', tentarPlay);
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) video.pause();
+      else tentarPlay();
+    });
+  })();
 
-    // Pausa/resume o autoplay e a barra de progresso dos dots (classe que o
-    // CSS usa para congelar a animação no mesmo instante do timer).
-    function pausar() { stopAutoplay(); if (hero) hero.classList.add('carousel-paused'); }
-    function retomar() { if (hero) hero.classList.remove('carousel-paused'); startAutoplay(); }
+  // ===== Seletor de idioma do site (UI — guarda a preferência) =====
+  (function initSiteLang() {
+    var sel = document.getElementById('siteLang');
+    if (!sel) return;
+    var salvo = localStorage.getItem('site-lang');
+    if (salvo) sel.value = salvo;
+    if (salvo && document.documentElement.lang !== salvo) document.documentElement.lang = salvo || 'pt-BR';
+    sel.addEventListener('change', function () {
+      var lang = sel.value || 'pt-BR';
+      localStorage.setItem('site-lang', lang);
+      document.documentElement.lang = lang;
+    });
+  })();
 
-    if (nextBtn) nextBtn.addEventListener('click', function () { pausar(); nextSlide(); retomar(); });
-    if (prevBtn) prevBtn.addEventListener('click', function () { pausar(); prevSlide(); retomar(); });
+  // ===== Explorador "Conheça Estância" (carrossel em baralho, estilo print) =====
+  // Cada aba (História, Cultura, Gastronomia, Experiências) alimenta um "deck"
+  // de cartas com foto de fundo. A carta ativa ocupa o centro com título,
+  // descrição e botão; as próximas espreitam à direita. As setas giram o baralho.
+  (function initConhecaEstancia() {
+    var dataEl = document.getElementById('conhecaData');
+    var slide = document.getElementById('conhecaSlide');
+    if (!dataEl || !slide) return;
+    var tabs;
+    try { tabs = JSON.parse(dataEl.textContent); } catch (e) { return; }
+    if (!tabs || !tabs.length) return;
 
-    dots.forEach(function (dot) {
-      dot.addEventListener('click', function () {
-        var idx = parseInt(this.getAttribute('data-slide'), 10);
-        if (!isNaN(idx)) { pausar(); goToSlide(idx); retomar(); }
+    var prevBtn = document.getElementById('conhecaPrev');
+    var nextBtn = document.getElementById('conhecaNext');
+    var tabButtons = document.querySelectorAll('.conheca-tab');
+    var activeTabIdx = 0;
+
+    function buildCard(item, rotulo) {
+      var el = document.createElement('div');
+      el.className = 'conheca-card-item';
+      if (item.imagem) el.style.backgroundImage = "url('" + item.imagem + "')";
+      else el.classList.add('no-photo');
+      el.dataset.nome = item.nome || '';
+
+      var content = document.createElement('div');
+      content.className = 'conheca-card-content';
+      content.innerHTML =
+        '<span class="conheca-card-pill">' + esc(rotulo) + '</span>' +
+        '<h3 class="conheca-card-name">' + esc(item.nome) + '</h3>' +
+        '<p class="conheca-card-des">' + esc(item.descricao || '') + '</p>' +
+        '<a class="conheca-card-link" href="' + esc(item.url || '#') + '">Ver detalhes <span aria-hidden="true">→</span></a>';
+      el.appendChild(content);
+      return el;
+    }
+
+    function renderDeck() {
+      slide.innerHTML = '';
+      var tab = tabs[activeTabIdx];
+      var itens = tab.itens || [];
+
+      if (!itens.length) {
+        var empty = document.createElement('div');
+        empty.className = 'conheca-empty';
+        empty.textContent = 'Em breve, novidades sobre ' + tab.rotulo + '.';
+        slide.appendChild(empty);
+        return;
+      }
+
+      // Baralho circular: começa pela última carta para a 1ª ficar em destaque.
+      var fila = itens.slice();
+      var ultima = fila.pop();
+      if (ultima) slide.appendChild(buildCard(ultima, tab.rotulo));
+      fila.forEach(function (it) { slide.appendChild(buildCard(it, tab.rotulo)); });
+    }
+
+    // Rotação: move a 1ª carta para o fim (next) ou a última para o início (prev).
+    function moverPrimeira() {
+      var first = slide.querySelector('.conheca-card-item');
+      if (first) slide.appendChild(first);
+    }
+    function moverUltima() {
+      var cards = slide.querySelectorAll('.conheca-card-item');
+      var last = cards[cards.length - 1];
+      if (last) slide.insertBefore(last, slide.firstChild);
+    }
+
+    tabButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var chave = this.getAttribute('data-tab');
+        var idx = -1;
+        tabs.forEach(function (t, i) { if (t.chave === chave) idx = i; });
+        if (idx < 0) return;
+        activeTabIdx = idx;
+        tabButtons.forEach(function (b) { b.classList.toggle('active', b === btn); });
+        renderDeck();
       });
     });
 
-    if (hero) {
-      hero.addEventListener('mouseenter', pausar);
-      hero.addEventListener('mouseleave', retomar);
+    if (nextBtn) nextBtn.addEventListener('click', moverPrimeira);
+    if (prevBtn) prevBtn.addEventListener('click', moverUltima);
+
+    // Abre a primeira aba que tenha conteúdo.
+    var idxInicial = 0;
+    for (var i = 0; i < tabs.length; i++) {
+      if ((tabs[i].itens || []).length) { idxInicial = i; break; }
     }
-
-    // Não troca slide com a aba oculta (economiza GPU e evita "pular" slides).
-    document.addEventListener('visibilitychange', function () {
-      if (document.hidden) pausar(); else retomar();
-    });
-
-    startAutoplay();
+    activeTabIdx = idxInicial;
+    tabButtons.forEach(function (b, i) { b.classList.toggle('active', i === idxInicial); });
+    renderDeck();
   })();
 
   // ===== Reading Progress Bar =====
@@ -161,9 +228,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 900);
   })();
 
-  // ===== Navbar scroll + mobile menu =====
+  // ===== Navbar fixa sempre visível + fundo ao rolar =====
   const navbar = document.getElementById('navbar');
-  let lastScrollY = 0;
   let tickingNav = false;
 
   function updateNavbar() {
@@ -171,12 +237,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const currentScrollY = window.scrollY;
     if (currentScrollY > 50) navbar.classList.add('scrolled');
     else navbar.classList.remove('scrolled');
-    if (currentScrollY > 150) {
-      navbar.style.transform = currentScrollY > lastScrollY ? 'translateY(-100%)' : 'translateY(0)';
-    } else {
-      navbar.style.transform = 'translateY(0)';
-    }
-    lastScrollY = currentScrollY;
     tickingNav = false;
   }
   window.addEventListener('scroll', function () {
@@ -380,150 +440,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (r.redirected) { window.location.href = r.url; return; }
         window.location.reload();
       });
-    });
-  }
-
-  // ===== Video player =====
-  // Autoplay ao passar pela seção: o vídeo começa MUDO (única forma de autoplay
-  // permitida por todos os navegadores, inclusive Safari iOS com playsinline),
-  // toca em loop enquanto a seção estiver visível e pausa ao sair. O play() é
-  // tratado como Promise — no Safari iOS ele rejeita quando o vídeo ainda não
-  // foi baixado (preload=metadata, Low Data Mode, estado "stalled"); um load()
-  // explícito destrava, e se falhar de novo mantemos o botão + fallback.
-  const videoFull = document.getElementById('videoFull');
-  if (videoFull) {
-    const videoEl = document.getElementById('heroVideo');
-    const playBtn = document.getElementById('cinemaPlayBtn');
-    const muteBtn = document.getElementById('videoMuteBtn');
-    const fallbackLink = document.getElementById('videoFallbackLink');
-
-    function mostrarFallback(mostrar) {
-      if (fallbackLink) fallbackLink.style.display = mostrar ? 'flex' : 'none';
-    }
-    mostrarFallback(false);
-
-    function atualizarMute() {
-      if (!muteBtn || !videoEl) return;
-      var mudo = videoEl.muted;
-      muteBtn.setAttribute('aria-pressed', String(!mudo));
-      muteBtn.setAttribute('aria-label', mudo ? 'Ativar som do vídeo' : 'Silenciar vídeo');
-      // O lucide troca o <i> por <svg> — busca qualquer elemento com data-lucide.
-      var icone = muteBtn.querySelector('[data-lucide]');
-      if (icone) icone.setAttribute('data-lucide', mudo ? 'volume-x' : 'volume-2');
-      if (typeof lucide !== 'undefined') lucide.createIcons();
-    }
-
-    function tentarReproduzir() {
-      if (!videoEl || !videoEl.querySelector('source') && !videoEl.getAttribute('src')) {
-        return Promise.reject();
-      }
-      // Se ainda não há dados suficientes (Safari iOS com preload reduzido),
-      // um load() explícito força o navegador a buscar o vídeo antes do play.
-      if (videoEl.readyState < 2) videoEl.load();
-      var p = videoEl.play();
-      if (!p || typeof p.catch !== 'function') return Promise.resolve();
-      return p.catch(function () {
-        // 1ª tentativa falhou: recarrega e tenta uma vez mais.
-        videoEl.load();
-        var p2 = videoEl.play();
-        if (!p2 || typeof p2.catch !== 'function') return Promise.resolve();
-        return p2.catch(function () { return Promise.reject(); });
-      });
-    }
-
-    function comTimeout(promise, ms) {
-      return new Promise(function (resolver, rejeitar) {
-        var t = setTimeout(function () { rejeitar(new Error('timeout')); }, ms);
-        promise.then(function (v) { clearTimeout(t); resolver(v); }, function (e) { clearTimeout(t); rejeitar(e); });
-      });
-    }
-
-    function tocar() {
-      if (!videoEl) return;
-      // Timeout de segurança: se o play não começar em 6s (Safari iOS com o
-      // vídeo ainda não baixado), trata como falha e mostra o fallback em vez
-      // de deixar a seção em tela preta sem feedback.
-      comTimeout(tentarReproduzir(), 6000).then(function () {
-        if (!videoEl.paused) videoFull.classList.add('playing');
-      }).catch(function () {
-        videoFull.classList.remove('playing');
-        mostrarFallback(true);
-      });
-    }
-
-    function pausar() {
-      if (videoEl) videoEl.pause();
-      videoFull.classList.remove('playing');
-    }
-
-    function toggleVideo() {
-      if (videoEl.paused) tocar();
-      else pausar();
-    }
-
-    function naViewport() {
-      if (!videoFull) return false;
-      var r = videoFull.getBoundingClientRect();
-      var vh = window.innerHeight || document.documentElement.clientHeight;
-      return r.top < vh * 0.9 && r.bottom > vh * 0.1;
-    }
-
-    if (playBtn) playBtn.addEventListener('click', toggleVideo);
-    if (videoEl) {
-      videoEl.addEventListener('click', toggleVideo);
-      videoEl.addEventListener('ended', function () { videoFull.classList.remove('playing'); });
-      // Se o navegador reproduzir mesmo com o fallback visível (ex.: voltou o
-      // sinal), esconde o fallback automaticamente.
-      videoEl.addEventListener('playing', function () {
-        mostrarFallback(false);
-        videoFull.classList.add('playing');
-      });
-      videoEl.addEventListener('pause', function () {
-        if (videoEl.ended) return;
-        videoFull.classList.remove('playing');
-      });
-      // Falha de carregamento/decodificação: mostra o fallback (nunca tela preta).
-      videoEl.addEventListener('error', function () {
-        videoFull.classList.remove('playing');
-        mostrarFallback(true);
-      });
-      if (muteBtn) muteBtn.addEventListener('click', function () {
-        videoEl.muted = !videoEl.muted;
-        atualizarMute();
-      });
-    }
-    videoFull.addEventListener('mouseenter', function () {
-      if (!videoEl.paused) videoFull.querySelector('.video-full-gradient').style.opacity = '1';
-    });
-    videoFull.addEventListener('mouseleave', function () {
-      if (!videoEl.paused) videoFull.querySelector('.video-full-gradient').style.opacity = '';
-    });
-
-    // Autoplay: quando a seção APROXIMA da viewport (200px antes), começa a
-    // baixar o vídeo (preload auto + load) para o play destravar na hora — o
-    // Safari iOS com preload=metadata costuma "stall" o play por falta de
-    // dados. Entrando na tela de verdade, toca; saindo, pausa.
-    if (videoEl && 'IntersectionObserver' in window) {
-      var observadorVideo = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            if (videoEl.preload !== 'auto') {
-              videoEl.preload = 'auto';
-              videoEl.load();
-            }
-            if (naViewport()) tocar();
-          } else {
-            pausar();
-          }
-        });
-      }, { threshold: 0, rootMargin: '200px 0px' });
-      observadorVideo.observe(videoFull);
-    }
-
-    // Aba oculta: pausa; ao voltar, retoma se a seção ainda estiver na tela.
-    document.addEventListener('visibilitychange', function () {
-      if (document.hidden) pausar();
-      else if (naViewport() && videoEl && videoEl.paused) tocar();
     });
   }
 

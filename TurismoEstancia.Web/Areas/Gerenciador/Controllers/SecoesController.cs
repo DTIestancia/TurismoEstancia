@@ -144,7 +144,7 @@ public class SecoesController : PainelController
                 T("cultura-citacao", "Citação", "Frase de efeito")
             ],
             imagens: [I("cultura-imagem", "Foto do card")],
-            ancora: "#section-cultura");
+            ancora: "cultura");
         var grupos = await _grupos.ListarAsync(ct);
         vm.Itens = new ItensAreaViewModel
         {
@@ -179,7 +179,7 @@ public class SecoesController : PainelController
                 T("gastronomia-grupos-texto", "Texto dos grupos populares", "Usado na home e na página Grupos Populares")
             ],
             imagens: [I("gastronomia-imagem", "Foto do card principal")],
-            ancora: "#section-gastronomia");
+            ancora: "gastronomia");
         var pratos = await _pratos.ListarAsync(ct);
         vm.Itens = new ItensAreaViewModel
         {
@@ -200,6 +200,36 @@ public class SecoesController : PainelController
         await SalvarAsync(vm, ct);
         TempData["PainelOk"] = "Gastronomia atualizada.";
         return RedirectToAction(nameof(Gastronomia));
+    }
+
+    // ===== Conheça Estância (explorador da home) =====
+    public async Task<IActionResult> Conheca(CancellationToken ct)
+    {
+        ViewData["Title"] = "Conheça Estância";
+        var vm = await MontarAsync("conheca", "Conheça Estância", "Explorador da home com as abas História, Cultura, Gastronomia e Experiências (estilo do print).", ct,
+            textos: [
+                T("conheca-titulo", "Título", "Aceita <strong> para destacar; ex.: Conheça <strong>Estância</strong>"),
+                T("conheca-descricao", "Descrição", "Chamada da seção"),
+                T("conheca-historia-categoria", "Categoria-chave — História", "Chave da categoria de pontos turísticos exibida na aba História (padrão: heritage)", aceitaHtml: false),
+                T("conheca-experiencias-categoria", "Categoria-chave — Experiências", "Chave da categoria de pontos turísticos exibida na aba Experiências (padrão: nature)", aceitaHtml: false)
+            ],
+            imagens: [],
+            ancora: "#section-conheca");
+        vm.Links = [
+            Link("Grupos culturais", "Alimentam a aba Cultura.", Url.Action("Index", "GruposCulturais", new { area = "Gerenciador" }) ?? "/Gerenciador/GruposCulturais", "music"),
+            Link("Pratos turísticos", "Alimentam a aba Gastronomia.", Url.Action("Index", "PratosTuristicos", new { area = "Gerenciador" }) ?? "/Gerenciador/PratosTuristicos", "utensils"),
+            Link("Categorias de pontos turísticos", "Definem quais pontos aparecem nas abas História e Experiências (chaves heritage/nature).", Url.Action("Index", "Categorias", new { area = "Gerenciador" }) ?? "/Gerenciador/Categorias", "tags")
+        ];
+        return View("Editar", vm);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SalvarConheca(AreaSiteViewModel vm, CancellationToken ct)
+    {
+        await SalvarAsync(vm, ct);
+        TempData["PainelOk"] = "Conheça Estância atualizada.";
+        return RedirectToAction(nameof(Conheca));
     }
 
     // ===== 7 Maravilhas =====

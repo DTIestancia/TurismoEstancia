@@ -1,0 +1,56 @@
+@model HomeViewModel
+@{
+    var conhecaTitulo = Model.Conteudos.GetValueOrDefault("conheca-titulo",
+        "Conheça <strong>Estância</strong>") ?? "";
+    var conhecaDesc = Model.Conteudos.GetValueOrDefault("conheca-descricao",
+        "Escolha um tema e deslize pelas fotos: história, cultura, gastronomia e experiências do Litoral de Estância.") ?? "";
+
+    // Dados das abas/itens em JSON para o carrossel (portal.js).
+    var dadosJson = System.Text.Json.JsonSerializer.Serialize(
+        Model.ConhecaEstancia.Select(t => new
+        {
+            chave = t.Chave,
+            rotulo = t.Rotulo,
+            icone = t.Icone,
+            itens = t.Itens.Select(i => new
+            {
+                nome = i.Nome,
+                imagem = i.ImagemArquivoId is long img ? Url.Content($"~/arquivo/{img}") : "",
+                url = i.Url
+            })
+        }));
+}
+
+<section class="section-conheca section-divider" id="section-conheca" data-section="conheca">
+    <div class="conheca-bg" aria-hidden="true"></div>
+
+    <div class="conheca-inner">
+            <h2 class="conheca-heading">@Html.Raw(conhecaTitulo)</h2>
+            @if (!string.IsNullOrWhiteSpace(conhecaDesc))
+            {
+                <p class="conheca-desc-intro">@Html.Raw(conhecaDesc)</p>
+            }
+
+        @if (Model.ConhecaEstancia.Count > 1)
+        {
+            <div class="conheca-tabs reveal reveal-delay-2" role="tablist" aria-label="Temas">
+                @foreach (var tab in Model.ConhecaEstancia)
+                {
+                    <button type="button" class="conheca-tab" role="tab" data-tab="@tab.Chave">
+                        <i data-lucide="@(tab.Icone ?? "star")" class="icon-lg"></i><span>@tab.Rotulo</span>
+                    </button>
+                }
+            </div>
+        }
+        <div class="conheca-card reveal reveal-delay-2">
+            <div class="conheca-card-slide" id="conhecaSlide" aria-live="polite"></div>
+            <div class="conheca-btn" aria-label="Navegar pelas fotos">
+                <button type="button" class="conheca-btn-item prev" id="conhecaPrev" aria-label="Anterior"> < </button> 
+                <button type="button" class="conheca-btn-item next" id="conhecaNext" aria-label="Próximo"> > </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="application/json" id="conhecaData">@Html.Raw(dadosJson)</script>
+</section>

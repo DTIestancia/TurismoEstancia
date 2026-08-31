@@ -184,7 +184,18 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
+    }
+
+    /* Vídeo de fundo do hero (configurável no Gerenciador). Substitui o
+       antigo carrossel de imagens. */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
     }
 
     .hero-slide {
@@ -291,8 +302,20 @@
       padding: 0 32px;
     }
 
+    /* Título do hero centralizado, com a palavra em fonte VAZADA (apenas o
+       contorno), como no print. O preenchimento é transparente e o contorno
+       branco dá o efeito "esboçado". */
     .hero-text {
-      max-width: 768px;
+      max-width: 1200px;
+      text-align: center;
+      margin: 0 auto;
+    }
+
+    /* Se o navegador não suportar contorno de texto, mantém o título visível. */
+    @supports not (-webkit-text-stroke: 1px black) {
+      .hero-title-outline {
+        color: var(--color-white-solid);
+      }
     }
 
     .hero-title {
@@ -302,23 +325,27 @@
       color: var(--color-white-solid);
     }
 
-    .hero-title .highlight-orange {
-      color: #F97E31;
-    }
-    .hero-title .highlight-green {
-      color: #26CB96;
-    }
-    .hero-title .highlight-coral {
-      color: #FF9350;
+    .hero-title-outline {
+      font-family: 'Baloo 2', 'Inter', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3.4rem, 14vw, 11.5rem);
+      line-height: 0.95;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: transparent;
+      -webkit-text-stroke: clamp(1.5px, 0.38vw, 3px) rgba(255, 255, 255, 0.92);
+      text-shadow: 0 10px 48px rgba(0, 0, 0, 0.38);
     }
 
     .hero-subtitle {
-      margin-top: 24px;
+      margin-top: 22px;
+      margin-left: auto;
+      margin-right: auto;
       max-width: 672px;
       font-size: clamp(1rem, 2vw, 1.25rem);
       font-weight: 400;
       line-height: 1.625;
-      color: var(--color-white--90);
+      color: var(--color-white--75);
     }
 
     .hero-actions {
@@ -1139,6 +1166,19 @@
       font-size: 14px;
       font-weight: 500;
       line-height: 20px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.25s ease, outline-color 0.25s ease, transform 0.2s ease;
+    }
+
+    a.culture-tag:hover {
+      background: rgba(0, 0, 0, 0.40);
+      outline-color: rgba(255, 255, 255, 0.40);
+      transform: translateY(-2px);
+    }
+
+    a.culture-tag:active {
+      transform: translateY(0);
     }
 
     .culture-card-wrapper {
@@ -2431,10 +2471,10 @@
 
     .navbar-link {
       position: relative;
-      padding: 8px 14px;
+      padding: 8px 10px;
       border-radius: 10px;
       color: var(--color-white--85);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 400;
       line-height: 20px;
       text-decoration: none;
@@ -2446,8 +2486,8 @@
       content: '';
       position: absolute;
       bottom: 4px;
-      left: 14px;
-      right: 14px;
+      left: 10px;
+      right: 10px;
       height: 2px;
       background: linear-gradient(90deg, var(--color-orange-48), var(--color-red-54));
       border-radius: 2px;
@@ -2582,6 +2622,75 @@
     /* Hide mobile CTA on desktop */
     .navbar-cta-mobile {
       display: none;
+    }
+
+    /* Redes sociais compactas na navbar (desktop) */
+    .navbar-social {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin: 0 6px 0 10px;
+      padding-left: 12px;
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .navbar-social-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 9999px;
+      color: var(--color-white--70);
+      transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+    }
+
+    .navbar-social-link svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .navbar-social-link:hover {
+      background: var(--color-white--10);
+      color: var(--color-white-solid);
+      transform: translateY(-1px);
+    }
+
+    /* Seletor de idioma do site (desktop) */
+    .navbar-lang {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 6px;
+      border-radius: 10px;
+      color: var(--color-white--85);
+      cursor: pointer;
+      transition: background 0.25s ease;
+    }
+
+    .navbar-lang:hover {
+      background: var(--color-white--8);
+    }
+
+    .navbar-lang-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--color-white-solid);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 16px;
+      cursor: pointer;
+      padding: 0 16px 0 0;
+      text-transform: uppercase;
+    }
+
+    .navbar-lang-select option {
+      color: #101820;
+      background: #ffffff;
     }
 
     /* ===== Lucide Icons ===== */
@@ -3373,79 +3482,67 @@
       z-index: 5;
       pointer-events: none;
       clip-path: polygon(
-        0% 0%,
-        3% 15%,
-        6% 30%,
-        9% 40%,
-        12% 45%,
-        15% 48%,
-        18% 50%,
-        21% 48%,
-        24% 45%,
-        27% 40%,
-        30% 35%,
-        33% 30%,
-        36% 28%,
-        39% 30%,
-        42% 35%,
-        45% 40%,
-        48% 48%,
-        51% 55%,
-        54% 60%,
-        57% 62%,
-        60% 60%,
-        63% 55%,
-        66% 48%,
-        69% 40%,
-        72% 35%,
-        75% 32%,
-        78% 33%,
-        81% 38%,
-        84% 45%,
-        87% 52%,
-        90% 58%,
-        93% 60%,
-        96% 55%,
+        0% 30%,
+        4% 40%,
+        8% 49%,
+        12% 54%,
+        17% 56%,
+        22% 54%,
+        27% 49%,
+        32% 41%,
+        38% 32%,
+        44% 26%,
+        50% 24%,
+        56% 26%,
+        62% 32%,
+        68% 40%,
+        74% 48%,
+        80% 54%,
+        86% 56%,
+        92% 53%,
+        96% 48%,
         100% 40%,
         100% 100%,
         0% 100%
       );
     }
 
-    /* Each section gets the NEXT section's color as the wave fill */
-    .section-video.section-divider::after {
+    /* A onda de cada seção usa a cor de fundo da PRÓXIMA seção, para que ela
+       "nasça" da seção seguinte e flua de forma discreta, como se fizesse
+       parte dela. */
+    .section-noticias.section-divider::after {
       background: var(--color-orange-47);
-      height: 48px;
+      height: 54px;
     }
 
     .section-history.section-divider::after {
-      background: var(--color-cyan-41);
-      height: 56px;
+      background: #0A2A55;
+      height: 58px;
     }
 
-    .section-culture.section-divider::after {
-      background: var(--color-rose-42);
-      height: 52px;
-    }
-
-    .section-gastronomy.section-divider::after {
+    .section-conheca.section-divider::after {
       background: var(--color-azure-5);
-      height: 60px;
+      height: 58px;
     }
 
     .section-wonders.section-divider::after {
       background: #320100;
-      height: 54px;
+      height: 58px;
     }
 
     .section-agenda.section-divider::after {
       background: var(--color-azure-5);
-      height: 50px;
+      height: 52px;
     }
 
     .section-map.section-divider::after {
       background: var(--color-azure-7);
-      height: 44px;
+      height: 50px;
+    }
+
+    .section-roteiros.section-divider::after {
+      background: var(--color-azure-7);
+      height: 48px;
     }
 
     /* Smooth variant: gradient blend instead of wave */
@@ -3658,6 +3755,34 @@
 
       .navbar-links.open .navbar-cta-mobile:hover {
         transform: scale(1.02);
+      }
+
+      /* Redes sociais + idioma entram no menu overlay (mobile) */
+      .navbar-links.open .navbar-social {
+        margin: 16px 4px 0;
+        padding: 0;
+        border-left: none;
+        justify-content: flex-start;
+      }
+
+      .navbar-links.open .navbar-social-link {
+        width: 42px;
+        height: 42px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .navbar-links.open .navbar-social-link:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+
+      .navbar-links.open .navbar-lang {
+        margin-top: 12px;
+        padding: 12px 20px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.03);
       }
 
       .hero-carousel {
@@ -4875,4 +5000,278 @@
       padding: 8px 16px;
       border-radius: 8px;
       display: inline-flex !important;
+    }
+
+    /* ===== Explorador "Conheça Estância" (estilo do print) ===== */
+    .section-conheca {
+      position: relative;
+      --secao-cor: var(--color-cyan-41);
+      overflow: hidden;
+      padding: clamp(56px, 7vw, 100px) 0;
+      background:
+        radial-gradient(ellipse 68% 60% at 88% -14%, rgba(0, 149, 246, 0.30), transparent 60%),
+        radial-gradient(ellipse 90% 74% at -10% 114%, rgba(233, 86, 138, 0.30), transparent 62%),
+        #0A2A55;
+    }
+
+    .conheca-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 56% 52% at 86% 4%, rgba(0, 149, 246, 0.20), transparent 62%),
+        radial-gradient(ellipse 54% 56% at 4% 92%, rgba(240, 64, 140, 0.22), transparent 62%);
+    }
+
+    .conheca-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 32px;
+      text-align: center;
+    }
+
+    .conheca-heading {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--color-white-solid);
+    }
+
+    .conheca-heading strong { color: var(--secao-cor); }
+
+    .conheca-desc-intro {
+      margin: 14px auto 0;
+      max-width: 680px;
+      color: var(--color-white--85);
+      font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+      line-height: 1.6;
+    }
+
+    .conheca-tabs {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: clamp(22px, 3vw, 34px);
+    }
+
+    .conheca-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.85);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 18px;
+      cursor: pointer;
+      transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+    }
+
+    .conheca-tab:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: var(--color-white-solid);
+      transform: translateY(-1px);
+    }
+
+    .conheca-tab.active {
+      background: var(--color-white-solid);
+      color: #C2185B;
+      font-weight: 700;
+      border-color: var(--color-white-solid);
+      box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.35);
+    }
+
+    .conheca-tab i { flex: none; }
+
+    /* ===== Baralho/carrossel de fotos (estilo do print) ===== */
+    .conheca-card {
+      position: relative;
+      height: clamp(460px, 54vw, 600px);
+      margin-top: clamp(20px, 2.6vw, 28px);
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 24px;
+      box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.6);
+    }
+
+    .conheca-card-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 24px;
+    }
+
+    .conheca-card-item {
+      position: absolute;
+      top: 50%;
+      transform: translate(0, -50%);
+      width: clamp(200px, 22vw, 256px);
+      height: clamp(250px, 30vw, 330px);
+      border-radius: 20px;
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.45);
+      background-position: 50% 50%;
+      background-size: cover;
+      display: inline-block;
+      overflow: hidden;
+      transition: all 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* As duas primeiras cartas preenchem o card (a ativa é a 2ª) */
+    .conheca-card-item:nth-child(1),
+    .conheca-card-item:nth-child(2) {
+      top: 0;
+      left: 0;
+      transform: none;
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
+    }
+
+    .conheca-card-item:nth-child(3) { left: 50%; }
+    .conheca-card-item:nth-child(4) { left: calc(50% + 226px); }
+    .conheca-card-item:nth-child(5) { left: calc(50% + 452px); }
+    .conheca-card-item:nth-child(n + 6) { left: calc(50% + 678px); opacity: 0; }
+
+    .conheca-card-item.no-photo {
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 10%, rgba(0, 149, 246, 0.40), transparent 60%),
+        radial-gradient(ellipse 60% 50% at 20% 90%, rgba(233, 86, 138, 0.45), transparent 60%),
+        #0A2A55;
+    }
+
+    .conheca-card-content {
+      position: absolute;
+      top: 50%;
+      left: clamp(24px, 6vw, 96px);
+      transform: translate(0, -50%);
+      width: min(40%, 440px);
+      color: var(--color-white-solid);
+      z-index: 2;
+      display: none;
+    }
+
+    .conheca-card-item:nth-child(2) .conheca-card-content,
+    .conheca-card-item:nth-child(1):last-child .conheca-card-content {
+      display: block;
+    }
+
+    .conheca-card-pill {
+      display: inline-block;
+      background: var(--color-cyan-41);
+      color: var(--color-white-solid);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-radius: 999px;
+      animation: conhecaCardIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .conheca-card-name {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.8rem, 3.6vw, 3rem);
+      font-weight: 700;
+      line-height: 1.05;
+      text-transform: uppercase;
+      margin-top: 12px;
+      text-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+      animation: conhecaCardIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+    }
+
+    .conheca-card-des {
+      margin-top: 10px;
+      font-size: clamp(0.95rem, 1.5vw, 1.08rem);
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.92);
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+      animation: conhecaCardIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+    }
+
+    .conheca-card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      padding: 12px 22px;
+      background: linear-gradient(135deg, var(--color-orange-48), var(--color-red-54));
+      color: var(--color-white-solid);
+      border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      text-decoration: none;
+      box-shadow: 0 8px 24px -10px rgba(237, 32, 39, 0.6);
+      animation: conhecaCardIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
+    }
+
+    .conheca-card-link:hover { filter: brightness(1.06); }
+
+    @keyframes conhecaCardIn {
+      from { opacity: 0; transform: translate(0, 42px); filter: blur(12px); }
+      to { opacity: 1; transform: translate(0); filter: blur(0); }
+    }
+
+    .conheca-btn {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 3;
+    }
+
+    .conheca-btn-item {
+      width: 46px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid rgba(10, 24, 42, 0.55);
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--color-azure-7);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .conheca-btn-item:hover {
+      transform: scale(1.1);
+      background: var(--color-white-solid);
+      border-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .conheca-empty {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.8);
+      font-family: 'Inter', sans-serif;
+      font-size: 1.1rem;
+      padding: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .conheca-card { height: 400px; }
+      .conheca-card-item:nth-child(n + 3) { opacity: 0; pointer-events: none; }
+      .conheca-card-content { left: 22px; width: 74%; }
+      .conheca-btn-item { width: 42px; height: 38px; }
     }

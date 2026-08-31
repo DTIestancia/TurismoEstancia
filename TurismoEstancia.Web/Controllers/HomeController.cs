@@ -108,6 +108,8 @@ public class HomeController : Controller
             .Where(p => p.ExibirNoMapa && p.Ativo)
             .ToList();
 
+        vm.ConhecaEstancia = MontarConhecaEstancia(vm.Conteudos, vm.GruposCulturais, vm.PratosTuristicos, categorias, pontos);
+
         vm.MapaJson = SerializarMapa(categorias, pontos);
 
         return View(vm);
@@ -173,6 +175,87 @@ public class HomeController : Controller
         "service" => "S",
         _ => "•"
     };
+
+    /// <summary>
+    /// Monta o explorador "Conheça Estância": quatro abas (História, Cultura,
+    /// Gastronomia, Experiências) semelhantes ao print. Cada aba traz uma lista
+    /// de itens (foto + título + explicação + link de detalhe).
+    /// História e Experiências usam pontos turísticos de categorias-chave
+    /// configuráveis no Gerenciador (padrão "heritage" e "nature").
+    /// </summary>
+    private IReadOnlyList<ConhecaEstanciaTab> MontarConhecaEstancia(
+        IReadOnlyDictionary<string, string?> conteudos,
+        IReadOnlyList<GrupoCulturalDto> grupos,
+        IReadOnlyList<PratoTuristicoDto> pratos,
+        IReadOnlyList<CategoriaPontoTuristicoDto> categorias,
+        IReadOnlyList<PontoTuristicoDto> pontos)
+    {
+        var porId = categorias.ToDictionary(c => c.Id);
+        static string chavePontos(CategoriaPontoTuristicoDto? c) => c?.Chave ?? "";
+
+        // Categorias-chave que alimentam História e Experiências — o Gerenciador
+        // permite trocar (Secoes › Conheça Estância).
+        var chaveHistoria = conteudos.GetValueOrDefault("conheca-historia-categoria", "heritage");
+        var chaveExperiencias = conteudos.GetValueOrDefault("conheca-experiencias-categoria", "nature");
+
+        var tabs = new List<ConhecaEstanciaTab>();
+
+        // História — pontos turísticos de patrimônio/história (com capa).
+        var historia = pontos
+            .Where(p => p.Ativo && p.CapaArquivoId is long
+                && porId.TryGetValue(p.CategoriaId, out var c) && chavePontos(c) == chaveHistoria)
+            .OrderBy(p => p.Ordem)
+            .Select(p => new ConhecaEstanciaItem
+            {
+                Nome = p.Nome,
+                Descricao = p.Descricao,
+                ImagemArquivoId = p.CapaArquivoId,
+                Url = Url.Content($"~/lugares/{p.Id}/{Slug.De(p.Nome)}")
+            })
+            .ToList();
+        tabs.Add(new ConhecaEstanciaTab { Chave = "historia", Rotulo = "História", Icone = "landmark", Itens = historia });
+
+        // Cultura — grupos culturais (com foto cadastrada no CRUD).
+        var cultura = grupos
+            .Select(g => new ConhecaEstanciaItem
+            {
+                Nome = g.Nome,
+                Descricao = g.Descricao,
+                ImagemArquivoId = g.ImagemArquivoId,
+                Url = Url.Content($"~/grupos-populares/{g.Id}/{Slug.De(g.Nome)}")
+            })
+            .ToList();
+        tabs.Add(new ConhecaEstanciaTab { Chave = "cultura", Rotulo = "Cultura", Icone = "music", Itens = cultura });
+
+        // Gastronomia — pratos turísticos (com foto).
+        var gastronomia = pratos
+            .Select(p => new ConhecaEstanciaItem
+            {
+                Nome = p.Nome,
+                Descricao = p.Descricao,
+                ImagemArquivoId = p.ImagemArquivoId,
+                Url = Url.Content($"~/gastronomia/{p.Id}/{Slug.De(p.Nome)}")
+            })
+            .ToList();
+        tabs.Add(new ConhecaEstanciaTab { Chave = "gastronomia", Rotulo = "Gastronomia", Icone = "utensils", Itens = gastronomia });
+
+        // Experiências — praias/natureza (com capa).
+        var experiencias = pontos
+            .Where(p => p.Ativo && p.CapaArquivoId is long
+                && porId.TryGetValue(p.CategoriaId, out var c) && chavePontos(c) == chaveExperiencias)
+            .OrderBy(p => p.Ordem)
+            .Select(p => new ConhecaEstanciaItem
+            {
+                Nome = p.Nome,
+                Descricao = p.Descricao,
+                ImagemArquivoId = p.CapaArquivoId,
+                Url = Url.Content($"~/lugares/{p.Id}/{Slug.De(p.Nome)}")
+            })
+            .ToList();
+        tabs.Add(new ConhecaEstanciaTab { Chave = "experiencias", Rotulo = "Experiências", Icone = "sun", Itens = experiencias });
+
+        return tabs;
+    }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
