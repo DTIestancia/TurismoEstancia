@@ -43,9 +43,17 @@
     </div>
 
     <div class="painel-field">
+        <label asp-for="Corpo"></label>
+        <textarea asp-for="Corpo" class="painel-textarea"></textarea>
+        @await Html.PartialAsync("_EditorTextoRico", "Corpo")
+        <span class="painel-hint">Editor rico — negrito, itálico, tamanho de fonte, cor, listas e links. Exibido na página /conheca-estancia/{id}.</span>
+    </div>
+
+    <div class="painel-field">
         <label>Foto da seção</label>
         <input type="file" name="imagem" accept="image/*" class="painel-input" />
-        <span class="painel-hint">Imagem em tela cheia exibida na aba selecionada (recomendado: paisagem, boa resolução).</span>
+        @await Html.PartialAsync("_AjusteImagemConheca", Model)
+        <span class="painel-hint">Imagem exibida no deck da home e na página de detalhe. Ajuste o recorte acima — salvo mesmo sem trocar a imagem.</span>
     </div>
 
     <div class="painel-field">

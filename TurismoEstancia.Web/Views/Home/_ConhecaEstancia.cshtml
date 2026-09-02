@@ -15,16 +15,24 @@
             icone = t.Icone,
             itens = t.Itens.Select(i => new
             {
+                id = i.Id,
                 nome = i.Nome,
                 descricao = i.Descricao ?? "",
-                imagem = i.ImagemArquivoId is long img ? Url.Content($"~/arquivo/{img}") : ""
+                imagem = i.ImagemArquivoId is long img ? Url.Content($"~/arquivo/{img}") : "",
+                url = i.Url ?? "",
+                zoom = i.ImagemZoom,
+                posX = i.ImagemPosicaoX,
+                posY = i.ImagemPosicaoY
             })
         }));
 }
 
 <section class="section-conheca section-divider" id="section-conheca" data-section="conheca">
-    <div class="conheca-slides" id="conhecaSlides" aria-hidden="true"></div>
-    <div class="conheca-scrim" aria-hidden="true"></div>
+    @* deck de imagens em tela cheia — a ativa ocupa a sessão toda; navegação por clique nas cartas *@
+    <div class="conheca-card" aria-hidden="true">
+        <div class="conheca-card-slide" id="conhecaDeck"></div>
+        <div class="conheca-scrim" aria-hidden="true"></div>
+    </div>
 
     <div class="conheca-inner">
         <header class="conheca-topo">
@@ -53,6 +61,7 @@
                 <span class="conheca-pill" id="conhecaPill"></span>
                 <h3 class="conheca-name" id="conhecaName"></h3>
                 <p class="conheca-des" id="conhecaDes"></p>
+                <a class="conheca-card-link" id="conhecaLink" href="#">Ver mais <i data-lucide="arrow-right" class="icon-sm"></i></a>
             </div>
         }
         else
@@ -60,17 +69,6 @@
             <div class="conheca-empty">Em breve, novidades sobre Estância por aqui.</div>
         }
     </div>
-
-    @if (temItens)
-    {
-        <button type="button" class="vitrine-seta vitrine-seta--overlay conheca-seta conheca-seta--prev" id="conhecaPrev" aria-label="Foto anterior">
-            <i data-lucide="chevron-left" class="icon-lg"></i>
-        </button>
-        <button type="button" class="vitrine-seta vitrine-seta--overlay conheca-seta conheca-seta--next" id="conhecaNext" aria-label="Próxima foto">
-            <i data-lucide="chevron-right" class="icon-lg"></i>
-        </button>
-        <div class="conheca-counter" id="conhecaCounter" aria-hidden="true"></div>
-    }
 
     <script type="application/json" id="conhecaData">@Html.Raw(dadosJson)</script>
 </section>

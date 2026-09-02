@@ -16,10 +16,22 @@ public class ConhecaEstanciaItem
     /// <summary>Texto sobreposto à foto na seção.</summary>
     public string? Descricao { get; set; }
 
+    /// <summary>Conteúdo completo exibido na página de detalhe (estilo blog).</summary>
+    public string? Corpo { get; set; }
+
     /// <summary>Foto de fundo (ocupa a seção inteira).</summary>
     public long? ImagemArquivoId { get; set; }
 
     public Arquivo? Imagem { get; set; }
+
+    /// <summary>Zoom (%) aplicado ao recorte da imagem (100 = sem zoom, até 250).</summary>
+    public int ImagemZoom { get; set; } = 100;
+
+    /// <summary>Posição horizontal do foco do recorte (object-position X, 0–100).</summary>
+    public int ImagemPosicaoX { get; set; } = 50;
+
+    /// <summary>Posição vertical do foco do recorte (object-position Y, 0–100).</summary>
+    public int ImagemPosicaoY { get; set; } = 50;
 
     public int Ordem { get; set; }
 

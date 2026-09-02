@@ -89,76 +89,110 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   })();
 
-  // ===== Seção "Conheça Estância" (carrossel de tela cheia) =====
-  // Cada aba (História, Cultura, Gastronomia, Experiências) alimenta um
-  // carrossel de fotos que ocupam a seção inteira; o texto (aba, título e
-  // descrição) fica sobreposto com sombreamento. Setas (mesmo padrão da
-  // vitrine das maravilhas) e abas trocam as fotos com fade + blur suave.
+  // ===== "Conheça Estância" — deck em tela cheia com texto por cima =====
+  // A imagem ativa ocupa a sessão toda; pill/nome/descrição/Ver mais ficam
+  // no overlay (.conheca-info) por cima com sombreamento. Cartas 3+ espreitam
+  // à direita — clicar nelas ou nas setas (padrão vitrine) gira o baralho.
   (function initConhecaEstancia() {
     var dataEl = document.getElementById('conhecaData');
-    var slidesWrap = document.getElementById('conhecaSlides');
-    if (!dataEl || !slidesWrap) return;
+    var deck = document.getElementById('conhecaDeck');
+    if (!dataEl || !deck) return;
     var tabs;
     try { tabs = JSON.parse(dataEl.textContent); } catch (e) { return; }
     if (!tabs || !tabs.length) return;
 
     var prevBtn = document.getElementById('conhecaPrev');
     var nextBtn = document.getElementById('conhecaNext');
+    var tabButtons = document.querySelectorAll('.conheca-tab');
     var infoEl = document.getElementById('conhecaInfo');
     var pillEl = document.getElementById('conhecaPill');
     var nameEl = document.getElementById('conhecaName');
     var desEl = document.getElementById('conhecaDes');
-    var counterEl = document.getElementById('conhecaCounter');
-    var tabButtons = document.querySelectorAll('.conheca-tab');
-
+    var linkEl = document.getElementById('conhecaLink');
     var activeTabIdx = 0;
-    var activeIdx = 0;
-    var slideEls = [];
 
-    function itens() { return (tabs[activeTabIdx] && tabs[activeTabIdx].itens) || []; }
-
-    function montarSlides() {
-      slidesWrap.innerHTML = '';
-      slideEls = itens().map(function (it) {
-        var el = document.createElement('div');
-        el.className = 'conheca-slide';
-        if (it.imagem) el.style.backgroundImage = "url('" + it.imagem + "')";
-        else el.classList.add('no-photo');
-        slidesWrap.appendChild(el);
-        return el;
-      });
+    function esc(s) {
+      var d = document.createElement('div');
+      d.textContent = s == null ? '' : s;
+      return d.innerHTML;
     }
 
-    function dois(n) { return (n < 10 ? '0' : '') + n; }
+    function itensAtuais() { return (tabs[activeTabIdx] && tabs[activeTabIdx].itens) || []; }
 
-    function atualizar(animarInfo) {
-      var lista = itens();
-      if (!lista.length) return;
-      if (activeIdx >= lista.length) activeIdx = 0;
-      var item = lista[activeIdx];
+    function buildCard(item) {
+      var el = document.createElement('div');
+      el.className = 'conheca-card-item';
+      if (item.imagem) el.style.backgroundImage = "url('" + item.imagem + "')";
+      else el.classList.add('no-photo');
+      // posição/zoom do Gerenciador (mesmo da Notícia)
+      var px = item.posX != null ? item.posX : 50;
+      var py = item.posY != null ? item.posY : 50;
+      el.style.backgroundPosition = px + '% ' + py + '%';
+      el.dataset.nome = item.nome || '';
+      el.addEventListener('click', function () {
+        var idx = Array.prototype.indexOf.call(deck.children, el);
+        if (idx <= 1) return;
+        var moves = idx - 1;
+        for (var k = 0; k < moves; k++) moverPrimeira();
+        atualizarInfo(true);
+      });
+      return el;
+    }
 
-      slideEls.forEach(function (el, i) { el.classList.toggle('is-active', i === activeIdx); });
+    function renderDeck() {
+      deck.innerHTML = '';
+      var tab = tabs[activeTabIdx];
+      var itens = tab.itens || [];
+      if (!itens.length) {
+        var empty = document.createElement('div');
+        empty.className = 'conheca-empty';
+        empty.textContent = 'Em breve, novidades sobre ' + esc(tab.rotulo) + '.';
+        deck.appendChild(empty);
+        if (infoEl) infoEl.style.display = 'none';
+        return;
+      }
+      if (infoEl) infoEl.style.display = '';
+      var fila = itens.slice();
+      var ultima = fila.pop();
+      if (ultima) deck.appendChild(buildCard(ultima));
+      fila.forEach(function (it) { deck.appendChild(buildCard(it)); });
+      atualizarInfo(false);
+    }
 
+    function atualizarInfo(animar) {
+      var itens = itensAtuais();
+      if (!itens.length || !infoEl) return;
+      // destaque é sempre a 2ª carta (índice 1), ou a única se só há uma
+      var deckItems = deck.querySelectorAll('.conheca-card-item');
+      var destaqueIdx = deckItems.length === 1 ? 0 : 1;
+      var nomeDestaque = deckItems[destaqueIdx] ? deckItems[destaqueIdx].dataset.nome : '';
+      var item = null;
+      for (var i = 0; i < itens.length; i++) { if (itens[i].nome === nomeDestaque) { item = itens[i]; break; } }
+      if (!item) item = itens[0];
       if (pillEl) pillEl.textContent = tabs[activeTabIdx].rotulo;
       if (nameEl) nameEl.textContent = item.nome;
       if (desEl) {
         desEl.textContent = item.descricao || '';
         desEl.style.display = item.descricao ? '' : 'none';
       }
-      if (counterEl) counterEl.textContent = dois(activeIdx + 1) + ' / ' + dois(lista.length);
-
-      if (animarInfo && infoEl) {
+      if (linkEl) linkEl.href = item.url || '#';
+      if (animar && infoEl) {
         infoEl.classList.remove('is-anim');
         void infoEl.offsetWidth;
         infoEl.classList.add('is-anim');
       }
     }
 
-    function trocar(delta) {
-      var total = itens().length;
-      if (!total) return;
-      activeIdx = (activeIdx + delta + total) % total;
-      atualizar(true);
+    function moverPrimeira() {
+      var first = deck.querySelector('.conheca-card-item');
+      if (first) deck.appendChild(first);
+      atualizarInfo(true);
+    }
+    function moverUltima() {
+      var cards = deck.querySelectorAll('.conheca-card-item');
+      var last = cards[cards.length - 1];
+      if (last) deck.insertBefore(last, deck.firstChild);
+      atualizarInfo(true);
     }
 
     tabButtons.forEach(function (btn) {
@@ -168,25 +202,21 @@ document.addEventListener('DOMContentLoaded', function () {
         tabs.forEach(function (t, i) { if (t.chave === chave) idx = i; });
         if (idx < 0 || idx === activeTabIdx) return;
         activeTabIdx = idx;
-        activeIdx = 0;
         tabButtons.forEach(function (b) { b.classList.toggle('active', b === btn); });
-        montarSlides();
-        atualizar(true);
+        renderDeck();
       });
     });
 
-    if (nextBtn) nextBtn.addEventListener('click', function () { trocar(1); });
-    if (prevBtn) prevBtn.addEventListener('click', function () { trocar(-1); });
+    if (nextBtn) nextBtn.addEventListener('click', moverPrimeira);
+    if (prevBtn) prevBtn.addEventListener('click', moverUltima);
 
-    // Abre a primeira aba que tenha conteúdo.
     var idxInicial = 0;
     for (var i = 0; i < tabs.length; i++) {
       if ((tabs[i].itens || []).length) { idxInicial = i; break; }
     }
     activeTabIdx = idxInicial;
     tabButtons.forEach(function (b, i) { b.classList.toggle('active', i === idxInicial); });
-    montarSlides();
-    atualizar(false);
+    renderDeck();
   })();
 
   // ===== Reading Progress Bar =====

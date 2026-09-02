@@ -483,6 +483,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Categoria).HasConversion<string>().HasMaxLength(20);
             entity.Property(e => e.Nome).HasMaxLength(200).IsRequired();
             entity.Property(e => e.Descricao).HasMaxLength(1000);
+            entity.Property(e => e.Corpo).HasColumnType("nvarchar(max)");
             entity.Property(e => e.Ativo).HasDefaultValue(true);
 
             // Referência compartilhada (Arquivo): SetNull, como nas demais

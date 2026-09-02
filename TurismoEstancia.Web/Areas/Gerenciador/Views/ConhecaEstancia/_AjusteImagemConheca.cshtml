@@ -1,0 +1,136 @@
+@model ConhecaEstanciaItemDto
+@{
+    var zoom = Model.ImagemZoom is >= 100 and <= 250 ? Model.ImagemZoom : 100;
+    var posX = Model.ImagemPosicaoX is >= 0 and <= 100 ? Model.ImagemPosicaoX : 50;
+    var posY = Model.ImagemPosicaoY is >= 0 and <= 100 ? Model.ImagemPosicaoY : 50;
+    var srcAtual = Model.ImagemArquivoId is long idAtual ? Url.Content($"~/arquivo/{idAtual}") : null;
+}
+<div class="painel-field">
+    <label>Posição e zoom da imagem</label>
+    <div class="ajuste-imagem"
+         data-ajuste-imagem
+         data-zoom="@zoom"
+         data-x="@posX"
+         data-y="@posY"
+         data-src="@srcAtual">
+        <div class="ajuste-imagem-previa">
+            <div class="ajuste-imagem-janela">
+                <img class="ajuste-imagem-img" alt="Prévia do recorte da imagem" />
+                <span class="ajuste-imagem-vazio">
+                    <i data-lucide="image-plus" class="icon-xl"></i>
+                    Selecione uma imagem para ajustar o recorte.
+                </span>
+            </div>
+        </div>
+        <div class="ajuste-imagem-controles">
+            <div class="ajuste-imagem-controle">
+                <label for="ajusteZoom">Zoom <span class="ajuste-imagem-valor" data-rotulo="zoom">@zoom%</span></label>
+                <input type="range" id="ajusteZoom" class="ajuste-imagem-range" data-alvo="zoom" min="100" max="250" step="5" value="@zoom" />
+            </div>
+            <div class="ajuste-imagem-controle">
+                <label for="ajusteY">Posição vertical <span class="ajuste-imagem-valor" data-rotulo="y">@posY%</span></label>
+                <input type="range" id="ajusteY" class="ajuste-imagem-range" data-alvo="y" min="0" max="100" step="5" value="@posY" />
+            </div>
+            <div class="ajuste-imagem-controle">
+                <label for="ajusteX">Posição horizontal <span class="ajuste-imagem-valor" data-rotulo="x">@posX%</span></label>
+                <input type="range" id="ajusteX" class="ajuste-imagem-range" data-alvo="x" min="0" max="100" step="5" value="@posX" />
+            </div>
+            <button type="button" class="btn-painel btn-painel--ghost btn-painel--xs" data-ajuste-reset>
+                <i data-lucide="rotate-ccw"></i> Redefinir
+            </button>
+        </div>
+
+        <input type="hidden" asp-for="ImagemZoom" />
+        <input type="hidden" asp-for="ImagemPosicaoX" />
+        <input type="hidden" asp-for="ImagemPosicaoY" />
+    </div>
+    <span class="painel-hint">
+        O recorte vale para o deck da home e para a página de detalhe. Use o zoom para aproximar e a posição
+        para mostrar o assunto (ex.: o topo da foto) — a prévia mostra exatamente o resultado.
+    </span>
+</div>
+
+<script>
+    (function () {
+        document.querySelectorAll('[data-ajuste-imagem]').forEach(function (caixa) {
+            if (caixa.dataset.inicializado === '1') return;
+            caixa.dataset.inicializado = '1';
+            var janela = caixa.querySelector('.ajuste-imagem-janela');
+            var img = caixa.querySelector('.ajuste-imagem-img');
+            var vazio = caixa.querySelector('.ajuste-imagem-vazio');
+            var hZoom = caixa.querySelector('input[name="ImagemZoom"]');
+            var hX = caixa.querySelector('input[name="ImagemPosicaoX"]');
+            var hY = caixa.querySelector('input[name="ImagemPosicaoY"]');
+            var rangeZoom = caixa.querySelector('input[data-alvo="zoom"]');
+            var rangeX = caixa.querySelector('input[data-alvo="x"]');
+            var rangeY = caixa.querySelector('input[data-alvo="y"]');
+            var rotuloZoom = caixa.querySelector('[data-rotulo="zoom"]');
+            var rotuloX = caixa.querySelector('[data-rotulo="x"]');
+            var rotuloY = caixa.querySelector('[data-rotulo="y"]');
+
+            var zoom = parseInt(caixa.getAttribute('data-zoom'), 10) || 100;
+            var x = parseInt(caixa.getAttribute('data-x'), 10);
+            var y = parseInt(caixa.getAttribute('data-y'), 10);
+            if (isNaN(x)) x = 50;
+            if (isNaN(y)) y = 50;
+            var src = caixa.getAttribute('data-src') || '';
+
+            function aplicar() {
+                if (src) {
+                    img.src = src;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.objectPosition = x + '% ' + y + '%';
+                    img.style.transformOrigin = x + '% ' + y + '%';
+                    img.style.transform = 'scale(' + (zoom / 100) + ')';
+                    img.style.display = 'block';
+                    vazio.style.display = 'none';
+                } else {
+                    img.style.display = 'none';
+                    vazio.style.display = '';
+                }
+                rotuloZoom.textContent = zoom + '%';
+                rotuloX.textContent = x + '%';
+                rotuloY.textContent = y + '%';
+                hZoom.value = zoom;
+                hX.value = x;
+                hY.value = y;
+            }
+
+            function sincronizarSliders() {
+                rangeZoom.value = zoom;
+                rangeX.value = x;
+                rangeY.value = y;
+            }
+
+            rangeZoom.addEventListener('input', function () { zoom = parseInt(rangeZoom.value, 10) || 100; aplicar(); });
+            rangeX.addEventListener('input', function () { x = parseInt(rangeX.value, 10) || 50; aplicar(); });
+            rangeY.addEventListener('input', function () { y = parseInt(rangeY.value, 10) || 50; aplicar(); });
+
+            var reset = caixa.querySelector('[data-ajuste-reset]');
+            if (reset) {
+                reset.addEventListener('click', function () {
+                    zoom = 100; x = 50; y = 50;
+                    sincronizarSliders();
+                    aplicar();
+                });
+            }
+
+            var form = caixa.closest('form');
+            var arquivo = form && form.querySelector('input[type="file"][name="imagem"]');
+            if (arquivo) {
+                arquivo.addEventListener('change', function () {
+                    var f = arquivo.files && arquivo.files[0];
+                    if (!f) return;
+                    var reader = new FileReader();
+                    reader.onload = function () { src = reader.result; aplicar(); };
+                    reader.readAsDataURL(f);
+                });
+            }
+
+            sincronizarSliders();
+            aplicar();
+        });
+    })();
+</script>

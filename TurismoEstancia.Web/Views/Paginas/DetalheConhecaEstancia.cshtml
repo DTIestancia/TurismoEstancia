@@ -1,0 +1,65 @@
+@model ConhecaEstanciaItemDto
+@using TurismoEstancia.Domain.Models
+@{
+    ViewData["Title"] = Model.Nome;
+    string RotuloCategoria(CategoriaConhecaEstancia c) => c switch
+    {
+        CategoriaConhecaEstancia.Historia => "História",
+        CategoriaConhecaEstancia.Cultura => "Cultura",
+        CategoriaConhecaEstancia.Gastronomia => "Gastronomia",
+        CategoriaConhecaEstancia.Experiencias => "Experiências",
+        _ => c.ToString()
+    };
+    string IconeCategoria(CategoriaConhecaEstancia c) => c switch
+    {
+        CategoriaConhecaEstancia.Historia => "landmark",
+        CategoriaConhecaEstancia.Cultura => "music",
+        CategoriaConhecaEstancia.Gastronomia => "utensils",
+        CategoriaConhecaEstancia.Experiencias => "sun",
+        _ => "compass"
+    };
+}
+<main class="paginas-page page-public">
+    @await Html.PartialAsync("_PaginasHeader")
+
+    <section class="item-hero">
+        @if (Model.ImagemArquivoId is long img)
+        {
+            <img class="item-hero-bg" src="@Url.Content($"~/arquivo/{img}")" alt="@Model.Nome"
+                 style="object-position:@(Model.ImagemPosicaoX)% @(Model.ImagemPosicaoY)%;transform-origin:@(Model.ImagemPosicaoX)% @(Model.ImagemPosicaoY)%;transform:scale(@((Model.ImagemZoom/100.0).ToString(System.Globalization.CultureInfo.InvariantCulture)));" />
+            <div class="item-hero-overlay"></div>
+        }
+        <div class="item-hero-content">
+            <div class="pill pill-white" style="background:rgba(255,255,255,0.14);">
+                <i data-lucide="@IconeCategoria(Model.Categoria)" class="icon-lg"></i>
+                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">@RotuloCategoria(Model.Categoria)</span>
+            </div>
+            <h1 class="item-hero-title">@Model.Nome</h1>
+        </div>
+    </section>
+
+    <div class="paginas-container paginas-container--item">
+        @if (!string.IsNullOrWhiteSpace(Model.Descricao))
+        {
+            <p class="item-descricao">@Model.Descricao</p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Corpo))
+        {
+            <article class="item-corpo" style="margin-top:22px;font-size:15.5px;line-height:1.75;color:var(--color-white--85);">
+                @Html.Raw(Model.Corpo)
+            </article>
+        }
+        else
+        {
+            <p class="item-descricao" style="color:var(--color-white--55);">Em breve, mais informações sobre este item.</p>
+        }
+
+        <div class="paginas-cta-row">
+            <a href="@Url.Content("~/")#section-conheca" class="btn-primary"><i data-lucide="arrow-left" class="icon-lg"></i> Voltar ao Conheça Estância</a>
+            <a href="@Url.Content("~/")" class="btn-secondary"><i data-lucide="home" class="icon-lg"></i> Voltar ao início</a>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_PaginasFooter")
+</main>

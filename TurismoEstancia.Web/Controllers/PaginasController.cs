@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TurismoEstancia.Services.Avaliacao.Interfaces;
+using TurismoEstancia.Services.ConhecaEstancia.Interfaces;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
 using TurismoEstancia.Services.Roteiro.Interfaces;
@@ -25,6 +26,7 @@ public class PaginasController : Controller
     private readonly ICategoriaPontoTuristicoService _categorias;
     private readonly IAvaliacaoService _avaliacoes;
     private readonly IRoteiroService _roteiros;
+    private readonly IConhecaEstanciaService _conheca;
 
     public PaginasController(
         IConteudoSiteService conteudos,
@@ -36,7 +38,8 @@ public class PaginasController : Controller
         IPontoTuristicoService pontos,
         ICategoriaPontoTuristicoService categorias,
         IAvaliacaoService avaliacoes,
-        IRoteiroService roteiros)
+        IRoteiroService roteiros,
+        IConhecaEstanciaService conheca)
     {
         _conteudos = conteudos;
         _estatisticas = estatisticas;
@@ -48,6 +51,7 @@ public class PaginasController : Controller
         _categorias = categorias;
         _avaliacoes = avaliacoes;
         _roteiros = roteiros;
+        _conheca = conheca;
     }
 
     /// <summary>GET /cidade — história completa da cidade.</summary>
@@ -212,6 +216,23 @@ public class PaginasController : Controller
         DefinirSeo(tag.Nome, tag.Descricao,
             tag.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}") : null);
         return View(tag);
+    }
+
+    /// <summary>GET /conheca-estancia/{id}/{slug?} — detalhe do Conheça Estância (estilo blog).</summary>
+    [Route("conheca-estancia/{id:int}/{slug?}")]
+    public async Task<IActionResult> DetalheConhecaEstancia(int id, string? slug, CancellationToken ct)
+    {
+        var item = await _conheca.ObterPorIdAsync(id, ct);
+        if (item is null || !item.Ativo)
+            return NotFound();
+
+        var slugCorreto = Slug.De(item.Nome);
+        if (!string.Equals(slug, slugCorreto, StringComparison.OrdinalIgnoreCase))
+            return RedirectToAction(nameof(DetalheConhecaEstancia), "Paginas", new { id, slug = slugCorreto });
+
+        DefinirSeo(item.Nome, item.Descricao,
+            item.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}") : null);
+        return View(item);
     }
 
     /// <summary>Preenche ViewData["Seo"] com os metadados da página atual.</summary>

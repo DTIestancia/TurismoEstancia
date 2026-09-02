@@ -62,26 +62,6 @@ public class ConteudosController : PainelController
                 },
                 new ConteudosCatalogViewModel.SecaoTextos
                 {
-                    Titulo = "Cultura",
-                    Descricao = "Seção Cultura da home e página de cultura.",
-                    Itens = Itens(cadastrados,
-                        ("cultura-titulo", "Título", "Headline decorativa (aceita HTML)"),
-                        ("cultura-descricao", "Descrição", "Texto principal da seção"),
-                        ("cultura-extra", "Texto extra", "Complemento exibido abaixo"),
-                        ("cultura-citacao", "Citação", "Frase de efeito"))
-                },
-                new ConteudosCatalogViewModel.SecaoTextos
-                {
-                    Titulo = "Gastronomia e Grupos Populares",
-                    Descricao = "Seção Gastronomia da home e páginas de gastronomia/grupos.",
-                    Itens = Itens(cadastrados,
-                        ("gastronomia-titulo", "Título", "Cole o exemplo: <div class=\"gastronomy-cursive\">na mesa &amp; na rua</div><div class=\"gastronomy-title-wrap\"><div class=\"gastronomy-title-line serif-italic\">Grupos</div><div class=\"gastronomy-title-line georgia-bold\">populares</div><div class=\"gastronomy-title-ampersand\">&amp;</div><div class=\"gastronomy-title-line georgia-bold white\">gastronomia.</div></div>"),
-                        ("gastronomia-descricao", "Descrição", "Texto principal da gastronomia"),
-                        ("gastronomia-main-texto", "Texto do card principal", "O prato em destaque"),
-                        ("gastronomia-grupos-texto", "Texto dos grupos populares", "Usado na home e na página Grupos Populares"))
-                },
-                new ConteudosCatalogViewModel.SecaoTextos
-                {
                     Titulo = "7 Maravilhas",
                     Descricao = "Seção do baralho de cartas das 7 Maravilhas.",
                     Itens = Itens(cadastrados,
@@ -256,14 +236,6 @@ public class ConteudosController : PainelController
             new() { Chave = "historia-citacao", Nome = "Nossa Cidade — citação", EmUso = emUso.Contains("historia-citacao") },
             new() { Chave = "historia-descricao", Nome = "Nossa Cidade — descrição", EmUso = emUso.Contains("historia-descricao") },
             new() { Chave = "historia-imagem", Nome = "Nossa Cidade — foto da cidade", EmUso = emUso.Contains("historia-imagem"), EhImagem = true },
-            new() { Chave = "cultura-titulo", Nome = "Cultura — título", EmUso = emUso.Contains("cultura-titulo") },
-            new() { Chave = "cultura-descricao", Nome = "Cultura — descrição", EmUso = emUso.Contains("cultura-descricao") },
-            new() { Chave = "cultura-extra", Nome = "Cultura — texto extra", EmUso = emUso.Contains("cultura-extra") },
-            new() { Chave = "cultura-citacao", Nome = "Cultura — citação", EmUso = emUso.Contains("cultura-citacao") },
-            new() { Chave = "gastronomia-titulo", Nome = "Gastronomia — título", EmUso = emUso.Contains("gastronomia-titulo") },
-            new() { Chave = "gastronomia-descricao", Nome = "Gastronomia — descrição", EmUso = emUso.Contains("gastronomia-descricao") },
-            new() { Chave = "gastronomia-main-texto", Nome = "Gastronomia — card principal", EmUso = emUso.Contains("gastronomia-main-texto") },
-            new() { Chave = "gastronomia-grupos-texto", Nome = "Grupos populares — texto", EmUso = emUso.Contains("gastronomia-grupos-texto") },
             new() { Chave = "maravilhas-titulo", Nome = "7 Maravilhas — título", EmUso = emUso.Contains("maravilhas-titulo") },
             new() { Chave = "maravilhas-descricao", Nome = "7 Maravilhas — descrição", EmUso = emUso.Contains("maravilhas-descricao") },
             new() { Chave = "agenda-titulo", Nome = "Agenda — título", EmUso = emUso.Contains("agenda-titulo") },

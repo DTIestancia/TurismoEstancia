@@ -4,7 +4,6 @@ using TurismoEstancia.Domain.Models;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
 using TurismoEstancia.Services.ConhecaEstancia.Interfaces;
 using TurismoEstancia.Services.Conteudo.Interfaces;
-using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
 using TurismoEstancia.Services.Infra.Interfaces;
 using TurismoEstancia.Services.Roteiro.Interfaces;
 using TurismoEstancia.Services.Turismo.Interfaces;
@@ -13,12 +12,9 @@ using TurismoEstancia.Web.Models;
 namespace TurismoEstancia.Web.Areas.Gerenciador.Controllers;
 
 /// <summary>
-/// Edição por área do portal: cada seção da home (Hero, Nossa Cidade, Cultura,
-/// Gastronomia, 7 Maravilhas, Agenda, Notícias, Roteiros, Mapa e Rodapé) vira
-/// uma página com os textos E imagens daquela área num formulário só — em vez
-/// de "Textos do portal" genérico + "Slides do hero" separado + telas soltas.
-/// Os CRUDs de lista (grupos, pratos, eventos...) continuam nas telas próprias,
-/// acessíveis por atalho dentro da área.
+/// Edição por área do portal: cada seção da home (Hero, Nossa Cidade,
+/// Conheça Estância, 7 Maravilhas, Agenda, Notícias, Roteiros, Mapa e Rodapé)
+/// vira uma página com os textos E imagens daquela área num formulário só.
 /// </summary>
 public class SecoesController : PainelController
 {
@@ -30,8 +26,6 @@ public class SecoesController : PainelController
     private readonly IEventoService _eventos;
     private readonly INoticiaService _noticias;
     private readonly IRoteiroService _roteiros;
-    private readonly IGrupoCulturalService _grupos;
-    private readonly IPratoTuristicoService _pratos;
     private readonly IContatoService _contatos;
     private readonly IConhecaEstanciaService _conheca;
     private readonly IConfiguracaoSiteService _configuracoes;
@@ -46,8 +40,6 @@ public class SecoesController : PainelController
         IEventoService eventos,
         INoticiaService noticias,
         IRoteiroService roteiros,
-        IGrupoCulturalService grupos,
-        IPratoTuristicoService pratos,
         IContatoService contatos,
         IConhecaEstanciaService conheca,
         IConfiguracaoSiteService configuracoes)
@@ -61,8 +53,6 @@ public class SecoesController : PainelController
         _eventos = eventos;
         _noticias = noticias;
         _roteiros = roteiros;
-        _grupos = grupos;
-        _pratos = pratos;
         _contatos = contatos;
         _conheca = conheca;
         _configuracoes = configuracoes;
@@ -174,76 +164,6 @@ public class SecoesController : PainelController
         await SalvarAsync(vm, ct);
         TempData["PainelOk"] = "Nossa Cidade atualizada.";
         return RedirectToAction(nameof(Cidade));
-    }
-
-    // ===== Cultura =====
-    public async Task<IActionResult> Cultura(CancellationToken ct)
-    {
-        ViewData["Title"] = "Cultura";
-        var vm = await MontarAsync("cultura", "Cultura", "Textos da seção de cultura da home e da página de cultura.", ct,
-            textos: [
-                T("cultura-titulo", "Título", "Headline decorativa (aceita HTML); ex.: <div class=\"headline-white\">Nossa</div><div class=\"headline-yellow\">cultura</div><div class=\"cursive-small\">arde alto.</div>"),
-                T("cultura-descricao", "Descrição", "Texto principal da seção"),
-                T("cultura-extra", "Texto extra", "Complemento exibido abaixo"),
-                T("cultura-citacao", "Citação", "Frase de efeito")
-            ],
-            imagens: [I("cultura-imagem", "Foto do card")],
-            ancora: "cultura");
-        var grupos = await _grupos.ListarAsync(ct);
-        vm.Itens = new ItensAreaViewModel
-        {
-            Titulo = "Grupos culturais cadastrados",
-            RotuloBotao = "Cadastrar novo grupo",
-            UrlCriar = Url.Action("Criar", "GruposCulturais", new { area = "Gerenciador" }) ?? "/Gerenciador/GruposCulturais/Criar",
-            UrlLista = Url.Action("Index", "GruposCulturais", new { area = "Gerenciador" }) ?? "/Gerenciador/GruposCulturais",
-            Icone = "music",
-            Itens = grupos.Select(g => new ItemAreaViewModel { Id = g.Id, Nome = g.Nome, Detalhe = g.Descricao, ImagemArquivoId = g.ImagemArquivoId, Ativo = g.Ativo }).ToList()
-        };
-        return View("Editar", vm);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SalvarCultura(AreaSiteViewModel vm, CancellationToken ct)
-    {
-        await SalvarAsync(vm, ct);
-        TempData["PainelOk"] = "Cultura atualizada.";
-        return RedirectToAction(nameof(Cultura));
-    }
-
-    // ===== Gastronomia =====
-    public async Task<IActionResult> Gastronomia(CancellationToken ct)
-    {
-        ViewData["Title"] = "Gastronomia";
-        var vm = await MontarAsync("gastronomia", "Gastronomia e Grupos Populares", "Textos da gastronomia e dos grupos populares.", ct,
-            textos: [
-                T("gastronomia-titulo", "Título", "Cole o exemplo: <div class=\"gastronomy-cursive\">na mesa &amp; na rua</div><div class=\"gastronomy-title-wrap\"><div class=\"gastronomy-title-line serif-italic\">Grupos</div><div class=\"gastronomy-title-line georgia-bold\">populares</div><div class=\"gastronomy-title-ampersand\">&amp;</div><div class=\"gastronomy-title-line georgia-bold white\">gastronomia.</div></div>"),
-                T("gastronomia-descricao", "Descrição", "Texto principal da gastronomia"),
-                T("gastronomia-main-texto", "Texto do card principal", "O prato em destaque"),
-                T("gastronomia-grupos-texto", "Texto dos grupos populares", "Usado na home e na página Grupos Populares")
-            ],
-            imagens: [I("gastronomia-imagem", "Foto do card principal")],
-            ancora: "gastronomia");
-        var pratos = await _pratos.ListarAsync(ct);
-        vm.Itens = new ItensAreaViewModel
-        {
-            Titulo = "Pratos turísticos cadastrados",
-            RotuloBotao = "Cadastrar novo prato",
-            UrlCriar = Url.Action("Criar", "PratosTuristicos", new { area = "Gerenciador" }) ?? "/Gerenciador/PratosTuristicos/Criar",
-            UrlLista = Url.Action("Index", "PratosTuristicos", new { area = "Gerenciador" }) ?? "/Gerenciador/PratosTuristicos",
-            Icone = "utensils",
-            Itens = pratos.Select(p => new ItemAreaViewModel { Id = p.Id, Nome = p.Nome, Detalhe = p.Descricao, ImagemArquivoId = p.ImagemArquivoId, Ativo = p.Ativo }).ToList()
-        };
-        return View("Editar", vm);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SalvarGastronomia(AreaSiteViewModel vm, CancellationToken ct)
-    {
-        await SalvarAsync(vm, ct);
-        TempData["PainelOk"] = "Gastronomia atualizada.";
-        return RedirectToAction(nameof(Gastronomia));
     }
 
     // ===== Conheça Estância (seção de tela cheia da home) =====

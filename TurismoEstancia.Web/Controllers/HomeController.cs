@@ -199,9 +199,14 @@ public class HomeController : Controller
                 .Where(i => i.Categoria == categoria)
                 .Select(i => new ConhecaEstanciaItem
                 {
+                    Id = i.Id,
                     Nome = i.Nome,
                     Descricao = i.Descricao,
-                    ImagemArquivoId = i.ImagemArquivoId
+                    ImagemArquivoId = i.ImagemArquivoId,
+                    ImagemZoom = i.ImagemZoom,
+                    ImagemPosicaoX = i.ImagemPosicaoX,
+                    ImagemPosicaoY = i.ImagemPosicaoY,
+                    Url = Url.Content($"~/conheca-estancia/{i.Id}/{Slug.De(i.Nome)}")
                 })
                 .ToList()
         };

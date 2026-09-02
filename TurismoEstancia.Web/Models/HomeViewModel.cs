@@ -114,10 +114,15 @@ public class ConhecaEstanciaTab
     public IReadOnlyList<ConhecaEstanciaItem> Itens { get; set; } = Array.Empty<ConhecaEstanciaItem>();
 }
 
-/// <summary>Um item da seção (foto em tela cheia + título + descrição sobreposta).</summary>
+/// <summary>Um item da seção (foto + título + descrição + página de detalhe).</summary>
 public class ConhecaEstanciaItem
 {
+    public int Id { get; set; }
     public string Nome { get; set; } = "";
     public string? Descricao { get; set; }
     public long? ImagemArquivoId { get; set; }
+    public int ImagemZoom { get; set; } = 100;
+    public int ImagemPosicaoX { get; set; } = 50;
+    public int ImagemPosicaoY { get; set; } = 50;
+    public string? Url { get; set; }
 }

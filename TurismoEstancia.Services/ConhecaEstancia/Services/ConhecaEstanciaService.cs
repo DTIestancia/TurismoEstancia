@@ -27,7 +27,11 @@ public class ConhecaEstanciaService : IConhecaEstanciaService
             Categoria = i.Categoria,
             Nome = i.Nome,
             Descricao = i.Descricao,
+            Corpo = i.Corpo,
             ImagemArquivoId = i.ImagemArquivoId,
+            ImagemZoom = i.ImagemZoom,
+            ImagemPosicaoX = i.ImagemPosicaoX,
+            ImagemPosicaoY = i.ImagemPosicaoY,
             Ordem = i.Ordem,
             Ativo = i.Ativo
         };
@@ -62,6 +66,10 @@ public class ConhecaEstanciaService : IConhecaEstanciaService
                 Categoria = dto.Categoria,
                 Nome = dto.Nome,
                 Descricao = dto.Descricao,
+                Corpo = dto.Corpo,
+                ImagemZoom = dto.ImagemZoom is >= 100 and <= 250 ? dto.ImagemZoom : 100,
+                ImagemPosicaoX = dto.ImagemPosicaoX is >= 0 and <= 100 ? dto.ImagemPosicaoX : 50,
+                ImagemPosicaoY = dto.ImagemPosicaoY is >= 0 and <= 100 ? dto.ImagemPosicaoY : 50,
                 Ordem = dto.Ordem,
                 Ativo = dto.Ativo
             };
@@ -80,6 +88,10 @@ public class ConhecaEstanciaService : IConhecaEstanciaService
             entidade.Categoria = dto.Categoria;
             entidade.Nome = dto.Nome;
             entidade.Descricao = dto.Descricao;
+            entidade.Corpo = dto.Corpo;
+            entidade.ImagemZoom = dto.ImagemZoom is >= 100 and <= 250 ? dto.ImagemZoom : 100;
+            entidade.ImagemPosicaoX = dto.ImagemPosicaoX is >= 0 and <= 100 ? dto.ImagemPosicaoX : 50;
+            entidade.ImagemPosicaoY = dto.ImagemPosicaoY is >= 0 and <= 100 ? dto.ImagemPosicaoY : 50;
             entidade.Ordem = dto.Ordem;
             entidade.Ativo = dto.Ativo;
 

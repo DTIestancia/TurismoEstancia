@@ -44,13 +44,17 @@
     </div>
 
     <div class="painel-field">
+        <label asp-for="Corpo"></label>
+        <textarea asp-for="Corpo" class="painel-textarea"></textarea>
+        @await Html.PartialAsync("_EditorTextoRico", "Corpo")
+        <span class="painel-hint">Editor rico — negrito, itálico, tamanho de fonte, cor, listas e links. Exibido na página /conheca-estancia/{id}.</span>
+    </div>
+
+    <div class="painel-field">
         <label>Foto da seção</label>
-        @if (Model.ImagemArquivoId is long imgId)
-        {
-            <img src="@Url.Content($"~/arquivo/{imgId}")" alt="" style="max-width:200px;border-radius:10px;border:1px solid var(--color-white--12);margin-bottom:6px;" />
-        }
         <input type="file" name="imagem" accept="image/*" class="painel-input" />
-        <span class="painel-hint">Envie para substituir a foto atual (opcional).</span>
+        @await Html.PartialAsync("_AjusteImagemConheca", Model)
+        <span class="painel-hint">Deixe vazio para manter a imagem atual — o ajuste de recorte acima é salvo mesmo sem trocar a imagem.</span>
     </div>
 
     <div class="painel-field">
