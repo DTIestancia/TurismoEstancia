@@ -1,0 +1,65 @@
+@model IReadOnlyList<ConhecaEstanciaItemDto>
+@{
+    ViewData["Title"] = "Conheça Estância";
+    ViewData["AreaAtiva"] = "conheca";
+    var rotulos = new Dictionary<CategoriaConhecaEstancia, string>
+    {
+        [CategoriaConhecaEstancia.Historia] = "História",
+        [CategoriaConhecaEstancia.Cultura] = "Cultura",
+        [CategoriaConhecaEstancia.Gastronomia] = "Gastronomia",
+        [CategoriaConhecaEstancia.Experiencias] = "Experiências"
+    };
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Conheça Estância</h1>
+        <p class="painel-page-desc">Itens da seção de tela cheia da home, nas abas História, Cultura, Gastronomia e Experiências.</p>
+    </div>
+    <button type="button" class="btn-painel btn-painel--primary js-abrir-criar" data-titulo="Novo item do Conheça Estância" data-url="@Url.Action("Criar")">
+        <i data-lucide="plus"></i> Novo item
+    </button>
+</div>
+
+<div class="painel-card">
+    <div class="painel-table-wrap">
+        <table class="painel-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Aba</th>
+                    <th>Ordem</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><strong>@item.Nome</strong></td>
+                        <td>@rotulos[item.Categoria]</td>
+                        <td>@item.Ordem</td>
+                        <td>
+                            <span class="painel-badge @(item.Ativo ? "painel-badge--green" : "painel-badge--grey")">
+                                @(item.Ativo ? "Ativo" : "Inativo")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="painel-actions" style="justify-content:flex-end;">
+                                <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Editar" asp-route-id="@item.Id"><i data-lucide="pencil"></i> Editar</a>
+                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir o item '@item.Nome'?">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Count == 0)
+    {
+        <div class="painel-empty">Nenhum item cadastrado. Clique em "Novo item" para começar.</div>
+    }
+</div>

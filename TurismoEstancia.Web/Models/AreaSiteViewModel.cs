@@ -32,6 +32,9 @@ public class AreaSiteViewModel
     public IReadOnlyList<SlideDto> Slides { get; set; } = Array.Empty<SlideDto>();
     public IReadOnlyList<EstatisticaDto> Estatisticas { get; set; } = Array.Empty<EstatisticaDto>();
 
+    /// <summary>Vídeo institucional (fundo do hero) — gerenciado na área Hero.</summary>
+    public long? VideoArquivoId { get; set; }
+
     public bool ExibeSlides => Slides.Count > 0;
     public bool ExibeEstatisticas => Estatisticas.Count > 0;
 }

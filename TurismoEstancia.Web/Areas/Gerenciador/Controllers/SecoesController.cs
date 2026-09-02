@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using TurismoEstancia.Domain.DTOs;
+using TurismoEstancia.Domain.Models;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
+using TurismoEstancia.Services.ConhecaEstancia.Interfaces;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
 using TurismoEstancia.Services.Infra.Interfaces;
@@ -31,6 +33,8 @@ public class SecoesController : PainelController
     private readonly IGrupoCulturalService _grupos;
     private readonly IPratoTuristicoService _pratos;
     private readonly IContatoService _contatos;
+    private readonly IConhecaEstanciaService _conheca;
+    private readonly IConfiguracaoSiteService _configuracoes;
 
     public SecoesController(
         IServiceProvider services,
@@ -44,7 +48,9 @@ public class SecoesController : PainelController
         IRoteiroService roteiros,
         IGrupoCulturalService grupos,
         IPratoTuristicoService pratos,
-        IContatoService contatos)
+        IContatoService contatos,
+        IConhecaEstanciaService conheca,
+        IConfiguracaoSiteService configuracoes)
         : base(services)
     {
         _conteudos = conteudos;
@@ -58,6 +64,8 @@ public class SecoesController : PainelController
         _grupos = grupos;
         _pratos = pratos;
         _contatos = contatos;
+        _conheca = conheca;
+        _configuracoes = configuracoes;
     }
 
     // ===== Hero =====
@@ -69,6 +77,7 @@ public class SecoesController : PainelController
             imagens: [],
             ancora: "#section-cidade");
         vm.Slides = await _slides.ListarAsync(ct);
+        vm.VideoArquivoId = (await _configuracoes.ObterPorChaveAsync("video-institucional", ct))?.ArquivoId;
         return View("Editar", vm);
     }
 
@@ -103,6 +112,41 @@ public class SecoesController : PainelController
     {
         await _slides.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Slide removido do hero.";
+        return RedirectToAction(nameof(Hero));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SalvarVideoHero(IFormFile? arquivo, CancellationToken ct)
+    {
+        if (arquivo is null || arquivo.Length == 0)
+        {
+            TempData["PainelErro"] = "Selecione um arquivo de vídeo (MP4).";
+            return RedirectToAction(nameof(Hero));
+        }
+
+        var atual = await _configuracoes.ObterPorChaveAsync("video-institucional", ct);
+        var dto = atual ?? new ConfiguracaoSiteDto
+        {
+            Chave = "video-institucional",
+            Nome = "Vídeo institucional",
+            Tipo = TipoConfiguracao.Arquivo
+        };
+        await _configuracoes.SalvarAsync(dto, arquivo, ct);
+        TempData["PainelOk"] = "Vídeo institucional atualizado.";
+        return RedirectToAction(nameof(Hero));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoverVideoHero(CancellationToken ct)
+    {
+        var atual = await _configuracoes.ObterPorChaveAsync("video-institucional", ct);
+        if (atual is not null)
+        {
+            await _configuracoes.ExcluirAsync(atual.Id, ct);
+            TempData["PainelOk"] = "Vídeo institucional removido — o hero passa a usar as imagens do carrossel.";
+        }
         return RedirectToAction(nameof(Hero));
     }
 
@@ -202,24 +246,27 @@ public class SecoesController : PainelController
         return RedirectToAction(nameof(Gastronomia));
     }
 
-    // ===== Conheça Estância (explorador da home) =====
+    // ===== Conheça Estância (seção de tela cheia da home) =====
     public async Task<IActionResult> Conheca(CancellationToken ct)
     {
         ViewData["Title"] = "Conheça Estância";
-        var vm = await MontarAsync("conheca", "Conheça Estância", "Explorador da home com as abas História, Cultura, Gastronomia e Experiências (estilo do print).", ct,
+        var vm = await MontarAsync("conheca", "Conheça Estância", "Seção de tela cheia da home: fotos com texto sobreposto nas abas História, Cultura, Gastronomia e Experiências. Conteúdo exclusivo desta área.", ct,
             textos: [
                 T("conheca-titulo", "Título", "Aceita <strong> para destacar; ex.: Conheça <strong>Estância</strong>"),
-                T("conheca-descricao", "Descrição", "Chamada da seção"),
-                T("conheca-historia-categoria", "Categoria-chave — História", "Chave da categoria de pontos turísticos exibida na aba História (padrão: heritage)", aceitaHtml: false),
-                T("conheca-experiencias-categoria", "Categoria-chave — Experiências", "Chave da categoria de pontos turísticos exibida na aba Experiências (padrão: nature)", aceitaHtml: false)
+                T("conheca-descricao", "Descrição", "Chamada da seção")
             ],
             imagens: [],
             ancora: "#section-conheca");
-        vm.Links = [
-            Link("Grupos culturais", "Alimentam a aba Cultura.", Url.Action("Index", "GruposCulturais", new { area = "Gerenciador" }) ?? "/Gerenciador/GruposCulturais", "music"),
-            Link("Pratos turísticos", "Alimentam a aba Gastronomia.", Url.Action("Index", "PratosTuristicos", new { area = "Gerenciador" }) ?? "/Gerenciador/PratosTuristicos", "utensils"),
-            Link("Categorias de pontos turísticos", "Definem quais pontos aparecem nas abas História e Experiências (chaves heritage/nature).", Url.Action("Index", "Categorias", new { area = "Gerenciador" }) ?? "/Gerenciador/Categorias", "tags")
-        ];
+        var itens = await _conheca.ListarAsync(ct);
+        vm.Itens = new ItensAreaViewModel
+        {
+            Titulo = "Itens do Conheça Estância",
+            RotuloBotao = "Cadastrar novo item",
+            UrlCriar = Url.Action("Criar", "ConhecaEstancia", new { area = "Gerenciador" }) ?? "/Gerenciador/ConhecaEstancia/Criar",
+            UrlLista = Url.Action("Index", "ConhecaEstancia", new { area = "Gerenciador" }) ?? "/Gerenciador/ConhecaEstancia",
+            Icone = "compass",
+            Itens = itens.Select(i => new ItemAreaViewModel { Id = i.Id, Nome = i.Nome, Detalhe = i.Categoria.ToString(), ImagemArquivoId = i.ImagemArquivoId, Ativo = i.Ativo }).ToList()
+        };
         return View("Editar", vm);
     }
 

@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Text.Json;
+using CategoriaConhecaEstancia = TurismoEstancia.Domain.Models.CategoriaConhecaEstancia;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
+using TurismoEstancia.Services.ConhecaEstancia.Interfaces;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
 using TurismoEstancia.Services.Roteiro.Interfaces;
@@ -27,6 +29,7 @@ public class HomeController : Controller
     private readonly IConteudoSiteService _conteudos;
     private readonly IConfiguracaoSiteService _configuracoes;
     private readonly IContatoService _contatos;
+    private readonly IConhecaEstanciaService _conheca;
 
     public HomeController(
         ISlideService slides,
@@ -41,7 +44,8 @@ public class HomeController : Controller
         INoticiaService noticias,
         IConteudoSiteService conteudos,
         IConfiguracaoSiteService configuracoes,
-        IContatoService contatos)
+        IContatoService contatos,
+        IConhecaEstanciaService conheca)
     {
         _slides = slides;
         _estatisticas = estatisticas;
@@ -56,6 +60,7 @@ public class HomeController : Controller
         _conteudos = conteudos;
         _configuracoes = configuracoes;
         _contatos = contatos;
+        _conheca = conheca;
     }
 
     public async Task<IActionResult> Index(CancellationToken ct)
@@ -108,7 +113,7 @@ public class HomeController : Controller
             .Where(p => p.ExibirNoMapa && p.Ativo)
             .ToList();
 
-        vm.ConhecaEstancia = MontarConhecaEstancia(vm.Conteudos, vm.GruposCulturais, vm.PratosTuristicos, categorias, pontos);
+        vm.ConhecaEstancia = await MontarConhecaEstancia(ct);
 
         vm.MapaJson = SerializarMapa(categorias, pontos);
 
@@ -177,84 +182,37 @@ public class HomeController : Controller
     };
 
     /// <summary>
-    /// Monta o explorador "Conheça Estância": quatro abas (História, Cultura,
-    /// Gastronomia, Experiências) semelhantes ao print. Cada aba traz uma lista
-    /// de itens (foto + título + explicação + link de detalhe).
-    /// História e Experiências usam pontos turísticos de categorias-chave
-    /// configuráveis no Gerenciador (padrão "heritage" e "nature").
+    /// Monta a seção "Conheça Estância": quatro abas (História, Cultura,
+    /// Gastronomia, Experiências) alimentadas exclusivamente pelos itens
+    /// cadastrados no Gerenciador (ConhecaEstancia › Itens).
     /// </summary>
-    private IReadOnlyList<ConhecaEstanciaTab> MontarConhecaEstancia(
-        IReadOnlyDictionary<string, string?> conteudos,
-        IReadOnlyList<GrupoCulturalDto> grupos,
-        IReadOnlyList<PratoTuristicoDto> pratos,
-        IReadOnlyList<CategoriaPontoTuristicoDto> categorias,
-        IReadOnlyList<PontoTuristicoDto> pontos)
+    private async Task<IReadOnlyList<ConhecaEstanciaTab>> MontarConhecaEstancia(CancellationToken ct)
     {
-        var porId = categorias.ToDictionary(c => c.Id);
-        static string chavePontos(CategoriaPontoTuristicoDto? c) => c?.Chave ?? "";
+        var itens = await _conheca.ListarAtivosAsync(ct);
 
-        // Categorias-chave que alimentam História e Experiências — o Gerenciador
-        // permite trocar (Secoes › Conheça Estância).
-        var chaveHistoria = conteudos.GetValueOrDefault("conheca-historia-categoria", "heritage");
-        var chaveExperiencias = conteudos.GetValueOrDefault("conheca-experiencias-categoria", "nature");
+        ConhecaEstanciaTab Aba(CategoriaConhecaEstancia categoria, string rotulo, string icone) => new()
+        {
+            Chave = categoria.ToString().ToLowerInvariant(),
+            Rotulo = rotulo,
+            Icone = icone,
+            Itens = itens
+                .Where(i => i.Categoria == categoria)
+                .Select(i => new ConhecaEstanciaItem
+                {
+                    Nome = i.Nome,
+                    Descricao = i.Descricao,
+                    ImagemArquivoId = i.ImagemArquivoId
+                })
+                .ToList()
+        };
 
-        var tabs = new List<ConhecaEstanciaTab>();
-
-        // História — pontos turísticos de patrimônio/história (com capa).
-        var historia = pontos
-            .Where(p => p.Ativo && p.CapaArquivoId is long
-                && porId.TryGetValue(p.CategoriaId, out var c) && chavePontos(c) == chaveHistoria)
-            .OrderBy(p => p.Ordem)
-            .Select(p => new ConhecaEstanciaItem
-            {
-                Nome = p.Nome,
-                Descricao = p.Descricao,
-                ImagemArquivoId = p.CapaArquivoId,
-                Url = Url.Content($"~/lugares/{p.Id}/{Slug.De(p.Nome)}")
-            })
-            .ToList();
-        tabs.Add(new ConhecaEstanciaTab { Chave = "historia", Rotulo = "História", Icone = "landmark", Itens = historia });
-
-        // Cultura — grupos culturais (com foto cadastrada no CRUD).
-        var cultura = grupos
-            .Select(g => new ConhecaEstanciaItem
-            {
-                Nome = g.Nome,
-                Descricao = g.Descricao,
-                ImagemArquivoId = g.ImagemArquivoId,
-                Url = Url.Content($"~/grupos-populares/{g.Id}/{Slug.De(g.Nome)}")
-            })
-            .ToList();
-        tabs.Add(new ConhecaEstanciaTab { Chave = "cultura", Rotulo = "Cultura", Icone = "music", Itens = cultura });
-
-        // Gastronomia — pratos turísticos (com foto).
-        var gastronomia = pratos
-            .Select(p => new ConhecaEstanciaItem
-            {
-                Nome = p.Nome,
-                Descricao = p.Descricao,
-                ImagemArquivoId = p.ImagemArquivoId,
-                Url = Url.Content($"~/gastronomia/{p.Id}/{Slug.De(p.Nome)}")
-            })
-            .ToList();
-        tabs.Add(new ConhecaEstanciaTab { Chave = "gastronomia", Rotulo = "Gastronomia", Icone = "utensils", Itens = gastronomia });
-
-        // Experiências — praias/natureza (com capa).
-        var experiencias = pontos
-            .Where(p => p.Ativo && p.CapaArquivoId is long
-                && porId.TryGetValue(p.CategoriaId, out var c) && chavePontos(c) == chaveExperiencias)
-            .OrderBy(p => p.Ordem)
-            .Select(p => new ConhecaEstanciaItem
-            {
-                Nome = p.Nome,
-                Descricao = p.Descricao,
-                ImagemArquivoId = p.CapaArquivoId,
-                Url = Url.Content($"~/lugares/{p.Id}/{Slug.De(p.Nome)}")
-            })
-            .ToList();
-        tabs.Add(new ConhecaEstanciaTab { Chave = "experiencias", Rotulo = "Experiências", Icone = "sun", Itens = experiencias });
-
-        return tabs;
+        return
+        [
+            Aba(CategoriaConhecaEstancia.Historia, "História", "landmark"),
+            Aba(CategoriaConhecaEstancia.Cultura, "Cultura", "music"),
+            Aba(CategoriaConhecaEstancia.Gastronomia, "Gastronomia", "utensils"),
+            Aba(CategoriaConhecaEstancia.Experiencias, "Experiências", "sun")
+        ];
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

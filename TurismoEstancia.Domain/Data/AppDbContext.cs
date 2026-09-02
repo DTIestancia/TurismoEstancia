@@ -36,6 +36,7 @@ public class AppDbContext : DbContext
     public DbSet<RoteiroItem> RoteiroItens => Set<RoteiroItem>();
     public DbSet<GaleriaCategoria> GaleriaCategorias => Set<GaleriaCategoria>();
     public DbSet<GaleriaMidia> GaleriaMidias => Set<GaleriaMidia>();
+    public DbSet<ConhecaEstanciaItem> ConhecaEstanciaItens => Set<ConhecaEstanciaItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -63,6 +64,7 @@ public class AppDbContext : DbContext
         ConfigureRoteiroItem(modelBuilder);
         ConfigureGaleriaCategoria(modelBuilder);
         ConfigureGaleriaMidia(modelBuilder);
+        ConfigureConhecaEstanciaItem(modelBuilder);
     }
 
     /// <summary>
@@ -471,6 +473,27 @@ public class AppDbContext : DbContext
             // a mesma foto em várias categorias vira várias linhas, cada uma
             // apontando para o MESMO binário otimizado na tabela Arquivo.
             entity.HasIndex(e => new { e.CategoriaId, e.ArquivoId }).IsUnique();
+        });
+    }
+
+    private static void ConfigureConhecaEstanciaItem(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ConhecaEstanciaItem>(entity =>
+        {
+            entity.Property(e => e.Categoria).HasConversion<string>().HasMaxLength(20);
+            entity.Property(e => e.Nome).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Descricao).HasMaxLength(1000);
+            entity.Property(e => e.Ativo).HasDefaultValue(true);
+
+            // Referência compartilhada (Arquivo): SetNull, como nas demais
+            // imagens de conteúdo (GrupoCultural, PratoTuristico, Noticia...).
+            entity.HasOne(e => e.Imagem)
+                  .WithMany()
+                  .HasForeignKey(e => e.ImagemArquivoId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            // Ordenação das abas da seção "Conheça Estância".
+            entity.HasIndex(e => new { e.Categoria, e.Ordem });
         });
     }
 }

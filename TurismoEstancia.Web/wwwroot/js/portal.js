@@ -89,70 +89,76 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   })();
 
-  // ===== Explorador "Conheça Estância" (carrossel em baralho, estilo print) =====
-  // Cada aba (História, Cultura, Gastronomia, Experiências) alimenta um "deck"
-  // de cartas com foto de fundo. A carta ativa ocupa o centro com título,
-  // descrição e botão; as próximas espreitam à direita. As setas giram o baralho.
+  // ===== Seção "Conheça Estância" (carrossel de tela cheia) =====
+  // Cada aba (História, Cultura, Gastronomia, Experiências) alimenta um
+  // carrossel de fotos que ocupam a seção inteira; o texto (aba, título e
+  // descrição) fica sobreposto com sombreamento. Setas (mesmo padrão da
+  // vitrine das maravilhas) e abas trocam as fotos com fade + blur suave.
   (function initConhecaEstancia() {
     var dataEl = document.getElementById('conhecaData');
-    var slide = document.getElementById('conhecaSlide');
-    if (!dataEl || !slide) return;
+    var slidesWrap = document.getElementById('conhecaSlides');
+    if (!dataEl || !slidesWrap) return;
     var tabs;
     try { tabs = JSON.parse(dataEl.textContent); } catch (e) { return; }
     if (!tabs || !tabs.length) return;
 
     var prevBtn = document.getElementById('conhecaPrev');
     var nextBtn = document.getElementById('conhecaNext');
+    var infoEl = document.getElementById('conhecaInfo');
+    var pillEl = document.getElementById('conhecaPill');
+    var nameEl = document.getElementById('conhecaName');
+    var desEl = document.getElementById('conhecaDes');
+    var counterEl = document.getElementById('conhecaCounter');
     var tabButtons = document.querySelectorAll('.conheca-tab');
+
     var activeTabIdx = 0;
+    var activeIdx = 0;
+    var slideEls = [];
 
-    function buildCard(item, rotulo) {
-      var el = document.createElement('div');
-      el.className = 'conheca-card-item';
-      if (item.imagem) el.style.backgroundImage = "url('" + item.imagem + "')";
-      else el.classList.add('no-photo');
-      el.dataset.nome = item.nome || '';
+    function itens() { return (tabs[activeTabIdx] && tabs[activeTabIdx].itens) || []; }
 
-      var content = document.createElement('div');
-      content.className = 'conheca-card-content';
-      content.innerHTML =
-        '<span class="conheca-card-pill">' + esc(rotulo) + '</span>' +
-        '<h3 class="conheca-card-name">' + esc(item.nome) + '</h3>' +
-        '<p class="conheca-card-des">' + esc(item.descricao || '') + '</p>' +
-        '<a class="conheca-card-link" href="' + esc(item.url || '#') + '">Ver detalhes <span aria-hidden="true">→</span></a>';
-      el.appendChild(content);
-      return el;
+    function montarSlides() {
+      slidesWrap.innerHTML = '';
+      slideEls = itens().map(function (it) {
+        var el = document.createElement('div');
+        el.className = 'conheca-slide';
+        if (it.imagem) el.style.backgroundImage = "url('" + it.imagem + "')";
+        else el.classList.add('no-photo');
+        slidesWrap.appendChild(el);
+        return el;
+      });
     }
 
-    function renderDeck() {
-      slide.innerHTML = '';
-      var tab = tabs[activeTabIdx];
-      var itens = tab.itens || [];
+    function dois(n) { return (n < 10 ? '0' : '') + n; }
 
-      if (!itens.length) {
-        var empty = document.createElement('div');
-        empty.className = 'conheca-empty';
-        empty.textContent = 'Em breve, novidades sobre ' + tab.rotulo + '.';
-        slide.appendChild(empty);
-        return;
+    function atualizar(animarInfo) {
+      var lista = itens();
+      if (!lista.length) return;
+      if (activeIdx >= lista.length) activeIdx = 0;
+      var item = lista[activeIdx];
+
+      slideEls.forEach(function (el, i) { el.classList.toggle('is-active', i === activeIdx); });
+
+      if (pillEl) pillEl.textContent = tabs[activeTabIdx].rotulo;
+      if (nameEl) nameEl.textContent = item.nome;
+      if (desEl) {
+        desEl.textContent = item.descricao || '';
+        desEl.style.display = item.descricao ? '' : 'none';
       }
+      if (counterEl) counterEl.textContent = dois(activeIdx + 1) + ' / ' + dois(lista.length);
 
-      // Baralho circular: começa pela última carta para a 1ª ficar em destaque.
-      var fila = itens.slice();
-      var ultima = fila.pop();
-      if (ultima) slide.appendChild(buildCard(ultima, tab.rotulo));
-      fila.forEach(function (it) { slide.appendChild(buildCard(it, tab.rotulo)); });
+      if (animarInfo && infoEl) {
+        infoEl.classList.remove('is-anim');
+        void infoEl.offsetWidth;
+        infoEl.classList.add('is-anim');
+      }
     }
 
-    // Rotação: move a 1ª carta para o fim (next) ou a última para o início (prev).
-    function moverPrimeira() {
-      var first = slide.querySelector('.conheca-card-item');
-      if (first) slide.appendChild(first);
-    }
-    function moverUltima() {
-      var cards = slide.querySelectorAll('.conheca-card-item');
-      var last = cards[cards.length - 1];
-      if (last) slide.insertBefore(last, slide.firstChild);
+    function trocar(delta) {
+      var total = itens().length;
+      if (!total) return;
+      activeIdx = (activeIdx + delta + total) % total;
+      atualizar(true);
     }
 
     tabButtons.forEach(function (btn) {
@@ -160,15 +166,17 @@ document.addEventListener('DOMContentLoaded', function () {
         var chave = this.getAttribute('data-tab');
         var idx = -1;
         tabs.forEach(function (t, i) { if (t.chave === chave) idx = i; });
-        if (idx < 0) return;
+        if (idx < 0 || idx === activeTabIdx) return;
         activeTabIdx = idx;
+        activeIdx = 0;
         tabButtons.forEach(function (b) { b.classList.toggle('active', b === btn); });
-        renderDeck();
+        montarSlides();
+        atualizar(true);
       });
     });
 
-    if (nextBtn) nextBtn.addEventListener('click', moverPrimeira);
-    if (prevBtn) prevBtn.addEventListener('click', moverUltima);
+    if (nextBtn) nextBtn.addEventListener('click', function () { trocar(1); });
+    if (prevBtn) prevBtn.addEventListener('click', function () { trocar(-1); });
 
     // Abre a primeira aba que tenha conteúdo.
     var idxInicial = 0;
@@ -177,7 +185,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     activeTabIdx = idxInicial;
     tabButtons.forEach(function (b, i) { b.classList.toggle('active', i === idxInicial); });
-    renderDeck();
+    montarSlides();
+    atualizar(false);
   })();
 
   // ===== Reading Progress Bar =====

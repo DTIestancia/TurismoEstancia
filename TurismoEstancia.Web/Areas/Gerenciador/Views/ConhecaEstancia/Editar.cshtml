@@ -1,0 +1,66 @@
+@model ConhecaEstanciaItemDto
+@{
+    ViewData["Title"] = "Editar item do Conheça Estância";
+    ViewData["AreaAtiva"] = "conheca";
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Editar item do Conheça Estância</h1>
+        <p class="painel-page-desc">Ajuste os dados do item da seção.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Editar" method="post" enctype="multipart/form-data">
+    <input asp-for="Id" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Categoria"></label>
+            <select asp-for="Categoria" class="painel-input">
+                <option value="Historia">História</option>
+                <option value="Cultura">Cultura</option>
+                <option value="Gastronomia">Gastronomia</option>
+                <option value="Experiencias">Experiências</option>
+            </select>
+            <span asp-validation-for="Categoria" class="field-validation-error"></span>
+        </div>
+        <div class="painel-field">
+            <label asp-for="Ordem"></label>
+            <input asp-for="Ordem" class="painel-input" type="number" />
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Nome"></label>
+        <input asp-for="Nome" class="painel-input" maxlength="200" />
+        <span asp-validation-for="Nome" class="field-validation-error"></span>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Descricao"></label>
+        <textarea asp-for="Descricao" class="painel-input" rows="4" maxlength="1000" placeholder="Texto sobreposto à foto na seção do portal."></textarea>
+        <span asp-validation-for="Descricao" class="field-validation-error"></span>
+    </div>
+
+    <div class="painel-field">
+        <label>Foto da seção</label>
+        @if (Model.ImagemArquivoId is long imgId)
+        {
+            <img src="@Url.Content($"~/arquivo/{imgId}")" alt="" style="max-width:200px;border-radius:10px;border:1px solid var(--color-white--12);margin-bottom:6px;" />
+        }
+        <input type="file" name="imagem" accept="image/*" class="painel-input" />
+        <span class="painel-hint">Envie para substituir a foto atual (opcional).</span>
+    </div>
+
+    <div class="painel-field">
+        <label class="painel-checkbox">
+            <input asp-for="Ativo" /> Ativo no portal
+        </label>
+    </div>
+
+    <div class="painel-form-actions">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar alterações</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>

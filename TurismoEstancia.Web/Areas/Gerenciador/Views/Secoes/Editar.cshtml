@@ -70,6 +70,37 @@
 @if (ehHero)
 {
     <div class="painel-card" style="margin-bottom:18px;">
+        <div class="painel-card-title"><i data-lucide="video"></i> Vídeo institucional (fundo do hero)</div>
+        <p style="font-size:13px;color:var(--color-white--55);margin:4px 0 14px;">O vídeo ocupa o fundo do hero com reprodução automática em loop. Sem vídeo, o hero usa as imagens do carrossel abaixo.</p>
+
+        @if (Model.VideoArquivoId is long videoId)
+        {
+            <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:14px;">
+                <video src="@Url.Content($"~/arquivo/{videoId}")" controls muted playsinline preload="metadata"
+                       style="max-width:320px;width:100%;border-radius:12px;border:1px solid var(--color-white--15);"></video>
+                <form asp-action="RemoverVideoHero" method="post" class="js-confirm" data-confirm="Remover o vídeo institucional? O hero passará a usar as imagens do carrossel.">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i> Remover vídeo</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div class="painel-empty" style="padding:18px 10px;margin-bottom:14px;">Nenhum vídeo enviado — o hero está usando as imagens do carrossel.</div>
+        }
+
+        <form asp-action="SalvarVideoHero" method="post" enctype="multipart/form-data" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+            @Html.AntiForgeryToken()
+            <div class="painel-field" style="flex:1;min-width:220px;margin:0;">
+                <label>Vídeo (MP4)</label>
+                <input type="file" name="arquivo" accept="video/mp4,video/*" class="painel-input" required />
+                <span class="painel-hint">Enviar um novo vídeo substitui o atual.</span>
+            </div>
+            <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="upload"></i> Enviar vídeo</button>
+        </form>
+    </div>
+
+    <div class="painel-card" style="margin-bottom:18px;">
         <div class="painel-card-title"><i data-lucide="images"></i> Imagens do carrossel (hero)</div>
         <p style="font-size:13px;color:var(--color-white--55);margin:4px 0 14px;">As imagens do fundo do hero. A primeira da lista aparece primeiro no carrossel.</p>
 

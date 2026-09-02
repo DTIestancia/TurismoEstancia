@@ -6,6 +6,8 @@ using TurismoEstancia.Services.Avaliacao.Interfaces;
 using TurismoEstancia.Services.Avaliacao.Services;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
 using TurismoEstancia.Services.Comunicacao.Services;
+using TurismoEstancia.Services.ConhecaEstancia.Interfaces;
+using TurismoEstancia.Services.ConhecaEstancia.Services;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Services.Conteudo.Services;
 using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
@@ -43,6 +45,9 @@ public static class BusinessServiceExtensions
         builder.Services.AddScoped<IGrupoCulturalService, GrupoCulturalService>();
         builder.Services.AddScoped<IPratoTuristicoService, PratoTuristicoService>();
         builder.Services.AddScoped<ITagCulturalService, TagCulturalService>();
+
+        // Módulo ConhecaEstancia
+        builder.Services.AddScoped<IConhecaEstanciaService, ConhecaEstanciaService>();
 
         // Módulo Conteudo
         builder.Services.AddScoped<IConteudoSiteService, ConteudoSiteService>();

@@ -16,7 +16,11 @@ public class ConfiguracoesController : PainelController
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Configurações";
-        return View(await _configuracoes.ListarAsync(ct));
+        // O vídeo institucional é gerenciado na área Hero (Secoes › Hero).
+        var itens = (await _configuracoes.ListarAsync(ct))
+            .Where(c => !string.Equals(c.Chave, "video-institucional", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+        return View(itens);
     }
 
     public async Task<IActionResult> Criar(CancellationToken ct)
@@ -100,7 +104,6 @@ public class ConfiguracoesController : PainelController
             new() { Chave = "logo", Nome = "Logotipo do rodapé (e imagem do SEO)", EhArquivo = true, EmUso = emUso.Contains("logo") },
             new() { Chave = "favicon", Nome = "Favicon do site (PNG quadrado, ex.: 64x64)", EhArquivo = true, EmUso = emUso.Contains("favicon") },
             new() { Chave = "guia-pdf", Nome = "Guia do turista em PDF", EhArquivo = true, EmUso = emUso.Contains("guia-pdf") },
-            new() { Chave = "video-institucional", Nome = "Vídeo institucional", EhArquivo = true, EmUso = emUso.Contains("video-institucional") },
             new() { Chave = "site-titulo", Nome = "Título do site (SEO e navegador)", EhArquivo = false, EmUso = emUso.Contains("site-titulo") },
             new() { Chave = "meta-descricao", Nome = "Meta description do site (SEO)", EhArquivo = false, EmUso = emUso.Contains("meta-descricao") },
             new() { Chave = "tema-cor-vermelho", Nome = "Cor do tema: vermelho", EhArquivo = false, EmUso = emUso.Contains("tema-cor-vermelho") },

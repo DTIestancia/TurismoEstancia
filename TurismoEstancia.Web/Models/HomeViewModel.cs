@@ -103,8 +103,8 @@ public class CategoriaMaravilhasViewModel
 }
 
 /// <summary>
-/// Uma aba do explorador "Conheça Estância" (História, Cultura, Gastronomia,
-/// Experiências) com seus itens exibidos no carrossel de foto + explicação.
+/// Uma aba da seção "Conheça Estância" (História, Cultura, Gastronomia,
+/// Experiências) com seus itens exibidos no carrossel de tela cheia.
 /// </summary>
 public class ConhecaEstanciaTab
 {
@@ -114,11 +114,10 @@ public class ConhecaEstanciaTab
     public IReadOnlyList<ConhecaEstanciaItem> Itens { get; set; } = Array.Empty<ConhecaEstanciaItem>();
 }
 
-/// <summary>Um item do explorador (foto + título + descrição + link de detalhe).</summary>
+/// <summary>Um item da seção (foto em tela cheia + título + descrição sobreposta).</summary>
 public class ConhecaEstanciaItem
 {
     public string Nome { get; set; } = "";
     public string? Descricao { get; set; }
     public long? ImagemArquivoId { get; set; }
-    public string? Url { get; set; }
 }

@@ -35,6 +35,22 @@ public enum TipoConfiguracao
     Arquivo
 }
 
+/// <summary>Abas da seção "Conheça Estância" da home.</summary>
+public enum CategoriaConhecaEstancia
+{
+    /// <summary>Aba História.</summary>
+    Historia,
+
+    /// <summary>Aba Cultura.</summary>
+    Cultura,
+
+    /// <summary>Aba Gastronomia.</summary>
+    Gastronomia,
+
+    /// <summary>Aba Experiências.</summary>
+    Experiencias
+}
+
 /// <summary>Tipos de contato exibidos no rodapé.</summary>
 public enum TipoContato
 {
