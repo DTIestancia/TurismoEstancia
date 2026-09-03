@@ -6,7 +6,6 @@
     var heroTitulo = Model.Conteudos.GetValueOrDefault("hero-titulo", "ESTÂNCIA");
     var heroSubtitulo = Model.Conteudos.GetValueOrDefault("hero-subtitulo",
         "Explore as Cores, a História e a Tradição de Estância") ?? "";
-    var slides = Model.Slides.Any() ? Model.Slides : null;
 
     // Pictogramas das 7 maravilhas para o preloader personalizado.
     // Regra de coleta compartilhada com o rodapé (HomeViewModel.MaravilhasComPictograma).
@@ -100,32 +99,13 @@
 </nav>
 
 <!-- ===== Hero Section ===== -->
-<section class="hero section-blend" id="section-cidade" data-section="cidade">
+<section class="hero section-divider" id="section-cidade" data-section="cidade">
     @if (Model.VideoArquivoId is long videoId)
     {
-        var poster = Model.VideoPosterArquivoId is long posterId ? Url.Content($"~/arquivo/{posterId}") : null;
-        <video class="hero-bg" id="heroBgVideo" autoplay muted loop playsinline webkit-playsinline poster="@poster">
+        <video class="hero-bg" id="heroBgVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" fetchpriority="high">
             <source src="@Url.Content($"~/arquivo/{videoId}")" type="video/mp4" />
             Seu navegador não suporta vídeo HTML5.
         </video>
-    }
-    else if (slides is not null)
-    {
-        long imgId = 0;
-        var tituloCapa = "Estância";
-        foreach (var s in slides)
-        {
-            if (s.ImagemArquivoId is long id)
-            {
-                imgId = id;
-                tituloCapa = s.Titulo ?? "Estância";
-                break;
-            }
-        }
-        @if (imgId > 0)
-        {
-            <img class="hero-bg" src="@Url.Content($"~/arquivo/{imgId}")" alt="@tituloCapa" />
-        }
     }
     <div class="hero-overlay"></div>
     <div class="hero-vignette"></div>

@@ -51,24 +51,32 @@ document.addEventListener('DOMContentLoaded', function () {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
   // ===== Hero Background Video (autoplay mudo, em loop) =====
-  // O vídeo do hero é configurado no Gerenciador (video-institucional). Toca
-  // sozinho, mudo e em loop; um load()+play() explícito destrava o Safari iOS.
+  // Vídeo do hero é configurado no Gerenciador (video-institucional) e deve
+  // iniciar junto com a página — sem esperar window.load/preloader.
   (function initHeroVideo() {
     var video = document.getElementById('heroBgVideo');
     if (!video) return;
 
     function tentarPlay() {
+      if (video.readyState < 2) { try { video.load(); } catch (e) {} }
       var p = video.play();
       if (p && typeof p.catch === 'function') {
         p.catch(function () {
           video.muted = true;
+          video.setAttribute('muted', '');
           video.play().catch(function () {});
         });
       }
     }
 
-    video.addEventListener('canplay', tentarPlay);
-    window.addEventListener('load', tentarPlay);
+    // Tenta o mais cedo possível
+    if (video.readyState >= 2) tentarPlay();
+    else {
+      video.addEventListener('canplay', tentarPlay, { once: true });
+      video.addEventListener('loadeddata', tentarPlay, { once: true });
+    }
+    setTimeout(tentarPlay, 300);
+    document.addEventListener('DOMContentLoaded', tentarPlay);
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) video.pause();
       else tentarPlay();

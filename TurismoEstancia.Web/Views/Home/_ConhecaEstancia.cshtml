@@ -28,7 +28,7 @@
 }
 
 <section class="section-conheca section-divider" id="section-conheca" data-section="conheca">
-    @* deck de imagens em tela cheia — a ativa ocupa a sessão toda; navegação por clique nas cartas *@
+    @* deck de imagens em tela cheia — a ativa ocupa a sessão toda *@
     <div class="conheca-card" aria-hidden="true">
         <div class="conheca-card-slide" id="conhecaDeck"></div>
         <div class="conheca-scrim" aria-hidden="true"></div>
@@ -67,6 +67,20 @@
         else
         {
             <div class="conheca-empty">Em breve, novidades sobre Estância por aqui.</div>
+        }
+
+        @if (temItens)
+        {
+            @* navegação por setas — no mobile ficam abaixo do card, no desktop
+               o deck fica escondido (clique nas cartas) *@
+            <div class="conheca-btn">
+                <button type="button" class="vitrine-seta" id="conhecaPrev" aria-label="Anterior">
+                    <i data-lucide="chevron-left" class="icon-lg"></i>
+                </button>
+                <button type="button" class="vitrine-seta" id="conhecaNext" aria-label="Próximo">
+                    <i data-lucide="chevron-right" class="icon-lg"></i>
+                </button>
+            </div>
         }
     </div>
 

@@ -20,7 +20,6 @@ public class SecoesController : PainelController
 {
     private readonly IConteudoSiteService _conteudos;
     private readonly IArquivoService _arquivos;
-    private readonly ISlideService _slides;
     private readonly IEstatisticaService _estatisticas;
     private readonly IPontoTuristicoService _pontos;
     private readonly IEventoService _eventos;
@@ -34,7 +33,6 @@ public class SecoesController : PainelController
         IServiceProvider services,
         IConteudoSiteService conteudos,
         IArquivoService arquivos,
-        ISlideService slides,
         IEstatisticaService estatisticas,
         IPontoTuristicoService pontos,
         IEventoService eventos,
@@ -47,7 +45,6 @@ public class SecoesController : PainelController
     {
         _conteudos = conteudos;
         _arquivos = arquivos;
-        _slides = slides;
         _estatisticas = estatisticas;
         _pontos = pontos;
         _eventos = eventos;
@@ -62,11 +59,10 @@ public class SecoesController : PainelController
     public async Task<IActionResult> Hero(CancellationToken ct)
     {
         ViewData["Title"] = "Hero";
-        var vm = await MontarAsync("hero", "Hero", "Abertura do portal: título, chamada, imagens do carrossel, guia e vídeo.", ct,
+        var vm = await MontarAsync("hero", "Hero", "Abertura do portal: título, chamada e vídeo de fundo.", ct,
             textos: [T("hero-titulo", "Título", "Ex.: Explore as Cores, a História e a Tradição de Estância"), T("hero-subtitulo", "Subtítulo", "Frase curta sob o título; quebras de linha viram <br>")],
             imagens: [],
             ancora: "#section-cidade");
-        vm.Slides = await _slides.ListarAsync(ct);
         vm.VideoArquivoId = (await _configuracoes.ObterPorChaveAsync("video-institucional", ct))?.ArquivoId;
         return View("Editar", vm);
     }
@@ -77,31 +73,6 @@ public class SecoesController : PainelController
     {
         await SalvarAsync(vm, ct);
         TempData["PainelOk"] = "Hero atualizado.";
-        return RedirectToAction(nameof(Hero));
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AdicionarSlide(SlideDto dto, IFormFile imagem, CancellationToken ct)
-    {
-        if (imagem is null || imagem.Length == 0)
-        {
-            TempData["PainelErro"] = "Selecione uma imagem para o slide.";
-            return RedirectToAction(nameof(Hero));
-        }
-
-        dto.Ativo = true;
-        await _slides.SalvarAsync(dto, imagem, ct);
-        TempData["PainelOk"] = "Slide adicionado ao hero.";
-        return RedirectToAction(nameof(Hero));
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ExcluirSlide(int id, CancellationToken ct)
-    {
-        await _slides.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Slide removido do hero.";
         return RedirectToAction(nameof(Hero));
     }
 
@@ -135,7 +106,7 @@ public class SecoesController : PainelController
         if (atual is not null)
         {
             await _configuracoes.ExcluirAsync(atual.Id, ct);
-            TempData["PainelOk"] = "Vídeo institucional removido — o hero passa a usar as imagens do carrossel.";
+            TempData["PainelOk"] = "Vídeo do hero removido.";
         }
         return RedirectToAction(nameof(Hero));
     }

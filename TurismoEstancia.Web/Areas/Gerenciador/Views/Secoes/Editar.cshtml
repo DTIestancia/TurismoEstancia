@@ -70,15 +70,15 @@
 @if (ehHero)
 {
     <div class="painel-card" style="margin-bottom:18px;">
-        <div class="painel-card-title"><i data-lucide="video"></i> Vídeo institucional (fundo do hero)</div>
-        <p style="font-size:13px;color:var(--color-white--55);margin:4px 0 14px;">O vídeo ocupa o fundo do hero com reprodução automática em loop. Sem vídeo, o hero usa as imagens do carrossel abaixo.</p>
+        <div class="painel-card-title"><i data-lucide="video"></i> Vídeo do hero (fundo em tela cheia)</div>
+        <p style="font-size:13px;color:var(--color-white--55);margin:4px 0 14px;">O vídeo inicia junto com a página em loop e ocupa o fundo do hero. Envie um MP4 leve (720p, &lt;12 MB, H.264) otimizado para carregamento instantâneo.</p>
 
         @if (Model.VideoArquivoId is long videoId)
         {
             <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:14px;">
                 <video src="@Url.Content($"~/arquivo/{videoId}")" controls muted playsinline preload="metadata"
                        style="max-width:320px;width:100%;border-radius:12px;border:1px solid var(--color-white--15);"></video>
-                <form asp-action="RemoverVideoHero" method="post" class="js-confirm" data-confirm="Remover o vídeo institucional? O hero passará a usar as imagens do carrossel.">
+                <form asp-action="RemoverVideoHero" method="post" class="js-confirm" data-confirm="Remover o vídeo do hero? O fundo ficará sem mídia até enviar outro.">
                     @Html.AntiForgeryToken()
                     <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i> Remover vídeo</button>
                 </form>
@@ -86,7 +86,7 @@
         }
         else
         {
-            <div class="painel-empty" style="padding:18px 10px;margin-bottom:14px;">Nenhum vídeo enviado — o hero está usando as imagens do carrossel.</div>
+            <div class="painel-empty" style="padding:18px 10px;margin-bottom:14px;">Nenhum vídeo no hero — envie um MP4 para ativar o fundo em vídeo.</div>
         }
 
         <form asp-action="SalvarVideoHero" method="post" enctype="multipart/form-data" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
@@ -94,53 +94,9 @@
             <div class="painel-field" style="flex:1;min-width:220px;margin:0;">
                 <label>Vídeo (MP4)</label>
                 <input type="file" name="arquivo" accept="video/mp4,video/*" class="painel-input" required />
-                <span class="painel-hint">Enviar um novo vídeo substitui o atual.</span>
+                <span class="painel-hint">Recomendado: 720p, H.264, &lt;12 MB para iniciar junto com a página. O vídeo inicia automaticamente com a página.</span>
             </div>
             <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="upload"></i> Enviar vídeo</button>
-        </form>
-    </div>
-
-    <div class="painel-card" style="margin-bottom:18px;">
-        <div class="painel-card-title"><i data-lucide="images"></i> Imagens do carrossel (hero)</div>
-        <p style="font-size:13px;color:var(--color-white--55);margin:4px 0 14px;">As imagens do fundo do hero. A primeira da lista aparece primeiro no carrossel.</p>
-
-        @if (Model.Slides.Count == 0)
-        {
-            <div class="painel-empty" style="margin-bottom:14px;">Nenhuma imagem no carrossel ainda. Adicione a primeira abaixo.</div>
-        }
-        else
-        {
-            <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:18px;">
-                @foreach (var slide in Model.Slides.OrderBy(s => s.Ordem))
-                {
-                    <div style="position:relative;width:200px;">
-                        <img src="@Url.Content($"~/arquivo/{slide.ImagemArquivoId}")" alt="@(slide.Titulo ?? "Slide do hero")"
-                             style="width:200px;height:112px;object-fit:cover;border-radius:12px;border:1px solid var(--color-white--15);" />
-                        @if (!string.IsNullOrWhiteSpace(slide.Titulo))
-                        {
-                            <div style="position:absolute;left:8px;bottom:8px;background:rgba(0,0,0,0.7);color:#fff;font-size:11px;padding:3px 8px;border-radius:6px;">@slide.Titulo</div>
-                        }
-                        <form asp-action="ExcluirSlide" asp-route-id="@slide.Id" method="post" class="js-confirm"
-                              data-confirm="Remover esta imagem do carrossel?" style="position:absolute;top:6px;right:6px;">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs" title="Remover slide"><i data-lucide="trash-2"></i></button>
-                        </form>
-                    </div>
-                }
-            </div>
-        }
-
-        <form asp-action="AdicionarSlide" method="post" enctype="multipart/form-data" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
-            @Html.AntiForgeryToken()
-            <div class="painel-field" style="flex:1;min-width:220px;margin:0;">
-                <label>Título (opcional)</label>
-                <input name="Titulo" class="painel-input" maxlength="120" placeholder="Ex.: Praia do Saco ao entardecer" />
-            </div>
-            <div class="painel-field" style="flex:1;min-width:220px;margin:0;">
-                <label>Imagem do slide</label>
-                <input type="file" name="imagem" accept="image/*" class="painel-input" required />
-            </div>
-            <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="plus"></i> Adicionar slide</button>
         </form>
     </div>
 }
