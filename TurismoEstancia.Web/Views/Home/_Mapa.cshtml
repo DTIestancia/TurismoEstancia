@@ -26,15 +26,23 @@
         </div>
 
         <div class="custom-map reveal-scale mt-4" id="estanciaMap" aria-label="Mapa Interativo de Estância com as 7 Maravilhas">
-            <div class="custom-map-terrain" aria-hidden="true">
-                <div class="terrain-circle" style="width:300px;height:300px;top:10%;left:5%;"></div>
-                <div class="terrain-circle" style="width:200px;height:200px;top:25%;left:15%;"></div>
-                <div class="terrain-circle" style="width:400px;height:400px;top:40%;left:50%;"></div>
-                <div class="terrain-circle" style="width:250px;height:250px;top:60%;left:20%;"></div>
-                <div class="terrain-circle" style="width:350px;height:350px;top:30%;left:70%;"></div>
-                <div class="terrain-circle" style="width:180px;height:180px;top:70%;left:65%;"></div>
-                <div class="terrain-circle" style="width:280px;height:280px;top:75%;left:40%;"></div>
-            </div>
+            @if (Model.MapaImagemArquivoId is long mapaId)
+            {
+                <img src="@Url.Content($"~/arquivo/{mapaId}")" alt="Mapa do município de Estância" class="custom-map-imagem"
+                     style="object-position:@(Model.MapaImagemPosX)% @(Model.MapaImagemPosY)%;transform-origin:@(Model.MapaImagemPosX)% @(Model.MapaImagemPosY)%;transform:scale(@((Model.MapaImagemZoom/100.0).ToString(System.Globalization.CultureInfo.InvariantCulture)));" />
+            }
+            else
+            {
+                <div class="custom-map-terrain" aria-hidden="true">
+                    <div class="terrain-circle" style="width:300px;height:300px;top:10%;left:5%;"></div>
+                    <div class="terrain-circle" style="width:200px;height:200px;top:25%;left:15%;"></div>
+                    <div class="terrain-circle" style="width:400px;height:400px;top:40%;left:50%;"></div>
+                    <div class="terrain-circle" style="width:250px;height:250px;top:60%;left:20%;"></div>
+                    <div class="terrain-circle" style="width:350px;height:350px;top:30%;left:70%;"></div>
+                    <div class="terrain-circle" style="width:180px;height:180px;top:70%;left:65%;"></div>
+                    <div class="terrain-circle" style="width:280px;height:280px;top:75%;left:40%;"></div>
+                </div>
+            }
             <div class="custom-map-grid" aria-hidden="true"></div>
             <div class="custom-map-river" aria-hidden="true"></div>
         </div>

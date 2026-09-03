@@ -3,6 +3,7 @@
     ViewData["Title"] = Model.Titulo;
     var ehHero = Model.Area == "hero";
     var ehCidade = Model.Area == "cidade";
+    var ehMapa = Model.Area == "mapa";
 }
 <div class="painel-page-header">
     <div>
@@ -137,6 +138,69 @@
                 <input type="hidden" name="Imagens[@j].Chave" value="@img.Chave" />
                 <input type="hidden" name="Imagens[@j].Nome" value="@img.Nome" />
             </div>
+        }
+
+        @if (ehMapa)
+        {
+            var mapaImgId = Model.Imagens.FirstOrDefault(i => i.Chave == "mapa-imagem")?.ArquivoId;
+            var mapaSrc = mapaImgId is long mid ? Url.Content($"~/arquivo/{mid}") : null;
+            <div class="painel-field">
+                <label>Posição e zoom do mapa</label>
+                <div class="ajuste-imagem" id="ajusteMapa" data-ajuste-imagem data-zoom="@Model.MapaImagemZoom" data-x="@Model.MapaImagemPosX" data-y="@Model.MapaImagemPosY" data-src="@mapaSrc">
+                    <div class="ajuste-imagem-previa">
+                        <div class="ajuste-imagem-janela">
+                            <img class="ajuste-imagem-img" alt="Prévia do recorte do mapa" />
+                            <span class="ajuste-imagem-vazio">
+                                <i data-lucide="image-plus" class="icon-xl"></i>
+                                Selecione o PNG do mapa para ajustar.
+                            </span>
+                        </div>
+                    </div>
+                    <div class="ajuste-imagem-controles">
+                        <div class="ajuste-imagem-controle">
+                            <label for="mapaZoom">Zoom <span class="ajuste-imagem-valor" data-rotulo="zoom">@(Model.MapaImagemZoom)%</span></label>
+                            <input type="range" id="mapaZoom" class="ajuste-imagem-range" data-alvo="zoom" min="100" max="250" step="5" value="@Model.MapaImagemZoom" />
+                        </div>
+                        <div class="ajuste-imagem-controle">
+                            <label for="mapaY">Posição vertical <span class="ajuste-imagem-valor" data-rotulo="y">@(Model.MapaImagemPosY)%</span></label>
+                            <input type="range" id="mapaY" class="ajuste-imagem-range" data-alvo="y" min="0" max="100" step="5" value="@Model.MapaImagemPosY" />
+                        </div>
+                        <div class="ajuste-imagem-controle">
+                            <label for="mapaX">Posição horizontal <span class="ajuste-imagem-valor" data-rotulo="x">@(Model.MapaImagemPosX)%</span></label>
+                            <input type="range" id="mapaX" class="ajuste-imagem-range" data-alvo="x" min="0" max="100" step="5" value="@Model.MapaImagemPosX" />
+                        </div>
+                        <button type="button" class="btn-painel btn-painel--ghost btn-painel--xs" data-ajuste-reset>
+                            <i data-lucide="rotate-ccw"></i> Redefinir
+                        </button>
+                    </div>
+                    <input type="hidden" name="MapaImagemZoom" value="@Model.MapaImagemZoom" />
+                    <input type="hidden" name="MapaImagemPosX" value="@Model.MapaImagemPosX" />
+                    <input type="hidden" name="MapaImagemPosY" value="@Model.MapaImagemPosY" />
+                </div>
+                <span class="painel-hint">Sugestão: 1600×900px (16:9), PNG com fundo transparente, até 1 MB. Use zoom e posição para enquadrar o município — a prévia é exatamente o que aparece no portal, com os pins por cima.</span>
+            </div>
+            <script>
+                (function(){
+                    var caixa = document.getElementById('ajusteMapa');
+                    if(!caixa || caixa.dataset.inicializado==="1") return;
+                    caixa.dataset.inicializado="1";
+                    var img=caixa.querySelector('.ajuste-imagem-img'), vazio=caixa.querySelector('.ajuste-imagem-vazio');
+                    var hZoom=caixa.querySelector('input[name="MapaImagemZoom"]'), hX=caixa.querySelector('input[name="MapaImagemPosX"]'), hY=caixa.querySelector('input[name="MapaImagemPosY"]');
+                    var rZoom=caixa.querySelector('input[data-alvo="zoom"]'), rX=caixa.querySelector('input[data-alvo="x"]'), rY=caixa.querySelector('input[data-alvo="y"]');
+                    var lZoom=caixa.querySelector('[data-rotulo="zoom"]'), lX=caixa.querySelector('[data-rotulo="x"]'), lY=caixa.querySelector('[data-rotulo="y"]');
+                    var zoom=parseInt(caixa.getAttribute('data-zoom'),10)||100, x=parseInt(caixa.getAttribute('data-x'),10), y=parseInt(caixa.getAttribute('data-y'),10);
+                    if(isNaN(x)) x=50; if(isNaN(y)) y=50;
+                    var src=caixa.getAttribute('data-src')||'';
+                    function aplicar(){ if(src){ img.src=src; img.style.width='100%'; img.style.height='100%'; img.style.objectFit='contain'; img.style.objectPosition=x+'% '+y+'%'; img.style.transformOrigin=x+'% '+y+'%'; img.style.transform='scale('+(zoom/100)+')'; img.style.display='block'; vazio.style.display='none'; } else { img.style.display='none'; vazio.style.display=''; } lZoom.textContent=zoom+'%'; lX.textContent=x+'%'; lY.textContent=y+'%'; hZoom.value=zoom; hX.value=x; hY.value=y; }
+                    function sync(){ rZoom.value=zoom; rX.value=x; rY.value=y; }
+                    rZoom.addEventListener('input',function(){ zoom=parseInt(rZoom.value,10)||100; aplicar(); });
+                    rX.addEventListener('input',function(){ x=parseInt(rX.value,10)||50; aplicar(); });
+                    rY.addEventListener('input',function(){ y=parseInt(rY.value,10)||50; aplicar(); });
+                    var rst=caixa.querySelector('[data-ajuste-reset]'); if(rst) rst.addEventListener('click',function(){ zoom=100; x=50; y=50; sync(); aplicar(); });
+                    var form=caixa.closest('form'); var arq=form&&form.querySelector('input[name="imagem_mapa-imagem"]'); if(arq) arq.addEventListener('change',function(){ var f=arq.files&&arq.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(){ src=r.result; aplicar(); }; r.readAsDataURL(f); });
+                    sync(); aplicar();
+                })();
+            </script>
         }
 
         @if (Model.Links.Count > 0)

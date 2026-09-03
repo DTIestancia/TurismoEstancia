@@ -56,6 +56,12 @@ public class HomeViewModel
     public bool GuiaDisponivel => Guia?.ArquivoId is > 0;
     public long? VideoArquivoId => VideoInstitucional?.ArquivoId;
 
+    /// <summary>Imagem de fundo do mapa (PNG do município) — gerenciada em Secoes/Mapa.</summary>
+    public long? MapaImagemArquivoId { get; set; }
+    public int MapaImagemZoom { get; set; } = 100;
+    public int MapaImagemPosX { get; set; } = 50;
+    public int MapaImagemPosY { get; set; } = 50;
+
     /// <summary>JSON do mapa (categorias + POIs) serializado no controller.</summary>
     public string MapaJson { get; set; } = "{}";
 

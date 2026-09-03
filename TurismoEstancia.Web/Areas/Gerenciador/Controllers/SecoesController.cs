@@ -309,13 +309,17 @@ public class SecoesController : PainelController
     public async Task<IActionResult> Mapa(CancellationToken ct)
     {
         ViewData["Title"] = "Mapa";
-        var vm = await MontarAsync("mapa", "Mapa interativo", "Chamada do mapa e acesso às categorias e pontos.", ct,
+        var vm = await MontarAsync("mapa", "Mapa interativo", "Imagem do município (PNG) + chamada do mapa e acesso às categorias e pontos. Os pins são os pontos com “Exibir no mapa”.", ct,
             textos: [
                 T("mapa-titulo", "Título", "Aceita <span class=\"secao-destaque\"> para destacar; ex.: Encontre as <span class=\"secao-destaque\">7 Maravilhas</span>"),
                 T("mapa-descricao", "Descrição", "Chamada do mapa interativo")
             ],
-            imagens: [],
+            imagens: [I("mapa-imagem", "Imagem do mapa (PNG do município) — sugestão: 1600×900px (16:9), PNG com fundo transparente, até 1 MB")],
             ancora: "#section-mapa");
+        var dic = await _conteudos.ObterDicionarioAsync(ct);
+        vm.MapaImagemZoom = dic.TryGetValue("mapa-imagem-zoom", out var z) && int.TryParse(z, out var zi) && zi is >= 100 and <= 250 ? zi : 100;
+        vm.MapaImagemPosX = dic.TryGetValue("mapa-imagem-pos-x", out var x) && int.TryParse(x, out var xi) && xi is >= 0 and <= 100 ? xi : 50;
+        vm.MapaImagemPosY = dic.TryGetValue("mapa-imagem-pos-y", out var y) && int.TryParse(y, out var yi) && yi is >= 0 and <= 100 ? yi : 50;
         var pontosMapa = await _pontos.ListarAsync(apenasAtivos: false, ct);
         // Mapa: todos os pontos com ExibirNoMapa — maravilhas, restaurantes,
         // hotéis, praias e demais pontos turísticos.
@@ -337,6 +341,13 @@ public class SecoesController : PainelController
     public async Task<IActionResult> SalvarMapa(AreaSiteViewModel vm, CancellationToken ct)
     {
         await SalvarAsync(vm, ct);
+        // Ajuste de zoom/posição da imagem do mapa (mesma biblioteca de Notícias)
+        var zoom = Request.Form.TryGetValue("MapaImagemZoom", out var zv) && int.TryParse(zv, out var zi) && zi is >= 100 and <= 250 ? zi.ToString() : "100";
+        var posX = Request.Form.TryGetValue("MapaImagemPosX", out var xv) && int.TryParse(xv, out var xi) && xi is >= 0 and <= 100 ? xi.ToString() : "50";
+        var posY = Request.Form.TryGetValue("MapaImagemPosY", out var yv) && int.TryParse(yv, out var yi) && yi is >= 0 and <= 100 ? yi.ToString() : "50";
+        await _conteudos.SalvarPorChaveAsync("mapa-imagem-zoom", "Mapa — zoom da imagem", zoom, ct);
+        await _conteudos.SalvarPorChaveAsync("mapa-imagem-pos-x", "Mapa — posição X", posX, ct);
+        await _conteudos.SalvarPorChaveAsync("mapa-imagem-pos-y", "Mapa — posição Y", posY, ct);
         TempData["PainelOk"] = "Mapa atualizado.";
         return RedirectToAction(nameof(Mapa));
     }

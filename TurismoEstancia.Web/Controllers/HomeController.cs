@@ -115,6 +115,12 @@ public class HomeController : Controller
 
         vm.ConhecaEstancia = await MontarConhecaEstancia(ct);
 
+        if (vm.Conteudos.TryGetValue("mapa-imagem", out var mapaImg) && long.TryParse(mapaImg, out var mapaId) && mapaId > 0)
+            vm.MapaImagemArquivoId = mapaId;
+        if (vm.Conteudos.TryGetValue("mapa-imagem-zoom", out var mz) && int.TryParse(mz, out var mzi) && mzi is >= 100 and <= 250) vm.MapaImagemZoom = mzi;
+        if (vm.Conteudos.TryGetValue("mapa-imagem-pos-x", out var mx) && int.TryParse(mx, out var mxi) && mxi is >= 0 and <= 100) vm.MapaImagemPosX = mxi;
+        if (vm.Conteudos.TryGetValue("mapa-imagem-pos-y", out var my) && int.TryParse(my, out var myi) && myi is >= 0 and <= 100) vm.MapaImagemPosY = myi;
+
         vm.MapaJson = SerializarMapa(categorias, pontos);
 
         return View(vm);

@@ -35,6 +35,11 @@ public class AreaSiteViewModel
     /// <summary>Vídeo institucional (fundo do hero) — gerenciado na área Hero.</summary>
     public long? VideoArquivoId { get; set; }
 
+    /// <summary>Ajuste do PNG do mapa (gerenciado em Secoes/Mapa) — espelha o componente de Notícias.</summary>
+    public int MapaImagemZoom { get; set; } = 100;
+    public int MapaImagemPosX { get; set; } = 50;
+    public int MapaImagemPosY { get; set; } = 50;
+
     public bool ExibeSlides => Slides.Count > 0;
     public bool ExibeEstatisticas => Estatisticas.Count > 0;
 }
