@@ -1,10 +1,4 @@
 @model HomeViewModel
-@{
-    var noticiasDesc = Model.Conteudos.GetValueOrDefault("noticias-descricao",
-        "Cultura, eventos e novidades da Capital Sergipana da Cultura.");
-    // Pictogramas das 7 maravilhas — viram os "destaques" estilo stories do Instagram.
-    var maravilhasPicto = Model.MaravilhasComPictograma.ToList();
-}
 
 @if (Model.Noticias.Count > 0)
 {
@@ -20,40 +14,6 @@
                     <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;line-height:16px;">Fique por dentro</span>
                 </div>
             </div>
-
-            <!-- Cabeçalho estilo perfil do Instagram (referência: @@vempraestancia) -->
-            <div class="ig-profile reveal">
-                <div class="ig-avatar-ring" aria-hidden="true">
-                    <div class="ig-avatar-inner">
-                        @await Component.InvokeAsync("LogoSite", new { altura = 46, alt = "Vem pra Estância" })
-                    </div>
-                </div>
-                <div class="ig-profile-info">
-                    <div class="ig-handle-row">
-                        <h2 class="ig-handle">@@vempraestancia</h2>
-                        <a class="ig-follow" href="https://www.instagram.com/vempraestancia" target="_blank" rel="noopener"
-                           title="Abrir o perfil oficial de turismo no Instagram" data-track="instagram-seguir">Seguir</a>
-                    </div>
-                    <p class="ig-name">Vem pra Estância · Turismo oficial</p>
-                    <p class="ig-bio">@noticiasDesc</p>
-                </div>
-            </div>
-
-            <!-- Destaques estilo stories: os 7 pictogramas das maravilhas -->
-            @if (maravilhasPicto.Count > 0)
-            {
-                <div class="ig-highlights reveal reveal-delay-1">
-                    @foreach (var m in maravilhasPicto)
-                    {
-                        <a class="ig-highlight" href="@Url.Content($"~/lugares/{m.Id}")" title="Ver detalhes: @m.Nome">
-                            <span class="ig-highlight-ring">
-                                <img src="@Url.Content($"~/arquivo/{m.PictogramaArquivoId}")" alt="" loading="lazy" />
-                            </span>
-                            <span class="ig-highlight-nome">@m.Nome</span>
-                        </a>
-                    }
-                </div>
-            }
 
             <!-- Feed de notícias: cards editoriais com foto (badge de data sobre
                  a imagem), título, resumo e link "Ler notícia" -->
