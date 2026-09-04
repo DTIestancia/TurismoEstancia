@@ -3,7 +3,9 @@
 @{
     var enderecos = Model.Contatos.Where(c => c.Tipo == TipoContato.Endereco).ToList();
     var telefones = Model.Contatos.Where(c => c.Tipo == TipoContato.Telefone).ToList();
-    var redes = Model.Contatos.Where(c => c.Tipo == TipoContato.RedesSocial).ToList();
+    var redes = Model.Contatos.Where(c => c.Tipo == TipoContato.RedesSocial)
+        .GroupBy(c => { var v=(c.Valor??"").ToLowerInvariant(); if(v.Contains("instagram")) return "instagram"; if(v.Contains("facebook")) return "facebook"; if(v.Contains("tiktok")) return "tiktok"; if(v.Contains("youtube")||v.Contains("youtu.be")) return "youtube"; if(v.Contains("wa.me")||v.Contains("whatsapp")) return "whatsapp"; if(v.Contains("twitter")||v.Contains("x.com")) return "x"; if(v.Contains("linkedin")) return "linkedin"; return v.Trim().TrimEnd('/'); })
+        .Select(g => g.First()).ToList();
     var emails = Model.Contatos.Where(c => c.Tipo == TipoContato.Email).ToList();
     var mostraEnderecos = Model.Bloco is "todos" or "enderecos";
     var mostraTelefones = Model.Bloco is "todos" or "telefones";

@@ -14,8 +14,23 @@
         .Distinct()
         .ToList();
 
-    // Redes sociais exibidas na navbar — mesma fonte do rodapé (Contatos).
-    var redesSociais = Model.Contatos.Where(c => c.Tipo == TipoContato.RedesSocial).ToList();
+    // Redes sociais da navbar — deduplicadas por rede para evitar dois ícones iguais (ex.: dois Instagram).
+    var redesSociais = Model.Contatos
+        .Where(c => c.Tipo == TipoContato.RedesSocial)
+        .GroupBy(c =>
+        {
+            var v = (c.Valor ?? "").Trim().ToLowerInvariant();
+            if (v.Contains("instagram")) return "instagram";
+            if (v.Contains("facebook")) return "facebook";
+            if (v.Contains("tiktok")) return "tiktok";
+            if (v.Contains("youtube") || v.Contains("youtu.be")) return "youtube";
+            if (v.Contains("wa.me") || v.Contains("whatsapp")) return "whatsapp";
+            if (v.Contains("twitter") || v.Contains("x.com")) return "x";
+            if (v.Contains("linkedin")) return "linkedin";
+            return v.TrimEnd('/');
+        })
+        .Select(g => g.First())
+        .ToList();
 }
 
 <!-- ===== Reading Progress Bar ===== -->
@@ -53,7 +68,7 @@
             <a href="#section-conheca" class="navbar-link" data-section="conheca">Conheça Estância</a>
                 <a href="#section-maravilhas" class="navbar-link" data-section="maravilhas">7 Maravilhas</a>
                 <a href="#section-servicos" class="navbar-link" data-section="Agenda">Agenda</a>
-                <a href="#section-servicos" class="navbar-link" data-section="servicos">Planeje sua viagem</a>
+                <a href="#section-roteiros" class="navbar-link" data-section="servicos">Planeje sua viagem</a>
             <a href="#section-noticias" class="navbar-link" data-section="noticias">Blog</a>
                 <a href="#section-mapa" class="navbar-link" data-section="map">Mapa</a>
            

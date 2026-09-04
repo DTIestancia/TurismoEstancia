@@ -1,49 +1,57 @@
 @model HomeViewModel
+@{
+    var noticiasDesc = Model.Conteudos.GetValueOrDefault("noticias-descricao",
+        "Cultura, eventos e novidades da Capital Sergipana da Cultura.") ?? "";
+}
 
 @if (Model.Noticias.Count > 0)
 {
     <section class="section-noticias section-divider section-instagram" id="section-noticias" data-section="noticias">
         <div class="section-noticias-inner">
             <div class="section-tag">
-                <div class="pill pill-white">
-                    <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-white-solid);" aria-hidden="true">
+                <div class="pill">
+                    <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
                         <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
                         <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
                     </svg>
-                    <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;line-height:16px;">Fique por dentro</span>
+                    <span style="font-size:12px;font-weight:700;line-height:16px;">Fique por dentro</span>
                 </div>
             </div>
-
-            <!-- Feed de notícias: cards editoriais com foto (badge de data sobre
-                 a imagem), título, resumo e link "Ler notícia" -->
-            <div class="ig-feed reveal reveal-delay-1">
-                @foreach (var noticia in Model.Noticias)
+            <div style="text-align:center; max-width:640px; margin: 24px auto 0;">
+                <h2 class="section-title" style="color: var(--color-azure-7); font-family: 'Fraunces', serif; font-size: clamp(28px, 4vw, 42px); font-weight: 800; line-height:1.1; margin:0;">Notícias e Blog</h2>
+                @if (!string.IsNullOrWhiteSpace(noticiasDesc))
                 {
-                    var dataBadge = noticia.DataPublicacao.ToString("dd MMM", new System.Globalization.CultureInfo("pt-BR"));
-                    <a class="ig-post" href="~/Noticias/Detalhe/@noticia.Slug"
-                       data-track="noticia" data-track-id="@noticia.Id" data-track-nome="@noticia.Titulo">
-                        <span class="ig-post-foto">
-                            @if (noticia.ImagemArquivoId is long imgId)
-                            {
-                                <img class="ig-post-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@noticia.Titulo" loading="lazy"
-                                     style="--noticia-zoom:@(noticia.ImagemZoom)%;object-position:@(noticia.ImagemPosicaoX)% @(noticia.ImagemPosicaoY)%;transform-origin:@(noticia.ImagemPosicaoX)% @(noticia.ImagemPosicaoY)%;" />
-                            }
-                            else
-                            {
-                                <span class="ig-post-fallback" aria-hidden="true"><i data-lucide="newspaper" class="icon-xl"></i></span>
-                            }
-                            <span class="ig-post-date">@dataBadge</span>
-                        </span>
-                        <span class="ig-post-texto">
-                            <span class="ig-post-title">@noticia.Titulo</span>
-                            @if (!string.IsNullOrWhiteSpace(noticia.Resumo))
-                            {
-                                <span class="ig-post-resumo">@noticia.Resumo</span>
-                            }
-                            <span class="ig-post-ler">Ler notícia <i data-lucide="arrow-right" class="icon-lg"></i></span>
-                        </span>
-                    </a>
+                    <p class="section-desc" style="color:#6b7280; margin: 12px auto 0; font-size: 16px; line-height:1.6;">@Html.Raw(noticiasDesc)</p>
+                }
+            </div>
+
+            <!-- Blog band (Cool Articles) — adaptado: grid 1→2→4 cols, card com thumb -->
+            <div class="noticias-band reveal">
+                @for (int i = 0; i < Model.Noticias.Count; i++)
+                {
+                    var noticia = Model.Noticias[i];
+                    var dataBadge = noticia.DataPublicacao.ToString("dd MMM", new System.Globalization.CultureInfo("pt-BR")).ToUpperInvariant();
+                    var thumbUrl = noticia.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}") : "";
+                    <div class="noticias-item noticias-item-@(i + 1)">
+                        <a href="~/Noticias/Detalhe/@noticia.Slug" class="noticias-card"
+                           data-track="noticia" data-track-id="@noticia.Id" data-track-nome="@noticia.Titulo">
+                            <div class="noticias-thumb" style="@(string.IsNullOrEmpty(thumbUrl) ? "background:#f3f4f6;" : $"background-image: url('{thumbUrl}'); background-position: {noticia.ImagemPosicaoX}% {noticia.ImagemPosicaoY}%;")">
+                                @if (!string.IsNullOrEmpty(thumbUrl))
+                                {
+                                    <span class="noticias-badge">@dataBadge</span>
+                                }
+                            </div>
+                            <article>
+                                <h1>@noticia.Titulo</h1>
+                                @if (!string.IsNullOrWhiteSpace(noticia.Resumo))
+                                {
+                                    <p>@noticia.Resumo</p>
+                                }
+                                <span>Ler notícia <i data-lucide="arrow-right" class="icon-lg"></i></span>
+                            </article>
+                        </a>
+                    </div>
                 }
             </div>
 
