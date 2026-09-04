@@ -5,7 +5,7 @@
     // (esboçada) sobre o vídeo, como no print: uma só palavra em destaque.
     var heroTitulo = Model.Conteudos.GetValueOrDefault("hero-titulo", "ESTÂNCIA");
     var heroSubtitulo = Model.Conteudos.GetValueOrDefault("hero-subtitulo",
-        "Explore as Cores, a História e a Tradição de Estância") ?? "";
+        "Explore as Cores, a História e a Tradição de Estância") ?? " ";
 
     // Pictogramas das 7 maravilhas para o preloader personalizado.
     // Regra de coleta compartilhada com o rodapé (HomeViewModel.MaravilhasComPictograma).
