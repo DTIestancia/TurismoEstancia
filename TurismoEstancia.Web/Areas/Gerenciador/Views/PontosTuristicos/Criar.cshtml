@@ -68,16 +68,23 @@
     <div class="painel-field" id="campoPosicaoMapa">
         <label>Posição no mapa</label>
         <div class="painel-mapa" id="painelMapa" role="application" aria-label="Mapa de Estância — clique para posicionar o ponto">
-            <div class="custom-map-terrain" aria-hidden="true">
-                <div class="terrain-circle" style="width:260px;height:260px;top:8%;left:6%;"></div>
-                <div class="terrain-circle" style="width:180px;height:180px;top:22%;left:16%;"></div>
-                <div class="terrain-circle" style="width:340px;height:340px;top:38%;left:48%;"></div>
-                <div class="terrain-circle" style="width:220px;height:220px;top:58%;left:22%;"></div>
-                <div class="terrain-circle" style="width:300px;height:300px;top:28%;left:68%;"></div>
-                <div class="terrain-circle" style="width:160px;height:160px;top:68%;left:64%;"></div>
-            </div>
-            <div class="custom-map-grid" aria-hidden="true"></div>
-            <div class="custom-map-river" aria-hidden="true"></div>
+            @if (ViewBag.MapaImagemId != null)
+            {
+                <img src="@Url.Content($"~/arquivo/{ViewBag.MapaImagemId}")" alt="Mapa do município" class="painel-mapa-imagem" />
+            }
+            else
+            {
+                <div class="custom-map-terrain" aria-hidden="true">
+                    <div class="terrain-circle" style="width:260px;height:260px;top:8%;left:6%;"></div>
+                    <div class="terrain-circle" style="width:180px;height:180px;top:22%;left:16%;"></div>
+                    <div class="terrain-circle" style="width:340px;height:340px;top:38%;left:48%;"></div>
+                    <div class="terrain-circle" style="width:220px;height:220px;top:58%;left:22%;"></div>
+                    <div class="terrain-circle" style="width:300px;height:300px;top:28%;left:68%;"></div>
+                    <div class="terrain-circle" style="width:160px;height:160px;top:68%;left:64%;"></div>
+                </div>
+                <div class="custom-map-grid" aria-hidden="true"></div>
+                <div class="custom-map-river" aria-hidden="true"></div>
+            }
             <div class="painel-mapa-vazio" id="painelMapaVazio">👆 Clique no mapa para posicionar o ponto</div>
             <div class="painel-mapa-marcador" id="painelMapaMarcador" hidden></div>
         </div>

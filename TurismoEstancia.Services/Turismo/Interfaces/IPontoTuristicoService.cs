@@ -23,4 +23,7 @@ public interface IPontoTuristicoService
     Task ExcluirAsync(int id, CancellationToken ct = default);
 
     Task ReativarAsync(int id, CancellationToken ct = default);
+
+    /// <summary>Atualiza apenas a posição percentual do ponto no mapa.</summary>
+    Task AtualizarPosicaoAsync(int id, int leftPercent, int topPercent, CancellationToken ct = default);
 }

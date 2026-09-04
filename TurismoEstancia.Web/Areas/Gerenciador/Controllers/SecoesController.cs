@@ -369,6 +369,7 @@ public class SecoesController : PainelController
             Icone = "map",
             Itens = mapa.Select(p => new ItemAreaViewModel { Id = p.Id, Nome = p.Nome, Detalhe = p.CategoriaNome, ImagemArquivoId = p.CapaArquivoId, Ativo = p.Ativo }).ToList()
         };
+        ViewBag.PontosMapaGeral = mapa;
         return View("Editar", vm);
     }
 

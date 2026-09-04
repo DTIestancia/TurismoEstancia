@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TurismoEstancia.Domain.DTOs;
+using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Services.Turismo.Interfaces;
 
 namespace TurismoEstancia.Web.Areas.Gerenciador.Controllers;
@@ -8,15 +9,18 @@ public class PontosTuristicosController : PainelController
 {
     private readonly IPontoTuristicoService _pontos;
     private readonly ICategoriaPontoTuristicoService _categorias;
+    private readonly IConteudoSiteService _conteudos;
 
     public PontosTuristicosController(
         IServiceProvider services,
         IPontoTuristicoService pontos,
-        ICategoriaPontoTuristicoService categorias)
+        ICategoriaPontoTuristicoService categorias,
+        IConteudoSiteService conteudos)
         : base(services)
     {
         _pontos = pontos;
         _categorias = categorias;
+        _conteudos = conteudos;
     }
 
     public async Task<IActionResult> Index(string? contexto, CancellationToken ct)
@@ -42,6 +46,7 @@ public class PontosTuristicosController : PainelController
         ViewData["Title"] = "Novo ponto turístico";
         ViewData["AreaAtiva"] = "maravilhas";
         ViewBag.Categorias = await _categorias.ListarAsync(incluirInativos: true, ct);
+        ViewBag.MapaImagemId = await ObterMapaImagemIdAsync(ct);
         return View(new PontoTuristicoDto());
     }
 
@@ -79,8 +84,15 @@ public class PontosTuristicosController : PainelController
         ViewData["Title"] = "Editar ponto turístico";
         ViewData["AreaAtiva"] = "maravilhas";
         ViewBag.Categorias = await _categorias.ListarAsync(incluirInativos: true, ct);
+        ViewBag.MapaImagemId = await ObterMapaImagemIdAsync(ct);
         var dto = await _pontos.ObterPorIdAsync(id, ct);
         return dto is null ? NotFound() : View(dto);
+    }
+
+    private async Task<long?> ObterMapaImagemIdAsync(CancellationToken ct)
+    {
+        var d = await _conteudos.ObterDicionarioAsync(ct);
+        return d.TryGetValue("mapa-imagem", out var v) && long.TryParse(v, out var id) && id > 0 ? id : null;
     }
 
     [HttpPost]
@@ -128,5 +140,13 @@ public class PontosTuristicosController : PainelController
         await _pontos.ReativarAsync(id, ct);
         TempData["PainelOk"] = "Ponto turístico reativado.";
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AtualizarPosicao(int id, int leftPercent, int topPercent, CancellationToken ct)
+    {
+        await _pontos.AtualizarPosicaoAsync(id, leftPercent, topPercent, ct);
+        return Json(new { ok = true, leftPercent = Math.Clamp(leftPercent, 0, 100), topPercent = Math.Clamp(topPercent, 0, 100) });
     }
 }

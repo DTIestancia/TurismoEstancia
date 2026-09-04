@@ -185,6 +185,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      background: #0a1628;
     }
 
     /* Vídeo de fundo do hero — inicia junto com a página, visível de imediato. */
@@ -3810,7 +3811,8 @@
       }
 
       .hero-scroll-indicator {
-        display: none;
+        display: flex;
+        bottom: 28px;
       }
 
       .video-card {
@@ -3903,13 +3905,14 @@
         grid-template-columns: 1fr;
       }
     }
-    /* ===== Custom Illustrated Map ===== */
+    /* ===== Custom Illustrated Map — a div se ajusta à imagem, não o contrário */
     .custom-map {
       position: relative;
       width: 100%;
-      height: 520px;
+      min-height: 520px;
+      height: auto;
       border-radius: 24px;
-      overflow: hidden;
+      overflow: visible;
       background: #0a1628;
       background-image:
         radial-gradient(circle at 25% 40%, rgba(255, 141, 0, 0.06) 0%, transparent 50%),
@@ -3924,17 +3927,33 @@
       outline-offset: -1px;
     }
 
-    /* Imagem PNG do município (gerenciada em Secoes/Mapa) — fica atrás dos pins */
+    /* Imagem PNG do município — a div se molda à imagem; pins em % acompanham o tamanho */
     .custom-map-imagem {
-      position: absolute;
-      inset: 0;
+      display: block;
+      position: relative;
       width: 100%;
-      height: 100%;
+      height: auto;
       object-fit: contain;
       object-position: center;
       z-index: 0;
       pointer-events: none;
       background: #0a1628;
+      border-radius: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .custom-map-marker-inner {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+      }
+    }
+    @media (max-width: 480px) {
+      .custom-map-marker-inner {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+      }
     }
 
     /* Map terrain decoration (topographic-like circles) */

@@ -3,6 +3,16 @@
     ViewData["Title"] = "Início";
     Layout = "_Layout";
 }
+@section Head {
+    @if (Model.VideoArquivoId is long _vidHead)
+    {
+        <link rel="preload" as="video" href="@Url.Content($"~/arquivo/{_vidHead}")" type="video/mp4" fetchpriority="high" />
+    }
+    @if (Model.VideoArquivoIdMobile is long _mvidHead)
+    {
+        <link rel="preload" as="video" href="@Url.Content($"~/arquivo/{_mvidHead}")" type="video/mp4" media="(max-width: 767px)" />
+    }
+}
 
 @await Html.PartialAsync("_Hero", Model)
 @await Html.PartialAsync("_Historia", Model)

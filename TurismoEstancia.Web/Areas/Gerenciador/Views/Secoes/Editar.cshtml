@@ -231,6 +231,95 @@
             </script>
         }
 
+        @if (ehMapa)
+        {
+            var pontosGeral = ViewBag.PontosMapaGeral as IReadOnlyList<PontoTuristicoDto>;
+            var mapaIdGeral = Model.Imagens.FirstOrDefault(i => i.Chave == "mapa-imagem")?.ArquivoId;
+            if (pontosGeral is not null && pontosGeral.Count > 0)
+            {
+                <div class="painel-card" style="margin-top:18px;">
+                    <div class="painel-card-title"><i data-lucide="map-pin"></i> Posicionamento geral dos pontos</div>
+                    <p style="font-size:12.5px;color:var(--color-white--55);margin:0 0 12px;">Arraste os pins sobre o mapa do município para reposicionar. Posição salva automaticamente.</p>
+                    <div class="painel-mapa-geral" id="mapaGeral">
+                        @if (mapaIdGeral is long mgId)
+                        {
+                            <img src="@Url.Content($"~/arquivo/{mgId}")" class="painel-mapa-imagem" alt="Mapa do município" />
+                        }
+                        @foreach (var pt in pontosGeral)
+                        {
+                            <div class="painel-mapa-pin" data-id="@pt.Id" data-nome="@pt.Nome" style="left:@(pt.LeftPercent)%; top:@(pt.TopPercent)%;" title="@pt.Nome — @pt.LeftPercent%, @pt.TopPercent%">@pt.Nome.Substring(0,1).ToUpperInvariant()</div>
+                        }
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:8px; margin-top:12px;">
+                        @foreach (var pt in pontosGeral)
+                        {
+                            <div style="display:flex; gap:8px; align-items:center; padding:7px 10px; background:var(--color-white--5); border:1px solid var(--color-white--10); border-radius:10px;">
+                                <span style="width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg, var(--color-orange-48), var(--color-red-54)); border:1px solid white; display:flex; align-items:center; justify-content:center; color:white; font-size:10px; font-weight:800; flex-shrink:0;">@pt.Nome.Substring(0,1).ToUpperInvariant()</span>
+                                <div style="min-width:0; flex:1;">
+                                    <div style="font-size:12px; font-weight:600; color:white; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="@pt.Nome">@pt.Nome</div>
+                                    <div style="font-size:10.5px; color:var(--color-white--55); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">@pt.CategoriaNome</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <p style="font-size:11.5px;color:var(--color-white--45);margin-top:10px;">Dica: passe o mouse sobre o pin para ver o nome, arraste para reposicionar.</p>
+                </div>
+                <script>
+                    (function(){
+                        var mapa = document.getElementById('mapaGeral');
+                        if(!mapa) return;
+                        var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                        var dragging = null;
+                        function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+                        function posFromEvent(e, el){
+                            var rect = mapa.getBoundingClientRect();
+                            var cx = e.touches ? e.touches[0].clientX : e.clientX;
+                            var cy = e.touches ? e.touches[0].clientY : e.clientY;
+                            var x = ((cx - rect.left) / rect.width) * 100;
+                            var y = ((cy - rect.top) / rect.height) * 100;
+                            return { x: clamp(Math.round(x),0,100), y: clamp(Math.round(y),0,100) };
+                        }
+                        function salvar(id, x, y){
+                            fetch('@Url.Action("AtualizarPosicao", "PontosTuristicos", new { area = "Gerenciador" })', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    'RequestVerificationToken': token || ''
+                                },
+                                body: 'id=' + encodeURIComponent(id) + '&leftPercent=' + x + '&topPercent=' + y + '&__RequestVerificationToken=' + encodeURIComponent(token||'')
+                            }).then(function(r){ if(!r.ok) console.error('Falha ao salvar posição'); });
+                        }
+                        mapa.querySelectorAll('.painel-mapa-pin').forEach(function(pin){
+                            pin.addEventListener('mousedown', function(e){ dragging = pin; e.preventDefault(); });
+                            pin.addEventListener('touchstart', function(e){ dragging = pin; }, {passive:false});
+                        });
+                        function onMove(e){
+                            if(!dragging) return;
+                            var p = posFromEvent(e, dragging);
+                            dragging.style.left = p.x + '%';
+                            dragging.style.top = p.y + '%';
+                            dragging.title = dragging.getAttribute('data-nome') + ' — ' + p.x + '%, ' + p.y + '%';
+                            e.preventDefault();
+                        }
+                        function onUp(e){
+                            if(!dragging) return;
+                            var p = posFromEvent(e, dragging);
+                            var id = dragging.getAttribute('data-id');
+                            dragging.style.left = p.x + '%';
+                            dragging.style.top = p.y + '%';
+                            salvar(id, p.x, p.y);
+                            dragging = null;
+                        }
+                        document.addEventListener('mousemove', onMove);
+                        document.addEventListener('mouseup', onUp);
+                        document.addEventListener('touchmove', onMove, {passive:false});
+                        document.addEventListener('touchend', onUp);
+                        // clique no mapa vazio não faz nada no modo geral
+                    })();
+                </script>
+            }
+        }
+
         @if (Model.Links.Count > 0)
         {
             <div style="border-top:1px solid var(--color-white--10);margin-top:20px;padding-top:16px;">

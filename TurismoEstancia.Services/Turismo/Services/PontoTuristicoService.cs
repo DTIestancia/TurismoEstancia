@@ -184,6 +184,17 @@ public class PontoTuristicoService : IPontoTuristicoService
         await _db.SaveChangesAsync(ct);
     }
 
+    public async Task AtualizarPosicaoAsync(int id, int leftPercent, int topPercent, CancellationToken ct = default)
+    {
+        leftPercent = Math.Clamp(leftPercent, 0, 100);
+        topPercent = Math.Clamp(topPercent, 0, 100);
+        var entidade = await _db.PontosTuristicos.FirstOrDefaultAsync(p => p.Id == id, ct)
+            ?? throw new InvalidOperationException("Ponto turístico não encontrado.");
+        entidade.LeftPercent = leftPercent;
+        entidade.TopPercent = topPercent;
+        await _db.SaveChangesAsync(ct);
+    }
+
     private async Task CarregarMidiasAsync(IEnumerable<int> ids, IReadOnlyList<PontoTuristicoDto> dtoList, CancellationToken ct)
     {
         var midias = await _db.PontoTuristicoMidias.AsNoTracking()

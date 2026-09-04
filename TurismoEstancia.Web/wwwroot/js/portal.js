@@ -5,12 +5,13 @@
 // ============================================================
 document.addEventListener('DOMContentLoaded', function () {
 
-  // ===== Page Preloader =====
+  // ===== Page Preloader — esconde cedo para o hero aparecer junto com a página
   (function hidePageLoader() {
     var loader = document.getElementById('pageLoader');
     if (!loader) return;
 
     function completeBar() {
+      if (loader.classList.contains('completing') || loader.classList.contains('hidden')) return;
       loader.classList.add('completing');
       setTimeout(function () {
         loader.classList.add('hidden');
@@ -20,10 +21,11 @@ document.addEventListener('DOMContentLoaded', function () {
       }, 400);
     }
 
-    if (document.readyState === 'complete') completeBar();
-    else {
-      window.addEventListener('load', completeBar);
-      setTimeout(completeBar, 5000);
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      setTimeout(completeBar, 500);
+    } else {
+      document.addEventListener('DOMContentLoaded', function () { setTimeout(completeBar, 600); });
+      setTimeout(completeBar, 2500);
     }
   })();
 
