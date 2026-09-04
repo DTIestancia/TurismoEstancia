@@ -11,9 +11,10 @@ public class HomeViewModel
     // Conteúdos por chave (textos das seções)
     public Dictionary<string, string?> Conteudos { get; set; } = new();
 
-    // Configurações (guia, vídeo, SEO)
+    // Configurações (guia, vídeo, SEO) — hero com vídeo distinto por breakpoint
     public ConfiguracaoSiteDto? Guia { get; set; }
     public ConfiguracaoSiteDto? VideoInstitucional { get; set; }
+    public ConfiguracaoSiteDto? VideoInstitucionalMobile { get; set; }
     public ConfiguracaoSiteDto? TituloSite { get; set; }
 
     // Hero
@@ -55,6 +56,7 @@ public class HomeViewModel
     // Acessórios
     public bool GuiaDisponivel => Guia?.ArquivoId is > 0;
     public long? VideoArquivoId => VideoInstitucional?.ArquivoId;
+    public long? VideoArquivoIdMobile => VideoInstitucionalMobile?.ArquivoId;
 
     /// <summary>Imagem de fundo do mapa (PNG do município) — gerenciada em Secoes/Mapa.</summary>
     public long? MapaImagemArquivoId { get; set; }

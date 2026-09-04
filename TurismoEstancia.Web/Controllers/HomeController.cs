@@ -72,6 +72,7 @@ public class HomeController : Controller
             Conteudos = await _conteudos.ObterDicionarioAsync(ct),
             Guia = await _configuracoes.ObterPorChaveAsync("guia-pdf", ct),
             VideoInstitucional = await _configuracoes.ObterPorChaveAsync("video-institucional", ct),
+            VideoInstitucionalMobile = await _configuracoes.ObterPorChaveAsync("video-institucional-mobile", ct),
             TituloSite = await _configuracoes.ObterPorChaveAsync("site-titulo", ct),
             Slides = await _slides.ListarAsync(ct),
             Estatisticas = await _estatisticas.ListarAsync(ct),

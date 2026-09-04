@@ -11,6 +11,10 @@
 </div>
 
 <form class="painel-form" asp-action="Criar" method="post" enctype="multipart/form-data">
+    @if (Context.Request.Query["embutido"] == "1")
+    {
+        <input type="hidden" name="embutido" value="1" />
+    }
     <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
 
     <div class="painel-form-grid">

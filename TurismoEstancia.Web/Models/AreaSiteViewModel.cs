@@ -32,8 +32,10 @@ public class AreaSiteViewModel
     public IReadOnlyList<SlideDto> Slides { get; set; } = Array.Empty<SlideDto>();
     public IReadOnlyList<EstatisticaDto> Estatisticas { get; set; } = Array.Empty<EstatisticaDto>();
 
-    /// <summary>Vídeo institucional (fundo do hero) — gerenciado na área Hero.</summary>
+    /// <summary>Vídeo do hero para desktop — gerenciado em Secoes/Hero.</summary>
     public long? VideoArquivoId { get; set; }
+    /// <summary>Vídeo do hero para mobile — gerenciado em Secoes/Hero.</summary>
+    public long? VideoArquivoIdMobile { get; set; }
 
     /// <summary>Ajuste do PNG do mapa (gerenciado em Secoes/Mapa) — espelha o componente de Notícias.</summary>
     public int MapaImagemZoom { get; set; } = 100;

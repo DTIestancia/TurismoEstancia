@@ -23,6 +23,11 @@ public class ConhecaEstanciaController : PainelController
         return View(new ConhecaEstanciaItemDto());
     }
 
+    private bool EhEmbutido() =>
+        Request.Query["embutido"] == "1" ||
+        Request.Form["embutido"] == "1" ||
+        Request.Headers.Referer.ToString().Contains("embutido=1");
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Criar(ConhecaEstanciaItemDto dto, IFormFile? imagem, CancellationToken ct)
@@ -30,6 +35,7 @@ public class ConhecaEstanciaController : PainelController
         if (!ModelState.IsValid) return View(dto);
         await _conheca.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Item salvo no Conheça Estância.";
+        if (EhEmbutido()) return RedirectToAction(nameof(Index), new { embutido = 1 });
         return RedirectToAction(nameof(Index));
     }
 
@@ -47,6 +53,7 @@ public class ConhecaEstanciaController : PainelController
         if (!ModelState.IsValid) return View(dto);
         await _conheca.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Item atualizado.";
+        if (EhEmbutido()) return RedirectToAction(nameof(Index), new { embutido = 1 });
         return RedirectToAction(nameof(Index));
     }
 

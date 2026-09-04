@@ -64,6 +64,7 @@ public class SecoesController : PainelController
             imagens: [],
             ancora: "#section-cidade");
         vm.VideoArquivoId = (await _configuracoes.ObterPorChaveAsync("video-institucional", ct))?.ArquivoId;
+        vm.VideoArquivoIdMobile = (await _configuracoes.ObterPorChaveAsync("video-institucional-mobile", ct))?.ArquivoId;
         return View("Editar", vm);
     }
 
@@ -95,6 +96,41 @@ public class SecoesController : PainelController
         };
         await _configuracoes.SalvarAsync(dto, arquivo, ct);
         TempData["PainelOk"] = "Vídeo institucional atualizado.";
+        return RedirectToAction(nameof(Hero));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SalvarVideoHeroMobile(IFormFile? arquivo, CancellationToken ct)
+    {
+        if (arquivo is null || arquivo.Length == 0)
+        {
+            TempData["PainelErro"] = "Selecione um arquivo de vídeo para mobile (MP4).";
+            return RedirectToAction(nameof(Hero));
+        }
+
+        var atual = await _configuracoes.ObterPorChaveAsync("video-institucional-mobile", ct);
+        var dto = atual ?? new ConfiguracaoSiteDto
+        {
+            Chave = "video-institucional-mobile",
+            Nome = "Vídeo do hero — mobile",
+            Tipo = TipoConfiguracao.Arquivo
+        };
+        await _configuracoes.SalvarAsync(dto, arquivo, ct);
+        TempData["PainelOk"] = "Vídeo mobile atualizado.";
+        return RedirectToAction(nameof(Hero));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoverVideoHeroMobile(CancellationToken ct)
+    {
+        var atual = await _configuracoes.ObterPorChaveAsync("video-institucional-mobile", ct);
+        if (atual is not null)
+        {
+            await _configuracoes.ExcluirAsync(atual.Id, ct);
+            TempData["PainelOk"] = "Vídeo mobile removido — o hero usará o vídeo desktop no celular.";
+        }
         return RedirectToAction(nameof(Hero));
     }
 

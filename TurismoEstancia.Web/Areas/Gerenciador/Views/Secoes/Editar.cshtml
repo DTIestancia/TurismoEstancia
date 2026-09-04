@@ -93,12 +93,40 @@
         <form asp-action="SalvarVideoHero" method="post" enctype="multipart/form-data" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
             @Html.AntiForgeryToken()
             <div class="painel-field" style="flex:1;min-width:220px;margin:0;">
-                <label>Vídeo (MP4)</label>
+                <label>Vídeo desktop (MP4 — telas ≥768px)</label>
                 <input type="file" name="arquivo" accept="video/mp4,video/*" class="painel-input" required />
-                <span class="painel-hint">Recomendado: 720p, H.264, &lt;12 MB para iniciar junto com a página. O vídeo inicia automaticamente com a página.</span>
+                <span class="painel-hint">Recomendado: 1920×1080, H.264, &lt;12 MB. Inicia junto com a página.</span>
             </div>
-            <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="upload"></i> Enviar vídeo</button>
+            <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="upload"></i> Enviar desktop</button>
         </form>
+
+        <div style="border-top:1px solid var(--color-white--10);margin-top:16px;padding-top:14px;">
+            <div class="painel-card-title" style="margin-bottom:8px;"><i data-lucide="smartphone"></i> Vídeo mobile (telas &lt;768px)</div>
+            @if (Model.VideoArquivoIdMobile is long mobileId)
+            {
+                <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:12px;">
+                    <video src="@Url.Content($"~/arquivo/{mobileId}")" controls muted playsinline preload="metadata"
+                           style="max-width:180px;width:100%;border-radius:12px;border:1px solid var(--color-white--15);"></video>
+                    <form asp-action="RemoverVideoHeroMobile" method="post" class="js-confirm" data-confirm="Remover o vídeo mobile? O hero usará o vídeo desktop no celular.">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i> Remover mobile</button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <p style="font-size:12.5px;color:var(--color-white--55);margin:0 0 12px;">Nenhum vídeo mobile — o hero usa o vídeo desktop no celular.</p>
+            }
+            <form asp-action="SalvarVideoHeroMobile" method="post" enctype="multipart/form-data" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+                @Html.AntiForgeryToken()
+                <div class="painel-field" style="flex:1;min-width:220px;margin:0;">
+                    <label>Vídeo mobile (MP4 vertical, opcional)</label>
+                    <input type="file" name="arquivo" accept="video/mp4,video/*" class="painel-input" />
+                    <span class="painel-hint">Sugestão: 720×1280 (9:16), &lt;8 MB. Se vazio, usa o desktop.</span>
+                </div>
+                <button type="submit" class="btn-painel btn-painel--ghost"><i data-lucide="upload"></i> Enviar mobile</button>
+            </form>
+        </div>
     </div>
 }
 

@@ -113,11 +113,31 @@
     </div>
 </nav>
 
+@{
+    // Preload do vídeo do hero já no <head> via link — inicia junto com o loading da página
+    var _heroVideoPreload = "";
+    if (Model.VideoArquivoId is long _vid)
+    {
+        var _src = Url.Content($"~/arquivo/{_vid}");
+        _heroVideoPreload = $"<link rel=\"preload\" as=\"video\" href=\"{_src}\" type=\"video/mp4\" fetchpriority=\"high\" />";
+    }
+    if (Model.VideoArquivoIdMobile is long _mvid)
+    {
+        var _msrc = Url.Content($"~/arquivo/{_mvid}");
+        _heroVideoPreload += $"<link rel=\"preload\" as=\"video\" href=\"{_msrc}\" type=\"video/mp4\" media=\"(max-width: 767px)\" />";
+    }
+}
+@Html.Raw(_heroVideoPreload)
 <!-- ===== Hero Section ===== -->
 <section class="hero section-divider" id="section-cidade" data-section="cidade">
     @if (Model.VideoArquivoId is long videoId)
     {
+        var mobileId = Model.VideoArquivoIdMobile;
         <video class="hero-bg" id="heroBgVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" fetchpriority="high">
+            @if (mobileId is long mId)
+            {
+                <source src="@Url.Content($"~/arquivo/{mId}")" type="video/mp4" media="(max-width: 767px)" />
+            }
             <source src="@Url.Content($"~/arquivo/{videoId}")" type="video/mp4" />
             Seu navegador não suporta vídeo HTML5.
         </video>
