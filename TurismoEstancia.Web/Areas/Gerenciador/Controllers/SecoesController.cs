@@ -59,9 +59,9 @@ public class SecoesController : PainelController
     public async Task<IActionResult> Hero(CancellationToken ct)
     {
         ViewData["Title"] = "Hero";
-        var vm = await MontarAsync("hero", "Hero", "Abertura do portal: título, chamada e vídeo de fundo.", ct,
-            textos: [T("hero-titulo", "Título", "Ex.: Explore as Cores, a História e a Tradição de Estância"), T("hero-subtitulo", "Subtítulo", "Frase curta sob o título; quebras de linha viram <br>")],
-            imagens: [],
+        var vm = await MontarAsync("hero", "Hero", "Abertura do portal: título, chamada, vídeo e imagem do título.", ct,
+            textos: [T("hero-titulo", "Título (alt do PNG)", "Texto alternativo quando a imagem do título não carregar"), T("hero-subtitulo", "Subtítulo", "Frase curta sob o título; quebras de linha viram <br>")],
+            imagens: [I("hero-titulo-imagem", "Imagem do título (PNG com fundo transparente — adapta a todas as telas)")],
             ancora: "#section-cidade");
         vm.VideoArquivoId = (await _configuracoes.ObterPorChaveAsync("video-institucional", ct))?.ArquivoId;
         vm.VideoArquivoIdMobile = (await _configuracoes.ObterPorChaveAsync("video-institucional-mobile", ct))?.ArquivoId;

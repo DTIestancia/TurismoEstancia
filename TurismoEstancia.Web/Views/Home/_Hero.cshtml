@@ -3,6 +3,7 @@
 @{
     // Título do hero editável pelo painel (Hero → "Título"). Fonte vazada
     // (esboçada) sobre o vídeo, como no print: uma só palavra em destaque.
+    var heroTituloImagemId = Model.Conteudos.TryGetValue("hero-titulo-imagem", out var _hti) && long.TryParse(_hti, out var _htiId) ? _htiId : (long?)null;
     var heroTitulo = Model.Conteudos.GetValueOrDefault("hero-titulo", "ESTÂNCIA");
     var heroSubtitulo = Model.Conteudos.GetValueOrDefault("hero-subtitulo",
         "Explore as Cores, a História e a Tradição de Estância") ?? " ";
@@ -131,7 +132,14 @@
     <div class="hero-vignette"></div>
     <div class="hero-content">
         <div class="hero-text">
-            <h1 class="hero-title hero-title-outline">@Html.Raw(heroTitulo)</h1>
+            @if (heroTituloImagemId is long htId)
+            {
+                <img src="@Url.Content($"~/arquivo/{htId}")" alt="@heroTitulo" class="hero-title-image" loading="eager" fetchpriority="high" />
+            }
+            else
+            {
+                <h1 class="hero-title hero-title-outline">@Html.Raw(heroTitulo)</h1>
+            }
             <p class="hero-subtitle">@Html.Raw(heroSubtitulo.Replace("\n", "<br />"))</p>
         </div>
     </div>

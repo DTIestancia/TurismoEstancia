@@ -331,6 +331,16 @@
     text-shadow: 0 10px 48px rgb(145 145 145 / 38%);
 }
 
+.hero-title-image {
+  display: block;
+  width: clamp(340px, 78vw, 980px);
+  max-width: 95%;
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 32px rgba(0, 0, 0, 0.45));
+}
+
     .hero-subtitle {
       margin-top: 22px;
       margin-left: auto;

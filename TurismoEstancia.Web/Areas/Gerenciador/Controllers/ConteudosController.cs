@@ -194,7 +194,9 @@ public class ConteudosController : PainelController
     /// </summary>
     private static readonly HashSet<string> ChavesImagem = new(StringComparer.OrdinalIgnoreCase)
     {
-        "historia-imagem"
+        "historia-imagem",
+        "hero-titulo-imagem",
+        "mapa-imagem"
     };
 
     /// <summary>
@@ -231,11 +233,14 @@ public class ConteudosController : PainelController
         viewData["ChavesDisponiveis"] = new List<ChaveDisponivelViewModel>
         {
             new() { Chave = "hero-titulo", Nome = "Título do hero", EmUso = emUso.Contains("hero-titulo") },
+            new() { Chave = "hero-titulo-imagem", Nome = "Hero — imagem do título (PNG)", EmUso = emUso.Contains("hero-titulo-imagem"), EhImagem = true },
             new() { Chave = "hero-subtitulo", Nome = "Subtítulo do hero", EmUso = emUso.Contains("hero-subtitulo") },
             new() { Chave = "historia-texto", Nome = "Nossa Cidade — texto da história", EmUso = emUso.Contains("historia-texto") },
             new() { Chave = "historia-citacao", Nome = "Nossa Cidade — citação", EmUso = emUso.Contains("historia-citacao") },
             new() { Chave = "historia-descricao", Nome = "Nossa Cidade — descrição", EmUso = emUso.Contains("historia-descricao") },
             new() { Chave = "historia-imagem", Nome = "Nossa Cidade — foto da cidade", EmUso = emUso.Contains("historia-imagem"), EhImagem = true },
+            new() { Chave = "conheca-titulo", Nome = "Conheça Estância — título", EmUso = emUso.Contains("conheca-titulo") },
+            new() { Chave = "conheca-descricao", Nome = "Conheça Estância — descrição", EmUso = emUso.Contains("conheca-descricao") },
             new() { Chave = "maravilhas-titulo", Nome = "7 Maravilhas — título", EmUso = emUso.Contains("maravilhas-titulo") },
             new() { Chave = "maravilhas-descricao", Nome = "7 Maravilhas — descrição", EmUso = emUso.Contains("maravilhas-descricao") },
             new() { Chave = "agenda-titulo", Nome = "Agenda — título", EmUso = emUso.Contains("agenda-titulo") },
@@ -245,6 +250,7 @@ public class ConteudosController : PainelController
             new() { Chave = "noticias-descricao", Nome = "Notícias — descrição", EmUso = emUso.Contains("noticias-descricao") },
             new() { Chave = "roteiros-titulo", Nome = "Roteiros — título", EmUso = emUso.Contains("roteiros-titulo") },
             new() { Chave = "roteiros-descricao", Nome = "Roteiros — descrição", EmUso = emUso.Contains("roteiros-descricao") },
+            new() { Chave = "mapa-imagem", Nome = "Mapa — imagem do município (PNG)", EmUso = emUso.Contains("mapa-imagem"), EhImagem = true },
             new() { Chave = "mapa-titulo", Nome = "Mapa — título", EmUso = emUso.Contains("mapa-titulo") },
             new() { Chave = "mapa-descricao", Nome = "Mapa — descrição", EmUso = emUso.Contains("mapa-descricao") },
             new() { Chave = "newsletter-titulo", Nome = "Newsletter — título", EmUso = emUso.Contains("newsletter-titulo") }
