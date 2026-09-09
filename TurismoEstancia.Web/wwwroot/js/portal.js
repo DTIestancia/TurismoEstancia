@@ -509,6 +509,10 @@ document.addEventListener('DOMContentLoaded', function () {
     window.estanciaMarkers = {};
     allPois.forEach(function (p) { window.estanciaMarkers[p.title] = p; });
 
+    function isMobileMap() { return window.innerWidth < 768; }
+    function posLeft(p) { return (isMobileMap() && p.leftMobile != null ? p.leftMobile : p.left); }
+    function posTop(p) { return (isMobileMap() && p.topMobile != null ? p.topMobile : p.top); }
+
     // Render Markers
     allPois.forEach(function (poi) {
       var el = document.createElement('div');
@@ -518,8 +522,8 @@ document.addEventListener('DOMContentLoaded', function () {
       el.setAttribute('data-id', poi.id);
       el.setAttribute('data-title', poi.title);
       el.setAttribute('data-category', poi.category);
-      el.style.left = poi.left + '%';
-      el.style.top = poi.top + '%';
+      el.style.left = posLeft(poi) + '%';
+      el.style.top = posTop(poi) + '%';
       el.style.animationDelay = poi.delay + 's';
       el.innerHTML = '<div class="custom-map-marker-inner">' + poi.content + '</div><div class="custom-map-marker-tooltip">' + esc(poi.title) + '</div>';
       mapEl.appendChild(el);
@@ -537,6 +541,21 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
       });
     });
+
+    // Reposiciona pins ao trocar de breakpoint mobile/desktop
+    (function(){
+      var timer;
+      window.addEventListener('resize', function(){
+        clearTimeout(timer);
+        timer = setTimeout(function(){
+          mapEl.querySelectorAll('.custom-map-marker').forEach(function(m){
+            var t = m.getAttribute('data-title');
+            var p = window.estanciaMarkers[t];
+            if(p){ m.style.left = posLeft(p) + '%'; m.style.top = posTop(p) + '%'; }
+          });
+        }, 150);
+      });
+    })();
 
     // Render Legend
     var legendEl = document.getElementById('mapLegend');

@@ -67,10 +67,14 @@
 
     <div class="painel-field" id="campoPosicaoMapa">
         <label>Posição no mapa</label>
-        <div class="painel-mapa" id="painelMapa" role="application" aria-label="Mapa de Estância — clique para posicionar o ponto">
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+            <button type="button" class="btn-painel btn-painel--primary btn-painel--xs" id="tabMapaDesktopCriar">Desktop</button>
+            <button type="button" class="btn-painel btn-painel--ghost btn-painel--xs" id="tabMapaMobileCriar">Mobile</button>
+        </div>
+        <div class="painel-mapa" id="painelMapaDesktopCriar" role="application" aria-label="Mapa desktop — clique para posicionar">
             @if (ViewBag.MapaImagemId != null)
             {
-                <img src="@Url.Content($"~/arquivo/{ViewBag.MapaImagemId}")" alt="Mapa do município" class="painel-mapa-imagem" />
+                <img src="@Url.Content($"~/arquivo/{ViewBag.MapaImagemId}")" alt="Mapa desktop" class="painel-mapa-imagem" />
             }
             else
             {
@@ -85,22 +89,51 @@
                 <div class="custom-map-grid" aria-hidden="true"></div>
                 <div class="custom-map-river" aria-hidden="true"></div>
             }
-            <div class="painel-mapa-vazio" id="painelMapaVazio">👆 Clique no mapa para posicionar o ponto</div>
-            <div class="painel-mapa-marcador" id="painelMapaMarcador" hidden></div>
+            <div class="painel-mapa-vazio" id="painelMapaVazioDesktopCriar">👆 Clique para posicionar (desktop)</div>
+            <div class="painel-mapa-marcador" id="painelMapaMarcadorDesktopCriar" hidden></div>
+        </div>
+        <div class="painel-mapa" id="painelMapaMobileCriar" role="application" aria-label="Mapa mobile — clique para posicionar" style="display:none;">
+            @if (ViewBag.MapaImagemIdMobile != null)
+            {
+                <img src="@Url.Content($"~/arquivo/{ViewBag.MapaImagemIdMobile}")" alt="Mapa mobile" class="painel-mapa-imagem" />
+            }
+            else if (ViewBag.MapaImagemId != null)
+            {
+                <img src="@Url.Content($"~/arquivo/{ViewBag.MapaImagemId}")" alt="Mapa mobile (fallback desktop)" class="painel-mapa-imagem" style="opacity:0.85;" />
+                <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(10,22,40,0.55); color:white; font-size:12px; font-weight:600; text-align:center; padding:12px;">Sem imagem mobile — usando desktop como prévia</div>
+            }
+            else
+            {
+                <div class="custom-map-terrain" aria-hidden="true">
+                    <div class="terrain-circle" style="width:220px;height:220px;top:10%;left:8%;"></div>
+                    <div class="terrain-circle" style="width:340px;height:340px;top:40%;left:10%;"></div>
+                </div>
+                <div class="custom-map-grid" aria-hidden="true"></div>
+                <div class="custom-map-river" aria-hidden="true"></div>
+            }
+            <div class="painel-mapa-vazio" id="painelMapaVazioMobileCriar">👆 Clique para posicionar (mobile)</div>
+            <div class="painel-mapa-marcador" id="painelMapaMarcadorMobileCriar" hidden></div>
         </div>
         <div class="painel-form-grid" style="margin-top:10px;">
             <div class="painel-field">
-                <label asp-for="LeftPercent"></label>
+                <label>Desktop — LeftPercent</label>
                 <input asp-for="LeftPercent" class="painel-input" type="number" min="0" max="100" />
-                <span class="painel-hint">Posição X (0–100).</span>
             </div>
             <div class="painel-field">
-                <label asp-for="TopPercent"></label>
+                <label>TopPercent</label>
                 <input asp-for="TopPercent" class="painel-input" type="number" min="0" max="100" />
-                <span class="painel-hint">Posição Y (0–100).</span>
+            </div>
+            <div class="painel-field">
+                <label>Mobile — LeftPercentMobile</label>
+                <input asp-for="LeftPercentMobile" class="painel-input" type="number" min="0" max="100" />
+                <span class="painel-hint">Se 0, usa desktop no celular.</span>
+            </div>
+            <div class="painel-field">
+                <label>TopPercentMobile</label>
+                <input asp-for="TopPercentMobile" class="painel-input" type="number" min="0" max="100" />
             </div>
         </div>
-        <span class="painel-hint">Clique no mapa para posicionar o marcador, ou ajuste os valores X/Y para um posicionamento fino.</span>
+        <span class="painel-hint">Use as abas para posicionar separadamente. Clique no mapa correspondente.</span>
     </div>
 
     <div class="painel-form-grid">
@@ -179,16 +212,29 @@
             });
         });
 
-        // Mapa interativo: clique posiciona o marcador e atualiza X/Y. O mapa
-        // vale para todos os pontos — inclusive as 7 Maravilhas, que também
-        // aparecem no mapa do portal (usam LeftPercent/TopPercent).
+        // Abas Desktop/Mobile para o mapa
+        (function(){
+            var btnD=document.getElementById('tabMapaDesktopCriar'), btnM=document.getElementById('tabMapaMobileCriar');
+            var mapD=document.getElementById('painelMapaDesktopCriar'), mapM=document.getElementById('painelMapaMobileCriar');
+            if(btnD&&btnM&&mapD&&mapM){
+                btnD.addEventListener('click',function(){ mapD.style.display=''; mapM.style.display='none'; btnD.classList.add('btn-painel--primary');btnD.classList.remove('btn-painel--ghost');btnM.classList.add('btn-painel--ghost');btnM.classList.remove('btn-painel--primary');});
+                btnM.addEventListener('click',function(){ mapD.style.display='none'; mapM.style.display=''; btnM.classList.add('btn-painel--primary');btnM.classList.remove('btn-painel--ghost');btnD.classList.add('btn-painel--ghost');btnD.classList.remove('btn-painel--primary');});
+            }
+        })();
         if (window.InicializarMapaPonto) {
             window.InicializarMapaPonto({
-                mapaId: 'painelMapa',
-                marcadorId: 'painelMapaMarcador',
-                vazioId: 'painelMapaVazio',
+                mapaId: 'painelMapaDesktopCriar',
+                marcadorId: 'painelMapaMarcadorDesktopCriar',
+                vazioId: 'painelMapaVazioDesktopCriar',
                 leftId: 'LeftPercent',
                 topId: 'TopPercent'
+            });
+            window.InicializarMapaPonto({
+                mapaId: 'painelMapaMobileCriar',
+                marcadorId: 'painelMapaMarcadorMobileCriar',
+                vazioId: 'painelMapaVazioMobileCriar',
+                leftId: 'LeftPercentMobile',
+                topId: 'TopPercentMobile'
             });
         }
     </script>

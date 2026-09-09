@@ -22,6 +22,17 @@
         <link rel="icon" type="image/svg+xml" href="@Url.Content("~/favicon.svg")" />
     }
     <script>
+        // Tema claro/escuro — aplica o mais cedo possível para evitar FOUC
+        (function () {
+            try {
+                var t = localStorage.getItem('theme');
+                if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <script>
         // A página abre sempre no topo: o navegador (sobretudo no celular) tende a
         // restaurar a rolagem da visita anterior e "pular" para o meio da página.
         // Se o link veio com âncora (#section-...), rola até ela após carregar.
@@ -37,7 +48,25 @@
             }
             // Navegação Voltar/Avançar (bfcache) também restaura a rolagem antiga —
             // volta ao topo quando a página vem do cache da sessão.
-            window.addEventListener('pageshow', function (e) { if (e.persisted) window.scrollTo(0, 0); });
+            window.addEventListener('pageshow', function (e) {
+                if (e.persisted) {
+                    window.scrollTo(0, 0);
+                    try {
+                        var t = localStorage.getItem('theme');
+                        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                            document.documentElement.setAttribute('data-theme', 'dark');
+                        } else {
+                            document.documentElement.removeAttribute('data-theme');
+                        }
+                        // Re-sincroniza ícone se o botão existir nesta página
+                        var ic = document.getElementById('themeToggleIcon');
+                        if (ic) {
+                            ic.setAttribute('data-lucide', document.documentElement.getAttribute('data-theme') === 'dark' ? 'sun' : 'moon');
+                            if (typeof lucide !== 'undefined') lucide.createIcons();
+                        }
+                    } catch (e) {}
+                }
+            });
         })();
     </script>
     @{

@@ -196,7 +196,8 @@ public class ConteudosController : PainelController
     {
         "historia-imagem",
         "hero-titulo-imagem",
-        "mapa-imagem"
+        "mapa-imagem",
+        "mapa-imagem-mobile"
     };
 
     /// <summary>
@@ -250,7 +251,8 @@ public class ConteudosController : PainelController
             new() { Chave = "noticias-descricao", Nome = "Notícias — descrição", EmUso = emUso.Contains("noticias-descricao") },
             new() { Chave = "roteiros-titulo", Nome = "Roteiros — título", EmUso = emUso.Contains("roteiros-titulo") },
             new() { Chave = "roteiros-descricao", Nome = "Roteiros — descrição", EmUso = emUso.Contains("roteiros-descricao") },
-            new() { Chave = "mapa-imagem", Nome = "Mapa — imagem do município (PNG)", EmUso = emUso.Contains("mapa-imagem"), EhImagem = true },
+            new() { Chave = "mapa-imagem", Nome = "Mapa — imagem desktop (PNG)", EmUso = emUso.Contains("mapa-imagem"), EhImagem = true },
+            new() { Chave = "mapa-imagem-mobile", Nome = "Mapa — imagem mobile (PNG vertical)", EmUso = emUso.Contains("mapa-imagem-mobile"), EhImagem = true },
             new() { Chave = "mapa-titulo", Nome = "Mapa — título", EmUso = emUso.Contains("mapa-titulo") },
             new() { Chave = "mapa-descricao", Nome = "Mapa — descrição", EmUso = emUso.Contains("mapa-descricao") },
             new() { Chave = "newsletter-titulo", Nome = "Newsletter — título", EmUso = emUso.Contains("newsletter-titulo") }

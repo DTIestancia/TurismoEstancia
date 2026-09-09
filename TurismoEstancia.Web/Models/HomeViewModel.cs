@@ -58,11 +58,15 @@ public class HomeViewModel
     public long? VideoArquivoId => VideoInstitucional?.ArquivoId;
     public long? VideoArquivoIdMobile => VideoInstitucionalMobile?.ArquivoId;
 
-    /// <summary>Imagem de fundo do mapa (PNG do município) — gerenciada em Secoes/Mapa.</summary>
+    /// <summary>Imagem de fundo do mapa (PNG do município) — desktop e mobile.</summary>
     public long? MapaImagemArquivoId { get; set; }
     public int MapaImagemZoom { get; set; } = 100;
     public int MapaImagemPosX { get; set; } = 50;
     public int MapaImagemPosY { get; set; } = 50;
+    public long? MapaImagemArquivoIdMobile { get; set; }
+    public int MapaImagemZoomMobile { get; set; } = 100;
+    public int MapaImagemPosXMobile { get; set; } = 50;
+    public int MapaImagemPosYMobile { get; set; } = 50;
 
     /// <summary>JSON do mapa (categorias + POIs) serializado no controller.</summary>
     public string MapaJson { get; set; } = "{}";

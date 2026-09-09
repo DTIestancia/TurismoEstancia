@@ -64,14 +64,14 @@
             <span class="navbar-toggle-icon" aria-hidden="true"></span>
         </button>
         <div class="navbar-links" id="navLinks">
-            <a href="@Url.Content("~/")" class="navbar-link">Home</a>
+            <a href="@Url.Content("~/")" class="navbar-link" data-section="home">Home</a>
             <a href="#section-historia" class="navbar-link" data-section="cidade">Nossa Cidade</a>
             <a href="#section-conheca" class="navbar-link" data-section="conheca">Conheça Estância</a>
                 <a href="#section-maravilhas" class="navbar-link" data-section="maravilhas">7 Maravilhas</a>
-                <a href="#section-servicos" class="navbar-link" data-section="Agenda">Agenda</a>
-                <a href="#section-roteiros" class="navbar-link" data-section="servicos">Planeje sua viagem</a>
+                <a href="#section-servicos" class="navbar-link" data-section="agenda">Agenda</a>
+                <a href="#section-roteiros" class="navbar-link" data-section="roteiros">Planeje sua viagem</a>
             <a href="#section-noticias" class="navbar-link" data-section="noticias">Blog</a>
-                <a href="#section-mapa" class="navbar-link" data-section="map">Mapa</a>
+                <a href="#section-mapa" class="navbar-link" data-section="mapa">Mapa</a>
            
 
             @if (redesSociais.Count > 0)
@@ -115,7 +115,7 @@
 </nav>
 
 <!-- ===== Hero Section ===== -->
-<section class="hero section-divider" id="section-cidade" data-section="cidade">
+<section class="hero section-divider" id="section-cidade" data-section="home">
     @if (Model.VideoArquivoId is long videoId)
     {
         var mobileId = Model.VideoArquivoIdMobile;

@@ -47,6 +47,7 @@ public class PontosTuristicosController : PainelController
         ViewData["AreaAtiva"] = "maravilhas";
         ViewBag.Categorias = await _categorias.ListarAsync(incluirInativos: true, ct);
         ViewBag.MapaImagemId = await ObterMapaImagemIdAsync(ct);
+        ViewBag.MapaImagemIdMobile = await ObterMapaImagemIdMobileAsync(ct);
         return View(new PontoTuristicoDto());
     }
 
@@ -85,6 +86,7 @@ public class PontosTuristicosController : PainelController
         ViewData["AreaAtiva"] = "maravilhas";
         ViewBag.Categorias = await _categorias.ListarAsync(incluirInativos: true, ct);
         ViewBag.MapaImagemId = await ObterMapaImagemIdAsync(ct);
+        ViewBag.MapaImagemIdMobile = await ObterMapaImagemIdMobileAsync(ct);
         var dto = await _pontos.ObterPorIdAsync(id, ct);
         return dto is null ? NotFound() : View(dto);
     }
@@ -93,6 +95,11 @@ public class PontosTuristicosController : PainelController
     {
         var d = await _conteudos.ObterDicionarioAsync(ct);
         return d.TryGetValue("mapa-imagem", out var v) && long.TryParse(v, out var id) && id > 0 ? id : null;
+    }
+    private async Task<long?> ObterMapaImagemIdMobileAsync(CancellationToken ct)
+    {
+        var d = await _conteudos.ObterDicionarioAsync(ct);
+        return d.TryGetValue("mapa-imagem-mobile", out var v) && long.TryParse(v, out var id) && id > 0 ? id : null;
     }
 
     [HttpPost]
@@ -148,5 +155,18 @@ public class PontosTuristicosController : PainelController
     {
         await _pontos.AtualizarPosicaoAsync(id, leftPercent, topPercent, ct);
         return Json(new { ok = true, leftPercent = Math.Clamp(leftPercent, 0, 100), topPercent = Math.Clamp(topPercent, 0, 100) });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AtualizarPosicaoMobile(int id, int leftPercent, int topPercent, int leftPercentMobile, int topPercentMobile, CancellationToken ct)
+    {
+        // Se vier com leftPercentMobile (do editor geral mobile), usa-o; senão usa leftPercent
+        var x = leftPercentMobile != 0 || topPercentMobile != 0 ? leftPercentMobile : leftPercent;
+        var y = topPercentMobile != 0 || leftPercentMobile != 0 ? topPercentMobile : topPercent;
+        if (x == 0 && leftPercent != 0) x = leftPercent;
+        if (y == 0 && topPercent != 0) y = topPercent;
+        await _pontos.AtualizarPosicaoMobileAsync(id, x, y, ct);
+        return Json(new { ok = true, leftPercentMobile = Math.Clamp(x, 0, 100), topPercentMobile = Math.Clamp(y, 0, 100) });
     }
 }

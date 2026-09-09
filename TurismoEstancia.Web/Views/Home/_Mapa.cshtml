@@ -6,7 +6,7 @@
         "Clique nos marcadores e descubra onde cada maravilha está esperando por você, com endereço e dicas de como chegar. <strong>Bora explorar?</strong>") ?? "";
 }
 
-<section class="section-map section-3d section-divider" id="section-mapa" data-section="servicos">
+<section class="section-map section-3d section-divider" id="section-mapa" data-section="mapa">
     <div class="section-map-inner">
         <div class="section-tag">
             <div class="pill pill-white" style="background:rgba(255,255,255,0.10);">
@@ -25,11 +25,16 @@
             <!-- Filter buttons generated dynamically from JS -->
         </div>
 
-        <div class="custom-map reveal-scale mt-4" id="estanciaMap" aria-label="Mapa Interativo de Estância com as 7 Maravilhas">
+        <div class="custom-map reveal-scale mt-4 @(Model.MapaImagemArquivoIdMobile is long ? "custom-map--has-mobile" : "")" id="estanciaMap" aria-label="Mapa Interativo de Estância com as 7 Maravilhas">
             @if (Model.MapaImagemArquivoId is long mapaId)
             {
-                <img src="@Url.Content($"~/arquivo/{mapaId}")" alt="Mapa do município de Estância" class="custom-map-imagem"
+                <img src="@Url.Content($"~/arquivo/{mapaId}")" alt="Mapa do município de Estância" class="custom-map-imagem custom-map-imagem--desktop"
                      style="object-position:@(Model.MapaImagemPosX)% @(Model.MapaImagemPosY)%;transform-origin:@(Model.MapaImagemPosX)% @(Model.MapaImagemPosY)%;transform:scale(@((Model.MapaImagemZoom/100.0).ToString(System.Globalization.CultureInfo.InvariantCulture)));" />
+                @if (Model.MapaImagemArquivoIdMobile is long mId2)
+                {
+                    <img src="@Url.Content($"~/arquivo/{mId2}")" alt="Mapa do município de Estância — mobile" class="custom-map-imagem custom-map-imagem--mobile"
+                         style="object-position:@(Model.MapaImagemPosXMobile)% @(Model.MapaImagemPosYMobile)%;transform-origin:@(Model.MapaImagemPosXMobile)% @(Model.MapaImagemPosYMobile)%;transform:scale(@((Model.MapaImagemZoomMobile/100.0).ToString(System.Globalization.CultureInfo.InvariantCulture)));" />
+                }
             }
             else
             {

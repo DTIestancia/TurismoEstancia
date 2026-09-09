@@ -3943,12 +3943,17 @@
       position: relative;
       width: 100%;
       height: auto;
-      object-fit: contain;
-      object-position: center;
       z-index: 0;
       pointer-events: none;
       background: #0a1628;
       border-radius: 24px;
+    }
+    .custom-map-imagem--mobile { display: none; }
+    .custom-map--has-mobile .custom-map-imagem--desktop { display: block; }
+    .custom-map--has-mobile .custom-map-imagem--mobile { display: none; }
+    @media (max-width: 767px) {
+      .custom-map--has-mobile .custom-map-imagem--desktop { display: none; }
+      .custom-map--has-mobile .custom-map-imagem--mobile { display: block; }
     }
 
     @media (max-width: 768px) {

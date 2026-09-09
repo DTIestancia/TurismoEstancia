@@ -30,11 +30,17 @@ public class PontoTuristico
     /// <summary>Instruções de como chegar exibidas no modal.</summary>
     public string? ComoChegar { get; set; }
 
-    /// <summary>Posição horizontal (0–100) no mapa ilustrado.</summary>
+    /// <summary>Posição horizontal (0–100) no mapa ilustrado — desktop.</summary>
     public int LeftPercent { get; set; }
 
-    /// <summary>Posição vertical (0–100) no mapa ilustrado.</summary>
+    /// <summary>Posição vertical (0–100) no mapa ilustrado — desktop.</summary>
     public int TopPercent { get; set; }
+
+    /// <summary>Posição horizontal no mapa mobile (0–100). Se 0, usa LeftPercent.</summary>
+    public int LeftPercentMobile { get; set; }
+
+    /// <summary>Posição vertical no mapa mobile (0–100). Se 0, usa TopPercent.</summary>
+    public int TopPercentMobile { get; set; }
 
     /// <summary>Indica se o ponto aparece como POI no mapa.</summary>
     public bool ExibirNoMapa { get; set; } = true;

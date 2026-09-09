@@ -38,6 +38,8 @@ public class PontoTuristicoService : IPontoTuristicoService
             ComoChegar = p.ComoChegar,
             LeftPercent = p.LeftPercent,
             TopPercent = p.TopPercent,
+            LeftPercentMobile = p.LeftPercentMobile,
+            TopPercentMobile = p.TopPercentMobile,
             ExibirNoMapa = p.ExibirNoMapa,
             Ordem = p.Ordem,
             Ativo = p.Ativo
@@ -126,6 +128,8 @@ public class PontoTuristicoService : IPontoTuristicoService
                 ComoChegar = dto.ComoChegar,
                 LeftPercent = dto.LeftPercent,
                 TopPercent = dto.TopPercent,
+                LeftPercentMobile = dto.LeftPercentMobile,
+                TopPercentMobile = dto.TopPercentMobile,
                 ExibirNoMapa = dto.ExibirNoMapa,
                 Ordem = dto.Ordem,
                 Ativo = true
@@ -153,6 +157,8 @@ public class PontoTuristicoService : IPontoTuristicoService
             entidade.ComoChegar = dto.ComoChegar;
             entidade.LeftPercent = dto.LeftPercent;
             entidade.TopPercent = dto.TopPercent;
+            entidade.LeftPercentMobile = dto.LeftPercentMobile;
+            entidade.TopPercentMobile = dto.TopPercentMobile;
             entidade.ExibirNoMapa = dto.ExibirNoMapa;
             entidade.Ordem = dto.Ordem;
 
@@ -192,6 +198,17 @@ public class PontoTuristicoService : IPontoTuristicoService
             ?? throw new InvalidOperationException("Ponto turístico não encontrado.");
         entidade.LeftPercent = leftPercent;
         entidade.TopPercent = topPercent;
+        await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task AtualizarPosicaoMobileAsync(int id, int leftPercent, int topPercent, CancellationToken ct = default)
+    {
+        leftPercent = Math.Clamp(leftPercent, 0, 100);
+        topPercent = Math.Clamp(topPercent, 0, 100);
+        var entidade = await _db.PontosTuristicos.FirstOrDefaultAsync(p => p.Id == id, ct)
+            ?? throw new InvalidOperationException("Ponto turístico não encontrado.");
+        entidade.LeftPercentMobile = leftPercent;
+        entidade.TopPercentMobile = topPercent;
         await _db.SaveChangesAsync(ct);
     }
 

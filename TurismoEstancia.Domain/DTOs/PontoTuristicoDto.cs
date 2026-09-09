@@ -29,6 +29,8 @@ public class PontoTuristicoDto
     public string? ComoChegar { get; set; }
     public int LeftPercent { get; set; }
     public int TopPercent { get; set; }
+    public int LeftPercentMobile { get; set; }
+    public int TopPercentMobile { get; set; }
     public bool ExibirNoMapa { get; set; } = true;
     public int Ordem { get; set; }
     public bool Ativo { get; set; } = true;

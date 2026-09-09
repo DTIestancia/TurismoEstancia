@@ -26,4 +26,5 @@ public interface IPontoTuristicoService
 
     /// <summary>Atualiza apenas a posição percentual do ponto no mapa.</summary>
     Task AtualizarPosicaoAsync(int id, int leftPercent, int topPercent, CancellationToken ct = default);
+    Task AtualizarPosicaoMobileAsync(int id, int leftPercent, int topPercent, CancellationToken ct = default);
 }

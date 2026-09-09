@@ -141,6 +141,8 @@ public class AppDbContext : DbContext
             entity.Property(e => e.ComoChegar).HasMaxLength(1000);
             entity.Property(e => e.LeftPercent).HasDefaultValue(50);
             entity.Property(e => e.TopPercent).HasDefaultValue(50);
+            entity.Property(e => e.LeftPercentMobile).HasDefaultValue(0);
+            entity.Property(e => e.TopPercentMobile).HasDefaultValue(0);
             entity.Property(e => e.ExibirNoMapa).HasDefaultValue(true);
             entity.Property(e => e.Ativo).HasDefaultValue(true);
 

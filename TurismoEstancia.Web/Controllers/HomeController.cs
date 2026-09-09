@@ -121,6 +121,11 @@ public class HomeController : Controller
         if (vm.Conteudos.TryGetValue("mapa-imagem-zoom", out var mz) && int.TryParse(mz, out var mzi) && mzi is >= 100 and <= 250) vm.MapaImagemZoom = mzi;
         if (vm.Conteudos.TryGetValue("mapa-imagem-pos-x", out var mx) && int.TryParse(mx, out var mxi) && mxi is >= 0 and <= 100) vm.MapaImagemPosX = mxi;
         if (vm.Conteudos.TryGetValue("mapa-imagem-pos-y", out var my) && int.TryParse(my, out var myi) && myi is >= 0 and <= 100) vm.MapaImagemPosY = myi;
+        if (vm.Conteudos.TryGetValue("mapa-imagem-mobile", out var mapaImgM) && long.TryParse(mapaImgM, out var mapaIdM) && mapaIdM > 0)
+            vm.MapaImagemArquivoIdMobile = mapaIdM;
+        if (vm.Conteudos.TryGetValue("mapa-imagem-zoom-mobile", out var mzm) && int.TryParse(mzm, out var mzim) && mzim is >= 100 and <= 250) vm.MapaImagemZoomMobile = mzim;
+        if (vm.Conteudos.TryGetValue("mapa-imagem-pos-x-mobile", out var mxm) && int.TryParse(mxm, out var mxim) && mxim is >= 0 and <= 100) vm.MapaImagemPosXMobile = mxim;
+        if (vm.Conteudos.TryGetValue("mapa-imagem-pos-y-mobile", out var mym) && int.TryParse(mym, out var myim) && myim is >= 0 and <= 100) vm.MapaImagemPosYMobile = myim;
 
         vm.MapaJson = SerializarMapa(categorias, pontos);
 
@@ -157,12 +162,18 @@ public class HomeController : Controller
             var eMaravilha = cat.ApresentarEmMaravilhas;
             if (eMaravilha) numeroMaravilha++;
 
+            var leftM = p.LeftPercentMobile != 0 || p.TopPercentMobile != 0 ? p.LeftPercentMobile : p.LeftPercent;
+            var topM = p.TopPercentMobile != 0 || p.LeftPercentMobile != 0 ? p.TopPercentMobile : p.TopPercent;
+            if (leftM == 0 && p.LeftPercent != 0) leftM = p.LeftPercent;
+            if (topM == 0 && p.TopPercent != 0) topM = p.TopPercent;
             pois.Add(new
             {
                 id = p.Id,
                 category = cat.Chave,
                 left = p.LeftPercent,
                 top = p.TopPercent,
+                leftMobile = leftM,
+                topMobile = topM,
                 delay = 0.05 + (numeroMaravilha - 1) * 0.05,
                 content = eMaravilha ? numeroMaravilha.ToString() : LetraPoi(cat.Chave),
                 title = p.Nome,

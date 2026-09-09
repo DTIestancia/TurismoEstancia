@@ -170,11 +170,21 @@
 
         @if (ehMapa)
         {
-            var mapaImgId = Model.Imagens.FirstOrDefault(i => i.Chave == "mapa-imagem")?.ArquivoId;
-            var mapaSrc = mapaImgId is long mid ? Url.Content($"~/arquivo/{mid}") : null;
-            <div class="painel-field">
-                <label>Posição e zoom do mapa</label>
-                <div class="ajuste-imagem" id="ajusteMapa" data-ajuste-imagem data-zoom="@Model.MapaImagemZoom" data-x="@Model.MapaImagemPosX" data-y="@Model.MapaImagemPosY" data-src="@mapaSrc">
+            <div class="painel-card" style="padding:18px; margin-bottom:14px;">
+                <div class="painel-card-title"><i data-lucide="image"></i> Ajuste do mapa</div>
+                <p style="font-size:12.5px;color:var(--color-white--55);margin:0 0 12px;">Ajuste o enquadramento do PNG para <strong>desktop</strong> e <strong>mobile</strong> separadamente.</p>
+                <div style="display:flex; gap:8px; margin-bottom:14px;">
+                    <button type="button" class="btn-painel btn-painel--primary btn-painel--xs" id="tabAjusteDesktop">Desktop</button>
+                    <button type="button" class="btn-painel btn-painel--ghost btn-painel--xs" id="tabAjusteMobile">Mobile</button>
+                </div>
+                <div id="paneAjusteDesktop">
+                    @{
+                        var mapaImgId = Model.Imagens.FirstOrDefault(i => i.Chave == "mapa-imagem")?.ArquivoId;
+                        var mapaSrc = mapaImgId is long mid ? Url.Content($"~/arquivo/{mid}") : null;
+                    }
+                    <div class="painel-field">
+                        <label>Posição e zoom — desktop</label>
+                        <div class="ajuste-imagem" id="ajusteMapa" data-ajuste-imagem data-zoom="@Model.MapaImagemZoom" data-x="@Model.MapaImagemPosX" data-y="@Model.MapaImagemPosY" data-src="@mapaSrc">
                     <div class="ajuste-imagem-previa">
                         <div class="ajuste-imagem-janela">
                             <img class="ajuste-imagem-img" alt="Prévia do recorte do mapa" />
@@ -207,47 +217,124 @@
                 </div>
                 <span class="painel-hint">Sugestão: 1600×900px (16:9), PNG com fundo transparente, até 1 MB. Use zoom e posição para enquadrar o município — a prévia é exatamente o que aparece no portal, com os pins por cima.</span>
             </div>
-            <script>
-                (function(){
-                    var caixa = document.getElementById('ajusteMapa');
-                    if(!caixa || caixa.dataset.inicializado==="1") return;
-                    caixa.dataset.inicializado="1";
-                    var img=caixa.querySelector('.ajuste-imagem-img'), vazio=caixa.querySelector('.ajuste-imagem-vazio');
-                    var hZoom=caixa.querySelector('input[name="MapaImagemZoom"]'), hX=caixa.querySelector('input[name="MapaImagemPosX"]'), hY=caixa.querySelector('input[name="MapaImagemPosY"]');
-                    var rZoom=caixa.querySelector('input[data-alvo="zoom"]'), rX=caixa.querySelector('input[data-alvo="x"]'), rY=caixa.querySelector('input[data-alvo="y"]');
-                    var lZoom=caixa.querySelector('[data-rotulo="zoom"]'), lX=caixa.querySelector('[data-rotulo="x"]'), lY=caixa.querySelector('[data-rotulo="y"]');
-                    var zoom=parseInt(caixa.getAttribute('data-zoom'),10)||100, x=parseInt(caixa.getAttribute('data-x'),10), y=parseInt(caixa.getAttribute('data-y'),10);
-                    if(isNaN(x)) x=50; if(isNaN(y)) y=50;
-                    var src=caixa.getAttribute('data-src')||'';
-                    function aplicar(){ if(src){ img.src=src; img.style.width='100%'; img.style.height='100%'; img.style.objectFit='contain'; img.style.objectPosition=x+'% '+y+'%'; img.style.transformOrigin=x+'% '+y+'%'; img.style.transform='scale('+(zoom/100)+')'; img.style.display='block'; vazio.style.display='none'; } else { img.style.display='none'; vazio.style.display=''; } lZoom.textContent=zoom+'%'; lX.textContent=x+'%'; lY.textContent=y+'%'; hZoom.value=zoom; hX.value=x; hY.value=y; }
-                    function sync(){ rZoom.value=zoom; rX.value=x; rY.value=y; }
-                    rZoom.addEventListener('input',function(){ zoom=parseInt(rZoom.value,10)||100; aplicar(); });
-                    rX.addEventListener('input',function(){ x=parseInt(rX.value,10)||50; aplicar(); });
-                    rY.addEventListener('input',function(){ y=parseInt(rY.value,10)||50; aplicar(); });
-                    var rst=caixa.querySelector('[data-ajuste-reset]'); if(rst) rst.addEventListener('click',function(){ zoom=100; x=50; y=50; sync(); aplicar(); });
-                    var form=caixa.closest('form'); var arq=form&&form.querySelector('input[name="imagem_mapa-imagem"]'); if(arq) arq.addEventListener('change',function(){ var f=arq.files&&arq.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(){ src=r.result; aplicar(); }; r.readAsDataURL(f); });
-                    sync(); aplicar();
-                })();
-            </script>
+                    <div id="paneAjusteMobile" style="display:none;">
+                        <div class="painel-field" style="margin-top:14px;">
+                            <label>Posição e zoom — mobile</label>
+                            @{
+                                var mapaSrcMobile = Model.Imagens.FirstOrDefault(i => i.Chave == "mapa-imagem-mobile")?.ArquivoId is long midM2 ? Url.Content($"~/arquivo/{midM2}") : null;
+                            }
+                            <div class="ajuste-imagem" id="ajusteMapaMobile" data-ajuste-imagem data-zoom="@Model.MapaImagemZoomMobile" data-x="@Model.MapaImagemPosXMobile" data-y="@Model.MapaImagemPosYMobile" data-src="@mapaSrcMobile">
+                                <div class="ajuste-imagem-previa">
+                                    <div class="ajuste-imagem-janela">
+                                        <img class="ajuste-imagem-img" alt="Prévia do recorte do mapa mobile" />
+                                        <span class="ajuste-imagem-vazio">
+                                            <i data-lucide="image-plus" class="icon-xl"></i>
+                                            Selecione o PNG mobile para ajustar (opcional).
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="ajuste-imagem-controles">
+                                    <div class="ajuste-imagem-controle">
+                                        <label for="mapaZoomM">Zoom <span class="ajuste-imagem-valor" data-rotulo="zoom">@(Model.MapaImagemZoomMobile)%</span></label>
+                                        <input type="range" id="mapaZoomM" class="ajuste-imagem-range" data-alvo="zoom" min="100" max="250" step="5" value="@Model.MapaImagemZoomMobile" />
+                                    </div>
+                                    <div class="ajuste-imagem-controle">
+                                        <label for="mapaYM">Posição vertical <span class="ajuste-imagem-valor" data-rotulo="y">@(Model.MapaImagemPosYMobile)%</span></label>
+                                        <input type="range" id="mapaYM" class="ajuste-imagem-range" data-alvo="y" min="0" max="100" step="5" value="@Model.MapaImagemPosYMobile" />
+                                    </div>
+                                    <div class="ajuste-imagem-controle">
+                                        <label for="mapaXM">Posição horizontal <span class="ajuste-imagem-valor" data-rotulo="x">@(Model.MapaImagemPosXMobile)%</span></label>
+                                        <input type="range" id="mapaXM" class="ajuste-imagem-range" data-alvo="x" min="0" max="100" step="5" value="@Model.MapaImagemPosXMobile" />
+                                    </div>
+                                    <button type="button" class="btn-painel btn-painel--ghost btn-painel--xs" data-ajuste-reset>
+                                        <i data-lucide="rotate-ccw"></i> Redefinir
+                                    </button>
+                                </div>
+                                <input type="hidden" name="MapaImagemZoomMobile" value="@Model.MapaImagemZoomMobile" />
+                                <input type="hidden" name="MapaImagemPosXMobile" value="@Model.MapaImagemPosXMobile" />
+                                <input type="hidden" name="MapaImagemPosYMobile" value="@Model.MapaImagemPosYMobile" />
+                            </div>
+                            <span class="painel-hint">Para telas &lt;768px. Se vazio, usa a imagem desktop. Sugestão: 800×1200px vertical, até 800KB.</span>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    (function(){
+                        function initAjuste(id, inputImagem){
+                            var caixa = document.getElementById(id);
+                            if(!caixa || caixa.dataset.inicializado==="1") return;
+                            caixa.dataset.inicializado="1";
+                            var img=caixa.querySelector('.ajuste-imagem-img'), vazio=caixa.querySelector('.ajuste-imagem-vazio');
+                            var hZoom=caixa.querySelector('input[name="'+(id==="ajusteMapaMobile"?"MapaImagemZoomMobile":"MapaImagemZoom")+'"]'), hX=caixa.querySelector('input[name="'+(id==="ajusteMapaMobile"?"MapaImagemPosXMobile":"MapaImagemPosX")+'"]'), hY=caixa.querySelector('input[name="'+(id==="ajusteMapaMobile"?"MapaImagemPosYMobile":"MapaImagemPosY")+'"]');
+                            var rZoom=caixa.querySelector('input[data-alvo="zoom"]'), rX=caixa.querySelector('input[data-alvo="x"]'), rY=caixa.querySelector('input[data-alvo="y"]');
+                            var lZoom=caixa.querySelector('[data-rotulo="zoom"]'), lX=caixa.querySelector('[data-rotulo="x"]'), lY=caixa.querySelector('[data-rotulo="y"]');
+                            var zoom=parseInt(caixa.getAttribute('data-zoom'),10)||100, x=parseInt(caixa.getAttribute('data-x'),10), y=parseInt(caixa.getAttribute('data-y'),10);
+                            if(isNaN(x)) x=50; if(isNaN(y)) y=50;
+                            var src=caixa.getAttribute('data-src')||'';
+                            function aplicar(){ if(src){ img.src=src; img.style.width='100%'; img.style.height='100%'; img.style.objectFit='contain'; img.style.objectPosition=x+'% '+y+'%'; img.style.transformOrigin=x+'% '+y+'%'; img.style.transform='scale('+(zoom/100)+')'; img.style.display='block'; vazio.style.display='none'; } else { img.style.display='none'; vazio.style.display=''; } lZoom.textContent=zoom+'%'; lX.textContent=x+'%'; lY.textContent=y+'%'; hZoom.value=zoom; hX.value=x; hY.value=y; }
+                            function sync(){ rZoom.value=zoom; rX.value=x; rY.value=y; }
+                            rZoom.addEventListener('input',function(){ zoom=parseInt(rZoom.value,10)||100; aplicar(); });
+                            rX.addEventListener('input',function(){ x=parseInt(rX.value,10)||50; aplicar(); });
+                            rY.addEventListener('input',function(){ y=parseInt(rY.value,10)||50; aplicar(); });
+                            var rst=caixa.querySelector('[data-ajuste-reset]'); if(rst) rst.addEventListener('click',function(){ zoom=100; x=50; y=50; sync(); aplicar(); });
+                            var form=caixa.closest('form'); var arq=form&&form.querySelector('input[name="'+inputImagem+'"]'); if(arq) arq.addEventListener('change',function(){ var f=arq.files&&arq.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(){ src=r.result; aplicar(); }; r.readAsDataURL(f); });
+                            sync(); aplicar();
+                        }
+                        initAjuste('ajusteMapa','imagem_mapa-imagem');
+                        initAjuste('ajusteMapaMobile','imagem_mapa-imagem-mobile');
+                        // Tabs
+                        var tabD=document.getElementById('tabMapaImgDesktop'), tabM=document.getElementById('tabMapaImgMobile');
+                        var paneD=document.getElementById('paneMapaImgDesktop'), paneM=document.getElementById('paneAjusteMobile');
+                        // O tab já existe no card de imagens; sincroniza também o ajuste
+                        if(tabD&&tabM){
+                            tabD.addEventListener('click',function(){ document.getElementById('paneMapaImgDesktop').style.display=''; document.getElementById('paneAjusteMobile').style.display='none'; document.getElementById('ajusteMapa').closest('.painel-field').style.display=''; tabD.classList.add('btn-painel--primary'); tabD.classList.remove('btn-painel--ghost'); tabM.classList.add('btn-painel--ghost'); tabM.classList.remove('btn-painel--primary'); });
+                            tabM.addEventListener('click',function(){ document.getElementById('paneMapaImgDesktop').style.display='none'; document.getElementById('paneAjusteMobile').style.display=''; document.getElementById('ajusteMapa').closest('.painel-field').style.display='none'; tabM.classList.add('btn-painel--primary'); tabM.classList.remove('btn-painel--ghost'); tabD.classList.add('btn-painel--ghost'); tabD.classList.remove('btn-painel--primary'); });
+                        }
+                    })();
+                </script>
+            </div>
         }
 
         @if (ehMapa)
         {
             var pontosGeral = ViewBag.PontosMapaGeral as IReadOnlyList<PontoTuristicoDto>;
             var mapaIdGeral = Model.Imagens.FirstOrDefault(i => i.Chave == "mapa-imagem")?.ArquivoId;
+            var mapaIdGeralMobile = Model.Imagens.FirstOrDefault(i => i.Chave == "mapa-imagem-mobile")?.ArquivoId;
             if (pontosGeral is not null && pontosGeral.Count > 0)
             {
                 <div class="painel-card" style="margin-top:18px;">
                     <div class="painel-card-title"><i data-lucide="map-pin"></i> Posicionamento geral dos pontos</div>
-                    <p style="font-size:12.5px;color:var(--color-white--55);margin:0 0 12px;">Arraste os pins sobre o mapa do município para reposicionar. Posição salva automaticamente.</p>
-                    <div class="painel-mapa-geral" id="mapaGeral">
+                    <p style="font-size:12.5px;color:var(--color-white--55);margin:0 0 12px;">Arraste os pins sobre o mapa. Use as abas para posicionar separadamente no desktop e no mobile.</p>
+                    <div style="display:flex; gap:8px; margin-bottom:12px;">
+                        <button type="button" class="btn-painel btn-painel--primary btn-painel--xs" id="btnMapaDesktopGeral">Desktop</button>
+                        <button type="button" class="btn-painel btn-painel--ghost btn-painel--xs" id="btnMapaMobileGeral">Mobile</button>
+                    </div>
+                    <div class="painel-mapa-geral" id="mapaGeralDesktop">
                         @if (mapaIdGeral is long mgId)
                         {
-                            <img src="@Url.Content($"~/arquivo/{mgId}")" class="painel-mapa-imagem" alt="Mapa do município" />
+                            <img src="@Url.Content($"~/arquivo/{mgId}")" class="painel-mapa-imagem" alt="Mapa desktop" />
                         }
                         @foreach (var pt in pontosGeral)
                         {
-                            <div class="painel-mapa-pin" data-id="@pt.Id" data-nome="@pt.Nome" style="left:@(pt.LeftPercent)%; top:@(pt.TopPercent)%;" title="@pt.Nome — @pt.LeftPercent%, @pt.TopPercent%">@pt.Nome.Substring(0,1).ToUpperInvariant()</div>
+                            var l = pt.LeftPercent; var t = pt.TopPercent;
+                            <div class="painel-mapa-pin" data-id="@pt.Id" data-nome="@pt.Nome" data-modo="desktop" style="left:@(l)%; top:@(t)%;" title="@pt.Nome — @l%, @t% (desktop)">@pt.Nome.Substring(0,1).ToUpperInvariant()</div>
+                        }
+                    </div>
+                    <div class="painel-mapa-geral" id="mapaGeralMobile" style="display:none;">
+                        @{
+                            var srcMobile = mapaIdGeralMobile is long mmId ? Url.Content($"~/arquivo/{mmId}") : (mapaIdGeral is long dId2 ? Url.Content($"~/arquivo/{dId2}") : null);
+                        }
+                        @if (srcMobile != null)
+                        {
+                            <img src="@srcMobile" class="painel-mapa-imagem" alt="Mapa mobile" />
+                        }
+                        @foreach (var pt in pontosGeral)
+                        {
+                            var lm = pt.LeftPercentMobile != 0 || pt.TopPercentMobile != 0 ? pt.LeftPercentMobile : pt.LeftPercent;
+                            var tm = pt.TopPercentMobile != 0 || pt.LeftPercentMobile != 0 ? pt.TopPercentMobile : pt.TopPercent;
+                            if (lm == 0 && pt.LeftPercent != 0) lm = pt.LeftPercent;
+                            if (tm == 0 && pt.TopPercent != 0) tm = pt.TopPercent;
+                            <div class="painel-mapa-pin" data-id="@pt.Id" data-nome="@pt.Nome" data-modo="mobile" style="left:@(lm)%; top:@(tm)%;" title="@pt.Nome — @lm%, @tm% (mobile)">@pt.Nome.Substring(0,1).ToUpperInvariant()</div>
                         }
                     </div>
                     <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:8px; margin-top:12px;">
@@ -266,54 +353,66 @@
                 </div>
                 <script>
                     (function(){
-                        var mapa = document.getElementById('mapaGeral');
-                        if(!mapa) return;
                         var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-                        var dragging = null;
-                        function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
-                        function posFromEvent(e, el){
-                            var rect = mapa.getBoundingClientRect();
-                            var cx = e.touches ? e.touches[0].clientX : e.clientX;
-                            var cy = e.touches ? e.touches[0].clientY : e.clientY;
-                            var x = ((cx - rect.left) / rect.width) * 100;
-                            var y = ((cy - rect.top) / rect.height) * 100;
-                            return { x: clamp(Math.round(x),0,100), y: clamp(Math.round(y),0,100) };
+                        function initMapaGeral(mapaId, urlSalvar){
+                            var mapa = document.getElementById(mapaId);
+                            if(!mapa) return;
+                            var dragging = null;
+                            function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+                            function posFromEvent(e){
+                                var rect = mapa.getBoundingClientRect();
+                                var cx = e.touches ? e.touches[0].clientX : e.clientX;
+                                var cy = e.touches ? e.touches[0].clientY : e.clientY;
+                                var x = ((cx - rect.left) / rect.width) * 100;
+                                var y = ((cy - rect.top) / rect.height) * 100;
+                                return { x: clamp(Math.round(x),0,100), y: clamp(Math.round(y),0,100) };
+                            }
+                            function salvar(id, x, y){
+                                var body = 'id=' + encodeURIComponent(id) + '&leftPercent=' + x + '&topPercent=' + y + '&__RequestVerificationToken=' + encodeURIComponent(token||'');
+                                if(mapaId === 'mapaGeralMobile'){
+                                    body = 'id=' + encodeURIComponent(id) + '&leftPercentMobile=' + x + '&topPercentMobile=' + y + '&__RequestVerificationToken=' + encodeURIComponent(token||'');
+                                }
+                                fetch(urlSalvar, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'RequestVerificationToken': token || '' },
+                                    body: body
+                                }).then(function(r){ if(!r.ok) console.error('Falha ao salvar posição'); });
+                            }
+                            mapa.querySelectorAll('.painel-mapa-pin').forEach(function(pin){
+                                pin.addEventListener('mousedown', function(e){ dragging = pin; e.preventDefault(); });
+                                pin.addEventListener('touchstart', function(e){ dragging = pin; }, {passive:false});
+                            });
+                            function onMove(e){
+                                if(!dragging || dragging.closest('#'+mapaId) !== mapa) return;
+                                var p = posFromEvent(e);
+                                dragging.style.left = p.x + '%';
+                                dragging.style.top = p.y + '%';
+                                dragging.title = dragging.getAttribute('data-nome') + ' — ' + p.x + '%, ' + p.y + '%';
+                                e.preventDefault();
+                            }
+                            function onUp(e){
+                                if(!dragging || dragging.closest('#'+mapaId) !== mapa) return;
+                                var p = posFromEvent(e);
+                                var id = dragging.getAttribute('data-id');
+                                dragging.style.left = p.x + '%';
+                                dragging.style.top = p.y + '%';
+                                salvar(id, p.x, p.y);
+                                dragging = null;
+                            }
+                            document.addEventListener('mousemove', onMove);
+                            document.addEventListener('mouseup', onUp);
+                            document.addEventListener('touchmove', onMove, {passive:false});
+                            document.addEventListener('touchend', onUp);
                         }
-                        function salvar(id, x, y){
-                            fetch('@Url.Action("AtualizarPosicao", "PontosTuristicos", new { area = "Gerenciador" })', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                    'RequestVerificationToken': token || ''
-                                },
-                                body: 'id=' + encodeURIComponent(id) + '&leftPercent=' + x + '&topPercent=' + y + '&__RequestVerificationToken=' + encodeURIComponent(token||'')
-                            }).then(function(r){ if(!r.ok) console.error('Falha ao salvar posição'); });
+                        initMapaGeral('mapaGeralDesktop', '@Url.Action("AtualizarPosicao", "PontosTuristicos", new { area = "Gerenciador" })');
+                        initMapaGeral('mapaGeralMobile', '@Url.Action("AtualizarPosicaoMobile", "PontosTuristicos", new { area = "Gerenciador" })');
+                        // Tabs
+                        var btnD=document.getElementById('btnMapaDesktopGeral'), btnM=document.getElementById('btnMapaMobileGeral');
+                        var paneD=document.getElementById('mapaGeralDesktop'), paneM=document.getElementById('mapaGeralMobile');
+                        if(btnD&&btnM&&paneD&&paneM){
+                            btnD.addEventListener('click',function(){ paneD.style.display='block'; paneM.style.display='none'; btnD.classList.add('btn-painel--primary'); btnD.classList.remove('btn-painel--ghost'); btnM.classList.add('btn-painel--ghost'); btnM.classList.remove('btn-painel--primary'); });
+                            btnM.addEventListener('click',function(){ paneD.style.display='none'; paneM.style.display='block'; btnM.classList.add('btn-painel--primary'); btnM.classList.remove('btn-painel--ghost'); btnD.classList.add('btn-painel--ghost'); btnD.classList.remove('btn-painel--primary'); });
                         }
-                        mapa.querySelectorAll('.painel-mapa-pin').forEach(function(pin){
-                            pin.addEventListener('mousedown', function(e){ dragging = pin; e.preventDefault(); });
-                            pin.addEventListener('touchstart', function(e){ dragging = pin; }, {passive:false});
-                        });
-                        function onMove(e){
-                            if(!dragging) return;
-                            var p = posFromEvent(e, dragging);
-                            dragging.style.left = p.x + '%';
-                            dragging.style.top = p.y + '%';
-                            dragging.title = dragging.getAttribute('data-nome') + ' — ' + p.x + '%, ' + p.y + '%';
-                            e.preventDefault();
-                        }
-                        function onUp(e){
-                            if(!dragging) return;
-                            var p = posFromEvent(e, dragging);
-                            var id = dragging.getAttribute('data-id');
-                            dragging.style.left = p.x + '%';
-                            dragging.style.top = p.y + '%';
-                            salvar(id, p.x, p.y);
-                            dragging = null;
-                        }
-                        document.addEventListener('mousemove', onMove);
-                        document.addEventListener('mouseup', onUp);
-                        document.addEventListener('touchmove', onMove, {passive:false});
-                        document.addEventListener('touchend', onUp);
                         // clique no mapa vazio não faz nada no modo geral
                     })();
                 </script>

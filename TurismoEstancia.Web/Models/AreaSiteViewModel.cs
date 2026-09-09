@@ -41,6 +41,9 @@ public class AreaSiteViewModel
     public int MapaImagemZoom { get; set; } = 100;
     public int MapaImagemPosX { get; set; } = 50;
     public int MapaImagemPosY { get; set; } = 50;
+    public int MapaImagemZoomMobile { get; set; } = 100;
+    public int MapaImagemPosXMobile { get; set; } = 50;
+    public int MapaImagemPosYMobile { get; set; } = 50;
 
     public bool ExibeSlides => Slides.Count > 0;
     public bool ExibeEstatisticas => Estatisticas.Count > 0;
