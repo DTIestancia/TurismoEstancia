@@ -158,15 +158,14 @@ public class HomeController : Controller
             })
             .ToList();
 
-        var numeroMaravilha = 0;
         var pois = new List<object>();
+        var indice = 0;
         foreach (var p in pontos.Where(x => x.ExibirNoMapa && x.Ativo).OrderBy(x => x.Ordem))
         {
             var cat = categorias.FirstOrDefault(c => c.Id == p.CategoriaId);
             if (cat is null) continue;
 
             var eMaravilha = cat.ApresentarEmMaravilhas;
-            if (eMaravilha) numeroMaravilha++;
 
             var leftM = p.LeftPercentMobile != 0 || p.TopPercentMobile != 0 ? p.LeftPercentMobile : p.LeftPercent;
             var topM = p.TopPercentMobile != 0 || p.LeftPercentMobile != 0 ? p.TopPercentMobile : p.TopPercent;
@@ -180,30 +179,23 @@ public class HomeController : Controller
                 top = p.TopPercent,
                 leftMobile = leftM,
                 topMobile = topM,
-                delay = 0.05 + (numeroMaravilha - 1) * 0.05,
-                content = eMaravilha ? numeroMaravilha.ToString() : LetraPoi(cat.Chave),
+                delay = 0.05 + indice * 0.05,
                 title = p.Nome,
                 desc = p.Descricao,
                 detail = p.Detalhe,
                 img = p.CapaArquivoId is long capaId ? Url.Content($"~/arquivo/{capaId}") : "",
                 icon = p.Icone ?? "map-pin",
+                iconImg = (p.IconeArquivoId ?? cat.IconeArquivoId) is long iconeId ? Url.Content($"~/arquivo/{iconeId}") : "",
                 tag = p.Tag,
                 address = p.Endereco,
                 directions = p.ComoChegar,
                 poi = !eMaravilha
             });
+            indice++;
         }
 
         return JsonSerializer.Serialize(new { categorias = categoriasMapa, pontos = pois });
     }
-
-    private static string LetraPoi(string chave) => chave.ToLowerInvariant() switch
-    {
-        "hotel" => "H",
-        "food" => "R",
-        "service" => "S",
-        _ => "•"
-    };
 
     /// <summary>
     /// Monta a seção "Conheça Estância": quatro abas (História, Cultura,

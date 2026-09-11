@@ -86,6 +86,92 @@
         </div>
     </div>
 
+    <div class="painel-card" style="padding:22px;margin-top:18px;">
+        <div class="tema-preview-title">Cores das seções da home</div>
+        <p class="painel-page-desc" style="margin:0 0 16px;">Cada faixa abaixo é uma seção do portal, na mesma ordem da página. A ondulação entre duas seções usa a cor da seção de baixo — mude a cor e a onda acompanha sozinha.</p>
+        <div class="tema-grid">
+            <div class="tema-item">
+                <label class="tema-label" asp-for="SecaoHistoria">Nossa Cidade</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="SecaoHistoria" class="tema-color" data-cor="secao-historia" />
+                    <input type="text" asp-for="SecaoHistoria" class="painel-input tema-hex" data-hex="secao-historia" maxlength="7" />
+                </div>
+                <small class="tema-dica">Fundo laranja da história + onda do hero.</small>
+            </div>
+            <div class="tema-item">
+                <label class="tema-label" asp-for="SecaoConheca">Conheça Estância</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="SecaoConheca" class="tema-color" data-cor="secao-conheca" />
+                    <input type="text" asp-for="SecaoConheca" class="painel-input tema-hex" data-hex="secao-conheca" maxlength="7" />
+                </div>
+                <small class="tema-dica">Base escura do carrossel de fotos.</small>
+            </div>
+            <div class="tema-item">
+                <label class="tema-label" asp-for="SecaoMaravilhas">7 Maravilhas</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="SecaoMaravilhas" class="tema-color" data-cor="secao-maravilhas" />
+                    <input type="text" asp-for="SecaoMaravilhas" class="painel-input tema-hex" data-hex="secao-maravilhas" maxlength="7" />
+                </div>
+                <small class="tema-dica">Fundo do baralho + onda de saída do Conheça.</small>
+            </div>
+            <div class="tema-item">
+                <label class="tema-label" asp-for="SecaoAgenda">Agenda</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="SecaoAgenda" class="tema-color" data-cor="secao-agenda" />
+                    <input type="text" asp-for="SecaoAgenda" class="painel-input tema-hex" data-hex="secao-agenda" maxlength="7" />
+                </div>
+                <small class="tema-dica">Substitui o degradê vinho por cor chapada.</small>
+            </div>
+            <div class="tema-item">
+                <label class="tema-label" asp-for="SecaoRoteiros">Planeje sua viagem</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="SecaoRoteiros" class="tema-color" data-cor="secao-roteiros" />
+                    <input type="text" asp-for="SecaoRoteiros" class="painel-input tema-hex" data-hex="secao-roteiros" maxlength="7" />
+                </div>
+                <small class="tema-dica">Fundo dos cards de roteiros + onda da Agenda.</small>
+            </div>
+            <div class="tema-item">
+                <label class="tema-label" asp-for="SecaoNoticias">Notícias e Blog</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="SecaoNoticias" class="tema-color" data-cor="secao-noticias" />
+                    <input type="text" asp-for="SecaoNoticias" class="painel-input tema-hex" data-hex="secao-noticias" maxlength="7" />
+                </div>
+                <small class="tema-dica">Seção clara — textos escuros se adaptam.</small>
+            </div>
+            <div class="tema-item">
+                <label class="tema-label" asp-for="SecaoMapa">Mapa</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="SecaoMapa" class="tema-color" data-cor="secao-mapa" />
+                    <input type="text" asp-for="SecaoMapa" class="painel-input tema-hex" data-hex="secao-mapa" maxlength="7" />
+                </div>
+                <small class="tema-dica">Fundo do mapa + onda de saída do Blog.</small>
+            </div>
+            <div class="tema-item">
+                <label class="tema-label" asp-for="SecaoRodape">Rodapé</label>
+                <div class="tema-input">
+                    <input type="color" asp-for="SecaoRodape" class="tema-color" data-cor="secao-rodape" />
+                    <input type="text" asp-for="SecaoRodape" class="painel-input tema-hex" data-hex="secao-rodape" maxlength="7" />
+                </div>
+                <small class="tema-dica">Fecha a página + onda de saída do Mapa.</small>
+            </div>
+        </div>
+
+        <!-- Pré-visualização das seções na ordem da home -->
+        <div class="tema-preview" style="margin-top:22px;border-top:1px solid var(--color-white--10);padding-top:18px;">
+            <div class="tema-preview-title">Ordem das seções (como no portal)</div>
+            <div class="tema-secoes-preview">
+                <div class="tema-secao-faixa" data-preview="secao-historia"><span>Nossa Cidade</span></div>
+                <div class="tema-secao-faixa" data-preview="secao-conheca"><span>Conheça Estância</span></div>
+                <div class="tema-secao-faixa" data-preview="secao-maravilhas"><span>7 Maravilhas</span></div>
+                <div class="tema-secao-faixa" data-preview="secao-agenda"><span>Agenda</span></div>
+                <div class="tema-secao-faixa" data-preview="secao-roteiros"><span>Planeje sua viagem</span></div>
+                <div class="tema-secao-faixa" data-preview="secao-noticias"><span>Notícias e Blog</span></div>
+                <div class="tema-secao-faixa" data-preview="secao-mapa"><span>Mapa</span></div>
+                <div class="tema-secao-faixa" data-preview="secao-rodape"><span>Rodapé</span></div>
+            </div>
+        </div>
+    </div>
+
     <div class="painel-form-actions" style="margin-top:16px;">
         <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar tema</button>
         <button type="submit" class="btn-painel btn-painel--ghost" formaction="@Url.Action("Restaurar")" formmethod="post"

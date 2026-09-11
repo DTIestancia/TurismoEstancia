@@ -58,6 +58,7 @@ public class PontosTuristicosController : PainelController
         IFormFile? capa,
         IFormFile? pictograma,
         IEnumerable<IFormFile> galeria,
+        IFormFile? icone,
         CancellationToken ct)
     {
         if (!ModelState.IsValid)
@@ -68,7 +69,7 @@ public class PontosTuristicosController : PainelController
 
         try
         {
-            await _pontos.SalvarAsync(dto, capa, pictograma, galeria, ct);
+            await _pontos.SalvarAsync(dto, capa, pictograma, galeria, icone, ct);
             TempData["PainelOk"] = "Ponto turístico salvo.";
             return RedirecionarParaIndex();
         }
@@ -109,6 +110,7 @@ public class PontosTuristicosController : PainelController
         IFormFile? capa,
         IFormFile? pictograma,
         IEnumerable<IFormFile> galeria,
+        IFormFile? icone,
         CancellationToken ct)
     {
         if (!ModelState.IsValid)
@@ -119,7 +121,7 @@ public class PontosTuristicosController : PainelController
 
         try
         {
-            await _pontos.SalvarAsync(dto, capa, pictograma, galeria, ct);
+            await _pontos.SalvarAsync(dto, capa, pictograma, galeria, icone, ct);
             TempData["PainelOk"] = "Ponto turístico atualizado.";
             return RedirecionarParaIndex();
         }

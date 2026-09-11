@@ -21,9 +21,11 @@ public class PontoTuristicoDto
     public string? Detalhe { get; set; }
     public string? Tag { get; set; }
     public string? Icone { get; set; }
+    public long? IconeArquivoId { get; set; }
     public string? CategoriaNome { get; set; }
     public string? CategoriaCor { get; set; }
     public string? CategoriaIcone { get; set; }
+    public long? CategoriaIconeArquivoId { get; set; }
     public bool CategoriaApresentarEmMaravilhas { get; set; }
     public string? Endereco { get; set; }
     public string? ComoChegar { get; set; }

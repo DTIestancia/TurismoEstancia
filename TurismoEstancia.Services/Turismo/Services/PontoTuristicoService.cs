@@ -29,10 +29,12 @@ public class PontoTuristicoService : IPontoTuristicoService
             Detalhe = p.Detalhe,
             Tag = p.Tag,
             Icone = p.Icone,
+            IconeArquivoId = p.IconeArquivoId,
             CategoriaId = p.CategoriaId,
             CategoriaNome = p.Categoria != null ? p.Categoria.Nome : null,
             CategoriaCor = p.Categoria != null ? p.Categoria.Cor : null,
             CategoriaIcone = p.Categoria != null ? p.Categoria.Icone : null,
+            CategoriaIconeArquivoId = p.Categoria != null ? p.Categoria.IconeArquivoId : null,
             CategoriaApresentarEmMaravilhas = p.Categoria != null && p.Categoria.ApresentarEmMaravilhas,
             Endereco = p.Endereco,
             ComoChegar = p.ComoChegar,
@@ -110,7 +112,7 @@ public class PontoTuristicoService : IPontoTuristicoService
         return dto;
     }
 
-    public async Task SalvarAsync(PontoTuristicoDto dto, IFormFile? capa, IFormFile? pictograma, IEnumerable<IFormFile> galeria, CancellationToken ct = default)
+    public async Task SalvarAsync(PontoTuristicoDto dto, IFormFile? capa, IFormFile? pictograma, IEnumerable<IFormFile> galeria, IFormFile? icone = null, CancellationToken ct = default)
     {
         var arquivosParaExcluir = new List<long>();
 
@@ -134,6 +136,8 @@ public class PontoTuristicoService : IPontoTuristicoService
                 Ordem = dto.Ordem,
                 Ativo = true
             };
+            if (icone is { Length: > 0 })
+                novo.IconeArquivoId = await _arquivos.SalvarAsync(icone, ct);
 
             _db.PontosTuristicos.Add(novo);
             await _db.SaveChangesAsync(ct);
@@ -161,6 +165,13 @@ public class PontoTuristicoService : IPontoTuristicoService
             entidade.TopPercentMobile = dto.TopPercentMobile;
             entidade.ExibirNoMapa = dto.ExibirNoMapa;
             entidade.Ordem = dto.Ordem;
+
+            if (icone is { Length: > 0 })
+            {
+                if (entidade.IconeArquivoId.HasValue)
+                    arquivosParaExcluir.Add(entidade.IconeArquivoId.Value);
+                entidade.IconeArquivoId = await _arquivos.SalvarAsync(icone, ct);
+            }
 
             await SalvarMidiasAsync(dto.Id, capa, pictograma, galeria, arquivosParaExcluir, ct);
             await SalvarHorariosAsync(dto.Id, dto.Horarios, ct);

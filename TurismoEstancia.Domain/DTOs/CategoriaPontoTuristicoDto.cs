@@ -17,6 +17,7 @@ public class CategoriaPontoTuristicoDto
     public string? SubTitulo { get; set; }
     public string? Cor { get; set; }
     public string? Icone { get; set; }
+    public long? IconeArquivoId { get; set; }
     public bool ApresentarEmMaravilhas { get; set; } = true;
     public bool ExibirNoMapa { get; set; } = true;
     public int Ordem { get; set; }

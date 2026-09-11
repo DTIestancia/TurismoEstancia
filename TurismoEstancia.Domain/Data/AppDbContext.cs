@@ -127,6 +127,12 @@ public class AppDbContext : DbContext
             entity.Property(e => e.Cor).HasMaxLength(20);
             entity.Property(e => e.Icone).HasMaxLength(50);
 
+            // PNG do ícone (pins do mapa): referência compartilhada, SetNull.
+            entity.HasOne(e => e.IconeArquivo)
+                  .WithMany()
+                  .HasForeignKey(e => e.IconeArquivoId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
             entity.HasIndex(e => e.Chave).IsUnique();
             entity.Property(e => e.ApresentarEmMaravilhas).HasDefaultValue(true);
             entity.Property(e => e.ExibirNoMapa).HasDefaultValue(true);
@@ -156,6 +162,12 @@ public class AppDbContext : DbContext
                   .WithMany(c => c.PontosTuristicos)
                   .HasForeignKey(e => e.CategoriaId)
                   .OnDelete(DeleteBehavior.Restrict);
+
+            // PNG do ícone do pin: referência compartilhada, SetNull.
+            entity.HasOne(e => e.IconeArquivo)
+                  .WithMany()
+                  .HasForeignKey(e => e.IconeArquivoId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
     }
 

@@ -35,6 +35,23 @@ public class ThemeSiteViewComponent : ViewComponent
         (ChaveRosa, "Rosa", "--color-rose-46", "#E9568A")
     ];
 
+    /// <summary>
+    /// Cor de fundo de cada seção da home (chaves <c>tema-secao-*</c>). As
+    /// ondulações (::after) usam a variável da seção SEGUINTE, então seguem
+    /// a cor automaticamente — como já fazem com os valores padrão do SCSS.
+    /// </summary>
+    public static readonly IReadOnlyList<(string Chave, string Nome, string Variavel, string Padrao)> Secoes =
+    [
+        ("tema-secao-historia", "Nossa Cidade", "--secao-historia-bg", "#C76527"),
+        ("tema-secao-conheca", "Conheça Estância", "--secao-conheca-bg", "#060D1A"),
+        ("tema-secao-maravilhas", "7 Maravilhas", "--secao-maravilhas-bg", "#030E19"),
+        ("tema-secao-agenda", "Agenda", "--secao-agenda-bg", "#320100"),
+        ("tema-secao-roteiros", "Planeje sua viagem", "--secao-roteiros-bg", "#001326"),
+        ("tema-secao-noticias", "Notícias e Blog", "--secao-noticias-bg", "#FFFFFF"),
+        ("tema-secao-mapa", "Mapa", "--secao-mapa-bg", "#030E19"),
+        ("tema-secao-rodape", "Rodapé", "--secao-rodape-bg", "#001326")
+    ];
+
     private readonly IConfiguracaoSiteService _configuracoes;
 
     public ThemeSiteViewComponent(IConfiguracaoSiteService configuracoes) => _configuracoes = configuracoes;
@@ -49,13 +66,21 @@ public class ThemeSiteViewComponent : ViewComponent
                 configuracoes[cor.Variavel] = hex;
         }
 
-        if (configuracoes.Count == 0)
+        var secoes = new Dictionary<string, string>();
+        foreach (var secao in Secoes)
+        {
+            var cfg = await _configuracoes.ObterPorChaveAsync(secao.Chave, ct);
+            if (cfg?.ValorTexto is { Length: 7 } hex && hex[0] == '#' && EhHex(hex))
+                secoes[secao.Variavel] = hex;
+        }
+
+        if (configuracoes.Count == 0 && secoes.Count == 0)
             return Content(string.Empty);
 
         // HtmlContentViewComponentResult escreve o HTML sem encode — o
         // Content() padrão escaparia as aspas e o <style> viraria texto.
         return new HtmlContentViewComponentResult(
-            new HtmlString($"<style id=\"tema-site\">{MontarCss(configuracoes)}</style>"));
+            new HtmlString($"<style id=\"tema-site\">{MontarCss(configuracoes, secoes)}</style>"));
     }
 
     private static bool EhHex(string valor) =>
@@ -63,9 +88,10 @@ public class ThemeSiteViewComponent : ViewComponent
 
     /// <summary>
     /// Monta o bloco <c>:root</c> com a cor base de cada família configurada e as
-    /// variantes derivadas (escala de leveza e alfas) usando color-mix().
+    /// variantes derivadas (escala de leveza e alfas) usando color-mix(), mais
+    /// as variáveis de fundo das seções configuradas.
     /// </summary>
-    private static string MontarCss(IReadOnlyDictionary<string, string> cores)
+    private static string MontarCss(IReadOnlyDictionary<string, string> cores, IReadOnlyDictionary<string, string> secoes)
     {
         var sb = new StringBuilder(":root{");
 
@@ -103,6 +129,12 @@ public class ThemeSiteViewComponent : ViewComponent
             sb.Append("--color-rose-46:").Append(rosa).Append(';')
               .Append("--color-rose-42:color-mix(in srgb,").Append(rosa).Append(" 62%,#000);")
               .Append("--color-rose-42-0:color-mix(in srgb,").Append(rosa).Append(" 0%,transparent);");
+        }
+
+        foreach (var secao in Secoes)
+        {
+            if (secoes.TryGetValue(secao.Variavel, out var hex))
+                sb.Append(secao.Variavel).Append(':').Append(hex).Append(';');
         }
 
         sb.Append('}');

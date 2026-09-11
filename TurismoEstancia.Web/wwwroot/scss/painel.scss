@@ -811,6 +811,15 @@
     // O <select> nativo abre o dropdown com o tema do sistema operacional
     // (branco no Windows). color-scheme: dark força o navegador a renderizar
     // a lista de opções no tema escuro do painel — texto legível, sem fundo branco.
+    // Vale para qualquer <select> do painel (mesmo sem a classe .painel-select).
+    select {
+      color-scheme: dark;
+
+      option {
+        background-color: #0d1526;
+        color: $color-white-solid;
+      }
+    }
     .painel-select {
       color-scheme: dark;
       // A seta do select nativo some no tema escuro de alguns navegadores;
@@ -1452,6 +1461,27 @@
   box-shadow: 0 6px 18px color-mix(in srgb, var(--cor) 35%, transparent);
 }
 
+// Faixas de pré-visualização das seções (na ordem da home). Cada faixa usa
+// --cor, atualizada ao vivo pelo mesmo script dos chips (data-preview).
+.tema-secoes-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid $color-white--10;
+}
+
+.tema-secao-faixa {
+  background: var(--cor);
+  padding: 10px 16px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  transition: background 0.2s ease;
+}
+
 // ===== Prévia de ícone (Contatos) =====
 // Campo de ícone com prévia em tempo real e sugestões por tipo de contato.
 .painel-icone-input-row {
@@ -1609,16 +1639,14 @@
 
   @media (max-width: 768px) {
     .painel-mapa-pin {
-      width: 22px;
-      height: 22px;
-      font-size: 9px;
+      width: 18px;
+      height: 18px;
     }
   }
   @media (max-width: 480px) {
     .painel-mapa-pin {
-      width: 18px;
-      height: 18px;
-      font-size: 8px;
+      width: 16px;
+      height: 16px;
     }
   }
 
@@ -1679,27 +1707,34 @@
 .painel-mapa-pin {
     position: absolute;
     z-index: 3;
-    width: 26px;
-    height: 26px;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    transform: translate(-50%, -100%) rotate(-45deg);
+    border-radius: 50% 50% 50% 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: linear-gradient(135deg, var(--color-orange-48), var(--color-red-54));
     border: 2px solid $color-white-solid;
     box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     cursor: grab;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 11px;
-    font-weight: 800;
+
+    > img {
+      transform: rotate(45deg);
+      width: 10px;
+      height: 10px;
+      object-fit: contain;
+      pointer-events: none;
+      filter: brightness(0) invert(1);
+    }
 
     &::after {
       content: attr(data-nome);
       position: absolute;
       bottom: 100%;
       left: 50%;
-      transform: translateX(-50%) translateY(-6px);
+      transform: translateX(-50%) translateY(-6px) rotate(45deg);
+      transform-origin: bottom center;
       background: #1a2332;
       color: white;
       padding: 4px 8px;
@@ -1717,12 +1752,19 @@
 
     &:hover::after {
       opacity: 1;
-      transform: translateX(-50%) translateY(-10px);
+      transform: translateX(-50%) translateY(-10px) rotate(45deg);
     }
 
     &:hover { z-index: 5; }
 
-    &:active { cursor: grabbing; transform: translate(-50%, -50%) scale(1.12); }
+    &:active { cursor: grabbing; }
+  }
+
+  @media (max-width: 768px) {
+    .painel-mapa-pin {
+      width: 18px;
+      height: 18px;
+    }
   }
 
 @keyframes painel-mapa-ping {

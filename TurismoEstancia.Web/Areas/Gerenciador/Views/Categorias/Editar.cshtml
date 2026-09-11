@@ -10,7 +10,7 @@
     </div>
 </div>
 
-<form class="painel-form" asp-action="Editar" method="post">
+<form class="painel-form" asp-action="Editar" method="post" enctype="multipart/form-data">
     <input asp-for="Id" type="hidden" />
     <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
 
@@ -36,8 +36,21 @@
         <div class="painel-field">
             <label asp-for="Icone"></label>
             <input asp-for="Icone" class="painel-input" maxlength="40" />
-            <span class="painel-hint">Nome do ícone Lucide (ex.: landmark, tree-pine, utensils).</span>
+            <span class="painel-hint">Nome do ícone Lucide (ex.: landmark, tree-pine, utensils). Vale quando não há PNG abaixo.</span>
         </div>
+    </div>
+
+    <div class="painel-field">
+        <label>Ícone PNG (pins do mapa)</label>
+        @if (Model.IconeArquivoId is long iconeId)
+        {
+            <div style="margin-bottom:8px;display:flex;align-items:center;gap:10px;">
+                <img src="@Url.Content($"~/arquivo/{iconeId}")" alt="Ícone atual" style="width:40px;height:40px;object-fit:contain;background:rgba(255,255,255,0.06);border-radius:10px;border:1px solid rgba(255,255,255,0.12);padding:4px;" />
+                <span class="painel-hint" style="margin:0;">Ícone atual — envie outro para substituir.</span>
+            </div>
+        }
+        <input type="file" name="icone" accept="image/png,image/*" class="painel-input" />
+        <span class="painel-hint">PNG com fundo transparente (ex.: 96×96). Aparece dentro do pin no mapa, no lugar do ícone Lucide.</span>
     </div>
 
     <div class="painel-form-grid">

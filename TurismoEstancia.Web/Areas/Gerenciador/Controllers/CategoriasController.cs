@@ -28,7 +28,7 @@ public class CategoriasController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Criar(CategoriaPontoTuristicoDto dto, CancellationToken ct)
+    public async Task<IActionResult> Criar(CategoriaPontoTuristicoDto dto, IFormFile? icone, CancellationToken ct)
     {
         if (!ModelState.IsValid)
         {
@@ -38,7 +38,7 @@ public class CategoriasController : PainelController
 
         try
         {
-            await _categorias.SalvarAsync(dto, ct);
+            await _categorias.SalvarAsync(dto, icone, ct);
             TempData["PainelOk"] = "Categoria salva com sucesso.";
             return RedirecionarParaIndex();
         }
@@ -99,7 +99,7 @@ public class CategoriasController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Editar(CategoriaPontoTuristicoDto dto, CancellationToken ct)
+    public async Task<IActionResult> Editar(CategoriaPontoTuristicoDto dto, IFormFile? icone, CancellationToken ct)
     {
         if (!ModelState.IsValid)
         {
@@ -108,7 +108,7 @@ public class CategoriasController : PainelController
 
         try
         {
-            await _categorias.SalvarAsync(dto, ct);
+            await _categorias.SalvarAsync(dto, icone, ct);
             TempData["PainelOk"] = "Categoria atualizada com sucesso.";
             return RedirecionarParaIndex();
         }

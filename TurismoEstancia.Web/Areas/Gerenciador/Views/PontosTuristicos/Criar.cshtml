@@ -51,7 +51,14 @@
         <div class="painel-field">
             <label asp-for="Icone"></label>
             <input asp-for="Icone" class="painel-input" maxlength="40" placeholder="landmark, tree-pine..." />
+            <span class="painel-hint">Vale quando não há PNG abaixo.</span>
         </div>
+    </div>
+
+    <div class="painel-field">
+        <label>Ícone PNG do pin (opcional)</label>
+        <input type="file" name="icone" accept="image/png,image/*" class="painel-input" />
+        <span class="painel-hint">PNG com fundo transparente (ex.: 96×96). Tem prioridade sobre o ícone da categoria e o Lucide.</span>
     </div>
 
     <div class="painel-field">

@@ -21,6 +21,11 @@ public class PontoTuristico
     /// <summary>Nome do ícone lucide exibido no card.</summary>
     public string? Icone { get; set; }
 
+    /// <summary>PNG enviado para o ícone do ponto (usado no pin do mapa; tem prioridade sobre o da categoria).</summary>
+    public long? IconeArquivoId { get; set; }
+
+    public Arquivo? IconeArquivo { get; set; }
+
     public int CategoriaId { get; set; }
 
     public CategoriaPontoTuristico? Categoria { get; set; }

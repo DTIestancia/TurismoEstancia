@@ -10,7 +10,7 @@
     </div>
 </div>
 
-<form class="painel-form" asp-action="Criar" method="post">
+<form class="painel-form" asp-action="Criar" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
 
     <div class="painel-form-grid">
@@ -35,8 +35,14 @@
         <div class="painel-field">
             <label asp-for="Icone"></label>
             <input asp-for="Icone" class="painel-input" maxlength="40" placeholder="landmark" />
-            <span class="painel-hint">Nome do ícone Lucide (ex.: landmark, tree-pine, utensils).</span>
+            <span class="painel-hint">Nome do ícone Lucide (ex.: landmark, tree-pine, utensils). Vale quando não há PNG abaixo.</span>
         </div>
+    </div>
+
+    <div class="painel-field">
+        <label>Ícone PNG (pins do mapa)</label>
+        <input type="file" name="icone" accept="image/png,image/*" class="painel-input" />
+        <span class="painel-hint">PNG com fundo transparente (ex.: 96×96). Aparece dentro do pin no mapa, no lugar do ícone Lucide.</span>
     </div>
 
     <div class="painel-form-grid">

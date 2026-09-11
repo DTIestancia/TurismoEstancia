@@ -317,7 +317,7 @@
                         @foreach (var pt in pontosGeral)
                         {
                             var l = pt.LeftPercent; var t = pt.TopPercent;
-                            <div class="painel-mapa-pin" data-id="@pt.Id" data-nome="@pt.Nome" data-modo="desktop" style="left:@(l)%; top:@(t)%;" title="@pt.Nome — @l%, @t% (desktop)">@pt.Nome.Substring(0,1).ToUpperInvariant()</div>
+                            <div class="painel-mapa-pin" data-id="@pt.Id" data-nome="@pt.Nome" data-modo="desktop" style="left:@(l)%; top:@(t)%;" title="@pt.Nome — @l%, @t% (desktop)">@if ((pt.IconeArquivoId ?? pt.CategoriaIconeArquivoId) is long iconeDesktopId){<img src="@Url.Content($"~/arquivo/{iconeDesktopId}")" alt="" />}</div>
                         }
                     </div>
                     <div class="painel-mapa-geral" id="mapaGeralMobile" style="display:none;">
@@ -334,7 +334,7 @@
                             var tm = pt.TopPercentMobile != 0 || pt.LeftPercentMobile != 0 ? pt.TopPercentMobile : pt.TopPercent;
                             if (lm == 0 && pt.LeftPercent != 0) lm = pt.LeftPercent;
                             if (tm == 0 && pt.TopPercent != 0) tm = pt.TopPercent;
-                            <div class="painel-mapa-pin" data-id="@pt.Id" data-nome="@pt.Nome" data-modo="mobile" style="left:@(lm)%; top:@(tm)%;" title="@pt.Nome — @lm%, @tm% (mobile)">@pt.Nome.Substring(0,1).ToUpperInvariant()</div>
+                            <div class="painel-mapa-pin" data-id="@pt.Id" data-nome="@pt.Nome" data-modo="mobile" style="left:@(lm)%; top:@(tm)%;" title="@pt.Nome — @lm%, @tm% (mobile)">@if ((pt.IconeArquivoId ?? pt.CategoriaIconeArquivoId) is long iconeMobileId){<img src="@Url.Content($"~/arquivo/{iconeMobileId}")" alt="" />}</div>
                         }
                     </div>
                     <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:8px; margin-top:12px;">

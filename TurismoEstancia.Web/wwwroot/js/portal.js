@@ -525,7 +525,11 @@ document.addEventListener('DOMContentLoaded', function () {
       el.style.left = posLeft(poi) + '%';
       el.style.top = posTop(poi) + '%';
       el.style.animationDelay = poi.delay + 's';
-      el.innerHTML = '<div class="custom-map-marker-inner">' + poi.content + '</div><div class="custom-map-marker-tooltip">' + esc(poi.title) + '</div>';
+      var iconePin = poi.icon || (categoriaConfig[poi.category] || {}).icon || 'map-pin';
+      var mioloPin = poi.iconImg
+        ? '<img src="' + esc(poi.iconImg) + '" alt="" loading="lazy" />'
+        : '<i data-lucide="' + esc(iconePin) + '"></i>';
+      el.innerHTML = '<div class="custom-map-marker-inner">' + mioloPin + '</div><div class="custom-map-marker-tooltip">' + esc(poi.title) + '</div>';
       mapEl.appendChild(el);
 
       el.addEventListener('click', function () {
@@ -541,6 +545,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
       });
     });
+
+    // Renderiza os ícones lucide dentro dos pins
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 
     // Reposiciona pins ao trocar de breakpoint mobile/desktop
     (function(){

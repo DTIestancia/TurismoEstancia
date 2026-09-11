@@ -17,7 +17,7 @@ public interface IPontoTuristicoService
     Task<PontoTuristicoDto?> ObterPorIdAsync(int id, CancellationToken ct = default);
 
     /// <summary>Salva o ponto, suas mídias (arquivos opcionais) e horários.</summary>
-    Task SalvarAsync(PontoTuristicoDto dto, IFormFile? capa, IFormFile? pictograma, IEnumerable<IFormFile> galeria, CancellationToken ct = default);
+    Task SalvarAsync(PontoTuristicoDto dto, IFormFile? capa, IFormFile? pictograma, IEnumerable<IFormFile> galeria, IFormFile? icone = null, CancellationToken ct = default);
 
     /// <summary>Exclusão lógica (Ativo = false).</summary>
     Task ExcluirAsync(int id, CancellationToken ct = default);

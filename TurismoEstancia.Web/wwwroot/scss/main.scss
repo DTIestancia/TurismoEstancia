@@ -518,7 +518,7 @@
 // Reusa o grid/cards da página /Noticias (news-grid/news-card) num fundo
 // próprio da home, com o cabeçalho de seção padrão do site.
 .section-noticias {
-  background: #ffffff;
+  background: var(--secao-noticias-bg, #ffffff);
   padding: 96px 0;
 
   // Blog claro: pill e textos escuros sobre fundo branco
@@ -948,7 +948,7 @@
 
 // --- Seção Roteiros ---
 .section-roteiros {
-  background: var(--color-azure-7);
+  background: var(--secao-roteiros-bg, var(--color-azure-7));
   padding: 96px 0;
 }
 

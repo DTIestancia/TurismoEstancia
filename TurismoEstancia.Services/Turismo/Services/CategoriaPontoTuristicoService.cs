@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using TurismoEstancia.Domain.Data;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Domain.Models;
+using TurismoEstancia.Services.Infra.Interfaces;
 using TurismoEstancia.Services.Turismo.Interfaces;
 
 namespace TurismoEstancia.Services.Turismo.Services;
@@ -11,8 +12,13 @@ namespace TurismoEstancia.Services.Turismo.Services;
 public class CategoriaPontoTuristicoService : ICategoriaPontoTuristicoService
 {
     private readonly AppDbContext _db;
+    private readonly IArquivoService _arquivos;
 
-    public CategoriaPontoTuristicoService(AppDbContext db) => _db = db;
+    public CategoriaPontoTuristicoService(AppDbContext db, IArquivoService arquivos)
+    {
+        _db = db;
+        _arquivos = arquivos;
+    }
 
     private static readonly Expression<Func<CategoriaPontoTuristico, CategoriaPontoTuristicoDto>> ToDto =
         c => new CategoriaPontoTuristicoDto
@@ -23,6 +29,7 @@ public class CategoriaPontoTuristicoService : ICategoriaPontoTuristicoService
             SubTitulo = c.SubTitulo,
             Cor = c.Cor,
             Icone = c.Icone,
+            IconeArquivoId = c.IconeArquivoId,
             ApresentarEmMaravilhas = c.ApresentarEmMaravilhas,
             ExibirNoMapa = c.ExibirNoMapa,
             Ordem = c.Ordem,
@@ -43,11 +50,11 @@ public class CategoriaPontoTuristicoService : ICategoriaPontoTuristicoService
             .Select(ToDto)
             .FirstOrDefaultAsync(ct);
 
-    public async Task SalvarAsync(CategoriaPontoTuristicoDto dto, CancellationToken ct = default)
+    public async Task SalvarAsync(CategoriaPontoTuristicoDto dto, IFormFile? icone = null, CancellationToken ct = default)
     {
         if (dto.Id == 0)
         {
-            _db.CategoriasPontosTuristicos.Add(new CategoriaPontoTuristico
+            var nova = new CategoriaPontoTuristico
             {
                 Chave = dto.Chave,
                 Nome = dto.Nome,
@@ -58,7 +65,10 @@ public class CategoriaPontoTuristicoService : ICategoriaPontoTuristicoService
                 ExibirNoMapa = dto.ExibirNoMapa,
                 Ordem = dto.Ordem,
                 Ativo = true
-            });
+            };
+            if (icone is { Length: > 0 })
+                nova.IconeArquivoId = await _arquivos.SalvarAsync(icone, ct);
+            _db.CategoriasPontosTuristicos.Add(nova);
         }
         else
         {
@@ -72,6 +82,19 @@ public class CategoriaPontoTuristicoService : ICategoriaPontoTuristicoService
             entidade.ApresentarEmMaravilhas = dto.ApresentarEmMaravilhas;
             entidade.ExibirNoMapa = dto.ExibirNoMapa;
             entidade.Ordem = dto.Ordem;
+
+            long? antigoId = null;
+            if (icone is { Length: > 0 })
+            {
+                antigoId = entidade.IconeArquivoId;
+                entidade.IconeArquivoId = await _arquivos.SalvarAsync(icone, ct);
+            }
+            await _db.SaveChangesAsync(ct);
+
+            // Remove o arquivo antigo só após o commit (checagem de referência).
+            if (antigoId.HasValue)
+                await _arquivos.ExcluirAsync(antigoId.Value, ct);
+            return;
         }
 
         await _db.SaveChangesAsync(ct);
@@ -85,7 +108,10 @@ public class CategoriaPontoTuristicoService : ICategoriaPontoTuristicoService
         if (await _db.PontosTuristicos.AnyAsync(p => p.CategoriaId == id && p.Ativo, ct))
             throw new InvalidOperationException("Não é possível excluir: existem pontos turísticos ativos nesta categoria.");
 
+        var iconeId = entidade.IconeArquivoId;
         _db.CategoriasPontosTuristicos.Remove(entidade);
         await _db.SaveChangesAsync(ct);
+        if (iconeId.HasValue)
+            await _arquivos.ExcluirAsync(iconeId.Value, ct);
     }
 }

@@ -7,6 +7,6 @@ public interface ICategoriaPontoTuristicoService
 {
     Task<IReadOnlyList<CategoriaPontoTuristicoDto>> ListarAsync(bool incluirInativos = false, CancellationToken ct = default);
     Task<CategoriaPontoTuristicoDto?> ObterPorIdAsync(int id, CancellationToken ct = default);
-    Task SalvarAsync(CategoriaPontoTuristicoDto dto, CancellationToken ct = default);
+    Task SalvarAsync(CategoriaPontoTuristicoDto dto, IFormFile? icone = null, CancellationToken ct = default);
     Task ExcluirAsync(int id, CancellationToken ct = default);
 }

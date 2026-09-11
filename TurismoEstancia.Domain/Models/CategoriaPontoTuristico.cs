@@ -25,6 +25,11 @@ public class CategoriaPontoTuristico
     /// <summary>Nome do ícone lucide exibido na categoria.</summary>
     public string? Icone { get; set; }
 
+    /// <summary>PNG enviado para o ícone da categoria (usado nos pins do mapa).</summary>
+    public long? IconeArquivoId { get; set; }
+
+    public Arquivo? IconeArquivo { get; set; }
+
     /// <summary>Indica se a categoria aparece na seção "7 Maravilhas".</summary>
     public bool ApresentarEmMaravilhas { get; set; } = true;
 
