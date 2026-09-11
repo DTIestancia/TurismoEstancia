@@ -1,0 +1,54 @@
+@model object
+@{
+    ViewData["Title"] = "Avaliações do Planeje";
+    var pendentes = (IReadOnlyList<PlanejeAvaliacaoDto>)ViewData["Pendentes"]!;
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Avaliações do Planeje</h1>
+        <p class="painel-page-desc">Moderação das avaliações dos cards do "Planeje sua viagem".</p>
+    </div>
+</div>
+
+<div class="painel-card">
+    <div class="painel-table-wrap">
+        <table class="painel-table">
+            <thead>
+                <tr>
+                    <th>Local</th>
+                    <th>Nome</th>
+                    <th>Nota</th>
+                    <th style="max-width:420px;">Comentário</th>
+                    <th style="text-align:right;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in pendentes)
+                {
+                    <tr>
+                        <td><strong>@(item.PlanejeItemTitulo ?? $"#{item.PlanejeItemId}")</strong></td>
+                        <td>@(string.IsNullOrWhiteSpace(item.Nome) ? "Anônimo" : item.Nome)</td>
+                        <td>@item.Nota ★</td>
+                        <td style="max-width:420px;">@item.Comentario</td>
+                        <td>
+                            <div class="painel-actions" style="justify-content:flex-end;">
+                                <form asp-action="Aprovar" asp-route-id="@item.Id" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-painel btn-painel--primary btn-painel--xs"><i data-lucide="check"></i> Aprovar</button>
+                                </form>
+                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir esta avaliação?">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (pendentes.Count == 0)
+    {
+        <div class="painel-empty">Nenhuma avaliação aguardando moderação.</div>
+    }
+</div>

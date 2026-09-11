@@ -34,7 +34,7 @@ public class SlidesController : PainelController
         {
             await _slides.SalvarAsync(dto, imagem, ct);
             TempData["PainelOk"] = "Slide salvo.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -59,7 +59,7 @@ public class SlidesController : PainelController
         {
             await _slides.SalvarAsync(dto, imagem, ct);
             TempData["PainelOk"] = "Slide atualizado.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -74,6 +74,6 @@ public class SlidesController : PainelController
     {
         await _slides.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Slide excluído.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

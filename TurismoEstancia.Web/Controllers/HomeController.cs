@@ -7,6 +7,7 @@ using TurismoEstancia.Services.Comunicacao.Interfaces;
 using TurismoEstancia.Services.ConhecaEstancia.Interfaces;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
+using TurismoEstancia.Services.Planeje.Interfaces;
 using TurismoEstancia.Services.Roteiro.Interfaces;
 using TurismoEstancia.Services.Turismo.Interfaces;
 using TurismoEstancia.Web.Models;
@@ -25,6 +26,7 @@ public class HomeController : Controller
     private readonly ICategoriaPontoTuristicoService _categorias;
     private readonly IEventoService _eventos;
     private readonly IRoteiroService _roteiros;
+    private readonly IPlanejeService _planeje;
     private readonly INoticiaService _noticias;
     private readonly IConteudoSiteService _conteudos;
     private readonly IConfiguracaoSiteService _configuracoes;
@@ -41,6 +43,7 @@ public class HomeController : Controller
         ICategoriaPontoTuristicoService categorias,
         IEventoService eventos,
         IRoteiroService roteiros,
+        IPlanejeService planeje,
         INoticiaService noticias,
         IConteudoSiteService conteudos,
         IConfiguracaoSiteService configuracoes,
@@ -56,6 +59,7 @@ public class HomeController : Controller
         _categorias = categorias;
         _eventos = eventos;
         _roteiros = roteiros;
+        _planeje = planeje;
         _noticias = noticias;
         _conteudos = conteudos;
         _configuracoes = configuracoes;
@@ -82,6 +86,8 @@ public class HomeController : Controller
             EventosProximosTotal = eventosProximos.Count,
             EventosProximos = eventosProximos.Take(3).ToList(),
             Roteiros = await _roteiros.ListarAsync(ct),
+            PlanejeCategorias = await _planeje.ListarCategoriasAsync(true, ct),
+            PlanejeItens = await _planeje.ListarItensAsync(true, ct),
             Noticias = (await _noticias.ListarAsync(apenasPublicadas: true, ct)).Take(3).ToList(),
             Contatos = await _contatos.ListarAsync(null, ct)
         };

@@ -1,0 +1,62 @@
+@model PlanejeCategoriaDto
+@{ ViewData["Title"] = "Editar categoria"; }
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Editar categoria</h1>
+        <p class="painel-page-desc">Ajuste os dados da categoria.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Editar" method="post" enctype="multipart/form-data">
+    <input asp-for="Id" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-field">
+        <label asp-for="Nome"></label>
+        <input asp-for="Nome" class="painel-input" maxlength="100" />
+        <span asp-validation-for="Nome" class="field-validation-error"></span>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Descricao"></label>
+        <textarea asp-for="Descricao" class="painel-textarea" maxlength="500"></textarea>
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Icone"></label>
+            <input asp-for="Icone" class="painel-input" maxlength="50" />
+        </div>
+        <div class="painel-field">
+            <label asp-for="Cor"></label>
+            <input asp-for="Cor" class="painel-input" maxlength="20" />
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label>Imagem padrão da categoria (opcional)</label>
+        @if (Model.ImagemPadraoArquivoId is long imgId)
+        {
+            <img src="@Url.Content($"~/arquivo/{imgId}")" alt="" style="max-width:200px;border-radius:10px;border:1px solid var(--color-white--12);margin-bottom:6px;" />
+        }
+        <input type="file" name="imagemPadrao" accept="image/*" class="painel-input" />
+        <span class="painel-hint">Envie para substituir a imagem atual.</span>
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Ordem"></label>
+            <input asp-for="Ordem" class="painel-input" type="number" />
+        </div>
+        <div class="painel-field">
+            <label class="painel-checkbox">
+                <input asp-for="Ativo" /> Ativo no portal
+            </label>
+        </div>
+    </div>
+
+    <div class="painel-form-actions">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar alterações</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>

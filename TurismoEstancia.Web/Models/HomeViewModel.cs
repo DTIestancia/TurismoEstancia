@@ -44,6 +44,10 @@ public class HomeViewModel
     // Roteiros
     public IReadOnlyList<RoteiroDto> Roteiros { get; set; } = Array.Empty<RoteiroDto>();
 
+    // Planeje sua viagem (categorias + cards)
+    public IReadOnlyList<PlanejeCategoriaDto> PlanejeCategorias { get; set; } = Array.Empty<PlanejeCategoriaDto>();
+    public IReadOnlyList<PlanejeItemDto> PlanejeItens { get; set; } = Array.Empty<PlanejeItemDto>();
+
     // Notícias (últimas publicadas, para a seção da home)
     public IReadOnlyList<NoticiaDto> Noticias { get; set; } = Array.Empty<NoticiaDto>();
 

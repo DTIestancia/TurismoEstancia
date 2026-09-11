@@ -38,7 +38,7 @@ public class GaleriaController : PainelController
         {
             await _galeria.SalvarCategoriaAsync(dto, capa, ct);
             TempData["PainelOk"] = "Categoria salva com sucesso.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -65,7 +65,7 @@ public class GaleriaController : PainelController
         {
             await _galeria.SalvarCategoriaAsync(dto, capa, ct);
             TempData["PainelOk"] = "Categoria atualizada com sucesso.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -87,7 +87,7 @@ public class GaleriaController : PainelController
         {
             TempData["PainelErro"] = ex.Message;
         }
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     /// <summary>GET Fotos/{id} — gestão das fotos da categoria (upload, vínculos, ordem, legenda).</summary>

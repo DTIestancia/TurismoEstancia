@@ -1,0 +1,87 @@
+@model PlanejeItemDto
+@{
+    ViewData["Title"] = "Editar local";
+    var categorias = (IReadOnlyList<PlanejeCategoriaDto>)ViewBag.Categorias;
+}
+<div class="painel-page-header">
+    <div>
+        <h1 class="painel-page-title">Editar local</h1>
+        <p class="painel-page-desc">Ajuste os dados do card.</p>
+    </div>
+</div>
+
+<form class="painel-form" asp-action="Editar" method="post" enctype="multipart/form-data">
+    <input asp-for="Id" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="painel-alert painel-alert--erro"></div>
+
+    <div class="painel-field">
+        <label asp-for="CategoriaId"></label>
+        <select asp-for="CategoriaId" class="painel-input">
+            <option value="0">— Selecione —</option>
+            @foreach (var c in categorias)
+            {
+                <option value="@c.Id">@c.Nome</option>
+            }
+        </select>
+        <span asp-validation-for="CategoriaId" class="field-validation-error"></span>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Titulo"></label>
+        <input asp-for="Titulo" class="painel-input" maxlength="180" />
+        <span asp-validation-for="Titulo" class="field-validation-error"></span>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Descricao"></label>
+        <textarea asp-for="Descricao" class="painel-textarea" maxlength="2000"></textarea>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Localizacao"></label>
+        <input asp-for="Localizacao" class="painel-input" maxlength="255" />
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Contato"></label>
+            <input asp-for="Contato" class="painel-input" maxlength="100" />
+        </div>
+        <div class="painel-field">
+            <label asp-for="Site"></label>
+            <input asp-for="Site" class="painel-input" maxlength="255" />
+        </div>
+    </div>
+
+    <div class="painel-field">
+        <label asp-for="Instagram"></label>
+        <input asp-for="Instagram" class="painel-input" maxlength="255" />
+    </div>
+
+    <div class="painel-field">
+        <label>Imagem (opcional)</label>
+        @if (Model.ImagemArquivoId is long imgId)
+        {
+            <img src="@Url.Content($"~/arquivo/{imgId}")" alt="" style="max-width:200px;border-radius:10px;border:1px solid var(--color-white--12);margin-bottom:6px;" />
+        }
+        <input type="file" name="imagem" accept="image/*" class="painel-input" />
+        <span class="painel-hint">Envie para substituir. Sem foto, o card usa a imagem padrão da categoria.</span>
+    </div>
+
+    <div class="painel-form-grid">
+        <div class="painel-field">
+            <label asp-for="Ordem"></label>
+            <input asp-for="Ordem" class="painel-input" type="number" />
+        </div>
+        <div class="painel-field">
+            <label class="painel-checkbox">
+                <input asp-for="Ativo" /> Ativo no portal
+            </label>
+        </div>
+    </div>
+
+    <div class="painel-form-actions">
+        <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar alterações</button>
+        <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
+    </div>
+</form>

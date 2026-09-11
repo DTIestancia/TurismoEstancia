@@ -30,7 +30,7 @@ public class GruposCulturaisController : PainelController
         if (!ModelState.IsValid) return View(dto);
         await _grupos.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Grupo cultural salvo.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
@@ -47,7 +47,7 @@ public class GruposCulturaisController : PainelController
         if (!ModelState.IsValid) return View(dto);
         await _grupos.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Grupo cultural atualizado.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     [HttpPost]
@@ -56,6 +56,6 @@ public class GruposCulturaisController : PainelController
     {
         await _grupos.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Grupo cultural excluído.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

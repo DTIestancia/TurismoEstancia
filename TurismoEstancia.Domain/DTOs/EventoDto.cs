@@ -10,6 +10,7 @@ public class EventoDto
     [Required(ErrorMessage = "Informe o título.")]
     [MaxLength(150)]
     public string Titulo { get; set; } = null!;
+    [MaxLength(500, ErrorMessage = "A descrição deve ter no máximo 500 caracteres.")]
     public string? Descricao { get; set; }
     public string? Local { get; set; }
     public DateTime DataInicio { get; set; }

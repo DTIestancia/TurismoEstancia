@@ -31,7 +31,7 @@ public class PratosTuristicosController : PainelController
         if (!ModelState.IsValid) return View(dto);
         await _pratos.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Prato turístico salvo.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
@@ -49,7 +49,7 @@ public class PratosTuristicosController : PainelController
         if (!ModelState.IsValid) return View(dto);
         await _pratos.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Prato turístico atualizado.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     [HttpPost]
@@ -58,6 +58,6 @@ public class PratosTuristicosController : PainelController
     {
         await _pratos.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Prato turístico excluído.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

@@ -33,7 +33,7 @@ public class RoteirosController : PainelController
         {
             await _roteiros.SalvarAsync(dto, imagem, ct);
             TempData["PainelOk"] = "Roteiro salvo.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -59,7 +59,7 @@ public class RoteirosController : PainelController
         {
             await _roteiros.SalvarAsync(dto, imagem, ct);
             TempData["PainelOk"] = "Roteiro atualizado.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -74,6 +74,6 @@ public class RoteirosController : PainelController
     {
         await _roteiros.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Roteiro excluído.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

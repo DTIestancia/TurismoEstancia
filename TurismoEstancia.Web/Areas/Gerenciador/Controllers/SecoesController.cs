@@ -5,6 +5,7 @@ using TurismoEstancia.Services.Comunicacao.Interfaces;
 using TurismoEstancia.Services.ConhecaEstancia.Interfaces;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Services.Infra.Interfaces;
+using TurismoEstancia.Services.Planeje.Interfaces;
 using TurismoEstancia.Services.Roteiro.Interfaces;
 using TurismoEstancia.Services.Turismo.Interfaces;
 using TurismoEstancia.Web.Models;
@@ -25,6 +26,7 @@ public class SecoesController : PainelController
     private readonly IEventoService _eventos;
     private readonly INoticiaService _noticias;
     private readonly IRoteiroService _roteiros;
+    private readonly IPlanejeService _planeje;
     private readonly IContatoService _contatos;
     private readonly IConhecaEstanciaService _conheca;
     private readonly IConfiguracaoSiteService _configuracoes;
@@ -38,6 +40,7 @@ public class SecoesController : PainelController
         IEventoService eventos,
         INoticiaService noticias,
         IRoteiroService roteiros,
+        IPlanejeService planeje,
         IContatoService contatos,
         IConhecaEstanciaService conheca,
         IConfiguracaoSiteService configuracoes)
@@ -50,6 +53,7 @@ public class SecoesController : PainelController
         _eventos = eventos;
         _noticias = noticias;
         _roteiros = roteiros;
+        _planeje = planeje;
         _contatos = contatos;
         _conheca = conheca;
         _configuracoes = configuracoes;
@@ -308,27 +312,32 @@ public class SecoesController : PainelController
         return RedirectToAction(nameof(Noticias));
     }
 
-    // ===== Roteiros =====
+    // ===== Roteiros (Planeje sua viagem) =====
     public async Task<IActionResult> Roteiros(CancellationToken ct)
     {
-        ViewData["Title"] = "Roteiros";
-        var vm = await MontarAsync("roteiros", "Roteiros", "Chamada da seção e acesso aos roteiros.", ct,
+        ViewData["Title"] = "Planeje sua viagem";
+        var vm = await MontarAsync("roteiros", "Planeje sua viagem", "Chamada da seção, categorias e cards (Onde ficar, Onde comer, Serviços).", ct,
             textos: [
-                T("roteiros-titulo", "Título", "Aceita <span class=\"secao-destaque\"> para destacar; ex.: Trilhas para <span class=\"secao-destaque\">explorar</span>"),
-                T("roteiros-descricao", "Descrição", "Chamada da seção de roteiros")
+                T("roteiros-titulo", "Título", "Aceita <span class=\"secao-destaque\"> para destacar; ex.: Planeje sua <span class=\"secao-destaque\">viagem</span>"),
+                T("roteiros-descricao", "Descrição", "Chamada da seção de planejamento")
             ],
             imagens: [],
             ancora: "#section-roteiros");
-        var roteiros = await _roteiros.ListarAsync(ct);
+        var itens = await _planeje.ListarItensAsync(false, ct);
         vm.Itens = new ItensAreaViewModel
         {
-            Titulo = "Roteiros cadastrados",
-            RotuloBotao = "Cadastrar novo roteiro",
-            UrlCriar = Url.Action("Criar", "Roteiros", new { area = "Gerenciador" }) ?? "/Gerenciador/Roteiros/Criar",
-            UrlLista = Url.Action("Index", "Roteiros", new { area = "Gerenciador" }) ?? "/Gerenciador/Roteiros",
+            Titulo = "Locais cadastrados",
+            RotuloBotao = "Cadastrar novo local",
+            UrlCriar = Url.Action("Criar", "PlanejeItens", new { area = "Gerenciador" }) ?? "/Gerenciador/PlanejeItens/Criar",
+            UrlLista = Url.Action("Index", "PlanejeItens", new { area = "Gerenciador" }) ?? "/Gerenciador/PlanejeItens",
             Icone = "route",
-            Itens = roteiros.Select(r => new ItemAreaViewModel { Id = r.Id, Nome = r.Titulo, Detalhe = r.Descricao, ImagemArquivoId = r.ImagemArquivoId, Ativo = r.Ativo }).ToList()
+            Itens = itens.Select(r => new ItemAreaViewModel { Id = r.Id, Nome = r.Titulo, Detalhe = r.CategoriaNome, ImagemArquivoId = r.ImagemArquivoId ?? r.CategoriaImagemPadraoArquivoId, Ativo = r.Ativo }).ToList()
         };
+        vm.Links =
+        [
+            new LinkArea { Titulo = "Categorias do Planeje", Descricao = "Filtros da seção: Onde ficar, Onde comer, Serviços...", Url = Url.Action("Index", "PlanejeCategorias", new { area = "Gerenciador" }) ?? "/Gerenciador/PlanejeCategorias", Icone = "tags" },
+            new LinkArea { Titulo = "Avaliações do Planeje", Descricao = "Moderação das avaliações dos cards.", Url = Url.Action("Index", "PlanejeAvaliacoes", new { area = "Gerenciador" }) ?? "/Gerenciador/PlanejeAvaliacoes", Icone = "star" }
+        ];
         return View("Editar", vm);
     }
 

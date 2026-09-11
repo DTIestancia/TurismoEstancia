@@ -45,10 +45,6 @@
                    asp-controller="Dashboard" asp-action="Index">
                     <i data-lucide="layout-dashboard"></i> Dashboard
                 </a>
-                <a class="painel-nav-link" asp-controller="Home" asp-action="Index" target="_blank">
-                    <i data-lucide="globe"></i> Ver portal
-                </a>
-
                 @if (gerenciador)
                 {
                     <div class="painel-nav-title">Conteúdo do site</div>
@@ -73,8 +69,8 @@
                     <a class="painel-nav-link @(IsAreaSecao("noticias") || IsAreaPage("Gerenciador","Noticias") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Noticias">
                         <i data-lucide="newspaper"></i> Notícias
                     </a>
-                    <a class="painel-nav-link @(IsAreaSecao("roteiros") || IsAreaPage("Gerenciador","Roteiros") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Roteiros">
-                        <i data-lucide="route"></i> Roteiros
+                    <a class="painel-nav-link @(IsAreaSecao("roteiros") || IsAreaPage("Gerenciador","PlanejeItens") || IsAreaPage("Gerenciador","PlanejeCategorias") || IsAreaPage("Gerenciador","PlanejeAvaliacoes") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Roteiros">
+                        <i data-lucide="route"></i> Planeje sua viagem
                     </a>
                     <a class="painel-nav-link @(IsAreaSecao("mapa") ? "active" : "")" asp-area="Gerenciador" asp-controller="Secoes" asp-action="Mapa">
                         <i data-lucide="map"></i> Mapa

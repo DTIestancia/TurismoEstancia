@@ -83,21 +83,21 @@ public class NewsletterController : PainelController
         {
             TempData["PainelErro"] = string.Join(" ", ModelState.Values
                 .SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
 
         if (!_smtp.Configurado)
         {
             TempData["PainelErro"] =
                 "E-mail SMTP não configurado. Adicione a seção \"Smtp\" (Host e RemetenteEmail) no appsettings.json.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
 
         var destinatarios = await _newsletter.ListarEmailsAtivosAsync(ct);
         if (destinatarios.Count == 0)
         {
             TempData["PainelErro"] = "Nenhuma inscrição ativa para receber o disparo.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
 
         var corpoHtml = EmailHtml.Marketing(model.Assunto, model.Corpo);
@@ -121,7 +121,7 @@ public class NewsletterController : PainelController
         TempData["PainelOk"] = enfileirados == destinatarios.Count
             ? $"Disparo enfileirado para {enfileirados} destinatário(s): \"{model.Assunto.Trim()}\"."
             : $"Disparo parcial: {enfileirados} de {destinatarios.Count} enfileirados (fila de e-mails cheia).";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     [HttpPost]
@@ -130,7 +130,7 @@ public class NewsletterController : PainelController
     {
         await _newsletter.InativarAsync(id, ct);
         TempData["PainelOk"] = "Inscrição inativada.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     [HttpPost]
@@ -139,6 +139,6 @@ public class NewsletterController : PainelController
     {
         await _newsletter.ReativarAsync(id, ct);
         TempData["PainelOk"] = "Inscrição reativada.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

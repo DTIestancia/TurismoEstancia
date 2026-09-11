@@ -1,45 +1,138 @@
 @model HomeViewModel
 @{
     var roteirosTitulo = Model.Conteudos.GetValueOrDefault("roteiros-titulo",
-        "Trilhas para <span class=\"secao-destaque\">explorar</span>") ?? "";
+        "Planeje sua <span class=\"secao-destaque\">viagem</span>") ?? "";
     var roteirosDesc = Model.Conteudos.GetValueOrDefault("roteiros-descricao",
-        "Itinerários prontos para você viver o melhor de Estância — da história ao litoral.");
+        "Onde ficar, onde comer e serviços para você viver o melhor de Estância.") ?? "";
 }
 
-@if (Model.Roteiros.Count > 0)
+@if (Model.PlanejeItens.Count > 0)
 {
     <section class="section-roteiros section-3d section-divider" id="section-roteiros" data-section="roteiros">
         <div class="section-roteiros-inner">
             <div class="section-tag">
                 <div class="pill pill-white">
-                    <i data-lucide="map" class="icon-lg" style="color:var(--color-white-solid);"></i>
-                    <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;line-height:16px;">Roteiros Turísticos</span>
+                    <i data-lucide="route" class="icon-lg" style="color:var(--color-white-solid);"></i>
+                    <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;line-height:16px;">Planeje sua viagem</span>
                 </div>
             </div>
             <h2 class="section-title reveal" style="color:var(--color-white-solid);">
                 @Html.Raw(roteirosTitulo)
             </h2>
             <p class="section-desc reveal reveal-delay-1" style="color:var(--color-white--70);max-width:640px;">
-                @roteirosDesc
+                @Html.Raw(roteirosDesc)
             </p>
-            <div class="roteiros-grid">
-                @foreach (var roteiro in Model.Roteiros)
+            @if (TempData["AvaliacaoOk"] is not null)
+            {
+                <div class="paginas-toast paginas-toast--ok"><i data-lucide="check-circle" class="icon-lg"></i> @TempData["AvaliacaoOk"]</div>
+            }
+            @if (TempData["AvaliacaoErro"] is not null)
+            {
+                <div class="paginas-toast paginas-toast--erro"><i data-lucide="alert-circle" class="icon-lg"></i> @TempData["AvaliacaoErro"]</div>
+            }
+
+            <div class="map-filter-bar reveal reveal-delay-1" id="planejeFilterBar">
+                <button type="button" class="map-filter-btn active" data-filter="all">Todos <span class="map-filter-count">@Model.PlanejeItens.Count</span></button>
+                @foreach (var cat in Model.PlanejeCategorias)
                 {
-                    <a class="roteiro-card reveal" href="~/Roteiros/Detalhe/@roteiro.Id"
-                       data-track="roteiro" data-track-id="@roteiro.Id" data-track-nome="@roteiro.Titulo">
-                        @if (roteiro.ImagemArquivoId is long imgId)
+                    var total = Model.PlanejeItens.Count(i => i.CategoriaId == cat.Id);
+                    <button type="button" class="map-filter-btn" data-filter="@cat.Id">
+                        @if (!string.IsNullOrWhiteSpace(cat.Cor))
                         {
-                            <img class="roteiro-card-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@roteiro.Titulo" loading="lazy" />
+                            <span class="filter-dot" style="background:@cat.Cor;"></span>
+                        }
+                        @cat.Nome <span class="map-filter-count">@total</span>
+                    </button>
+                }
+            </div>
+
+            <div class="roteiros-grid" id="planejeGrid">
+                @foreach (var item in Model.PlanejeItens)
+                {
+                    var imgId = item.ImagemArquivoId ?? item.CategoriaImagemPadraoArquivoId;
+                    <article class="roteiro-card reveal planeje-card" tabindex="0" role="button"
+                             data-cat="@item.CategoriaId" data-id="@item.Id" data-title="@item.Titulo"
+                             data-desc="@item.Descricao" data-img="@(imgId is long id ? Url.Content($"~/arquivo/{id}") : "")"
+                             data-category="@item.CategoriaNome" data-location="@item.Localizacao"
+                             data-contact="@item.Contato" data-site="@item.Site" data-instagram="@item.Instagram"
+                             aria-label="Ver detalhes: @item.Titulo">
+                        @if (imgId is long fotoId)
+                        {
+                            <img class="roteiro-card-img" src="@Url.Content($"~/arquivo/{fotoId}")" alt="@item.Titulo" loading="lazy" />
                         }
                         <div class="roteiro-card-body">
-                            <h3 class="roteiro-card-title">@roteiro.Titulo</h3>
-                            <p class="roteiro-card-desc">@roteiro.Descricao</p>
-                            @{ var totalDias = roteiro.Itens.Select(i => i.Dia).Distinct().Count(); }
-                            <span class="roteiro-card-dias">@totalDias @(totalDias == 1 ? "dia" : "dias") de roteiro →</span>
+                            @if (!string.IsNullOrWhiteSpace(item.CategoriaNome))
+                            {
+                                <span class="roteiro-card-dias">@item.CategoriaNome</span>
+                            }
+                            <h3 class="roteiro-card-title">@item.Titulo</h3>
+                            <p class="roteiro-card-desc">@item.Descricao</p>
+                            @if (!string.IsNullOrWhiteSpace(item.Localizacao))
+                            {
+                                <span class="roteiro-card-dias"><i data-lucide="map-pin" class="icon-lg"></i> @item.Localizacao</span>
+                            }
                         </div>
-                    </a>
+                    </article>
                 }
             </div>
         </div>
     </section>
+
+    <!-- ===== Modal do Planeje (detalhes + avaliações) ===== -->
+    <div class="modal-overlay" id="planejeModal">
+        <div class="modal">
+            <button class="modal-close" id="planejeModalClose" aria-label="Fechar">
+                <i data-lucide="x" class="icon-lg"></i>
+            </button>
+            <img class="modal-img" id="planejeModalImg" src="" alt="" />
+            <div class="modal-body">
+                <div class="modal-category" id="planejeModalCategory"></div>
+                <h3 class="modal-title" id="planejeModalTitle"></h3>
+                <p class="modal-desc" id="planejeModalDesc"></p>
+                <div class="modal-address" id="planejeModalLocation">
+                    <i data-lucide="map-pin" class="icon-lg"></i>
+                    <div>
+                        <span class="modal-address-title">Localização</span>
+                        <span id="planejeModalLocationText"></span>
+                    </div>
+                </div>
+                <div class="modal-address" id="planejeModalContact">
+                    <i data-lucide="phone" class="icon-lg"></i>
+                    <div>
+                        <span class="modal-address-title">Contato</span>
+                        <span id="planejeModalContactText"></span>
+                    </div>
+                </div>
+                <div class="modal-address" id="planejeModalLinks">
+                    <i data-lucide="globe" class="icon-lg"></i>
+                    <div>
+                        <span class="modal-address-title">Na internet</span>
+                        <span id="planejeModalLinksText"></span>
+                    </div>
+                </div>
+
+                <div class="modal-avaliacoes" id="planejeModalAvaliacoes" hidden>
+                    <div class="modal-avaliacoes-title"><i data-lucide="star" class="icon-lg"></i> O que dizem os visitantes</div>
+                    <div class="modal-avaliacoes-list" id="planejeModalAvaliacoesList"></div>
+                </div>
+
+                <form class="avaliacao-form" method="post" asp-controller="Planeje" asp-action="Avaliar">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="PlanejeItemId" id="planejeAvaliacaoItemId" value="" />
+                    <input type="hidden" name="retorno" value="/#section-roteiros" />
+                    <div class="avaliacao-form-title"><i data-lucide="message-square-heart" class="icon-lg"></i> Deixe sua avaliação</div>
+                    <input type="text" name="Nome" class="avaliacao-input" placeholder="Seu nome (opcional)" maxlength="150" />
+                    <div class="avaliacao-notas" id="planejeAvaliacaoNotas">
+                        @for (var n = 1; n <= 5; n++)
+                        {
+                            <button type="button" class="avaliacao-nota" data-nota="@n" aria-label="@n estrelas">★</button>
+                        }
+                        <input type="hidden" name="Nota" id="planejeAvaliacaoNotaInput" value="5" />
+                    </div>
+                    <textarea name="Comentario" class="avaliacao-textarea" placeholder="Conte sua experiência... (mínimo 50 caracteres)" minlength="50" maxlength="1000" required></textarea>
+                    <button type="submit" class="avaliacao-submit">Enviar avaliação</button>
+                </form>
+            </div>
+        </div>
+    </div>
 }

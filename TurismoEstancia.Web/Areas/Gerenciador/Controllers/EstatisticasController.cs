@@ -39,7 +39,7 @@ public class EstatisticasController : PainelController
         }
         await _estatisticas.SalvarAsync(dto, ct);
         TempData["PainelOk"] = "Estatística salva.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
@@ -63,7 +63,7 @@ public class EstatisticasController : PainelController
         }
         await _estatisticas.SalvarAsync(dto, ct);
         TempData["PainelOk"] = "Estatística atualizada.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     /// <summary>
@@ -96,6 +96,6 @@ public class EstatisticasController : PainelController
     {
         await _estatisticas.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Estatística excluída.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

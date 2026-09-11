@@ -571,39 +571,6 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    // Render Filter Buttons
-    var filterBar = document.getElementById('mapFilterBar');
-    if (filterBar) {
-      filterBar.innerHTML = '';
-      var allBtn = document.createElement('button');
-      allBtn.className = 'map-filter-btn active';
-      allBtn.setAttribute('data-filter', 'all');
-      allBtn.innerHTML = 'Todas <span class="map-filter-count">' + allPois.length + '</span>';
-      filterBar.appendChild(allBtn);
-
-      dados.categorias.forEach(function (c) {
-        var count = allPois.filter(function (p) { return p.category === c.key; }).length;
-        if (count === 0) return;
-        var btn = document.createElement('button');
-        btn.className = 'map-filter-btn';
-        btn.setAttribute('data-filter', c.key);
-        btn.innerHTML = '<span class="filter-dot" style="background:' + c.color + ';"></span> ' + c.label + ' <span class="map-filter-count">' + count + '</span>';
-        filterBar.appendChild(btn);
-      });
-
-      filterBar.querySelectorAll('.map-filter-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var filter = this.getAttribute('data-filter');
-          filterBar.querySelectorAll('.map-filter-btn').forEach(function (b) { b.classList.remove('active'); });
-          this.classList.add('active');
-          mapEl.querySelectorAll('.custom-map-marker').forEach(function (m) {
-            var cat = m.getAttribute('data-category');
-            m.style.display = (filter === 'all' || cat === filter) ? '' : 'none';
-          });
-        });
-      });
-    }
-
     // flyToWonder
     window.flyToWonder = function (title) {
       var poi = window.estanciaMarkers[title];
@@ -611,11 +578,6 @@ document.addEventListener('DOMContentLoaded', function () {
       var safeTitle = title.replace(/'/g, "\\'");
       var markerEl = mapEl.querySelector('.custom-map-marker[data-title="' + safeTitle + '"]');
       if (!markerEl) return;
-      if (markerEl.style.display === 'none') {
-        mapEl.querySelectorAll('.custom-map-marker').forEach(function (m) { m.style.display = ''; });
-        var allBtns = document.querySelectorAll('.map-filter-btn');
-        allBtns.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-filter') === 'all'); });
-      }
       markerEl.classList.add('highlight');
       setTimeout(function () { markerEl.classList.remove('highlight'); }, 3600);
       mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -651,6 +613,132 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   initEstanciaMap();
+
+  // ===== Planeje sua viagem (filtros + modal + avaliações) =====
+  (function initPlaneje() {
+    var grid = document.getElementById('planejeGrid');
+    if (!grid) return;
+    var filterBar = document.getElementById('planejeFilterBar');
+    var modal = document.getElementById('planejeModal');
+    var modalClose = document.getElementById('planejeModalClose');
+    var modalImg = document.getElementById('planejeModalImg');
+
+    if (filterBar) {
+      filterBar.querySelectorAll('.map-filter-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var filter = this.getAttribute('data-filter');
+          filterBar.querySelectorAll('.map-filter-btn').forEach(function (b) { b.classList.remove('active'); });
+          this.classList.add('active');
+          grid.querySelectorAll('.planeje-card').forEach(function (c) {
+            c.style.display = (filter === 'all' || c.getAttribute('data-cat') === filter) ? '' : 'none';
+          });
+        });
+      });
+    }
+
+    function setText(id, value, wrapId) {
+      var el = document.getElementById(id);
+      var wrap = wrapId ? document.getElementById(wrapId) : null;
+      if (!el) return;
+      el.textContent = value || '';
+      if (wrap) wrap.classList.toggle('show', !!value);
+    }
+
+    function carregarAvaliacoes(itemId) {
+      var list = document.getElementById('planejeModalAvaliacoesList');
+      var bloco = document.getElementById('planejeModalAvaliacoes');
+      var hiddenId = document.getElementById('planejeAvaliacaoItemId');
+      if (hiddenId) hiddenId.value = itemId;
+      if (!list || !bloco) return;
+      list.innerHTML = '';
+      bloco.hidden = true;
+      fetch(appBase() + 'Planeje/Avaliacoes/' + itemId)
+        .then(function (r) { return r.json(); })
+        .then(function (arr) {
+          if (!arr || !arr.length) return;
+          bloco.hidden = false;
+          arr.forEach(function (av) {
+            var item = document.createElement('div');
+            item.className = 'modal-avaliacao-item';
+            var estrelas = '★'.repeat(av.nota) + '☆'.repeat(5 - av.nota);
+            var nome = av.nome && av.nome.trim() ? av.nome : 'Anônimo';
+            item.innerHTML =
+              '<div class="modal-avaliacao-head">' +
+              '<strong>' + esc(nome) + '</strong>' +
+              '<span class="modal-avaliacao-stars">' + estrelas + '</span></div>' +
+              (av.comentario ? '<p class="modal-avaliacao-comentario">' + esc(av.comentario) + '</p>' : '');
+            list.appendChild(item);
+          });
+        })
+        .catch(function () {});
+    }
+
+    function openModal(card) {
+      var img = card.getAttribute('data-img') || '';
+      modalImg.src = img;
+      modalImg.alt = card.getAttribute('data-title') || '';
+      modalImg.classList.toggle('hidden', !img);
+      setText('planejeModalCategory', card.getAttribute('data-category'));
+      document.getElementById('planejeModalTitle').textContent = card.getAttribute('data-title') || '';
+      setText('planejeModalDesc', card.getAttribute('data-desc'));
+      setText('planejeModalLocationText', card.getAttribute('data-location'), 'planejeModalLocation');
+      setText('planejeModalContactText', card.getAttribute('data-contact'), 'planejeModalContact');
+      var site = card.getAttribute('data-site') || '';
+      var insta = card.getAttribute('data-instagram') || '';
+      var linksEl = document.getElementById('planejeModalLinksText');
+      var linksWrap = document.getElementById('planejeModalLinks');
+      if (linksEl) {
+        linksEl.innerHTML = '';
+        if (site) {
+          var a = document.createElement('a');
+          a.href = site; a.target = '_blank'; a.rel = 'noopener';
+          a.textContent = site.replace(/^https?:\/\//, '');
+          linksEl.appendChild(a);
+        }
+        if (insta) {
+          if (site) linksEl.appendChild(document.createTextNode(' · '));
+          var href = insta.indexOf('http') === 0 ? insta : 'https://instagram.com/' + insta.replace(/^@/, '');
+          var b = document.createElement('a');
+          b.href = href; b.target = '_blank'; b.rel = 'noopener';
+          b.textContent = insta;
+          linksEl.appendChild(b);
+        }
+      }
+      if (linksWrap) linksWrap.classList.toggle('show', !!(site || insta));
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+      carregarAvaliacoes(card.getAttribute('data-id'));
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    grid.querySelectorAll('.planeje-card').forEach(function (card) {
+      card.addEventListener('click', function () { openModal(card); });
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(card); }
+      });
+    });
+    if (modalClose) modalClose.addEventListener('click', closeModal);
+    if (modal) modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal && modal.classList.contains('active')) closeModal();
+    });
+
+    // Seletor de notas do formulário do modal
+    document.querySelectorAll('#planejeAvaliacaoNotas .avaliacao-nota').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var nota = parseInt(this.getAttribute('data-nota'), 10);
+        document.getElementById('planejeAvaliacaoNotaInput').value = nota;
+        document.querySelectorAll('#planejeAvaliacaoNotas .avaliacao-nota').forEach(function (b) {
+          b.classList.toggle('active', parseInt(b.getAttribute('data-nota'), 10) <= nota);
+        });
+      });
+    });
+  })();
 
   // ===== Cinematic Scroll Effects =====
   const revealObserver = new IntersectionObserver(function (entries) {

@@ -34,7 +34,7 @@ public class AvaliacoesController : PainelController
     {
         await _avaliacoes.AprovarAsync(id, ct);
         TempData["PainelOk"] = "Avaliação aprovada e publicada no portal.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     [HttpPost]
@@ -43,6 +43,6 @@ public class AvaliacoesController : PainelController
     {
         await _avaliacoes.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Avaliação removida.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

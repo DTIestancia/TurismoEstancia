@@ -38,7 +38,7 @@ public class EventosController : PainelController
 
         await _eventos.SalvarAsync(dto, ct);
         TempData["PainelOk"] = "Evento salvo.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
@@ -61,7 +61,7 @@ public class EventosController : PainelController
 
         await _eventos.SalvarAsync(dto, ct);
         TempData["PainelOk"] = "Evento atualizado.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     [HttpPost]
@@ -70,6 +70,6 @@ public class EventosController : PainelController
     {
         await _eventos.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Evento excluído.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

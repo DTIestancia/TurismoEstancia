@@ -142,7 +142,7 @@ public class ConteudosController : PainelController
             if (antigoId.HasValue)
                 await _arquivos.ExcluirAsync(antigoId.Value, ct);
             TempData["PainelOk"] = "Texto salvo.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -178,7 +178,7 @@ public class ConteudosController : PainelController
             if (antigoId.HasValue)
                 await _arquivos.ExcluirAsync(antigoId.Value, ct);
             TempData["PainelOk"] = "Texto atualizado.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -265,6 +265,6 @@ public class ConteudosController : PainelController
     {
         await _conteudos.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Texto excluído.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

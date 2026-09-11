@@ -21,10 +21,6 @@
             @Html.Raw(mapaDesc.Replace("\n", "<br />"))
         </p>
 
-        <div class="map-filter-bar reveal reveal-delay-1" style="margin-bottom: 1rem;" id="mapFilterBar">
-            <!-- Filter buttons generated dynamically from JS -->
-        </div>
-
         <div class="custom-map reveal-scale mt-4 @(Model.MapaImagemArquivoIdMobile is long ? "custom-map--has-mobile" : "")" id="estanciaMap" aria-label="Mapa Interativo de Estância com as 7 Maravilhas">
             @if (Model.MapaImagemArquivoId is long mapaId)
             {

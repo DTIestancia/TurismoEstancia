@@ -39,7 +39,7 @@ public class ContatosController : PainelController
         }
         await _contatos.SalvarAsync(dto, ct);
         TempData["PainelOk"] = "Contato salvo.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
@@ -63,7 +63,7 @@ public class ContatosController : PainelController
         }
         await _contatos.SalvarAsync(dto, ct);
         TempData["PainelOk"] = "Contato atualizado.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     /// <summary>
@@ -109,6 +109,6 @@ public class ContatosController : PainelController
     {
         await _contatos.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Contato excluído.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

@@ -17,10 +17,11 @@
         <span asp-validation-for="Titulo" class="field-validation-error"></span>
     </div>
 
-    <div class="painel-field">
-        <label asp-for="Descricao"></label>
-        <textarea asp-for="Descricao" class="painel-textarea"></textarea>
-    </div>
+        <div class="painel-field">
+            <label asp-for="Descricao"></label>
+            <textarea asp-for="Descricao" class="painel-textarea" maxlength="500" rows="4" placeholder="Resumo do evento (máximo 500 caracteres)"></textarea>
+            <span asp-validation-for="Descricao" class="field-validation-error"></span>
+        </div>
 
     <div class="painel-field">
         <label asp-for="Local"></label>

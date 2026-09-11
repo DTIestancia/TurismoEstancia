@@ -40,7 +40,7 @@ public class CategoriasController : PainelController
         {
             await _categorias.SalvarAsync(dto, ct);
             TempData["PainelOk"] = "Categoria salva com sucesso.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -110,7 +110,7 @@ public class CategoriasController : PainelController
         {
             await _categorias.SalvarAsync(dto, ct);
             TempData["PainelOk"] = "Categoria atualizada com sucesso.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -132,6 +132,6 @@ public class CategoriasController : PainelController
         {
             TempData["PainelErro"] = ex.Message;
         }
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

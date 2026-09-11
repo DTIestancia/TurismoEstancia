@@ -14,6 +14,8 @@ using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
 using TurismoEstancia.Services.CulturaGastronomia.Services;
 using TurismoEstancia.Services.Galeria.Interfaces;
 using TurismoEstancia.Services.Galeria.Services;
+using TurismoEstancia.Services.Planeje.Interfaces;
+using TurismoEstancia.Services.Planeje.Services;
 using TurismoEstancia.Services.Infra.Interfaces;
 using TurismoEstancia.Services.Infra.Services;
 using TurismoEstancia.Services.Roteiro.Interfaces;
@@ -64,6 +66,9 @@ public static class BusinessServiceExtensions
 
         // Módulo Roteiro
         builder.Services.AddScoped<IRoteiroService, RoteiroService>();
+
+        // Módulo Planeje sua viagem
+        builder.Services.AddScoped<IPlanejeService, PlanejeService>();
 
         // Módulo Avaliacao
         builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();

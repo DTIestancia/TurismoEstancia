@@ -31,7 +31,7 @@ public class TagsCulturaisController : PainelController
         if (!ModelState.IsValid) return View(dto);
         await _tags.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Tag cultural salva.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
@@ -49,7 +49,7 @@ public class TagsCulturaisController : PainelController
         if (!ModelState.IsValid) return View(dto);
         await _tags.SalvarAsync(dto, imagem, ct);
         TempData["PainelOk"] = "Tag cultural atualizada.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     [HttpPost]
@@ -58,6 +58,6 @@ public class TagsCulturaisController : PainelController
     {
         await _tags.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Tag cultural excluída.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

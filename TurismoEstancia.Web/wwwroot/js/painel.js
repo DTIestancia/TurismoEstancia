@@ -196,6 +196,23 @@ window.InicializarMapaPonto = function (opts) {
 };
 
 // ===== Modal de cadastro (telas de lista → formulário embutido) =====
+// Dentro do iframe (?embutido=1), marca todos os forms com o campo oculto
+// para o POST preservar o modo e o redirect voltar com ?embutido=1 — sem
+// isso o iframe renderizaria a lista com layout completo após salvar.
+(function preservarEmbutidoNosForms() {
+  try {
+    if (new URLSearchParams(window.location.search).get('embutido') !== '1') return;
+    document.querySelectorAll('form').forEach(function (form) {
+      if (form.querySelector('input[name="embutido"]')) return;
+      var hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = 'embutido';
+      hidden.value = '1';
+      form.appendChild(hidden);
+    });
+  } catch (e) { /* sem querystring — nada a preservar */ }
+})();
+
 // Botões .js-abrir-criar (data-url) abrem o dialog com o formulário de Criar
 // num iframe (?embutido=1, sem sidebar/topbar). Ao salvar, o iframe avisa via
 // postMessage e o modal recarrega a página para a lista mostrar o item novo.
@@ -256,11 +273,17 @@ document.addEventListener('keydown', function (e) {
   }
 });
 
-// Depois de salvar dentro do iframe, recarrega a página para a lista atualizar.
+// Depois de salvar dentro do iframe, fecha o modal e recarrega a página
+// para a lista mostrar o item novo. O reload espera a animação de saída
+// do dialog (180ms) terminar.
 window.addEventListener('message', function (e) {
   if (e.data === 'painel-salvo') {
-    fecharCriarDialog();
-    window.location.reload();
+    if (typeof window.FecharDialogPainel === 'function') {
+      window.FecharDialogPainel('criarDialog');
+      setTimeout(function () { window.location.reload(); }, 220);
+    } else {
+      window.location.reload();
+    }
   }
 });
 

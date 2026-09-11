@@ -49,7 +49,7 @@ public class NoticiasController : PainelController
         {
             await _noticias.SalvarAsync(dto, imagem, ct);
             TempData["PainelOk"] = "Notícia salva.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -77,7 +77,7 @@ public class NoticiasController : PainelController
         {
             await _noticias.SalvarAsync(dto, imagem, ct);
             TempData["PainelOk"] = "Notícia atualizada.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -92,7 +92,7 @@ public class NoticiasController : PainelController
     {
         await _noticias.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Notícia excluída.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     /// <summary>Categorias ativas da galeria para o select "Galeria relacionada".</summary>

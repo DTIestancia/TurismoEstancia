@@ -48,7 +48,7 @@ public class TemaController : PainelController
         if (vm.Rosa is not null) await SalvarCorAsync(TemaViewModel.ChaveRosa, "Cor rosa (tema)", vm.Rosa, ct);
 
         TempData["PainelOk"] = "Tema atualizado. As mudanças já valem no portal, no painel e no login.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     [HttpPost]
@@ -60,7 +60,7 @@ public class TemaController : PainelController
             await _configuracoes.ExcluirAsync(item.Id, ct);
 
         TempData["PainelOk"] = "Paleta oficial restaurada.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     private static readonly string[] Cores =

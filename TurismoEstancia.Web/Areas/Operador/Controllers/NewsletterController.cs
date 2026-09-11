@@ -28,7 +28,7 @@ public class NewsletterController : OperadorController
     {
         await _newsletter.InativarAsync(id, ct);
         TempData["PainelOk"] = "Inscrição inativada.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     [HttpPost]
@@ -37,6 +37,6 @@ public class NewsletterController : OperadorController
     {
         await _newsletter.ReativarAsync(id, ct);
         TempData["PainelOk"] = "Inscrição reativada.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

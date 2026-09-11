@@ -43,7 +43,7 @@ public class ConfiguracoesController : PainelController
         {
             await _configuracoes.SalvarAsync(dto, arquivo, ct);
             TempData["PainelOk"] = "Configuração salva.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -75,7 +75,7 @@ public class ConfiguracoesController : PainelController
         {
             await _configuracoes.SalvarAsync(dto, arquivo, ct);
             TempData["PainelOk"] = "Configuração atualizada.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -121,6 +121,6 @@ public class ConfiguracoesController : PainelController
     {
         await _configuracoes.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Configuração excluída.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 }

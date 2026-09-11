@@ -70,7 +70,7 @@ public class PontosTuristicosController : PainelController
         {
             await _pontos.SalvarAsync(dto, capa, pictograma, galeria, ct);
             TempData["PainelOk"] = "Ponto turístico salvo.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -121,7 +121,7 @@ public class PontosTuristicosController : PainelController
         {
             await _pontos.SalvarAsync(dto, capa, pictograma, galeria, ct);
             TempData["PainelOk"] = "Ponto turístico atualizado.";
-            return RedirectToAction(nameof(Index));
+            return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
         {
@@ -137,7 +137,7 @@ public class PontosTuristicosController : PainelController
     {
         await _pontos.ExcluirAsync(id, ct);
         TempData["PainelOk"] = "Ponto turístico desativado.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     [HttpPost]
@@ -146,7 +146,7 @@ public class PontosTuristicosController : PainelController
     {
         await _pontos.ReativarAsync(id, ct);
         TempData["PainelOk"] = "Ponto turístico reativado.";
-        return RedirectToAction(nameof(Index));
+        return RedirecionarParaIndex();
     }
 
     [HttpPost]

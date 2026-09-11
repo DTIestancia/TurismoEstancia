@@ -37,6 +37,9 @@ public class AppDbContext : DbContext
     public DbSet<GaleriaCategoria> GaleriaCategorias => Set<GaleriaCategoria>();
     public DbSet<GaleriaMidia> GaleriaMidias => Set<GaleriaMidia>();
     public DbSet<ConhecaEstanciaItem> ConhecaEstanciaItens => Set<ConhecaEstanciaItem>();
+    public DbSet<PlanejeCategoria> PlanejeCategorias => Set<PlanejeCategoria>();
+    public DbSet<PlanejeItem> PlanejeItens => Set<PlanejeItem>();
+    public DbSet<PlanejeAvaliacao> PlanejeAvaliacoes => Set<PlanejeAvaliacao>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -65,6 +68,9 @@ public class AppDbContext : DbContext
         ConfigureGaleriaCategoria(modelBuilder);
         ConfigureGaleriaMidia(modelBuilder);
         ConfigureConhecaEstanciaItem(modelBuilder);
+        ConfigurePlanejeCategoria(modelBuilder);
+        ConfigurePlanejeItem(modelBuilder);
+        ConfigurePlanejeAvaliacao(modelBuilder);
     }
 
     /// <summary>
@@ -497,6 +503,68 @@ public class AppDbContext : DbContext
 
             // Ordenação das abas da seção "Conheça Estância".
             entity.HasIndex(e => new { e.Categoria, e.Ordem });
+        });
+    }
+
+    private static void ConfigurePlanejeCategoria(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PlanejeCategoria>(entity =>
+        {
+            entity.Property(e => e.Nome).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Descricao).HasMaxLength(500);
+            entity.Property(e => e.Icone).HasMaxLength(50);
+            entity.Property(e => e.Cor).HasMaxLength(20);
+            entity.Property(e => e.Ativo).HasDefaultValue(true);
+
+            // Imagem padrão compartilhada (Arquivo): SetNull.
+            entity.HasOne(e => e.ImagemPadrao)
+                  .WithMany()
+                  .HasForeignKey(e => e.ImagemPadraoArquivoId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+    }
+
+    private static void ConfigurePlanejeItem(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PlanejeItem>(entity =>
+        {
+            entity.Property(e => e.Titulo).HasMaxLength(180).IsRequired();
+            entity.Property(e => e.Descricao).HasMaxLength(2000);
+            entity.Property(e => e.Localizacao).HasMaxLength(255);
+            entity.Property(e => e.Contato).HasMaxLength(100);
+            entity.Property(e => e.Site).HasMaxLength(255);
+            entity.Property(e => e.Instagram).HasMaxLength(255);
+            entity.Property(e => e.Ativo).HasDefaultValue(true);
+
+            entity.HasOne(e => e.Categoria)
+                  .WithMany(c => c.Itens)
+                  .HasForeignKey(e => e.CategoriaId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.Imagem)
+                  .WithMany()
+                  .HasForeignKey(e => e.ImagemArquivoId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(e => new { e.CategoriaId, e.Ordem });
+        });
+    }
+
+    private static void ConfigurePlanejeAvaliacao(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PlanejeAvaliacao>(entity =>
+        {
+            entity.Property(e => e.Nome).HasMaxLength(150);
+            entity.Property(e => e.Nota).HasDefaultValue(5);
+            entity.Property(e => e.Comentario).HasMaxLength(1000).IsRequired();
+            entity.Property(e => e.Data).HasDefaultValueSql("GETDATE()");
+            entity.Property(e => e.Aprovada).HasDefaultValue(false);
+
+            // Filho próprio: Cascade.
+            entity.HasOne(e => e.PlanejeItem)
+                  .WithMany(i => i.Avaliacoes)
+                  .HasForeignKey(e => e.PlanejeItemId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
