@@ -3632,3 +3632,78 @@ img.paginas-galeria-card-img {
 
 // --- Estado vazio do deck (sem itens, sem foto de fundo) ---
 .conheca-empty { color: #4b5563; }
+
+// ===== Padrão claro: correções de especificidade =====
+// As regras-base aninhadas (.pai .filho, 0,2,0+) vencem seletores simples;
+// abaixo os mesmos ajustes com o pai explícito — no empate, vale a última.
+.section-roteiros .roteiro-card-title { color: var(--color-azure-7); }
+.section-roteiros .roteiro-card-desc { color: #4b5563; }
+.page-public .news-card-title { color: var(--color-azure-7); }
+.page-public .news-card-resumo { color: #4b5563; }
+.page-public .paginas-card-title { color: var(--color-azure-7); }
+.page-public .paginas-card-desc { color: #4b5563; }
+.page-public .news-article-body { color: #4b5563; }
+.page-public .news-article-resumo { color: #4b5563; }
+.page-public .news-article-title { color: var(--color-azure-7); }
+.page-public .news-article-body strong { color: var(--color-azure-7); }
+.page-public .news-article-body h2,
+.page-public .news-article-body h3,
+.page-public .news-article-body h4 { color: var(--color-azure-7); }
+.page-public .news-article-body blockquote { background: #f8fafc; color: #4b5563; }
+.page-public .news-galeria { border-top-color: #e5e7eb; }
+.page-public .news-article .news-galeria .news-galeria-titulo { color: var(--color-azure-7); }
+.page-public .news-article .news-galeria .galeria-item-mais-rotulo { color: #6b7280; }
+.page-public .galeria-item-mais {
+  background: #ffffff;
+  color: var(--color-azure-7);
+  border: 1px solid #e5e7eb;
+}
+.page-public .roteiro-item-info p { color: #4b5563; }
+.page-public .roteiro-item-info strong { color: var(--color-azure-7); }
+.page-public .lugar-descricao, .page-public .lugar-detalhe { color: #4b5563; }
+.page-public .lugar-info-text { color: #4b5563; }
+.page-public .lugar-info-title { color: #6b7280; }
+.page-public .lugar-info-link { color: #B45309; }
+.page-public .lugar-horario-dia { color: var(--color-azure-7); }
+.page-public .lugar-horario-valor { color: #4b5563; }
+.page-public .lugar-horario-item.is-fechado .lugar-horario-valor { color: #DC2626; }
+.page-public .lugar-avaliacao-head { color: var(--color-azure-7); }
+.page-public .lugar-avaliacao-comentario { color: #4b5563; }
+.page-public .lugar-bloco-title { color: var(--color-azure-7); }
+.page-public .lugar-roteiro p { color: #4b5563; }
+.page-public .lugar-roteiro strong { color: var(--color-azure-7); }
+.page-public .paginas-cidade-card-text { color: #4b5563; }
+.page-public .paginas-cidade-card .paginas-cidade-card-header .cursive { color: color-mix(in srgb, var(--color-orange-48) 80%, #000); }
+.page-public .paginas-cidade-card .paginas-cidade-card-header .stars { color: #D97706; }
+.page-public .paginas-cidade-card .paginas-cidade-card-quote { color: #B45309; }
+.page-public .paginas-cidade-text .paginas-cidade-title { color: var(--color-azure-7); }
+.page-public .paginas-cidade-text .paginas-cidade-desc { color: #4b5563; }
+.page-public .paginas-cidade-text .cursive { color: color-mix(in srgb, var(--color-orange-48) 80%, #000); }
+.page-public .paginas-cultura-intro .paginas-cultura-text .cursive { color: color-mix(in srgb, var(--color-orange-48) 80%, #000); }
+.page-public .paginas-cultura-intro .paginas-cultura-text p { color: #4b5563; }
+.page-public .paginas-cultura-intro .paginas-cultura-text .paginas-cidade-title { color: var(--color-azure-7); }
+.page-public .paginas-cultura-intro .paginas-cultura-text .paginas-cultura-extra { color: #6b7280; }
+.page-public .paginas-cultura-intro .paginas-cultura-quote { color: #B45309; }
+.page-public .paginas-gastro-main { color: #4b5563; }
+.page-public .paginas-galeria-cards .paginas-galeria-card-body h3 { color: var(--color-azure-7); }
+.page-public .paginas-galeria-cards .paginas-galeria-card-body p { color: #4b5563; }
+.page-public .paginas-galeria-cards .paginas-galeria-card-img--placeholder { color: #9ca3af; }
+.modal-avaliacao-item .modal-avaliacao-head { color: var(--color-azure-7); }
+.modal-avaliacao-item .modal-avaliacao-comentario { color: #4b5563; }
+.modal-avaliacoes .modal-avaliacoes-title { color: var(--color-azure-7); }
+.avaliacao-form .avaliacao-form-title { color: var(--color-azure-7); }
+.avaliacao-form .avaliacao-textarea,
+.avaliacao-form .avaliacao-input {
+  background: #ffffff;
+  border-color: #d1d5db;
+  color: var(--color-azure-7);
+}
+.avaliacao-form .avaliacao-nota { color: #d1d5db; }
+.paginacao .paginacao-item, .paginacao .paginacao-seta {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  color: #4b5563;
+}
+.paginacao .paginacao-item:hover, .paginacao .paginacao-seta:hover { color: var(--color-azure-7); }
+.paginacao .paginacao-reticencias { color: #9ca3af; }
+.error-page .error-message { color: #4b5563; }
