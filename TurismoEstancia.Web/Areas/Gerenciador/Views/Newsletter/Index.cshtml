@@ -79,18 +79,22 @@
                             <div class="painel-actions" style="justify-content:flex-end;">
                                 @if (item.Ativo)
                                 {
-                                    <form asp-action="Inativar" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Inativar a inscrição de @item.Email?">
+                                    <form asp-action="Inativar" asp-route-id="@item.Id" asp-route-busca="@ViewData["Busca"]" asp-route-pagina="@ViewData["PaginaAtual"]" method="post" class="js-confirm" data-confirm="Inativar a inscrição de @item.Email?">
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="user-x"></i> Inativar</button>
                                     </form>
                                 }
                                 else
                                 {
-                                    <form asp-action="Reativar" asp-route-id="@item.Id" method="post">
+                                    <form asp-action="Reativar" asp-route-id="@item.Id" asp-route-busca="@ViewData["Busca"]" asp-route-pagina="@ViewData["PaginaAtual"]" method="post">
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn-painel btn-painel--ghost btn-painel--xs"><i data-lucide="user-check"></i> Reativar</button>
                                     </form>
                                 }
+                                <form asp-action="Excluir" asp-route-id="@item.Id" asp-route-busca="@ViewData["Busca"]" asp-route-pagina="@ViewData["PaginaAtual"]" method="post" class="js-confirm" data-confirm="Excluir DEFINITIVAMENTE a inscrição de @item.Email? (LGPD: eliminação total)">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs" title="Excluir definitivamente"><i data-lucide="trash-2"></i></button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -143,6 +147,8 @@
 
         <form method="post" asp-action="EnviarDisparo" class="painel-form">
             @Html.AntiForgeryToken()
+            <input type="hidden" name="busca" value="@ViewData["Busca"]" />
+            <input type="hidden" name="pagina" value="@ViewData["PaginaAtual"]" />
             <div class="painel-field">
                 <label for="Assunto">Assunto</label>
                 <input id="Assunto" name="Assunto" class="painel-input" maxlength="120" placeholder="Ex.: Programação cultural de setembro" required />

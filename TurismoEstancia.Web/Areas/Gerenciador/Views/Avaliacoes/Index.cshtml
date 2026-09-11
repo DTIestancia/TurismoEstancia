@@ -1,11 +1,17 @@
-@model IReadOnlyList<AvaliacaoDto>
+@model IReadOnlyList<AvaliacaoGerenciadorViewModel>
 @{
     ViewData["Title"] = "Avaliações";
+    var origem = ViewData["OrigemAtual"] as string;
+    var totalPontos = (int)(ViewData["TotalPontos"] ?? 0);
+    var totalPlaneje = (int)(ViewData["TotalPlaneje"] ?? 0);
+    var paginaAtual = (int)(ViewData["PaginaAtual"] ?? 1);
+    var baseUrl = Url.Action("Index", "Avaliacoes");
+    string UrlOrigem(string? o) => o is null ? baseUrl! : $"{baseUrl}?origem={o}";
 }
 <div class="painel-page-header">
     <div>
         <h1 class="painel-page-title">Avaliações</h1>
-        <p class="painel-page-desc">Avaliações enviadas pelo portal. Aprove para publicar no modal do mapa.</p>
+        <p class="painel-page-desc">Moderação unificada: pontos turísticos (mapa) e "Planeje sua viagem". Aprove para publicar no portal.</p>
     </div>
     @if ((int)(ViewData["PendentesAvaliacoes"] ?? 0) > 0)
     {
@@ -15,12 +21,19 @@
     }
 </div>
 
+<div class="painel-periodo" style="margin-bottom:16px;">
+    <a class="@(origem is null ? "active" : "")" href="@UrlOrigem(null)">Todas (@(totalPontos + totalPlaneje))</a>
+    <a class="@(origem == "ponto" ? "active" : "")" href="@UrlOrigem("ponto")">Pontos (@totalPontos)</a>
+    <a class="@(origem == "planeje" ? "active" : "")" href="@UrlOrigem("planeje")">Planeje (@totalPlaneje)</a>
+</div>
+
 <div class="painel-card">
     <div class="painel-table-wrap">
         <table class="painel-table">
             <thead>
                 <tr>
-                    <th>Ponto</th>
+                    <th>Origem</th>
+                    <th>Local</th>
                     <th>Visitante</th>
                     <th>Nota</th>
                     <th>Comentário</th>
@@ -32,9 +45,15 @@
             <tbody>
                 @foreach (var item in Model)
                 {
+                    var ehPlaneje = item.Origem == "planeje";
                     <tr>
-                        <td><strong>@(item.PontoTuristicoNome ?? $"Ponto #{item.PontoTuristicoId}")</strong></td>
-                        <td>@item.Nome</td>
+                        <td>
+                            <span class="painel-badge @(ehPlaneje ? "painel-badge--orange" : "")">
+                                @(ehPlaneje ? "Planeje" : "Ponto")
+                            </span>
+                        </td>
+                        <td><strong>@item.Local</strong></td>
+                        <td>@item.Visitante</td>
                         <td style="color:#FCBB0F;">@(new string('★', item.Nota))<span style="color:var(--color-white--25);">@(new string('★', 5 - item.Nota))</span></td>
                         <td style="max-width:280px;">@(item.Comentario ?? "—")</td>
                         <td>@item.Data.ToString("dd/MM/yyyy HH:mm")</td>
@@ -47,12 +66,12 @@
                             <div class="painel-actions" style="justify-content:flex-end;">
                                 @if (!item.Aprovada)
                                 {
-                                    <form asp-action="Aprovar" asp-route-id="@item.Id" method="post">
+                                    <form asp-action="@(ehPlaneje ? "AprovarPlaneje" : "Aprovar")" asp-route-id="@item.Id" asp-route-origem="@origem" asp-route-pagina="@paginaAtual" method="post">
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn-painel btn-painel--ghost btn-painel--xs"><i data-lucide="check"></i> Aprovar</button>
                                     </form>
                                 }
-                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Remover esta avaliação?">
+                                <form asp-action="@(ehPlaneje ? "ExcluirPlaneje" : "Excluir")" asp-route-id="@item.Id" asp-route-origem="@origem" asp-route-pagina="@paginaAtual" method="post" class="js-confirm" data-confirm="Remover esta avaliação?">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
                                 </form>
@@ -71,9 +90,9 @@
     {
         @await Html.PartialAsync("_Paginacao", new PaginacaoViewModel
         {
-            PaginaAtual = (int)(ViewData["PaginaAtual"] ?? 1),
+            PaginaAtual = paginaAtual,
             TotalPaginas = (int)(ViewData["PaginasTotal"] ?? 1),
-            UrlBase = Url.Action("Index", "Avaliacoes")
+            UrlBase = origem is null ? baseUrl : $"{baseUrl}?origem={origem}"
         })
     }
 </div>

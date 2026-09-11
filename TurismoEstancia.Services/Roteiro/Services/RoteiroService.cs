@@ -120,6 +120,22 @@ public class RoteiroService : IRoteiroService
             await _arquivos.ExcluirAsync(imagemId.Value, ct);
     }
 
+    public async Task OcultarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.Roteiros.FirstOrDefaultAsync(r => r.Id == id, ct)
+            ?? throw new InvalidOperationException("Roteiro não encontrado.");
+        entidade.Ativo = false;
+        await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task ReativarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.Roteiros.FirstOrDefaultAsync(r => r.Id == id, ct)
+            ?? throw new InvalidOperationException("Roteiro não encontrado.");
+        entidade.Ativo = true;
+        await _db.SaveChangesAsync(ct);
+    }
+
     private async Task CarregarItensAsync(IEnumerable<RoteiroDto> roteiros, CancellationToken ct)
     {
         var ids = roteiros.Select(r => r.Id).ToList();

@@ -20,6 +20,7 @@ public class TagsCulturaisController : PainelController
 
     public async Task<IActionResult> Criar(CancellationToken ct)
     {
+        ViewData["Title"] = "Nova tag cultural";
         ViewData["AreaAtiva"] = "cultura";
         return View(new TagCulturalDto());
     }
@@ -29,9 +30,17 @@ public class TagsCulturaisController : PainelController
     public async Task<IActionResult> Criar(TagCulturalDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _tags.SalvarAsync(dto, imagem, ct);
-        TempData["PainelOk"] = "Tag cultural salva.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _tags.SalvarAsync(dto, imagem, ct);
+            TempData["PainelOk"] = "Tag cultural salva.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            return View(dto);
+        }
     }
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
@@ -47,8 +56,48 @@ public class TagsCulturaisController : PainelController
     public async Task<IActionResult> Editar(TagCulturalDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _tags.SalvarAsync(dto, imagem, ct);
-        TempData["PainelOk"] = "Tag cultural atualizada.";
+        try
+        {
+            await _tags.SalvarAsync(dto, imagem, ct);
+            TempData["PainelOk"] = "Tag cultural atualizada.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            return View(dto);
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Ocultar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _tags.OcultarAsync(id, ct);
+            TempData["PainelOk"] = "Tag cultural ocultada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _tags.ReativarAsync(id, ct);
+            TempData["PainelOk"] = "Tag cultural reativada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 
@@ -56,8 +105,15 @@ public class TagsCulturaisController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
-        await _tags.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Tag cultural excluída.";
+        try
+        {
+            await _tags.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Tag cultural excluída.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 }

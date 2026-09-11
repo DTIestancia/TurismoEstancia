@@ -12,6 +12,12 @@ public interface IEventoService
 
     Task SalvarAsync(EventoDto dto, CancellationToken ct = default);
 
+    /// <summary>Oculta o evento do portal (Ativo = false).</summary>
+    Task OcultarAsync(int id, CancellationToken ct = default);
+
+    Task ReativarAsync(int id, CancellationToken ct = default);
+
+    /// <summary>Exclusão definitiva do evento.</summary>
     Task ExcluirAsync(int id, CancellationToken ct = default);
 
     /// <summary>Gera o conteúdo do arquivo .ics do evento para importação em calendários.</summary>

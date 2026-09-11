@@ -17,6 +17,16 @@ document.addEventListener('submit', function (e) {
   }
 });
 
+// Confirmação por botão (ex.: Restaurar paleta sem confirmar o Salvar junto).
+document.addEventListener('click', function (e) {
+  var botao = e.target.closest && e.target.closest('[data-confirmar]');
+  if (!botao) return;
+  if (!window.confirm(botao.getAttribute('data-confirmar') || 'Tem certeza?')) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+});
+
 // ===== Preview ao vivo de texto (Textos do portal) =====
 // Renderiza o texto como o portal faz: quebras de linha viram <br> e tags
 // conhecidas (<strong>, <em>, <br>) passam como HTML. O resto é escapado.
@@ -85,28 +95,7 @@ window.InicializarCampoIcone = function (inputId, previewId, chipsId, tipoId) {
   if (!input || !preview) return;
 
   function atualizarPreview() {
-    var nome = (input.value || '').trim().toLowerCase();
-    if (!nome) {
-      preview.innerHTML = '<span class="painel-icone-preview-vazio" aria-hidden="true">?</span>';
-      preview.title = '';
-      return;
-    }
-    if (ICONES_MARCA[nome]) {
-      preview.innerHTML = ICONES_MARCA[nome];
-      preview.title = nome;
-      return;
-    }
-    if (window.lucide) {
-      // Mesmo mecanismo do portal: <i data-lucide> + createIcons() escopado ao preview.
-      preview.innerHTML = '<i data-lucide="' + nome + '"></i>';
-      lucide.createIcons({ nameAttr: 'data-lucide' }, preview);
-      if (!preview.querySelector('i[data-lucide]')) {
-        preview.title = nome;
-        return;
-      }
-    }
-    preview.innerHTML = '<span class="painel-icone-preview-invalido" aria-hidden="true">!</span>';
-    preview.title = 'Ícone "' + nome + '" não encontrado. Use um nome Lucide ou uma rede social.';
+    window.AtualizarPreviewIcone(input, preview);
   }
 
   function marcarAtivo() {
@@ -150,6 +139,173 @@ window.InicializarCampoIcone = function (inputId, previewId, chipsId, tipoId) {
   montarChips();
   atualizarPreview();
 };
+
+// Prévia de um nome de ícone (Lucide ou marca) num elemento — reutilizada
+// pelo campo de Contatos e pelo seletor visual de ícones.
+window.AtualizarPreviewIcone = function (input, preview) {
+  var nome = ((input && input.value) || '').trim().toLowerCase();
+  if (!nome) {
+    preview.innerHTML = '<span class="painel-icone-preview-vazio" aria-hidden="true">?</span>';
+    preview.title = '';
+    return;
+  }
+  if (ICONES_MARCA[nome]) {
+    preview.innerHTML = ICONES_MARCA[nome];
+    preview.title = nome;
+    return;
+  }
+  if (window.lucide) {
+    // Mesmo mecanismo do portal: <i data-lucide> + createIcons() escopado ao preview.
+    preview.innerHTML = '<i data-lucide="' + nome + '"></i>';
+    lucide.createIcons({ nameAttr: 'data-lucide' }, preview);
+    if (!preview.querySelector('i[data-lucide]')) {
+      preview.title = nome;
+      return;
+    }
+  }
+  preview.innerHTML = '<span class="painel-icone-preview-invalido" aria-hidden="true">!</span>';
+  preview.title = 'Ícone "' + nome + '" não encontrado. Escolha um na lista.';
+};
+
+// Liga a prévia ao vivo num campo de ícone simples (sem chips por tipo).
+window.InicializarSeletorIcone = function (inputId, previewId) {
+  var input = document.getElementById(inputId);
+  var preview = document.getElementById(previewId);
+  if (!input || !preview || !window.AtualizarPreviewIcone) return;
+  input.addEventListener('input', function () { window.AtualizarPreviewIcone(input, preview); });
+  window.AtualizarPreviewIcone(input, preview);
+};
+
+// ===== Seletor visual de ícones (modal) =====
+// Catálogo curado de ícones Lucide por grupo + marcas de redes sociais.
+// Nomes inválidos na versão atual do Lucide são ocultados automaticamente
+// após o createIcons (o <i data-lucide> não substituído denuncia).
+var SELETOR_ICONE_GRUPOS = [
+  { grupo: 'Lugares', icones: ['map-pin', 'landmark', 'church', 'castle', 'building-2', 'home', 'school', 'hospital', 'ticket', 'flag'] },
+  { grupo: 'Hospedagem', icones: ['hotel', 'bed-double', 'bed-single', 'building', 'wifi', 'coffee'] },
+  { grupo: 'Comida', icones: ['utensils', 'utensils-crossed', 'pizza', 'fish', 'beer', 'wine', 'shopping-bag', 'store'] },
+  { grupo: 'Transporte', icones: ['bus', 'car', 'bike', 'ship', 'sailboat', 'anchor', 'plane', 'train', 'fuel'] },
+  { grupo: 'Natureza', icones: ['trees', 'tree-pine', 'mountain', 'mountain-snow', 'waves', 'sun', 'shell', 'bird', 'leaf', 'tent'] },
+  { grupo: 'Cultura e eventos', icones: ['music', 'guitar', 'mic', 'palette', 'camera', 'film', 'calendar', 'calendar-days', 'party-popper', 'theater', 'drama', 'sparkles', 'star', 'heart', 'gem', 'crown'] },
+  { grupo: 'Serviços', icones: ['phone', 'mail', 'clock', 'info', 'globe', 'compass', 'navigation', 'life-buoy', 'credit-card', 'send', 'bell', 'megaphone', 'shield', 'users', 'accessibility'] }
+];
+var SELETOR_ICONE_MARCAS = ['instagram', 'facebook', 'youtube', 'whatsapp', 'tiktok', 'x', 'linkedin'];
+
+var seletorIconeTarget = null;
+var seletorIconeMontado = false;
+var seletorIconeGrupo = '';
+
+function seletorIconeDialog() { return document.getElementById('seletorIconeDialog'); }
+
+function montarSeletorIcone() {
+  var dialog = seletorIconeDialog();
+  var grade = document.getElementById('seletorIconeGrade');
+  var grupos = document.getElementById('seletorIconeGrupos');
+  if (!dialog || !grade || seletorIconeMontado) return;
+  seletorIconeMontado = true;
+
+  function chip(rotulo, valor) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'painel-icone-grupo' + (valor === seletorIconeGrupo ? ' active' : '');
+    btn.textContent = rotulo;
+    btn.setAttribute('data-grupo', valor);
+    btn.addEventListener('click', function () {
+      seletorIconeGrupo = valor;
+      grupos.querySelectorAll('.painel-icone-grupo').forEach(function (c) {
+        c.classList.toggle('active', c.getAttribute('data-grupo') === valor);
+      });
+      filtrarSeletorIcone();
+    });
+    grupos.appendChild(btn);
+  }
+
+  if (grupos) {
+    chip('Todos', '');
+    SELETOR_ICONE_GRUPOS.forEach(function (g) { chip(g.grupo, g.grupo); });
+    chip('Redes sociais', 'Redes sociais');
+  }
+
+  SELETOR_ICONE_GRUPOS.forEach(function (g) {
+    g.icones.forEach(function (nome) {
+      grade.appendChild(opcaoSeletorIcone(nome, g.grupo, false));
+    });
+  });
+  SELETOR_ICONE_MARCAS.forEach(function (nome) {
+    grade.appendChild(opcaoSeletorIcone(nome, 'Redes sociais', true));
+  });
+
+  if (window.lucide) lucide.createIcons({ nameAttr: 'data-lucide' }, grade);
+  // Oculta nomes que esta versão do Lucide não conhece.
+  grade.querySelectorAll('.painel-icone-opcao').forEach(function (btn) {
+    if (!btn.hasAttribute('data-marca') && btn.querySelector('i[data-lucide]')) btn.style.display = 'none';
+  });
+
+  var busca = document.getElementById('seletorIconeBusca');
+  if (busca) busca.addEventListener('input', filtrarSeletorIcone);
+}
+
+function opcaoSeletorIcone(nome, grupo, marca) {
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'painel-icone-opcao';
+  btn.setAttribute('data-icone', nome);
+  btn.setAttribute('data-grupo', grupo);
+  btn.setAttribute('role', 'option');
+  btn.title = nome;
+  if (marca) {
+    btn.setAttribute('data-marca', '1');
+    btn.innerHTML = (typeof ICONES_MARCA !== 'undefined' && ICONES_MARCA[nome] ? ICONES_MARCA[nome] : '') + '<span>' + nome + '</span>';
+  } else {
+    btn.innerHTML = '<i data-lucide="' + nome + '"></i><span>' + nome + '</span>';
+  }
+  btn.addEventListener('click', function () {
+    if (seletorIconeTarget && seletorIconeTarget.input) {
+      seletorIconeTarget.input.value = nome;
+      seletorIconeTarget.input.dispatchEvent(new Event('input', { bubbles: true }));
+      if (seletorIconeTarget.preview && window.AtualizarPreviewIcone) {
+        window.AtualizarPreviewIcone(seletorIconeTarget.input, seletorIconeTarget.preview);
+      }
+    }
+    var dialog = seletorIconeDialog();
+    if (dialog && typeof dialog.close === 'function') dialog.close();
+  });
+  return btn;
+}
+
+function filtrarSeletorIcone() {
+  var grade = document.getElementById('seletorIconeGrade');
+  var busca = document.getElementById('seletorIconeBusca');
+  if (!grade) return;
+  var termo = ((busca && busca.value) || '').trim().toLowerCase();
+  grade.querySelectorAll('.painel-icone-opcao').forEach(function (btn) {
+    if (btn.style.display === 'none' && !btn.hasAttribute('data-marca')) return;
+    var nome = btn.getAttribute('data-icone') || '';
+    var okGrupo = !seletorIconeGrupo || btn.getAttribute('data-grupo') === seletorIconeGrupo;
+    var okBusca = !termo || nome.indexOf(termo) >= 0;
+    btn.classList.toggle('is-oculto', !(okGrupo && okBusca));
+  });
+}
+
+window.AbrirSeletorIcone = function (inputId, previewId) {
+  var input = document.getElementById(inputId);
+  if (!input) return;
+  seletorIconeTarget = { input: input, preview: previewId ? document.getElementById(previewId) : null };
+  montarSeletorIcone();
+  var busca = document.getElementById('seletorIconeBusca');
+  if (busca) busca.value = '';
+  filtrarSeletorIcone();
+  var dialog = seletorIconeDialog();
+  if (dialog && typeof dialog.showModal === 'function') dialog.showModal();
+};
+
+// Botões "Escolher" (data-escolher-icone="IdDoInput", opcional data-preview="IdDoPreview").
+document.addEventListener('click', function (e) {
+  var botao = e.target.closest && e.target.closest('[data-escolher-icone]');
+  if (!botao || !window.AbrirSeletorIcone) return;
+  window.AbrirSeletorIcone(botao.getAttribute('data-escolher-icone'), botao.getAttribute('data-preview'));
+  e.preventDefault();
+});
 
 // ===== Mapa interativo de posicionamento (Pontos turísticos) =====
 // O usuário clica no mapa para posicionar o marcador; as porcentagens X/Y

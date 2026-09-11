@@ -28,9 +28,17 @@ public class GruposCulturaisController : PainelController
     public async Task<IActionResult> Criar(GrupoCulturalDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _grupos.SalvarAsync(dto, imagem, ct);
-        TempData["PainelOk"] = "Grupo cultural salvo.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _grupos.SalvarAsync(dto, imagem, ct);
+            TempData["PainelOk"] = "Grupo cultural salvo.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            return View(dto);
+        }
     }
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
@@ -45,8 +53,48 @@ public class GruposCulturaisController : PainelController
     public async Task<IActionResult> Editar(GrupoCulturalDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _grupos.SalvarAsync(dto, imagem, ct);
-        TempData["PainelOk"] = "Grupo cultural atualizado.";
+        try
+        {
+            await _grupos.SalvarAsync(dto, imagem, ct);
+            TempData["PainelOk"] = "Grupo cultural atualizado.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            return View(dto);
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Ocultar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _grupos.OcultarAsync(id, ct);
+            TempData["PainelOk"] = "Grupo cultural ocultado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _grupos.ReativarAsync(id, ct);
+            TempData["PainelOk"] = "Grupo cultural reativado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 
@@ -54,8 +102,15 @@ public class GruposCulturaisController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
-        await _grupos.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Grupo cultural excluído.";
+        try
+        {
+            await _grupos.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Grupo cultural excluído.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 }

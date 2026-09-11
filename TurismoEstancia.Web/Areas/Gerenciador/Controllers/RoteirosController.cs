@@ -20,6 +20,7 @@ public class RoteirosController : PainelController
 
     public async Task<IActionResult> Criar(CancellationToken ct)
     {
+        ViewData["Title"] = "Novo roteiro";
         ViewData["AreaAtiva"] = "roteiros";
         return View(new RoteiroDto());
     }
@@ -70,10 +71,49 @@ public class RoteirosController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Ocultar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _roteiros.OcultarAsync(id, ct);
+            TempData["PainelOk"] = "Roteiro ocultado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _roteiros.ReativarAsync(id, ct);
+            TempData["PainelOk"] = "Roteiro reativado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
-        await _roteiros.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Roteiro excluído.";
+        try
+        {
+            await _roteiros.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Roteiro excluído.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 }

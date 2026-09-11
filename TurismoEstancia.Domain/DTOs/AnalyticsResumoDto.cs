@@ -48,4 +48,7 @@ public class AnalyticsContagemDto
 {
     public string Rotulo { get; set; } = "";
     public int Quantidade { get; set; }
+
+    /// <summary>Thumbnail da foto (só nos rankings de fotos da galeria).</summary>
+    public long? ArquivoThumbId { get; set; }
 }

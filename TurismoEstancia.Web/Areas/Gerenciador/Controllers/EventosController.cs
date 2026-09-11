@@ -36,9 +36,17 @@ public class EventosController : PainelController
             return View(dto);
         }
 
-        await _eventos.SalvarAsync(dto, ct);
-        TempData["PainelOk"] = "Evento salvo.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _eventos.SalvarAsync(dto, ct);
+            TempData["PainelOk"] = "Evento salvo.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            return View(dto);
+        }
     }
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
@@ -59,8 +67,48 @@ public class EventosController : PainelController
             return View(dto);
         }
 
-        await _eventos.SalvarAsync(dto, ct);
-        TempData["PainelOk"] = "Evento atualizado.";
+        try
+        {
+            await _eventos.SalvarAsync(dto, ct);
+            TempData["PainelOk"] = "Evento atualizado.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            return View(dto);
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Ocultar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _eventos.OcultarAsync(id, ct);
+            TempData["PainelOk"] = "Evento ocultado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _eventos.ReativarAsync(id, ct);
+            TempData["PainelOk"] = "Evento reativado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 
@@ -68,8 +116,15 @@ public class EventosController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
-        await _eventos.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Evento excluído.";
+        try
+        {
+            await _eventos.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Evento excluído.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 }

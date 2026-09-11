@@ -37,9 +37,18 @@ public class EstatisticasController : PainelController
             await PreencherLegendasAsync(ViewData, ct);
             return View(dto);
         }
-        await _estatisticas.SalvarAsync(dto, ct);
-        TempData["PainelOk"] = "Estatística salva.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _estatisticas.SalvarAsync(dto, ct);
+            TempData["PainelOk"] = "Estatística salva.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            await PreencherLegendasAsync(ViewData, ct);
+            return View(dto);
+        }
     }
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
@@ -61,9 +70,18 @@ public class EstatisticasController : PainelController
             await PreencherLegendasAsync(ViewData, ct, dto.Legenda);
             return View(dto);
         }
-        await _estatisticas.SalvarAsync(dto, ct);
-        TempData["PainelOk"] = "Estatística atualizada.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _estatisticas.SalvarAsync(dto, ct);
+            TempData["PainelOk"] = "Estatística atualizada.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            await PreencherLegendasAsync(ViewData, ct, dto.Legenda);
+            return View(dto);
+        }
     }
 
     /// <summary>
@@ -92,10 +110,49 @@ public class EstatisticasController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Ocultar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _estatisticas.OcultarAsync(id, ct);
+            TempData["PainelOk"] = "Estatística ocultada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _estatisticas.ReativarAsync(id, ct);
+            TempData["PainelOk"] = "Estatística reativada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
-        await _estatisticas.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Estatística excluída.";
+        try
+        {
+            await _estatisticas.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Estatística excluída.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 }

@@ -1,6 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
+    <None Include="Properties\PublishProfiles\pacote_pss.pubxml.user" />
+    <None Include="Properties\PublishProfiles\webserver01iis.pubxml.user" />
+    <None Include="Properties\PublishProfiles\webserver02iis.pubxml.user" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TurismoEstancia.Domain\TurismoEstancia.Domain.csproj" />
     <ProjectReference Include="..\TurismoEstancia.Services\TurismoEstancia.Services.csproj" />
     <ProjectReference Include="..\TurismoEstancia.Authorization\TurismoEstancia.Authorization.csproj" />

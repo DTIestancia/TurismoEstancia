@@ -35,6 +35,7 @@ public class NoticiasController : PainelController
 
     public async Task<IActionResult> Criar(CancellationToken ct)
     {
+        ViewData["Title"] = "Nova notícia";
         ViewData["AreaAtiva"] = "noticias";
         await PreencherGaleriaAsync(ViewData, ct);
         return View(new NoticiaDto { DataPublicacao = DateTime.Now });
@@ -44,7 +45,11 @@ public class NoticiasController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Criar(NoticiaDto dto, IFormFile? imagem, CancellationToken ct)
     {
-        if (!ModelState.IsValid) return View(dto);
+        if (!ModelState.IsValid)
+        {
+            await PreencherGaleriaAsync(ViewData, ct);
+            return View(dto);
+        }
         try
         {
             await _noticias.SalvarAsync(dto, imagem, ct);
@@ -54,6 +59,7 @@ public class NoticiasController : PainelController
         catch (InvalidOperationException ex)
         {
             TempData["PainelErro"] = ex.Message;
+            await PreencherGaleriaAsync(ViewData, ct);
             return View(dto);
         }
     }
@@ -72,7 +78,11 @@ public class NoticiasController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Editar(NoticiaDto dto, IFormFile? imagem, CancellationToken ct)
     {
-        if (!ModelState.IsValid) return View(dto);
+        if (!ModelState.IsValid)
+        {
+            await PreencherGaleriaAsync(ViewData, ct);
+            return View(dto);
+        }
         try
         {
             await _noticias.SalvarAsync(dto, imagem, ct);
@@ -82,17 +92,57 @@ public class NoticiasController : PainelController
         catch (InvalidOperationException ex)
         {
             TempData["PainelErro"] = ex.Message;
+            await PreencherGaleriaAsync(ViewData, ct);
             return View(dto);
         }
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Excluir(int id, CancellationToken ct)
+    public async Task<IActionResult> Ocultar(int id, int pagina, CancellationToken ct)
     {
-        await _noticias.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Notícia excluída.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _noticias.OcultarAsync(id, ct);
+            TempData["PainelOk"] = "Notícia ocultada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirectToAction(nameof(Index), new { pagina });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reativar(int id, int pagina, CancellationToken ct)
+    {
+        try
+        {
+            await _noticias.ReativarAsync(id, ct);
+            TempData["PainelOk"] = "Notícia reativada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirectToAction(nameof(Index), new { pagina });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Excluir(int id, int pagina, CancellationToken ct)
+    {
+        try
+        {
+            await _noticias.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Notícia excluída.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirectToAction(nameof(Index), new { pagina });
     }
 
     /// <summary>Categorias ativas da galeria para o select "Galeria relacionada".</summary>

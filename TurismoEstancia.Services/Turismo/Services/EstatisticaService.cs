@@ -68,4 +68,20 @@ public class EstatisticaService : IEstatisticaService
         _db.Estatisticas.Remove(entidade);
         await _db.SaveChangesAsync(ct);
     }
+
+    public async Task OcultarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.Estatisticas.FirstOrDefaultAsync(e => e.Id == id, ct)
+            ?? throw new InvalidOperationException("Estatística não encontrada.");
+        entidade.Ativo = false;
+        await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task ReativarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.Estatisticas.FirstOrDefaultAsync(e => e.Id == id, ct)
+            ?? throw new InvalidOperationException("Estatística não encontrada.");
+        entidade.Ativo = true;
+        await _db.SaveChangesAsync(ct);
+    }
 }

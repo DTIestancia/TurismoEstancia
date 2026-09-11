@@ -83,6 +83,22 @@ public class EventoService : IEventoService
         await _db.SaveChangesAsync(ct);
     }
 
+    public async Task OcultarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.Eventos.FirstOrDefaultAsync(e => e.Id == id, ct)
+            ?? throw new InvalidOperationException("Evento não encontrado.");
+        entidade.Ativo = false;
+        await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task ReativarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.Eventos.FirstOrDefaultAsync(e => e.Id == id, ct)
+            ?? throw new InvalidOperationException("Evento não encontrado.");
+        entidade.Ativo = true;
+        await _db.SaveChangesAsync(ct);
+    }
+
     public async Task<string> GerarIcsAsync(int id, CancellationToken ct = default)
     {
         var evento = await _db.Eventos.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id, ct)

@@ -28,9 +28,17 @@ public class ConhecaEstanciaController : PainelController
     public async Task<IActionResult> Criar(ConhecaEstanciaItemDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _conheca.SalvarAsync(dto, imagem, ct);
-        TempData["PainelOk"] = "Item salvo no Conheça Estância.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _conheca.SalvarAsync(dto, imagem, ct);
+            TempData["PainelOk"] = "Item salvo no Conheça Estância.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            return View(dto);
+        }
     }
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
@@ -45,8 +53,48 @@ public class ConhecaEstanciaController : PainelController
     public async Task<IActionResult> Editar(ConhecaEstanciaItemDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _conheca.SalvarAsync(dto, imagem, ct);
-        TempData["PainelOk"] = "Item atualizado.";
+        try
+        {
+            await _conheca.SalvarAsync(dto, imagem, ct);
+            TempData["PainelOk"] = "Item atualizado.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            return View(dto);
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Ocultar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _conheca.OcultarAsync(id, ct);
+            TempData["PainelOk"] = "Item ocultado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _conheca.ReativarAsync(id, ct);
+            TempData["PainelOk"] = "Item reativado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 
@@ -54,8 +102,15 @@ public class ConhecaEstanciaController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
-        await _conheca.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Item excluído do Conheça Estância.";
-        return RedirectToAction(nameof(Index));
+        try
+        {
+            await _conheca.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Item excluído do Conheça Estância.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
     }
 }

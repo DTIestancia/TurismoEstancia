@@ -84,10 +84,49 @@ public class PlanejeItensController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Ocultar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _planeje.OcultarItemAsync(id, ct);
+            TempData["PainelOk"] = "Local ocultado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _planeje.ReativarItemAsync(id, ct);
+            TempData["PainelOk"] = "Local reativado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
-        await _planeje.ExcluirItemAsync(id, ct);
-        TempData["PainelOk"] = "Local excluído.";
+        try
+        {
+            await _planeje.ExcluirItemAsync(id, ct);
+            TempData["PainelOk"] = "Local excluído.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 }

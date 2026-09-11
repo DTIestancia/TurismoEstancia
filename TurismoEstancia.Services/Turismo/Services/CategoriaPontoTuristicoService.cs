@@ -108,10 +108,26 @@ public class CategoriaPontoTuristicoService : ICategoriaPontoTuristicoService
         if (await _db.PontosTuristicos.AnyAsync(p => p.CategoriaId == id && p.Ativo, ct))
             throw new InvalidOperationException("Não é possível excluir: existem pontos turísticos ativos nesta categoria.");
 
-        var iconeId = entidade.IconeArquivoId;
-        _db.CategoriasPontosTuristicos.Remove(entidade);
+            var iconeId = entidade.IconeArquivoId;
+            _db.CategoriasPontosTuristicos.Remove(entidade);
+            await _db.SaveChangesAsync(ct);
+            if (iconeId.HasValue)
+                await _arquivos.ExcluirAsync(iconeId.Value, ct);
+        }
+
+    public async Task OcultarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.CategoriasPontosTuristicos.FirstOrDefaultAsync(c => c.Id == id, ct)
+            ?? throw new InvalidOperationException("Categoria não encontrada.");
+        entidade.Ativo = false;
         await _db.SaveChangesAsync(ct);
-        if (iconeId.HasValue)
-            await _arquivos.ExcluirAsync(iconeId.Value, ct);
+    }
+
+    public async Task ReativarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.CategoriasPontosTuristicos.FirstOrDefaultAsync(c => c.Id == id, ct)
+            ?? throw new InvalidOperationException("Categoria não encontrada.");
+        entidade.Ativo = true;
+        await _db.SaveChangesAsync(ct);
     }
 }

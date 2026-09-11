@@ -89,10 +89,26 @@ public class TagCulturalService : ITagCulturalService
     {
         var entidade = await _db.TagsCulturais.FirstOrDefaultAsync(t => t.Id == id, ct)
             ?? throw new InvalidOperationException("Tag cultural não encontrada.");
-        var imagemId = entidade.ImagemArquivoId;
-        _db.TagsCulturais.Remove(entidade);
+            var imagemId = entidade.ImagemArquivoId;
+            _db.TagsCulturais.Remove(entidade);
+            await _db.SaveChangesAsync(ct);
+            if (imagemId.HasValue)
+                await _arquivos.ExcluirAsync(imagemId.Value, ct);
+        }
+
+    public async Task OcultarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.TagsCulturais.FirstOrDefaultAsync(t => t.Id == id, ct)
+            ?? throw new InvalidOperationException("Tag cultural não encontrada.");
+        entidade.Ativo = false;
         await _db.SaveChangesAsync(ct);
-        if (imagemId.HasValue)
-            await _arquivos.ExcluirAsync(imagemId.Value, ct);
+    }
+
+    public async Task ReativarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.TagsCulturais.FirstOrDefaultAsync(t => t.Id == id, ct)
+            ?? throw new InvalidOperationException("Tag cultural não encontrada.");
+        entidade.Ativo = true;
+        await _db.SaveChangesAsync(ct);
     }
 }

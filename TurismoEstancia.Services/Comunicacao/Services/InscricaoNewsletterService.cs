@@ -87,6 +87,14 @@ public class InscricaoNewsletterService : IInscricaoNewsletterService
         await _db.SaveChangesAsync(ct);
     }
 
+    public async Task ExcluirAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.InscricoesNewsletter.FirstOrDefaultAsync(i => i.Id == id, ct)
+            ?? throw new InvalidOperationException("Inscrição não encontrada.");
+        _db.InscricoesNewsletter.Remove(entidade);
+        await _db.SaveChangesAsync(ct);
+    }
+
     public async Task<byte[]> ExportarCsvAsync(CancellationToken ct = default)
     {
         var inscricoes = await _db.InscricoesNewsletter.AsNoTracking()

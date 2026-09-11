@@ -185,7 +185,7 @@ public class PontoTuristicoService : IPontoTuristicoService
             await _arquivos.ExcluirAsync(id, ct);
     }
 
-    public async Task ExcluirAsync(int id, CancellationToken ct = default)
+    public async Task OcultarAsync(int id, CancellationToken ct = default)
     {
         var entidade = await _db.PontosTuristicos.FirstOrDefaultAsync(p => p.Id == id, ct)
             ?? throw new InvalidOperationException("Ponto turístico não encontrado.");
@@ -199,6 +199,32 @@ public class PontoTuristicoService : IPontoTuristicoService
             ?? throw new InvalidOperationException("Ponto turístico não encontrado.");
         entidade.Ativo = true;
         await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task ExcluirAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.PontosTuristicos.FirstOrDefaultAsync(p => p.Id == id, ct)
+            ?? throw new InvalidOperationException("Ponto turístico não encontrado.");
+
+        if (await _db.RoteiroItens.AnyAsync(r => r.PontoTuristicoId == id, ct))
+            throw new InvalidOperationException("Este ponto está vinculado a um roteiro. Desative-o em vez de excluir.");
+
+        // Arquivos exclusivos do ponto (as linhas de mídia somem em Cascade,
+        // mas os binários precisam de exclusão explícita).
+        var arquivosParaExcluir = await _db.PontoTuristicoMidias.AsNoTracking()
+            .Where(m => m.PontoTuristicoId == id)
+            .Select(m => m.ArquivoId)
+            .ToListAsync(ct);
+        if (entidade.IconeArquivoId.HasValue)
+            arquivosParaExcluir.Add(entidade.IconeArquivoId.Value);
+
+        _db.PontosTuristicos.Remove(entidade);
+        await _db.SaveChangesAsync(ct);
+
+        // Só remove os binários DEPOIS do commit (senão a checagem de
+        // referência Restrict das mídias impediria a exclusão).
+        foreach (var arquivoId in arquivosParaExcluir.Distinct())
+            await _arquivos.ExcluirAsync(arquivoId, ct);
     }
 
     public async Task AtualizarPosicaoAsync(int id, int leftPercent, int topPercent, CancellationToken ct = default)

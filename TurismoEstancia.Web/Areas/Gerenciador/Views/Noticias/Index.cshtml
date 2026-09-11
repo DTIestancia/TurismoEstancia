@@ -59,11 +59,25 @@
                                         <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
                                     </svg>
                                 </button>
-                                <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-page="/Noticias/Detalhe" asp-route-slug="@item.Slug" target="_blank" title="Ver no portal"><i data-lucide="eye"></i></a>
+                                <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-page="/Noticias/Detalhe" asp-route-slug="@item.Slug" target="_blank" rel="noopener" title="Ver no portal"><i data-lucide="eye"></i></a>
                                 <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Editar" asp-route-id="@item.Id"><i data-lucide="pencil"></i> Editar</a>
-                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir a notícia '@item.Titulo'?">
+                                @if (item.Ativo)
+                                {
+                                    <form asp-action="Ocultar" asp-route-id="@item.Id" asp-route-pagina="@ViewData["PaginaAtual"]" method="post" class="js-confirm" data-confirm="Ocultar a notícia '@item.Titulo'? Ela sai do portal, mas pode ser reativada.">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-painel btn-painel--ghost btn-painel--xs" title="Ocultar"><i data-lucide="eye-off"></i></button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="Reativar" asp-route-id="@item.Id" asp-route-pagina="@ViewData["PaginaAtual"]" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-painel btn-painel--ghost btn-painel--xs" title="Reativar"><i data-lucide="eye"></i></button>
+                                    </form>
+                                }
+                                <form asp-action="Excluir" asp-route-id="@item.Id" asp-route-pagina="@ViewData["PaginaAtual"]" method="post" class="js-confirm" data-confirm="Excluir DEFINITIVAMENTE a notícia '@item.Titulo'? A imagem de capa será apagada.">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
+                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs" title="Excluir definitivamente"><i data-lucide="trash-2"></i></button>
                                 </form>
                             </div>
                         </td>

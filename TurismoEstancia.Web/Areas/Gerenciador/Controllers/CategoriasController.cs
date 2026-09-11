@@ -103,6 +103,7 @@ public class CategoriasController : PainelController
     {
         if (!ModelState.IsValid)
         {
+            await PreencherChavesAsync(ViewData, ct, dto.Chave);
             return View(dto);
         }
 
@@ -115,8 +116,41 @@ public class CategoriasController : PainelController
         catch (InvalidOperationException ex)
         {
             TempData["PainelErro"] = ex.Message;
+            await PreencherChavesAsync(ViewData, ct, dto.Chave);
             return View(dto);
         }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Ocultar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _categorias.OcultarAsync(id, ct);
+            TempData["PainelOk"] = "Categoria ocultada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _categorias.ReativarAsync(id, ct);
+            TempData["PainelOk"] = "Categoria reativada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
     }
 
     [HttpPost]

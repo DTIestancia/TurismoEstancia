@@ -137,12 +137,31 @@ public class NoticiaService : INoticiaService
             await _arquivos.ExcluirAsync(id, ct);
     }
 
-    public async Task ExcluirAsync(int id, CancellationToken ct = default)
+    public async Task OcultarAsync(int id, CancellationToken ct = default)
     {
         var entidade = await _db.Noticias.FirstOrDefaultAsync(n => n.Id == id, ct)
             ?? throw new InvalidOperationException("Notícia não encontrada.");
         entidade.Ativo = false;
         await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task ReativarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.Noticias.FirstOrDefaultAsync(n => n.Id == id, ct)
+            ?? throw new InvalidOperationException("Notícia não encontrada.");
+        entidade.Ativo = true;
+        await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task ExcluirAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.Noticias.FirstOrDefaultAsync(n => n.Id == id, ct)
+            ?? throw new InvalidOperationException("Notícia não encontrada.");
+        var imagemId = entidade.ImagemArquivoId;
+        _db.Noticias.Remove(entidade);
+        await _db.SaveChangesAsync(ct);
+        if (imagemId.HasValue)
+            await _arquivos.ExcluirAsync(imagemId.Value, ct);
     }
 
     public async Task<string> GerarSlugAsync(string titulo, int? ignorarId = null, CancellationToken ct = default)

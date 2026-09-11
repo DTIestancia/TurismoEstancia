@@ -2,12 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using TurismoEstancia.Domain.Data;
 using TurismoEstancia.Domain.DTOs;
-using TurismoEstancia.Domain.Models;
 using TurismoEstancia.Services.Infra.Interfaces;
 using TurismoEstancia.Services.Planeje.Interfaces;
+using PlanejeAvaliacaoEntity = TurismoEstancia.Domain.Models.PlanejeAvaliacao;
 using PlanejeCategoriaEntity = TurismoEstancia.Domain.Models.PlanejeCategoria;
 using PlanejeItemEntity = TurismoEstancia.Domain.Models.PlanejeItem;
-using PlanejeAvaliacaoEntity = TurismoEstancia.Domain.Models.PlanejeAvaliacao;
 
 namespace TurismoEstancia.Services.Planeje.Services;
 
@@ -134,6 +133,22 @@ public class PlanejeService : IPlanejeService
             await _arquivos.ExcluirAsync(imagemId.Value, ct);
     }
 
+    public async Task OcultarCategoriaAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.PlanejeCategorias.FirstOrDefaultAsync(c => c.Id == id, ct)
+            ?? throw new InvalidOperationException("Categoria não encontrada.");
+        entidade.Ativo = false;
+        await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task ReativarCategoriaAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.PlanejeCategorias.FirstOrDefaultAsync(c => c.Id == id, ct)
+            ?? throw new InvalidOperationException("Categoria não encontrada.");
+        entidade.Ativo = true;
+        await _db.SaveChangesAsync(ct);
+    }
+
     public async Task<IReadOnlyList<PlanejeItemDto>> ListarItensAsync(bool apenasAtivos = true, CancellationToken ct = default) =>
         await _db.PlanejeItens.AsNoTracking()
             .Include(i => i.Categoria)
@@ -210,6 +225,22 @@ public class PlanejeService : IPlanejeService
             await _arquivos.ExcluirAsync(imagemId.Value, ct);
     }
 
+    public async Task OcultarItemAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.PlanejeItens.FirstOrDefaultAsync(i => i.Id == id, ct)
+            ?? throw new InvalidOperationException("Item não encontrado.");
+        entidade.Ativo = false;
+        await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task ReativarItemAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.PlanejeItens.FirstOrDefaultAsync(i => i.Id == id, ct)
+            ?? throw new InvalidOperationException("Item não encontrado.");
+        entidade.Ativo = true;
+        await _db.SaveChangesAsync(ct);
+    }
+
     public async Task<IReadOnlyList<PlanejeAvaliacaoDto>> ListarAvaliacoesAsync(int itemId, bool apenasAprovadas = true, CancellationToken ct = default)
     {
         var query = _db.PlanejeAvaliacoes.AsNoTracking().Where(a => a.PlanejeItemId == itemId);
@@ -220,6 +251,13 @@ public class PlanejeService : IPlanejeService
             .Select(ToAvaliacaoDto)
             .ToListAsync(ct);
     }
+
+    public async Task<IReadOnlyList<PlanejeAvaliacaoDto>> ListarTodasAvaliacoesAsync(CancellationToken ct = default) =>
+        await _db.PlanejeAvaliacoes.AsNoTracking()
+            .Include(a => a.PlanejeItem)
+            .OrderByDescending(a => a.Data)
+            .Select(ToAvaliacaoDto)
+            .ToListAsync(ct);
 
     public async Task<IReadOnlyList<PlanejeAvaliacaoDto>> ListarPendentesAsync(CancellationToken ct = default) =>
         await _db.PlanejeAvaliacoes.AsNoTracking()

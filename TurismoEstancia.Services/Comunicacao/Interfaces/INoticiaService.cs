@@ -15,7 +15,12 @@ public interface INoticiaService
 
     Task SalvarAsync(NoticiaDto dto, IFormFile? imagem, CancellationToken ct = default);
 
-    /// <summary>Exclusão lógica (Ativo = false).</summary>
+    /// <summary>Oculta a notícia do portal (Ativo = false).</summary>
+    Task OcultarAsync(int id, CancellationToken ct = default);
+
+    Task ReativarAsync(int id, CancellationToken ct = default);
+
+    /// <summary>Exclusão definitiva da notícia (remove também a imagem de capa).</summary>
     Task ExcluirAsync(int id, CancellationToken ct = default);
 
     /// <summary>Gera um slug único a partir do título.</summary>

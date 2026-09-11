@@ -76,8 +76,15 @@ public class SecoesController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SalvarHero(AreaSiteViewModel vm, CancellationToken ct)
     {
-        await SalvarAsync(vm, ct);
-        TempData["PainelOk"] = "Hero atualizado.";
+        try
+        {
+            await SalvarAsync(vm, ct);
+            TempData["PainelOk"] = "Hero atualizado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirectToAction(nameof(Hero));
     }
 
@@ -98,8 +105,15 @@ public class SecoesController : PainelController
             Nome = "Vídeo institucional",
             Tipo = TipoConfiguracao.Arquivo
         };
-        await _configuracoes.SalvarAsync(dto, arquivo, ct);
-        TempData["PainelOk"] = "Vídeo institucional atualizado.";
+        try
+        {
+            await _configuracoes.SalvarAsync(dto, arquivo, ct);
+            TempData["PainelOk"] = "Vídeo institucional atualizado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirectToAction(nameof(Hero));
     }
 
@@ -120,8 +134,15 @@ public class SecoesController : PainelController
             Nome = "Vídeo do hero — mobile",
             Tipo = TipoConfiguracao.Arquivo
         };
-        await _configuracoes.SalvarAsync(dto, arquivo, ct);
-        TempData["PainelOk"] = "Vídeo mobile atualizado.";
+        try
+        {
+            await _configuracoes.SalvarAsync(dto, arquivo, ct);
+            TempData["PainelOk"] = "Vídeo mobile atualizado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirectToAction(nameof(Hero));
     }
 
@@ -132,8 +153,15 @@ public class SecoesController : PainelController
         var atual = await _configuracoes.ObterPorChaveAsync("video-institucional-mobile", ct);
         if (atual is not null)
         {
-            await _configuracoes.ExcluirAsync(atual.Id, ct);
-            TempData["PainelOk"] = "Vídeo mobile removido — o hero usará o vídeo desktop no celular.";
+            try
+            {
+                await _configuracoes.ExcluirAsync(atual.Id, ct);
+                TempData["PainelOk"] = "Vídeo mobile removido — o hero usará o vídeo desktop no celular.";
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["PainelErro"] = ex.Message;
+            }
         }
         return RedirectToAction(nameof(Hero));
     }
@@ -145,8 +173,15 @@ public class SecoesController : PainelController
         var atual = await _configuracoes.ObterPorChaveAsync("video-institucional", ct);
         if (atual is not null)
         {
-            await _configuracoes.ExcluirAsync(atual.Id, ct);
-            TempData["PainelOk"] = "Vídeo do hero removido.";
+            try
+            {
+                await _configuracoes.ExcluirAsync(atual.Id, ct);
+                TempData["PainelOk"] = "Vídeo do hero removido.";
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["PainelErro"] = ex.Message;
+            }
         }
         return RedirectToAction(nameof(Hero));
     }
@@ -172,8 +207,15 @@ public class SecoesController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SalvarCidade(AreaSiteViewModel vm, CancellationToken ct)
     {
-        await SalvarAsync(vm, ct);
-        TempData["PainelOk"] = "Nossa Cidade atualizada.";
+        try
+        {
+            await SalvarAsync(vm, ct);
+            TempData["PainelOk"] = "Nossa Cidade atualizada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirectToAction(nameof(Cidade));
     }
 
@@ -205,8 +247,15 @@ public class SecoesController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SalvarConheca(AreaSiteViewModel vm, CancellationToken ct)
     {
-        await SalvarAsync(vm, ct);
-        TempData["PainelOk"] = "Conheça Estância atualizada.";
+        try
+        {
+            await SalvarAsync(vm, ct);
+            TempData["PainelOk"] = "Conheça Estância atualizado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirectToAction(nameof(Conheca));
     }
 
@@ -240,8 +289,15 @@ public class SecoesController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SalvarMaravilhas(AreaSiteViewModel vm, CancellationToken ct)
     {
-        await SalvarAsync(vm, ct);
-        TempData["PainelOk"] = "7 Maravilhas atualizada.";
+        try
+        {
+            await SalvarAsync(vm, ct);
+            TempData["PainelOk"] = "7 Maravilhas atualizadas.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirectToAction(nameof(Maravilhas));
     }
 
@@ -274,8 +330,15 @@ public class SecoesController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SalvarAgenda(AreaSiteViewModel vm, CancellationToken ct)
     {
-        await SalvarAsync(vm, ct);
-        TempData["PainelOk"] = "Agenda atualizada.";
+        try
+        {
+            await SalvarAsync(vm, ct);
+            TempData["PainelOk"] = "Agenda atualizada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirectToAction(nameof(Agenda));
     }
 
@@ -307,8 +370,15 @@ public class SecoesController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SalvarNoticias(AreaSiteViewModel vm, CancellationToken ct)
     {
-        await SalvarAsync(vm, ct);
-        TempData["PainelOk"] = "Notícias atualizada.";
+        try
+        {
+            await SalvarAsync(vm, ct);
+            TempData["PainelOk"] = "Notícias atualizadas.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirectToAction(nameof(Noticias));
     }
 
@@ -336,7 +406,7 @@ public class SecoesController : PainelController
         vm.Links =
         [
             new LinkArea { Titulo = "Categorias do Planeje", Descricao = "Filtros da seção: Onde ficar, Onde comer, Serviços...", Url = Url.Action("Index", "PlanejeCategorias", new { area = "Gerenciador" }) ?? "/Gerenciador/PlanejeCategorias", Icone = "tags" },
-            new LinkArea { Titulo = "Avaliações do Planeje", Descricao = "Moderação das avaliações dos cards.", Url = Url.Action("Index", "PlanejeAvaliacoes", new { area = "Gerenciador" }) ?? "/Gerenciador/PlanejeAvaliacoes", Icone = "star" }
+            new LinkArea { Titulo = "Avaliações do Planeje", Descricao = "Moderação unificada (filtro Planeje).", Url = Url.Action("Index", "Avaliacoes", new { area = "Gerenciador", origem = "planeje" }) ?? "/Gerenciador/Avaliacoes?origem=planeje", Icone = "star" }
         ];
         return View("Editar", vm);
     }
@@ -345,8 +415,15 @@ public class SecoesController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SalvarRoteiros(AreaSiteViewModel vm, CancellationToken ct)
     {
-        await SalvarAsync(vm, ct);
-        TempData["PainelOk"] = "Roteiros atualizada.";
+        try
+        {
+            await SalvarAsync(vm, ct);
+            TempData["PainelOk"] = "Planeje sua viagem atualizada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirectToAction(nameof(Roteiros));
     }
 
@@ -392,21 +469,28 @@ public class SecoesController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SalvarMapa(AreaSiteViewModel vm, CancellationToken ct)
     {
-        await SalvarAsync(vm, ct);
-        // Ajuste de zoom/posição da imagem do mapa (desktop + mobile)
-        var zoom = Request.Form.TryGetValue("MapaImagemZoom", out var zv) && int.TryParse(zv, out var zi) && zi is >= 100 and <= 250 ? zi.ToString() : "100";
-        var posX = Request.Form.TryGetValue("MapaImagemPosX", out var xv) && int.TryParse(xv, out var xi) && xi is >= 0 and <= 100 ? xi.ToString() : "50";
-        var posY = Request.Form.TryGetValue("MapaImagemPosY", out var yv) && int.TryParse(yv, out var yi) && yi is >= 0 and <= 100 ? yi.ToString() : "50";
-        await _conteudos.SalvarPorChaveAsync("mapa-imagem-zoom", "Mapa — zoom da imagem", zoom, ct);
-        await _conteudos.SalvarPorChaveAsync("mapa-imagem-pos-x", "Mapa — posição X", posX, ct);
-        await _conteudos.SalvarPorChaveAsync("mapa-imagem-pos-y", "Mapa — posição Y", posY, ct);
-        var zoomM = Request.Form.TryGetValue("MapaImagemZoomMobile", out var zvm) && int.TryParse(zvm, out var zim) && zim is >= 100 and <= 250 ? zim.ToString() : "100";
-        var posXM = Request.Form.TryGetValue("MapaImagemPosXMobile", out var xvm) && int.TryParse(xvm, out var xim) && xim is >= 0 and <= 100 ? xim.ToString() : "50";
-        var posYM = Request.Form.TryGetValue("MapaImagemPosYMobile", out var yvm) && int.TryParse(yvm, out var yim) && yim is >= 0 and <= 100 ? yim.ToString() : "50";
-        await _conteudos.SalvarPorChaveAsync("mapa-imagem-zoom-mobile", "Mapa — zoom mobile", zoomM, ct);
-        await _conteudos.SalvarPorChaveAsync("mapa-imagem-pos-x-mobile", "Mapa — posição X mobile", posXM, ct);
-        await _conteudos.SalvarPorChaveAsync("mapa-imagem-pos-y-mobile", "Mapa — posição Y mobile", posYM, ct);
-        TempData["PainelOk"] = "Mapa atualizado.";
+        try
+        {
+            await SalvarAsync(vm, ct);
+            // Ajuste de zoom/posição da imagem do mapa (desktop + mobile)
+            var zoom = Request.Form.TryGetValue("MapaImagemZoom", out var zv) && int.TryParse(zv, out var zi) && zi is >= 100 and <= 250 ? zi.ToString() : "100";
+            var posX = Request.Form.TryGetValue("MapaImagemPosX", out var xv) && int.TryParse(xv, out var xi) && xi is >= 0 and <= 100 ? xi.ToString() : "50";
+            var posY = Request.Form.TryGetValue("MapaImagemPosY", out var yv) && int.TryParse(yv, out var yi) && yi is >= 0 and <= 100 ? yi.ToString() : "50";
+            await _conteudos.SalvarPorChaveAsync("mapa-imagem-zoom", "Mapa — zoom da imagem", zoom, ct);
+            await _conteudos.SalvarPorChaveAsync("mapa-imagem-pos-x", "Mapa — posição X", posX, ct);
+            await _conteudos.SalvarPorChaveAsync("mapa-imagem-pos-y", "Mapa — posição Y", posY, ct);
+            var zoomM = Request.Form.TryGetValue("MapaImagemZoomMobile", out var zvm) && int.TryParse(zvm, out var zim) && zim is >= 100 and <= 250 ? zim.ToString() : "100";
+            var posXM = Request.Form.TryGetValue("MapaImagemPosXMobile", out var xvm) && int.TryParse(xvm, out var xim) && xim is >= 0 and <= 100 ? xim.ToString() : "50";
+            var posYM = Request.Form.TryGetValue("MapaImagemPosYMobile", out var yvm) && int.TryParse(yvm, out var yim) && yim is >= 0 and <= 100 ? yim.ToString() : "50";
+            await _conteudos.SalvarPorChaveAsync("mapa-imagem-zoom-mobile", "Mapa — zoom mobile", zoomM, ct);
+            await _conteudos.SalvarPorChaveAsync("mapa-imagem-pos-x-mobile", "Mapa — posição X mobile", posXM, ct);
+            await _conteudos.SalvarPorChaveAsync("mapa-imagem-pos-y-mobile", "Mapa — posição Y mobile", posYM, ct);
+            TempData["PainelOk"] = "Mapa atualizado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirectToAction(nameof(Mapa));
     }
 
@@ -441,8 +525,15 @@ public class SecoesController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SalvarRodape(AreaSiteViewModel vm, CancellationToken ct)
     {
-        await SalvarAsync(vm, ct);
-        TempData["PainelOk"] = "Rodapé atualizado.";
+        try
+        {
+            await SalvarAsync(vm, ct);
+            TempData["PainelOk"] = "Rodapé atualizado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirectToAction(nameof(Rodape));
     }
 

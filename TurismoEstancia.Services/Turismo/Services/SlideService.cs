@@ -94,4 +94,20 @@ public class SlideService : ISlideService
         await _db.SaveChangesAsync(ct);
         await _arquivos.ExcluirAsync(arquivoId, ct);
     }
+
+    public async Task OcultarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.Slides.FirstOrDefaultAsync(s => s.Id == id, ct)
+            ?? throw new InvalidOperationException("Slide não encontrado.");
+        entidade.Ativo = false;
+        await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task ReativarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.Slides.FirstOrDefaultAsync(s => s.Id == id, ct)
+            ?? throw new InvalidOperationException("Slide não encontrado.");
+        entidade.Ativo = true;
+        await _db.SaveChangesAsync(ct);
+    }
 }

@@ -147,6 +147,22 @@ public class GaleriaService : IGaleriaService
             await _arquivos.ExcluirAsync(capaId.Value, ct);
     }
 
+    public async Task OcultarCategoriaAsync(int id, CancellationToken ct = default)
+    {
+        var categoria = await _db.GaleriaCategorias.FirstOrDefaultAsync(c => c.Id == id, ct)
+            ?? throw new InvalidOperationException("Categoria não encontrada.");
+        categoria.Ativo = false;
+        await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task ReativarCategoriaAsync(int id, CancellationToken ct = default)
+    {
+        var categoria = await _db.GaleriaCategorias.FirstOrDefaultAsync(c => c.Id == id, ct)
+            ?? throw new InvalidOperationException("Categoria não encontrada.");
+        categoria.Ativo = true;
+        await _db.SaveChangesAsync(ct);
+    }
+
     // ---- Fotos ----
 
     public async Task<IReadOnlyList<GaleriaMidiaDto>> ListarFotosAsync(int categoriaId, bool apenasAtivos = true, CancellationToken ct = default) =>

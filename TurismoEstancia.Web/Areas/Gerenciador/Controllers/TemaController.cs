@@ -48,7 +48,9 @@ public class TemaController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Salvar(TemaViewModel vm, CancellationToken ct)
     {
-        if (vm.Vermelho is not null) await SalvarCorAsync(TemaViewModel.ChaveVermelho, "Cor vermelha (tema)", vm.Vermelho, ct);
+        try
+        {
+            if (vm.Vermelho is not null) await SalvarCorAsync(TemaViewModel.ChaveVermelho, "Cor vermelha (tema)", vm.Vermelho, ct);
         if (vm.Laranja is not null) await SalvarCorAsync(TemaViewModel.ChaveLaranja, "Cor laranja (tema)", vm.Laranja, ct);
         if (vm.Amarelo is not null) await SalvarCorAsync(TemaViewModel.ChaveAmarelo, "Cor amarela (tema)", vm.Amarelo, ct);
         if (vm.Verde is not null) await SalvarCorAsync(TemaViewModel.ChaveVerde, "Cor verde (tema)", vm.Verde, ct);
@@ -64,6 +66,11 @@ public class TemaController : PainelController
         if (vm.SecaoRodape is not null) await SalvarCorAsync(TemaViewModel.ChaveSecaoRodape, "Fundo do Rodapé", vm.SecaoRodape, ct);
 
         TempData["PainelOk"] = "Tema atualizado. As mudanças já valem no portal, no painel e no login.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 
@@ -71,12 +78,19 @@ public class TemaController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Restaurar(CancellationToken ct)
     {
-        var todas = await _configuracoes.ListarAsync(ct);
-        foreach (var item in todas.Where(c => c.Chave.StartsWith("tema-cor-", StringComparison.Ordinal)
-            || c.Chave.StartsWith("tema-secao-", StringComparison.Ordinal)))
-            await _configuracoes.ExcluirAsync(item.Id, ct);
+        try
+        {
+            var todas = await _configuracoes.ListarAsync(ct);
+            foreach (var item in todas.Where(c => c.Chave.StartsWith("tema-cor-", StringComparison.Ordinal)
+                || c.Chave.StartsWith("tema-secao-", StringComparison.Ordinal)))
+                await _configuracoes.ExcluirAsync(item.Id, ct);
 
-        TempData["PainelOk"] = "Paleta oficial restaurada.";
+            TempData["PainelOk"] = "Paleta oficial restaurada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 

@@ -3,6 +3,11 @@ using TurismoEstancia.Services.Planeje.Interfaces;
 
 namespace TurismoEstancia.Web.Areas.Gerenciador.Controllers;
 
+/// <summary>
+/// Compatibilidade: a moderação do Planeje foi unificada em
+/// <see cref="AvaliacoesController"/> (filtro ?origem=planeje). As ações de
+/// aprovar/excluir seguem funcionando e voltam para a tela unificada.
+/// </summary>
 public class PlanejeAvaliacoesController : PainelController
 {
     private readonly IPlanejeService _planeje;
@@ -10,29 +15,38 @@ public class PlanejeAvaliacoesController : PainelController
     public PlanejeAvaliacoesController(IServiceProvider services, IPlanejeService planeje)
         : base(services) => _planeje = planeje;
 
-    public async Task<IActionResult> Index(CancellationToken ct)
-    {
-        ViewData["Title"] = "Avaliações do Planeje";
-        ViewData["AreaAtiva"] = "roteiros";
-        ViewData["Pendentes"] = await _planeje.ListarPendentesAsync(ct);
-        return View();
-    }
+    public IActionResult Index() =>
+        RedirectToAction("Index", "Avaliacoes", new { area = "Gerenciador", origem = "planeje" });
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Aprovar(int id, CancellationToken ct)
     {
-        await _planeje.AprovarAvaliacaoAsync(id, ct);
-        TempData["PainelOk"] = "Avaliação aprovada.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _planeje.AprovarAvaliacaoAsync(id, ct);
+            TempData["PainelOk"] = "Avaliação aprovada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirectToAction("Index", "Avaliacoes", new { area = "Gerenciador", origem = "planeje" });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
-        await _planeje.ExcluirAvaliacaoAsync(id, ct);
-        TempData["PainelOk"] = "Avaliação excluída.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _planeje.ExcluirAvaliacaoAsync(id, ct);
+            TempData["PainelOk"] = "Avaliação excluída.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirectToAction("Index", "Avaliacoes", new { area = "Gerenciador", origem = "planeje" });
     }
 }

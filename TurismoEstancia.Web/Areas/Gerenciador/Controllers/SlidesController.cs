@@ -17,7 +17,11 @@ public class SlidesController : PainelController
         return View(await _slides.ListarAsync(ct));
     }
 
-    public IActionResult Criar() => View(new SlideDto());
+    public IActionResult Criar()
+    {
+        ViewData["Title"] = "Novo slide";
+        return View(new SlideDto());
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -70,10 +74,49 @@ public class SlidesController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Ocultar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _slides.OcultarAsync(id, ct);
+            TempData["PainelOk"] = "Slide ocultado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _slides.ReativarAsync(id, ct);
+            TempData["PainelOk"] = "Slide reativado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
-        await _slides.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Slide excluído.";
+        try
+        {
+            await _slides.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Slide excluído.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 }

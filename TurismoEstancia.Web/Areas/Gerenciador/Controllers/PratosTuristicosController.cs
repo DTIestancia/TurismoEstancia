@@ -20,6 +20,7 @@ public class PratosTuristicosController : PainelController
 
     public async Task<IActionResult> Criar(CancellationToken ct)
     {
+        ViewData["Title"] = "Novo prato turístico";
         ViewData["AreaAtiva"] = "gastronomia";
         return View(new PratoTuristicoDto());
     }
@@ -29,9 +30,17 @@ public class PratosTuristicosController : PainelController
     public async Task<IActionResult> Criar(PratoTuristicoDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _pratos.SalvarAsync(dto, imagem, ct);
-        TempData["PainelOk"] = "Prato turístico salvo.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _pratos.SalvarAsync(dto, imagem, ct);
+            TempData["PainelOk"] = "Prato turístico salvo.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            return View(dto);
+        }
     }
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
@@ -47,8 +56,48 @@ public class PratosTuristicosController : PainelController
     public async Task<IActionResult> Editar(PratoTuristicoDto dto, IFormFile? imagem, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
-        await _pratos.SalvarAsync(dto, imagem, ct);
-        TempData["PainelOk"] = "Prato turístico atualizado.";
+        try
+        {
+            await _pratos.SalvarAsync(dto, imagem, ct);
+            TempData["PainelOk"] = "Prato turístico atualizado.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            return View(dto);
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Ocultar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _pratos.OcultarAsync(id, ct);
+            TempData["PainelOk"] = "Prato turístico ocultado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _pratos.ReativarAsync(id, ct);
+            TempData["PainelOk"] = "Prato turístico reativado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 
@@ -56,8 +105,15 @@ public class PratosTuristicosController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
-        await _pratos.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Prato turístico excluído.";
+        try
+        {
+            await _pratos.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Prato turístico excluído.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 }

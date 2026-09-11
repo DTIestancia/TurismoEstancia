@@ -123,13 +123,31 @@ public class AnalyticsService : IAnalyticsService
             .Take(10)
             .ToListAsync(ct);
 
-        return ranking
+        var lista = ranking
             .Select(r => new AnalyticsContagemDto
             {
                 Rotulo = string.IsNullOrWhiteSpace(r.EntidadeNome) ? $"Foto #{r.EntidadeId}" : r.EntidadeNome!,
                 Quantidade = r.Quantidade
             })
             .ToList();
+
+        // Thumbnails para o dashboard identificar a foto (o evento guarda o Id do vínculo).
+        var ids = ranking.Where(r => r.EntidadeId.HasValue).Select(r => r.EntidadeId!.Value).ToList();
+        if (ids.Count > 0)
+        {
+            var thumbs = await _db.GaleriaMidias.AsNoTracking()
+                .Where(gm => ids.Contains(gm.Id))
+                .Select(gm => new { gm.Id, gm.ArquivoThumbId })
+                .ToDictionaryAsync(gm => gm.Id, gm => gm.ArquivoThumbId, ct);
+            for (var i = 0; i < lista.Count && i < ranking.Count; i++)
+            {
+                var id = ranking[i].EntidadeId;
+                if (id.HasValue && thumbs.TryGetValue(id.Value, out var thumb))
+                    lista[i].ArquivoThumbId = thumb;
+            }
+        }
+
+        return lista;
     }
 
     /// <summary>Busca os referrers e classifica em Buscas/Redes sociais/Direto/Outros.</summary>

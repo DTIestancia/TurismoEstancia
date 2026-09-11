@@ -1,0 +1,27 @@
+@* Campo padrão de ícone Lucide com prévia e botão "Escolher" (modal visual).
+   Model: valor atual (string). ViewData opcionais: "Placeholder" e "Hint".
+   Posta name="Icone" — os DTOs usam string? sem Required, o binding segue igual. *@
+@model string
+@{
+    var valor = Model ?? string.Empty;
+    var placeholder = ViewData["Placeholder"] as string ?? "Escolha um ícone...";
+    var hint = ViewData["Hint"] as string;
+}
+<div class="painel-field">
+    <label for="Icone">Ícone (Lucide)</label>
+    <div class="painel-icone-input-row">
+        <input type="text" name="Icone" id="Icone" value="@valor" class="painel-input painel-icone-input" maxlength="50" placeholder="@placeholder" autocomplete="off" />
+        <div class="painel-icone-preview" id="iconePreview" aria-hidden="true"></div>
+        <button type="button" class="btn-painel btn-painel--ghost btn-painel--sm" data-escolher-icone="Icone" data-preview="iconePreview">Escolher</button>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(hint))
+    {
+        <span class="painel-hint">@hint</span>
+    }
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (window.InicializarSeletorIcone) window.InicializarSeletorIcone('Icone', 'iconePreview');
+    });
+</script>

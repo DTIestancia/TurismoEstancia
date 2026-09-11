@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Services.Planeje.Interfaces;
-using TurismoEstancia.Web.Controllers;
 
 namespace TurismoEstancia.Web.Controllers;
 

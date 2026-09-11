@@ -37,9 +37,23 @@
                         <td>
                             <div class="painel-actions" style="justify-content:flex-end;">
                                 <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Editar" asp-route-id="@item.Id"><i data-lucide="pencil"></i> Editar</a>
-                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir este slide?">
+                                @if (item.Ativo)
+                                {
+                                    <form asp-action="Ocultar" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Ocultar este slide? Ele sai do portal, mas pode ser reativado.">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-painel btn-painel--ghost btn-painel--xs" title="Ocultar"><i data-lucide="eye-off"></i></button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="Reativar" asp-route-id="@item.Id" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-painel btn-painel--ghost btn-painel--xs" title="Reativar"><i data-lucide="eye"></i></button>
+                                    </form>
+                                }
+                                <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Excluir DEFINITIVAMENTE este slide? A imagem será apagada.">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs"><i data-lucide="trash-2"></i></button>
+                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs" title="Excluir definitivamente"><i data-lucide="trash-2"></i></button>
                                 </form>
                             </div>
                         </td>

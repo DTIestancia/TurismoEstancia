@@ -22,10 +22,7 @@
     </div>
 
     <div class="painel-form-grid">
-        <div class="painel-field">
-            <label asp-for="Icone"></label>
-            <input asp-for="Icone" class="painel-input" maxlength="50" placeholder="bed-double, utensils, concierge-bell..." />
-        </div>
+        @await Html.PartialAsync("_SeletorIcone", Model.Icone, new ViewDataDictionary(ViewData) { ["Placeholder"] = "bed-double, utensils..." })
         <div class="painel-field">
             <label asp-for="Cor"></label>
             <input asp-for="Cor" class="painel-input" maxlength="20" placeholder="#F97E31" />

@@ -642,6 +642,36 @@
   }
 }
 
+// Card de contagem clicável (dashboard): mesma cara, cursor de link.
+a.painel-stat--link {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+// Delta vs período anterior nos KPIs do dashboard.
+.painel-kpi-delta {
+  font-size: 11.5px;
+  font-weight: 700;
+
+  &.is-up { color: #4ade80; }
+  &.is-down { color: #f87171; }
+}
+
+// Miniatura nas tabelas de ranking do dashboard.
+.painel-thumb {
+  width: 44px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid $color-white--12;
+  display: block;
+}
+
+// Card de pendências do dashboard (moderação + ocultos).
+.painel-pendencias {
+  margin-bottom: 20px;
+}
+
 // ===== Tabelas =====
 .painel-table-wrap {
   overflow-x: auto;
@@ -1553,6 +1583,122 @@
     background: color-mix(in srgb, var(--color-orange-48) 14%, transparent);
     color: var(--color-orange-48);
   }
+}
+
+// ===== Seletor visual de ícones (modal) =====
+// Dialog único do painel (ver _DialogIcones): busca + grupos + grade de ícones.
+.painel-dialog--icone {
+  width: min(680px, calc(100vw - 32px));
+
+  // O .painel-input escuro só vale dentro de .painel-form — o dialog vive
+  // fora, então o campo de busca precisa do próprio estilo escuro.
+  #seletorIconeBusca {
+    width: 100%;
+    margin-bottom: 12px;
+    background: $color-white--5;
+    border: 1px solid $color-white--15;
+    border-radius: 10px;
+    padding: 10px 13px;
+    color: $color-white-solid;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    outline: none;
+    color-scheme: dark;
+    transition: border-color 0.2s, background 0.2s;
+
+    &::placeholder { color: $color-white--40; }
+
+    &:focus {
+      border-color: var(--color-orange-48);
+      background: $color-white--8;
+    }
+  }
+}
+
+.painel-icone-grupos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.painel-icone-grupo {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid $color-white--15;
+  background: $color-white--5;
+  color: $color-white--65;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+
+  &:hover {
+    border-color: var(--color-orange-48);
+    color: var(--color-orange-48);
+  }
+
+  &.active {
+    border-color: var(--color-orange-48);
+    background: color-mix(in srgb, var(--color-orange-48) 14%, transparent);
+    color: var(--color-orange-48);
+  }
+}
+
+.painel-icone-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  gap: 8px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: $color-white--20 transparent;
+
+  &::-webkit-scrollbar { width: 8px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: $color-white--20;
+    border-radius: 999px;
+  }
+}
+
+.painel-icone-opcao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 72px;
+  padding: 10px 6px;
+  border-radius: 12px;
+  border: 1px solid $color-white--15;
+  background: $color-white--5;
+  color: $color-white--70;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s, transform 0.15s;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  span {
+    font-size: 10px;
+    line-height: 1.2;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &:hover {
+    border-color: var(--color-orange-48);
+    color: var(--color-orange-48);
+    transform: translateY(-2px);
+  }
+
+  &.is-oculto { display: none; }
 }
 
 // ===== Mapa interativo de posicionamento (Pontos turísticos) =====

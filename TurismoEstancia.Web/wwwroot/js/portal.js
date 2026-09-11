@@ -608,19 +608,110 @@ document.addEventListener('DOMContentLoaded', function () {
     var modal = document.getElementById('planejeModal');
     var modalClose = document.getElementById('planejeModalClose');
     var modalImg = document.getElementById('planejeModalImg');
+    var verMaisBtn = document.getElementById('planejeVerMais');
+    var verMaisTexto = document.getElementById('planejeVerMaisTexto');
+    var LIMITE_PLANEJE = 6;
+    var POR_CATEGORIA_TODOS = 2;
+    var filtroAtual = 'all';
+    var expandido = false;
+    var ordemOriginal = Array.prototype.slice.call(grid.querySelectorAll('.planeje-card'));
+    var ordemMixTodos = ordemOriginal.slice();
+    var limiteTodos = LIMITE_PLANEJE;
+
+    function embaralhar(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      }
+      return arr;
+    }
+
+    // Monta a ordem do "Todos": 2 aleatórios de cada categoria, intercalados.
+    function construirMixTodos() {
+      var grupos = {};
+      ordemOriginal.forEach(function (c) {
+        var k = c.getAttribute('data-cat');
+        (grupos[k] = grupos[k] || []).push(c);
+      });
+      var chaves = Object.keys(grupos);
+      chaves.forEach(function (k) { embaralhar(grupos[k]); });
+      var max = 0;
+      chaves.forEach(function (k) { if (grupos[k].length > max) max = grupos[k].length; });
+      var mix = [];
+      for (var i = 0; i < max; i++) {
+        var rodada = [];
+        chaves.forEach(function (k) { if (grupos[k][i]) rodada.push(grupos[k][i]); });
+        embaralhar(rodada);
+        mix = mix.concat(rodada);
+      }
+      ordemMixTodos = mix;
+      limiteTodos = 0;
+      chaves.forEach(function (k) { limiteTodos += Math.min(POR_CATEGORIA_TODOS, grupos[k].length); });
+    }
+
+    function reordenarGrid(ordem) {
+      ordem.forEach(function (c) { grid.appendChild(c); });
+    }
+
+    function limiteAtual(totalVisiveis) {
+      if (filtroAtual === 'all') return Math.min(limiteTodos, totalVisiveis);
+      return Math.min(LIMITE_PLANEJE, totalVisiveis);
+    }
+
+    function planejeVisiveis() {
+      var todos = Array.prototype.slice.call(grid.querySelectorAll('.planeje-card'));
+      return todos.filter(function (c) {
+        return filtroAtual === 'all' || c.getAttribute('data-cat') === filtroAtual;
+      });
+    }
+
+    function atualizarPlaneje() {
+      if (filtroAtual === 'all') reordenarGrid(ordemMixTodos);
+      else reordenarGrid(ordemOriginal);
+      var visiveis = planejeVisiveis();
+      var limite = expandido ? visiveis.length : limiteAtual(visiveis.length);
+      visiveis.forEach(function (c, i) {
+        c.style.display = i < limite ? '' : 'none';
+      });
+      grid.querySelectorAll('.planeje-card').forEach(function (c) {
+        if (filtroAtual !== 'all' && c.getAttribute('data-cat') !== filtroAtual) c.style.display = 'none';
+      });
+      if (verMaisBtn) {
+        var base = filtroAtual === 'all' ? limiteTodos : LIMITE_PLANEJE;
+        var restantes = visiveis.length - base;
+        if (restantes > 0) {
+          verMaisBtn.hidden = false;
+          if (verMaisTexto) verMaisTexto.textContent = expandido ? 'Mostrar menos' : 'Ver mais (' + restantes + ')';
+          verMaisBtn.classList.toggle('is-expandido', expandido);
+        } else {
+          verMaisBtn.hidden = true;
+        }
+      }
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    if (verMaisBtn) {
+      verMaisBtn.addEventListener('click', function () {
+        expandido = !expandido;
+        atualizarPlaneje();
+      });
+    }
 
     if (filterBar) {
       filterBar.querySelectorAll('.map-filter-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
-          var filter = this.getAttribute('data-filter');
+          filtroAtual = this.getAttribute('data-filter');
           filterBar.querySelectorAll('.map-filter-btn').forEach(function (b) { b.classList.remove('active'); });
           this.classList.add('active');
-          grid.querySelectorAll('.planeje-card').forEach(function (c) {
-            c.style.display = (filter === 'all' || c.getAttribute('data-cat') === filter) ? '' : 'none';
-          });
+          expandido = false;
+          if (filtroAtual === 'all') construirMixTodos();
+          atualizarPlaneje();
         });
       });
     }
+
+    construirMixTodos();
+    atualizarPlaneje();
 
     function setText(id, value, wrapId) {
       var el = document.getElementById(id);

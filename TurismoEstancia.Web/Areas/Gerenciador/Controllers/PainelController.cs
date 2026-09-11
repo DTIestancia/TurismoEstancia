@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using TurismoEstancia.Authorization.Services;
 using TurismoEstancia.Services.Avaliacao.Interfaces;
+using TurismoEstancia.Services.Planeje.Interfaces;
 
 namespace TurismoEstancia.Web.Areas.Gerenciador.Controllers;
 
@@ -39,7 +40,9 @@ public abstract class PainelController : Controller
     {
         using var scope = _services.CreateScope();
         var avaliacoes = scope.ServiceProvider.GetRequiredService<IAvaliacaoService>();
-        ViewData["PendentesAvaliacoes"] = await avaliacoes.ContarPendentesAsync();
+        var planeje = scope.ServiceProvider.GetRequiredService<IPlanejeService>();
+        ViewData["PendentesAvaliacoes"] =
+            await avaliacoes.ContarPendentesAsync() + await planeje.ContarPendentesAsync();
         await next();
     }
 }

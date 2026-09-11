@@ -9193,6 +9193,35 @@ img.paginas-galeria-card-img.is-carregada {
   background: #f3f4f6;
 }
 
+.planeje-ver-mais-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.planeje-ver-mais {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  border: 1px solid #ffffff;
+  background: transparent;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.planeje-ver-mais:hover {
+  background: #ffffff;
+  color: var(--color-azure-7);
+  transform: translateY(-2px);
+}
+.planeje-ver-mais.is-expandido svg {
+  transform: rotate(180deg);
+}
+
 .modal {
   background: #ffffff;
   outline-color: #e5e7eb;

@@ -5,6 +5,7 @@ using TurismoEstancia.Services.Comunicacao.Interfaces;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
 using TurismoEstancia.Services.Galeria.Interfaces;
+using TurismoEstancia.Services.Planeje.Interfaces;
 using TurismoEstancia.Services.Roteiro.Interfaces;
 using TurismoEstancia.Services.Turismo.Interfaces;
 using TurismoEstancia.Web.Models;
@@ -30,6 +31,7 @@ public class DashboardController : PainelController
     private readonly IConfiguracaoSiteService _configs;
     private readonly ITagCulturalService _tags;
     private readonly IGaleriaService _galeria;
+    private readonly IPlanejeService _planeje;
 
     public DashboardController(
         IServiceProvider services,
@@ -45,7 +47,8 @@ public class DashboardController : PainelController
         IAnalyticsService analytics,
         IConfiguracaoSiteService configs,
         ITagCulturalService tags,
-        IGaleriaService galeria)
+        IGaleriaService galeria,
+        IPlanejeService planeje)
         : base(services)
     {
         _pontos = pontos;
@@ -61,6 +64,7 @@ public class DashboardController : PainelController
         _configs = configs;
         _tags = tags;
         _galeria = galeria;
+        _planeje = planeje;
     }
 
     public async Task<IActionResult> Index(int dias, int? galeriaCategoria, CancellationToken ct)
@@ -72,6 +76,7 @@ public class DashboardController : PainelController
         var ate = DateTime.Today;
 
         var resumo = await _analytics.ObterResumoAsync(de, ate, galeriaCategoria, ct);
+        var anterior = await _analytics.ObterResumoAsync(de.AddDays(-dias), de.AddDays(-1), null, ct);
 
         // Categorias da galeria para o filtro do ranking de fotos (inclui inativas,
         // para o ranking de uma categoria desativada continuar consultável).
@@ -85,25 +90,35 @@ public class DashboardController : PainelController
         var seoTitulo = configs.FirstOrDefault(c => c.Chave == "site-titulo")?.ValorTexto;
         var seoDescricao = configs.FirstOrDefault(c => c.Chave == "meta-descricao")?.ValorTexto;
 
+        var pontosTodos = await _pontos.ListarAsync(apenasAtivos: false, ct);
+        var categoriasTodas = await _categorias.ListarAsync(incluirInativos: true, ct);
+        var eventosTodos = await _eventos.ListarAsync(apenasProximos: false, ct);
+        var noticiasTodas = await _noticias.ListarAsync(apenasPublicadas: false, ct);
+        var roteirosTodos = await _roteiros.ListarAsync(ct);
+        var gruposTodos = await _grupos.ListarAsync(ct);
+        var pratosTodos = await _pratos.ListarAsync(ct);
+        var avaliacoesTodas = await _avaliacoes.ListarAsync(apenasAprovadas: false, ct);
+        var planejeTodas = await _planeje.ListarTodasAvaliacoesAsync(ct);
+
         var itens = new List<PainelStatViewModel>
         {
-            new() { Rotulo = "Pontos turísticos", Icone = "map-pin", Valor = (await _pontos.ListarAsync(apenasAtivos: false, ct)).Count },
-            new() { Rotulo = "Categorias", Icone = "folder-tree", Valor = (await _categorias.ListarAsync(incluirInativos: true, ct)).Count },
-            new() { Rotulo = "Eventos", Icone = "calendar", Valor = (await _eventos.ListarAsync(apenasProximos: false, ct)).Count },
-            new() { Rotulo = "Notícias", Icone = "newspaper", Valor = (await _noticias.ListarAsync(apenasPublicadas: false, ct)).Count },
-            new() { Rotulo = "Roteiros", Icone = "route", Valor = (await _roteiros.ListarAsync(ct)).Count },
-            new() { Rotulo = "Grupos culturais", Icone = "music", Valor = (await _grupos.ListarAsync(ct)).Count },
-            new() { Rotulo = "Pratos turísticos", Icone = "utensils", Valor = (await _pratos.ListarAsync(ct)).Count },
-            new() { Rotulo = "Inscrições newsletter", Icone = "mail", Valor = ativas },
-            new() { Rotulo = "Avaliações", Icone = "star", Valor = (await _avaliacoes.ListarAsync(apenasAprovadas: false, ct)).Count }
+            new() { Rotulo = "Pontos turísticos", Icone = "map-pin", Valor = pontosTodos.Count, Url = Url.Action("Index", "PontosTuristicos") },
+            new() { Rotulo = "Categorias", Icone = "folder-tree", Valor = categoriasTodas.Count, Url = Url.Action("Index", "Categorias") },
+            new() { Rotulo = "Eventos", Icone = "calendar", Valor = eventosTodos.Count, Url = Url.Action("Index", "Eventos") },
+            new() { Rotulo = "Notícias", Icone = "newspaper", Valor = noticiasTodas.Count, Url = Url.Action("Index", "Noticias") },
+            new() { Rotulo = "Roteiros", Icone = "route", Valor = roteirosTodos.Count, Url = Url.Action("Index", "Roteiros") },
+            new() { Rotulo = "Grupos culturais", Icone = "music", Valor = gruposTodos.Count, Url = Url.Action("Index", "GruposCulturais") },
+            new() { Rotulo = "Pratos turísticos", Icone = "utensils", Valor = pratosTodos.Count, Url = Url.Action("Index", "PratosTuristicos") },
+            new() { Rotulo = "Inscrições newsletter", Icone = "mail", Valor = ativas, Url = Url.Action("Index", "Newsletter") },
+            new() { Rotulo = "Avaliações", Icone = "star", Valor = avaliacoesTodas.Count + planejeTodas.Count, Url = Url.Action("Index", "Avaliacoes") }
         };
 
         // Contagem real de rotas públicas no sitemap (8 estáticas + detalhes do banco).
-        var maravilhas = (await _pontos.ListarAsync(apenasAtivos: true, ct)).Count(p => p.CategoriaApresentarEmMaravilhas);
-        var noticiasPublicadas = (await _noticias.ListarAsync(apenasPublicadas: true, ct)).Count;
-        var roteirosAtivos = (await _roteiros.ListarAsync(ct)).Count(r => r.Ativo);
-        var gruposAtivos = (await _grupos.ListarAsync(ct)).Count(g => g.Ativo);
-        var pratosAtivos = (await _pratos.ListarAsync(ct)).Count(p => p.Ativo);
+        var maravilhas = pontosTodos.Count(p => p.Ativo && p.CategoriaApresentarEmMaravilhas);
+        var noticiasPublicadas = noticiasTodas.Count(n => n.Publicada && n.Ativo);
+        var roteirosAtivos = roteirosTodos.Count(r => r.Ativo);
+        var gruposAtivos = gruposTodos.Count(g => g.Ativo);
+        var pratosAtivos = pratosTodos.Count(p => p.Ativo);
         var tagsAtivas = (await _tags.ListarAsync(ct)).Count(t => t.Ativo);
         var rotasIndexaveis = 8 + maravilhas + noticiasPublicadas + roteirosAtivos + gruposAtivos + pratosAtivos + tagsAtivas;
 
@@ -113,6 +128,13 @@ public class DashboardController : PainelController
             De = de,
             Ate = ate,
             Resumo = resumo,
+            VisitasAnteriores = anterior.Visitas,
+            CliquesAnteriores = anterior.Cliques,
+            AvaliacoesPendentes = avaliacoesTodas.Count(a => !a.Aprovada) + planejeTodas.Count(a => !a.Aprovada),
+            ItensInativos = pontosTodos.Count(p => !p.Ativo) + categoriasTodas.Count(c => !c.Ativo)
+                + eventosTodos.Count(e => !e.Ativo) + noticiasTodas.Count(n => !n.Ativo)
+                + roteirosTodos.Count(r => !r.Ativo) + gruposTodos.Count(g => !g.Ativo)
+                + pratosTodos.Count(p => !p.Ativo),
             NewsletterNoPeriodo = novasNoPeriodo,
             NewsletterAtivas = ativas,
             Conteudos = itens,

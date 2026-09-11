@@ -37,9 +37,18 @@ public class ContatosController : PainelController
             await PreencherRotulosAsync(ViewData, ct);
             return View(dto);
         }
-        await _contatos.SalvarAsync(dto, ct);
-        TempData["PainelOk"] = "Contato salvo.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _contatos.SalvarAsync(dto, ct);
+            TempData["PainelOk"] = "Contato salvo.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            await PreencherRotulosAsync(ViewData, ct);
+            return View(dto);
+        }
     }
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
@@ -61,9 +70,18 @@ public class ContatosController : PainelController
             await PreencherRotulosAsync(ViewData, ct, dto.Rotulo);
             return View(dto);
         }
-        await _contatos.SalvarAsync(dto, ct);
-        TempData["PainelOk"] = "Contato atualizado.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _contatos.SalvarAsync(dto, ct);
+            TempData["PainelOk"] = "Contato atualizado.";
+            return RedirecionarParaIndex();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+            await PreencherRotulosAsync(ViewData, ct, dto.Rotulo);
+            return View(dto);
+        }
     }
 
     /// <summary>
@@ -105,10 +123,49 @@ public class ContatosController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Ocultar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _contatos.OcultarAsync(id, ct);
+            TempData["PainelOk"] = "Contato ocultado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _contatos.ReativarAsync(id, ct);
+            TempData["PainelOk"] = "Contato reativado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
-        await _contatos.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Contato excluído.";
+        try
+        {
+            await _contatos.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Contato excluído.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 }

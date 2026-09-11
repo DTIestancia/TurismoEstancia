@@ -4,7 +4,7 @@ namespace TurismoEstancia.Services.Comunicacao.Interfaces;
 
 /// <summary>
 /// Serviço da newsletter. E-mail único — reenvio reativa a inscrição.
-/// Exclusão = Ativo = false. Exportação em CSV com BOM (Excel).
+/// Inativar = Ativo = false. Exportação em CSV com BOM (Excel).
 /// </summary>
 public interface IInscricaoNewsletterService
 {
@@ -19,6 +19,9 @@ public interface IInscricaoNewsletterService
 
     /// <summary>Reativa a inscrição (Ativo = true).</summary>
     Task ReativarAsync(int id, CancellationToken ct = default);
+
+    /// <summary>Exclusão definitiva da inscrição (LGPD: direito de eliminação).</summary>
+    Task ExcluirAsync(int id, CancellationToken ct = default);
 
     /// <summary>Exporta as inscrições ativas em CSV (com BOM UTF-8 para Excel).</summary>
     Task<byte[]> ExportarCsvAsync(CancellationToken ct = default);

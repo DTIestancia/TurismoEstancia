@@ -8,6 +8,31 @@ public class PainelStatViewModel
     public string Rotulo { get; set; } = string.Empty;
     public string Icone { get; set; } = "info";
     public int Valor { get; set; }
+
+    /// <summary>Link do card (ex.: "/Gerenciador/Eventos"). Null = sem link.</summary>
+    public string? Url { get; set; }
+}
+
+/// <summary>
+/// Linha da moderação unificada de avaliações (Gerenciador › Avaliações):
+/// junta as avaliações dos pontos turísticos (mapa) e as do "Planeje sua
+/// viagem", indicando a origem de cada uma.
+/// </summary>
+public class AvaliacaoGerenciadorViewModel
+{
+    /// <summary>Origem: "ponto" (mapa/maravilhas) ou "planeje".</summary>
+    public string Origem { get; set; } = "ponto";
+
+    public int Id { get; set; }
+
+    /// <summary>Nome do ponto turístico ou do local do Planeje.</summary>
+    public string Local { get; set; } = string.Empty;
+
+    public string Visitante { get; set; } = "Anônimo";
+    public int Nota { get; set; }
+    public string? Comentario { get; set; }
+    public DateTime Data { get; set; }
+    public bool Aprovada { get; set; }
 }
 
 /// <summary>
@@ -45,4 +70,16 @@ public class DashboardAnalyticsViewModel
 
     /// <summary>Categoria selecionada no filtro do ranking (null = todas as categorias).</summary>
     public int? GaleriaCategoriaId { get; set; }
+
+    /// <summary>Visitas no período anterior (mesmo tamanho) — comparativo dos KPIs.</summary>
+    public long VisitasAnteriores { get; set; }
+
+    /// <summary>Cliques no período anterior (mesmo tamanho) — comparativo dos KPIs.</summary>
+    public long CliquesAnteriores { get; set; }
+
+    /// <summary>Avaliações aguardando moderação (pontos + planeje).</summary>
+    public int AvaliacoesPendentes { get; set; }
+
+    /// <summary>Itens ocultos (Ativo = false) somando os módulos de conteúdo.</summary>
+    public int ItensInativos { get; set; }
 }

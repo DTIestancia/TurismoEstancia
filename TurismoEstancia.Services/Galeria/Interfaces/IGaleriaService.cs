@@ -15,6 +15,11 @@ public interface IGaleriaService
     /// <summary>Salva a categoria (cria ou atualiza); <paramref name="capa"/> substitui a capa atual quando enviada.</summary>
     Task SalvarCategoriaAsync(GaleriaCategoriaDto dto, IFormFile? capa = null, CancellationToken ct = default);
 
+    /// <summary>Oculta a categoria da galeria (Ativo = false).</summary>
+    Task OcultarCategoriaAsync(int id, CancellationToken ct = default);
+
+    Task ReativarCategoriaAsync(int id, CancellationToken ct = default);
+
     Task ExcluirCategoriaAsync(int id, CancellationToken ct = default);
 
     // ---- Fotos ----

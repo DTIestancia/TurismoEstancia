@@ -20,7 +20,7 @@
         @await Html.PartialAsync("_SeletorChave", Model.Chave)
         <div class="painel-field">
             <label asp-for="Nome"></label>
-            <input asp-for="Nome" class="painel-input" maxlength="120" />
+            <input asp-for="Nome" class="painel-input" maxlength="120" placeholder="Guia do turista" />
             <span asp-validation-for="Nome" class="field-validation-error"></span>
         </div>
     </div>

@@ -76,4 +76,20 @@ public class ContatoService : IContatoService
         _db.Contatos.Remove(entidade);
         await _db.SaveChangesAsync(ct);
     }
+
+    public async Task OcultarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.Contatos.FirstOrDefaultAsync(c => c.Id == id, ct)
+            ?? throw new InvalidOperationException("Contato não encontrado.");
+        entidade.Ativo = false;
+        await _db.SaveChangesAsync(ct);
+    }
+
+    public async Task ReativarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.Contatos.FirstOrDefaultAsync(c => c.Id == id, ct)
+            ?? throw new InvalidOperationException("Contato não encontrado.");
+        entidade.Ativo = true;
+        await _db.SaveChangesAsync(ct);
+    }
 }

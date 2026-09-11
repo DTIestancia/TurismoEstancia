@@ -16,9 +16,10 @@ public class ConfiguracoesController : PainelController
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Configurações";
-        // O vídeo institucional é gerenciado na área Hero (Secoes › Hero).
+        // Os vídeos institucionais (desktop + mobile) são gerenciados na área Hero (Secoes › Hero).
         var itens = (await _configuracoes.ListarAsync(ct))
-            .Where(c => !string.Equals(c.Chave, "video-institucional", StringComparison.OrdinalIgnoreCase))
+            .Where(c => !string.Equals(c.Chave, "video-institucional", StringComparison.OrdinalIgnoreCase)
+                     && !string.Equals(c.Chave, "video-institucional-mobile", StringComparison.OrdinalIgnoreCase))
             .ToList();
         return View(itens);
     }
@@ -119,8 +120,15 @@ public class ConfiguracoesController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
-        await _configuracoes.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Configuração excluída.";
+        try
+        {
+            await _configuracoes.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Configuração excluída.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 }

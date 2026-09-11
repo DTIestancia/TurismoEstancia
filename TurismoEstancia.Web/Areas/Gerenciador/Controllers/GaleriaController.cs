@@ -76,6 +76,38 @@ public class GaleriaController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Ocultar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _galeria.OcultarCategoriaAsync(id, ct);
+            TempData["PainelOk"] = "Categoria ocultada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    {
+        try
+        {
+            await _galeria.ReativarCategoriaAsync(id, ct);
+            TempData["PainelOk"] = "Categoria reativada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirecionarParaIndex();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
         try
@@ -156,6 +188,7 @@ public class GaleriaController : PainelController
         try
         {
             await _galeria.MoverFotoAsync(id, direcao, ct);
+            TempData["PainelOk"] = "Foto reordenada.";
         }
         catch (InvalidOperationException ex)
         {

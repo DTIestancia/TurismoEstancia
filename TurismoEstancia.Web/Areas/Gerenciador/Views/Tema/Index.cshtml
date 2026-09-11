@@ -177,7 +177,7 @@
     <div class="painel-form-actions" style="margin-top:16px;">
         <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar tema</button>
         <button type="submit" class="btn-painel btn-painel--ghost" formaction="@Url.Action("Restaurar")" formmethod="post"
-                onclick="return confirm('Restaurar a paleta oficial? As cores personalizadas serão apagadas.');">
+                data-confirmar="Restaurar a paleta oficial? As cores personalizadas serão apagadas.">
             <i data-lucide="rotate-ccw"></i> Restaurar paleta oficial
         </button>
         <a class="btn-painel btn-painel--ghost" asp-area="Gerenciador" asp-controller="Configuracoes" asp-action="Index"><i data-lucide="settings"></i> Ver configurações</a>

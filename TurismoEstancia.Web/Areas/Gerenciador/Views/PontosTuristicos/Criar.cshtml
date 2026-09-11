@@ -48,11 +48,7 @@
             <label asp-for="Tag"></label>
             <input asp-for="Tag" class="painel-input" maxlength="60" placeholder="Ex.: Praia" />
         </div>
-        <div class="painel-field">
-            <label asp-for="Icone"></label>
-            <input asp-for="Icone" class="painel-input" maxlength="40" placeholder="landmark, tree-pine..." />
-            <span class="painel-hint">Vale quando não há PNG abaixo.</span>
-        </div>
+        @await Html.PartialAsync("_SeletorIcone", Model.Icone, new ViewDataDictionary(ViewData) { ["Placeholder"] = "landmark, tree-pine...", ["Hint"] = "Vale quando não há PNG abaixo." })
     </div>
 
     <div class="painel-field">

@@ -115,10 +115,26 @@ public class ConhecaEstanciaService : IConhecaEstanciaService
     {
         var entidade = await _db.ConhecaEstanciaItens.FirstOrDefaultAsync(i => i.Id == id, ct)
             ?? throw new InvalidOperationException("Item do Conheça Estância não encontrado.");
-        var imagemId = entidade.ImagemArquivoId;
-        _db.ConhecaEstanciaItens.Remove(entidade);
+            var imagemId = entidade.ImagemArquivoId;
+            _db.ConhecaEstanciaItens.Remove(entidade);
+            await _db.SaveChangesAsync(ct);
+            if (imagemId.HasValue)
+                await _arquivos.ExcluirAsync(imagemId.Value, ct);
+        }
+
+    public async Task OcultarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.ConhecaEstanciaItens.FirstOrDefaultAsync(i => i.Id == id, ct)
+            ?? throw new InvalidOperationException("Item do Conheça Estância não encontrado.");
+        entidade.Ativo = false;
         await _db.SaveChangesAsync(ct);
-        if (imagemId.HasValue)
-            await _arquivos.ExcluirAsync(imagemId.Value, ct);
+    }
+
+    public async Task ReativarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.ConhecaEstanciaItens.FirstOrDefaultAsync(i => i.Id == id, ct)
+            ?? throw new InvalidOperationException("Item do Conheça Estância não encontrado.");
+        entidade.Ativo = true;
+        await _db.SaveChangesAsync(ct);
     }
 }

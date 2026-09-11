@@ -91,10 +91,26 @@ public class GrupoCulturalService : IGrupoCulturalService
     {
         var entidade = await _db.GruposCulturais.FirstOrDefaultAsync(g => g.Id == id, ct)
             ?? throw new InvalidOperationException("Grupo cultural não encontrado.");
-        var imagemId = entidade.ImagemArquivoId;
-        _db.GruposCulturais.Remove(entidade);
+            var imagemId = entidade.ImagemArquivoId;
+            _db.GruposCulturais.Remove(entidade);
+            await _db.SaveChangesAsync(ct);
+            if (imagemId.HasValue)
+                await _arquivos.ExcluirAsync(imagemId.Value, ct);
+        }
+
+    public async Task OcultarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.GruposCulturais.FirstOrDefaultAsync(g => g.Id == id, ct)
+            ?? throw new InvalidOperationException("Grupo cultural não encontrado.");
+        entidade.Ativo = false;
         await _db.SaveChangesAsync(ct);
-        if (imagemId.HasValue)
-            await _arquivos.ExcluirAsync(imagemId.Value, ct);
+    }
+
+    public async Task ReativarAsync(int id, CancellationToken ct = default)
+    {
+        var entidade = await _db.GruposCulturais.FirstOrDefaultAsync(g => g.Id == id, ct)
+            ?? throw new InvalidOperationException("Grupo cultural não encontrado.");
+        entidade.Ativo = true;
+        await _db.SaveChangesAsync(ct);
     }
 }

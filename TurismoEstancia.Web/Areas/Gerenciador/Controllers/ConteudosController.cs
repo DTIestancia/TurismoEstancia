@@ -263,8 +263,15 @@ public class ConteudosController : PainelController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Excluir(int id, CancellationToken ct)
     {
-        await _conteudos.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Texto excluído.";
+        try
+        {
+            await _conteudos.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Texto excluído.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
         return RedirecionarParaIndex();
     }
 }

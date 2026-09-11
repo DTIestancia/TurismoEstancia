@@ -135,28 +135,65 @@ public class PontosTuristicosController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Excluir(int id, CancellationToken ct)
+    public async Task<IActionResult> Ocultar(int id, string? contexto, CancellationToken ct)
     {
-        await _pontos.ExcluirAsync(id, ct);
-        TempData["PainelOk"] = "Ponto turístico desativado.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _pontos.OcultarAsync(id, ct);
+            TempData["PainelOk"] = "Ponto turístico ocultado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirectToAction(nameof(Index), new { contexto });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    public async Task<IActionResult> Reativar(int id, string? contexto, CancellationToken ct)
     {
-        await _pontos.ReativarAsync(id, ct);
-        TempData["PainelOk"] = "Ponto turístico reativado.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _pontos.ReativarAsync(id, ct);
+            TempData["PainelOk"] = "Ponto turístico reativado.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirectToAction(nameof(Index), new { contexto });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Excluir(int id, string? contexto, CancellationToken ct)
+    {
+        try
+        {
+            await _pontos.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Ponto turístico excluído definitivamente.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirectToAction(nameof(Index), new { contexto });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AtualizarPosicao(int id, int leftPercent, int topPercent, CancellationToken ct)
     {
-        await _pontos.AtualizarPosicaoAsync(id, leftPercent, topPercent, ct);
-        return Json(new { ok = true, leftPercent = Math.Clamp(leftPercent, 0, 100), topPercent = Math.Clamp(topPercent, 0, 100) });
+        try
+        {
+            await _pontos.AtualizarPosicaoAsync(id, leftPercent, topPercent, ct);
+            return Json(new { ok = true, leftPercent = Math.Clamp(leftPercent, 0, 100), topPercent = Math.Clamp(topPercent, 0, 100) });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Json(new { ok = false, erro = ex.Message });
+        }
     }
 
     [HttpPost]
@@ -168,7 +205,14 @@ public class PontosTuristicosController : PainelController
         var y = topPercentMobile != 0 || leftPercentMobile != 0 ? topPercentMobile : topPercent;
         if (x == 0 && leftPercent != 0) x = leftPercent;
         if (y == 0 && topPercent != 0) y = topPercent;
-        await _pontos.AtualizarPosicaoMobileAsync(id, x, y, ct);
-        return Json(new { ok = true, leftPercentMobile = Math.Clamp(x, 0, 100), topPercentMobile = Math.Clamp(y, 0, 100) });
+        try
+        {
+            await _pontos.AtualizarPosicaoMobileAsync(id, x, y, ct);
+            return Json(new { ok = true, leftPercentMobile = Math.Clamp(x, 0, 100), topPercentMobile = Math.Clamp(y, 0, 100) });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Json(new { ok = false, erro = ex.Message });
+        }
     }
 }

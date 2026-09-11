@@ -1,0 +1,17 @@
+@* Dialog único de seleção visual de ícones (Lucide + redes sociais).
+   Incluído uma vez no _PainelLayout; os botões "Escolher" (data-escolher-icone)
+   dos formulários abrem via painel.js (AbrirSeletorIcone). *@
+<dialog class="painel-dialog painel-dialog--icone" id="seletorIconeDialog" aria-label="Escolher ícone">
+    <div class="painel-dialog-inner">
+        <div class="painel-dialog-header">
+            <div>
+                <h3 class="painel-dialog-title">Escolher ícone</h3>
+                <p class="painel-dialog-desc">Clique num ícone para preencher o campo. Use a busca ou os grupos para filtrar.</p>
+            </div>
+            <button type="button" class="painel-dialog-close" data-dialog-close aria-label="Fechar"><i data-lucide="x"></i></button>
+        </div>
+        <input type="search" id="seletorIconeBusca" class="painel-input" placeholder="Buscar ícone... (ex.: praia, hotel, mapa)" autocomplete="off" />
+        <div class="painel-icone-grupos" id="seletorIconeGrupos" role="group" aria-label="Filtrar por grupo"></div>
+        <div class="painel-icone-grade" id="seletorIconeGrade" role="listbox" aria-label="Ícones disponíveis"></div>
+    </div>
+</dialog>

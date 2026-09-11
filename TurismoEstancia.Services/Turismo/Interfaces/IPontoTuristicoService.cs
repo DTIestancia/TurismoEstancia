@@ -19,7 +19,14 @@ public interface IPontoTuristicoService
     /// <summary>Salva o ponto, suas mídias (arquivos opcionais) e horários.</summary>
     Task SalvarAsync(PontoTuristicoDto dto, IFormFile? capa, IFormFile? pictograma, IEnumerable<IFormFile> galeria, IFormFile? icone = null, CancellationToken ct = default);
 
-    /// <summary>Exclusão lógica (Ativo = false).</summary>
+    /// <summary>Oculta o ponto do portal (Ativo = false).</summary>
+    Task OcultarAsync(int id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Exclusão definitiva: remove o ponto, suas mídias/horários/avaliações
+    /// (filhos próprios) e os arquivos órfãos. Bloqueada se houver vínculo
+    /// com itens de roteiro.
+    /// </summary>
     Task ExcluirAsync(int id, CancellationToken ct = default);
 
     Task ReativarAsync(int id, CancellationToken ct = default);

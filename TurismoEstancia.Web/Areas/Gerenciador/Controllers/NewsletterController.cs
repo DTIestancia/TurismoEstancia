@@ -77,27 +77,27 @@ public class NewsletterController : PainelController
     /// <summary>Disparo em massa: enfileira um e-mail para cada destinatário ativo.</summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> EnviarDisparo(DisparoNewsletterViewModel model, CancellationToken ct)
+    public async Task<IActionResult> EnviarDisparo(DisparoNewsletterViewModel model, string? busca, int pagina, CancellationToken ct)
     {
         if (!ModelState.IsValid)
         {
             TempData["PainelErro"] = string.Join(" ", ModelState.Values
                 .SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-            return RedirecionarParaIndex();
+            return RedirectToAction(nameof(Index), new { busca, pagina });
         }
 
         if (!_smtp.Configurado)
         {
             TempData["PainelErro"] =
                 "E-mail SMTP não configurado. Adicione a seção \"Smtp\" (Host e RemetenteEmail) no appsettings.json.";
-            return RedirecionarParaIndex();
+            return RedirectToAction(nameof(Index), new { busca, pagina });
         }
 
         var destinatarios = await _newsletter.ListarEmailsAtivosAsync(ct);
         if (destinatarios.Count == 0)
         {
             TempData["PainelErro"] = "Nenhuma inscrição ativa para receber o disparo.";
-            return RedirecionarParaIndex();
+            return RedirectToAction(nameof(Index), new { busca, pagina });
         }
 
         var corpoHtml = EmailHtml.Marketing(model.Assunto, model.Corpo);
@@ -121,24 +121,54 @@ public class NewsletterController : PainelController
         TempData["PainelOk"] = enfileirados == destinatarios.Count
             ? $"Disparo enfileirado para {enfileirados} destinatário(s): \"{model.Assunto.Trim()}\"."
             : $"Disparo parcial: {enfileirados} de {destinatarios.Count} enfileirados (fila de e-mails cheia).";
-        return RedirecionarParaIndex();
+        return RedirectToAction(nameof(Index), new { busca, pagina });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Inativar(int id, CancellationToken ct)
+    public async Task<IActionResult> Inativar(int id, string? busca, int pagina, CancellationToken ct)
     {
-        await _newsletter.InativarAsync(id, ct);
-        TempData["PainelOk"] = "Inscrição inativada.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _newsletter.InativarAsync(id, ct);
+            TempData["PainelOk"] = "Inscrição inativada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirectToAction(nameof(Index), new { busca, pagina });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Reativar(int id, CancellationToken ct)
+    public async Task<IActionResult> Reativar(int id, string? busca, int pagina, CancellationToken ct)
     {
-        await _newsletter.ReativarAsync(id, ct);
-        TempData["PainelOk"] = "Inscrição reativada.";
-        return RedirecionarParaIndex();
+        try
+        {
+            await _newsletter.ReativarAsync(id, ct);
+            TempData["PainelOk"] = "Inscrição reativada.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirectToAction(nameof(Index), new { busca, pagina });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Excluir(int id, string? busca, int pagina, CancellationToken ct)
+    {
+        try
+        {
+            await _newsletter.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Inscrição excluída definitivamente.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["PainelErro"] = ex.Message;
+        }
+        return RedirectToAction(nameof(Index), new { busca, pagina });
     }
 }

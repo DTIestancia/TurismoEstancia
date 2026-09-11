@@ -72,18 +72,22 @@
                                 <a class="btn-painel btn-painel--ghost btn-painel--xs" asp-action="Editar" asp-route-id="@item.Id"><i data-lucide="pencil"></i> Editar</a>
                                 @if (item.Ativo)
                                 {
-                                    <form asp-action="Excluir" asp-route-id="@item.Id" method="post" class="js-confirm" data-confirm="Desativar o ponto '@item.Nome'? Ele sai do portal.">
+                                    <form asp-action="Ocultar" asp-route-id="@item.Id" asp-route-contexto="@contexto" method="post" class="js-confirm" data-confirm="Ocultar o ponto '@item.Nome'? Ele sai do portal, mas pode ser reativado.">
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs" title="Desativar"><i data-lucide="eye-off"></i></button>
+                                        <button type="submit" class="btn-painel btn-painel--ghost btn-painel--xs" title="Ocultar"><i data-lucide="eye-off"></i></button>
                                     </form>
                                 }
                                 else
                                 {
-                                    <form asp-action="Reativar" asp-route-id="@item.Id" method="post">
+                                    <form asp-action="Reativar" asp-route-id="@item.Id" asp-route-contexto="@contexto" method="post">
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn-painel btn-painel--ghost btn-painel--xs" title="Reativar"><i data-lucide="eye"></i></button>
                                     </form>
                                 }
+                                <form asp-action="Excluir" asp-route-id="@item.Id" asp-route-contexto="@contexto" method="post" class="js-confirm" data-confirm="Excluir DEFINITIVAMENTE o ponto '@item.Nome'? Fotos, horários e avaliações serão apagados.">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-painel btn-painel--danger btn-painel--xs" title="Excluir definitivamente"><i data-lucide="trash-2"></i></button>
+                                </form>
                             </div>
                         </td>
                     </tr>
