@@ -584,7 +584,7 @@
     justify-content: space-between;
     gap: 8px;
   }
-  h1 {
+  h1, h3 {
     font-family: 'Fraunces', serif;
     font-size: 18px;
     margin: 0;
@@ -642,7 +642,7 @@
 .noticias-item-1 {
   @media (min-width: 60em) {
     grid-column: 1 / span 2;
-    h1 { font-size: 22px; }
+    h1, h3 { font-size: 22px; }
   }
 }
 
@@ -2094,6 +2094,30 @@
   justify-content: center;
   gap: 12px;
   padding: 18px 28px 26px;
+}
+
+// Placeholder quando a maravilha não tem capa (evita <img src="">).
+.vitrine-foto--vazia {
+  aspect-ratio: 16 / 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  color: #9ca3af;
+
+  svg { width: 44px; height: 44px; }
+}
+
+// Placeholder quando o card de /lugares não tem capa.
+.paginas-card-img--vazia {
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  color: #9ca3af;
+
+  svg { width: 40px; height: 40px; }
 }
 
 .vitrine-cat {
@@ -3734,3 +3758,17 @@ img.paginas-galeria-card-img {
 .paginacao .paginacao-item:hover, .paginacao .paginacao-seta:hover { color: var(--color-azure-7); }
 .paginacao .paginacao-reticencias { color: #9ca3af; }
 .error-page .error-message { color: #4b5563; }
+
+// ===== Utilit�rios de acessibilidade =====
+// Texto leg�vel por leitores de tela, invis�vel no layout.
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

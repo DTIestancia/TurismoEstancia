@@ -12,7 +12,7 @@ else
              a próxima espreita pela direita e a anterior fica à esquerda (já passou).
              No celular, arrastar passa as cartas; as setas ficam no centro da foto. -->
         <div class="vitrine-posicao">
-            <div class="vitrine-deck" id="vitrineDeck" role="list" aria-label="As 7 maravilhas de Estância">
+            <div class="vitrine-deck" id="vitrineDeck" role="list" aria-label="As maravilhas de Estância">
                 @for (var i = 0; i < Model.Count; i++)
                 {
                     var ponto = Model[i];
@@ -25,7 +25,7 @@ else
                             }
                             else
                             {
-                                <img src="" alt="@ponto.Nome" loading="lazy" />
+                                <div class="vitrine-foto--vazia" role="img" aria-label="Foto de @ponto.Nome em breve"><i data-lucide="image" aria-hidden="true"></i></div>
                             }
                         </figure>
                         <div class="vitrine-info">

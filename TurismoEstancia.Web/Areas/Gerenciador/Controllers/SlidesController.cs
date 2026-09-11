@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TurismoEstancia.Web.Infrastructure;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Services.Turismo.Interfaces;
 
@@ -11,10 +12,20 @@ public class SlidesController : PainelController
     public SlidesController(IServiceProvider services, ISlideService slides)
         : base(services) => _slides = slides;
 
-    public async Task<IActionResult> Index(CancellationToken ct)
+    public async Task<IActionResult> Index(CancellationToken ct, int pagina = 1)
     {
         ViewData["Title"] = "Slides do hero";
-        return View(await _slides.ListarAsync(ct));
+
+        var todos = await _slides.ListarAsync(ct);
+        var totalPaginas = Math.Max(1, (int)Math.Ceiling(todos.Count / (double)PaginaService.TamanhoPainel));
+        var paginaAtual = Math.Clamp(pagina, 1, totalPaginas);
+        ViewData["PaginaAtual"] = paginaAtual;
+        ViewData["PaginasTotal"] = totalPaginas;
+
+        return View(todos
+            .Skip((paginaAtual - 1) * PaginaService.TamanhoPainel)
+            .Take(PaginaService.TamanhoPainel)
+            .ToList());
     }
 
     public IActionResult Criar()

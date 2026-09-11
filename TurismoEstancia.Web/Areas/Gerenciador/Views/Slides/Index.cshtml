@@ -66,4 +66,13 @@
     {
         <div class="painel-empty">Nenhum slide cadastrado. Sem slides, o hero usa o fundo do protótipo.</div>
     }
+    else
+    {
+        @await Html.PartialAsync("_Paginacao", new PaginacaoViewModel
+        {
+            PaginaAtual = (int)(ViewData["PaginaAtual"] ?? 1),
+            TotalPaginas = (int)(ViewData["PaginasTotal"] ?? 1),
+            UrlBase = Url.Action("Index", "Slides")
+        })
+    }
 </div>

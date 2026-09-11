@@ -26,6 +26,7 @@ public class GaleriaController : Controller
     private const int FotosPorPagina = 12;
 
     /// <summary>GET /galeria — todas as fotos das categorias ativas, paginadas.</summary>
+    [HttpGet]
     [Route("galeria")]
     public async Task<IActionResult> Index(CancellationToken ct, int pagina = 1)
     {
@@ -40,6 +41,7 @@ public class GaleriaController : Controller
     }
 
     /// <summary>GET /galeria/{chave} — fotos de uma categoria específica, paginadas.</summary>
+    [HttpGet]
     [Route("galeria/{chave}")]
     public async Task<IActionResult> Categoria(string chave, CancellationToken ct, int pagina = 1)
     {

@@ -12,6 +12,7 @@ public class EventoController : Controller
     public EventoController(IEventoService eventos) => _eventos = eventos;
 
     /// <summary>GET /Evento/{id}/ics — baixa o evento no formato iCalendar.</summary>
+    [HttpGet]
     [Route("Evento/{id:int}/ics")]
     public async Task<IActionResult> Ics(int id, CancellationToken ct)
     {

@@ -69,8 +69,8 @@
                                     <img src="@Url.Content($"~/arquivo/{thumb}")" alt="@(midia.Titulo ?? Model.Galeria.Nome)" loading="lazy" decoding="async" />
                                     @if (i == fotosVisiveis - 1 && totalFotos > fotosVisiveis)
                                     {
-                                        <span class="galeria-item-mais" data-abrir-em="@fotosVisiveis" role="button"
-                                              aria-label="Ver as @(totalFotos - fotosVisiveis) fotos restantes">
+                                        <span class="galeria-item-mais" data-abrir-em="@fotosVisiveis"
+                                              aria-hidden="true">
                                             <span class="galeria-item-mais-num">+@(totalFotos - fotosVisiveis)</span>
                                             <span class="galeria-item-mais-rotulo">ver todas as fotos</span>
                                         </span>

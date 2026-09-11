@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TurismoEstancia.Web.Infrastructure;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Services.Turismo.Interfaces;
@@ -23,7 +24,7 @@ public class PontosTuristicosController : PainelController
         _conteudos = conteudos;
     }
 
-    public async Task<IActionResult> Index(string? contexto, CancellationToken ct)
+    public async Task<IActionResult> Index(string? contexto, CancellationToken ct, int pagina = 1)
     {
         ViewData["Title"] = "Pontos turísticos";
         // O contexto separa os dois usos no portal: "maravilhas" (7 Maravilhas)
@@ -38,7 +39,16 @@ public class PontosTuristicosController : PainelController
             "mapa" => todos.Where(p => p.ExibirNoMapa).ToList(),
             _ => todos
         };
-        return View(lista);
+
+        var totalPaginas = Math.Max(1, (int)Math.Ceiling(lista.Count / (double)PaginaService.TamanhoPainel));
+        var paginaAtual = Math.Clamp(pagina, 1, totalPaginas);
+        ViewData["PaginaAtual"] = paginaAtual;
+        ViewData["PaginasTotal"] = totalPaginas;
+
+        return View(lista
+            .Skip((paginaAtual - 1) * PaginaService.TamanhoPainel)
+            .Take(PaginaService.TamanhoPainel)
+            .ToList());
     }
 
     public async Task<IActionResult> Criar(CancellationToken ct)

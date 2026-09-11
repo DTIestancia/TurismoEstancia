@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TurismoEstancia.Web.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Services.Conteudo.Interfaces;
@@ -13,11 +14,21 @@ public class ContatosController : PainelController
     public ContatosController(IServiceProvider services, IContatoService contatos)
         : base(services) => _contatos = contatos;
 
-    public async Task<IActionResult> Index(CancellationToken ct)
+    public async Task<IActionResult> Index(CancellationToken ct, int pagina = 1)
     {
         ViewData["Title"] = "Contatos do rodapé";
         ViewData["AreaAtiva"] = "rodape";
-        return View(await _contatos.ListarAsync(null, ct));
+
+        var todos = await _contatos.ListarAsync(null, ct);
+        var totalPaginas = Math.Max(1, (int)Math.Ceiling(todos.Count / (double)PaginaService.TamanhoPainel));
+        var paginaAtual = Math.Clamp(pagina, 1, totalPaginas);
+        ViewData["PaginaAtual"] = paginaAtual;
+        ViewData["PaginasTotal"] = totalPaginas;
+
+        return View(todos
+            .Skip((paginaAtual - 1) * PaginaService.TamanhoPainel)
+            .Take(PaginaService.TamanhoPainel)
+            .ToList());
     }
 
     public async Task<IActionResult> Criar(CancellationToken ct)

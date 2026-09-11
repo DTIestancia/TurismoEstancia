@@ -1,0 +1,67 @@
+@page
+@model TurismoEstancia.Web.Pages.MidiaKit.IndexModel
+@{
+    ViewData["Title"] = "Mídia kit";
+}
+@await Html.PartialAsync("_PaginasHeader")
+<main class="news-index page-public pagina-midiakit">
+    <section class="news-hero">
+        <div class="news-hero-inner">
+            <div class="pill pill-white" style="background:var(--color-orange-48);">
+                <i data-lucide="briefcase" class="icon-lg"></i>
+                <span style="color:#241C07;font-size:12px;font-weight:700;">Imprensa e parceiros</span>
+            </div>
+            <h1 class="news-hero-title">Mídia <span class="secao-destaque">kit</span></h1>
+            <p class="news-hero-subtitle">Materiais oficiais do turismo de Estância para divulgação — logotipos, fotos e documentos.</p>
+        </div>
+    </section>
+
+    <div class="news-container">
+        @if (Model.Itens.Count == 0)
+        {
+            <div class="news-empty">Nenhum material publicado ainda — volte em breve!</div>
+        }
+        else
+        {
+            <div class="news-grid">
+                @foreach (var item in Model.Itens)
+                {
+                    <div class="news-card">
+                        <div class="news-card-body">
+                            <div class="news-card-date">
+                                <i data-lucide="file-down" class="icon-lg"></i>
+                                @(string.IsNullOrWhiteSpace(item.ArquivoContentType) ? "Arquivo" : item.ArquivoContentType)
+                                @if (item.ArquivoSize is long tamanho && tamanho > 0)
+                                {
+                                    <span> · @FormatarTamanho(tamanho)</span>
+                                }
+                            </div>
+                            <h2 class="news-card-title">@item.Titulo</h2>
+                            @if (!string.IsNullOrWhiteSpace(item.Descricao))
+                            {
+                                <p class="news-card-resumo">@item.Descricao</p>
+                            }
+                            @if (item.ArquivoId is long arquivoId)
+                            {
+                                <a class="btn-primary" href="@Url.Content($"~/arquivo/{arquivoId}")" download title="Baixar @item.Titulo" style="align-self:flex-start;">
+                                    <i data-lucide="download" class="icon-lg"></i> Baixar
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</main>
+@await Html.PartialAsync("_PaginasFooter")
+
+@functions {
+    private static string FormatarTamanho(long bytes) =>
+        bytes switch
+        {
+            >= 1024 * 1024 => $"{bytes / (1024.0 * 1024.0):0.#} MB",
+            >= 1024 => $"{bytes / 1024.0:0.#} KB",
+            _ => $"{bytes} B"
+        };
+}

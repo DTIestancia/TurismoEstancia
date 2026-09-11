@@ -45,11 +45,15 @@
             @if (Model.ConhecaEstancia.Count > 1 && temItens)
             {
                 <div class="conheca-tabs" role="tablist" aria-label="Temas">
+                    @{
+                        var primeiraAba = true;
+                    }
                     @foreach (var tab in Model.ConhecaEstancia)
                     {
-                        <button type="button" class="conheca-tab" role="tab" data-tab="@tab.Chave">
+                        <button type="button" class="conheca-tab" role="tab" aria-selected="@(primeiraAba ? "true" : "false")" data-tab="@tab.Chave">
                             <i data-lucide="@(tab.Icone ?? "star")" class="icon-lg"></i><span>@tab.Rotulo</span>
                         </button>
+                        primeiraAba = false;
                     }
                 </div>
             }

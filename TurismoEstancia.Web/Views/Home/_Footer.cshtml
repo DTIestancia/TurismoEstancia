@@ -50,13 +50,10 @@
             <div class="footer-pages">
                 <div class="footer-pages-title">Navegue</div>
                 <div class="footer-pages-grid">
-                    <a href="@Url.Content("~/cidade")">Nossa Cidade</a>
-                    <a href="@Url.Content("~/cultura")">Nossa Cultura</a>
-                    <a href="@Url.Content("~/grupos-populares")">Grupos Populares</a>
-                    <a href="@Url.Content("~/gastronomia")">Gastronomia</a>
-                    <a href="@Url.Content("~/lugares")">Lugares que Encantam</a>
-                    <a href="@Url.Content("~/Agenda")">Agenda</a>
-                    <a href="~/Noticias">Blog</a>
+                    @foreach (var link in MenuPortal.Rodape)
+                    {
+                        <a href="@Url.Content(link.Url)">@link.Rotulo</a>
+                    }
                 </div>
             </div>
 

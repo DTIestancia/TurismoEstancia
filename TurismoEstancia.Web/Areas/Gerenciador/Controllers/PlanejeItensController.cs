@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TurismoEstancia.Web.Infrastructure;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Services.Planeje.Interfaces;
 
@@ -11,11 +12,21 @@ public class PlanejeItensController : PainelController
     public PlanejeItensController(IServiceProvider services, IPlanejeService planeje)
         : base(services) => _planeje = planeje;
 
-    public async Task<IActionResult> Index(CancellationToken ct)
+    public async Task<IActionResult> Index(CancellationToken ct, int pagina = 1)
     {
         ViewData["Title"] = "Locais do Planeje";
         ViewData["AreaAtiva"] = "roteiros";
-        return View(await _planeje.ListarItensAsync(false, ct));
+
+        var todos = await _planeje.ListarItensAsync(false, ct);
+        var totalPaginas = Math.Max(1, (int)Math.Ceiling(todos.Count / (double)PaginaService.TamanhoPainel));
+        var paginaAtual = Math.Clamp(pagina, 1, totalPaginas);
+        ViewData["PaginaAtual"] = paginaAtual;
+        ViewData["PaginasTotal"] = totalPaginas;
+
+        return View(todos
+            .Skip((paginaAtual - 1) * PaginaService.TamanhoPainel)
+            .Take(PaginaService.TamanhoPainel)
+            .ToList());
     }
 
     public async Task<IActionResult> Criar(CancellationToken ct)

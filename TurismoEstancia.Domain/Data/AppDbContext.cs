@@ -40,6 +40,7 @@ public class AppDbContext : DbContext
     public DbSet<PlanejeCategoria> PlanejeCategorias => Set<PlanejeCategoria>();
     public DbSet<PlanejeItem> PlanejeItens => Set<PlanejeItem>();
     public DbSet<PlanejeAvaliacao> PlanejeAvaliacoes => Set<PlanejeAvaliacao>();
+    public DbSet<MidiaKitItem> MidiaKitItens => Set<MidiaKitItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -71,6 +72,7 @@ public class AppDbContext : DbContext
         ConfigurePlanejeCategoria(modelBuilder);
         ConfigurePlanejeItem(modelBuilder);
         ConfigurePlanejeAvaliacao(modelBuilder);
+        ConfigureMidiaKitItem(modelBuilder);
     }
 
     /// <summary>
@@ -577,6 +579,24 @@ public class AppDbContext : DbContext
                   .WithMany(i => i.Avaliacoes)
                   .HasForeignKey(e => e.PlanejeItemId)
                   .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+
+    private static void ConfigureMidiaKitItem(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<MidiaKitItem>(entity =>
+        {
+            entity.Property(e => e.Titulo).HasMaxLength(180).IsRequired();
+            entity.Property(e => e.Descricao).HasMaxLength(1000);
+            entity.Property(e => e.Data).HasDefaultValueSql("GETDATE()");
+            entity.Property(e => e.Ativo).HasDefaultValue(true);
+
+            // Arquivo para download (qualquer tipo): SetNull — sem arquivo, o
+            // item exibe título/descrição mas sem botão de baixar.
+            entity.HasOne(e => e.Arquivo)
+                  .WithMany()
+                  .HasForeignKey(e => e.ArquivoId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
     }
 }

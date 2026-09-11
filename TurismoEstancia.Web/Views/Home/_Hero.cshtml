@@ -64,15 +64,10 @@
             <span class="navbar-toggle-icon" aria-hidden="true"></span>
         </button>
         <div class="navbar-links" id="navLinks">
-            <a href="@Url.Content("~/")" class="navbar-link" data-section="home">Home</a>
-            <a href="#section-historia" class="navbar-link" data-section="cidade">Nossa Cidade</a>
-            <a href="#section-conheca" class="navbar-link" data-section="conheca">Conheça Estância</a>
-                <a href="#section-maravilhas" class="navbar-link" data-section="maravilhas">7 Maravilhas</a>
-                <a href="#section-servicos" class="navbar-link" data-section="agenda">Agenda</a>
-                <a href="#section-roteiros" class="navbar-link" data-section="roteiros">Planeje sua viagem</a>
-            <a href="#section-noticias" class="navbar-link" data-section="noticias">Blog</a>
-                <a href="#section-mapa" class="navbar-link" data-section="mapa">Mapa</a>
-           
+            @foreach (var link in MenuPortal.Navbar)
+            {
+                <a href="@(link.Ancora ?? Url.Content(link.Url))" class="navbar-link"@Html.Raw(link.Secao is null ? "" : $" data-section=\"{link.Secao}\"")>@link.Rotulo</a>
+            }
 
             @if (redesSociais.Count > 0)
             {
@@ -132,6 +127,7 @@
             @if (heroTituloImagemId is long htId)
             {
                 <img src="@Url.Content($"~/arquivo/{htId}")" alt="@heroTitulo" class="hero-title-image" loading="eager" fetchpriority="high" />
+                <h1 class="visually-hidden">@System.Text.RegularExpressions.Regex.Replace(heroTitulo ?? "Estância", "<.*?>", "")</h1>
             }
             else
             {

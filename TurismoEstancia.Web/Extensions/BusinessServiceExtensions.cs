@@ -16,6 +16,8 @@ using TurismoEstancia.Services.Galeria.Interfaces;
 using TurismoEstancia.Services.Galeria.Services;
 using TurismoEstancia.Services.Infra.Interfaces;
 using TurismoEstancia.Services.Infra.Services;
+using TurismoEstancia.Services.MidiaKit.Interfaces;
+using TurismoEstancia.Services.MidiaKit.Services;
 using TurismoEstancia.Services.Planeje.Interfaces;
 using TurismoEstancia.Services.Planeje.Services;
 using TurismoEstancia.Services.Roteiro.Interfaces;
@@ -75,6 +77,9 @@ public static class BusinessServiceExtensions
 
         // Módulo Galeria
         builder.Services.AddScoped<IGaleriaService, GaleriaService>();
+
+        // Módulo Mídia kit
+        builder.Services.AddScoped<IMidiaKitService, MidiaKitService>();
 
         // Módulo Analytics: fila em memória + gravação em background (lote).
         builder.Services.AddSingleton(Channel.CreateBounded<AnalyticsEvento>(

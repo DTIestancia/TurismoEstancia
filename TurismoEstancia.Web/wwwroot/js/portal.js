@@ -191,7 +191,11 @@ document.addEventListener('DOMContentLoaded', function () {
         tabs.forEach(function (t, i) { if (t.chave === chave) idx = i; });
         if (idx < 0 || idx === activeTabIdx) return;
         activeTabIdx = idx;
-        tabButtons.forEach(function (b) { b.classList.toggle('active', b === btn); });
+        tabButtons.forEach(function (b) {
+          var ativa = b === btn;
+          b.classList.toggle('active', ativa);
+          b.setAttribute('aria-selected', ativa ? 'true' : 'false');
+        });
         renderDeck();
       });
     });
@@ -204,7 +208,11 @@ document.addEventListener('DOMContentLoaded', function () {
       if ((tabs[i].itens || []).length) { idxInicial = i; break; }
     }
     activeTabIdx = idxInicial;
-    tabButtons.forEach(function (b, i) { b.classList.toggle('active', i === idxInicial); });
+    tabButtons.forEach(function (b, i) {
+      var ativa = i === idxInicial;
+      b.classList.toggle('active', ativa);
+      b.setAttribute('aria-selected', ativa ? 'true' : 'false');
+    });
     renderDeck();
   })();
 
@@ -766,19 +774,23 @@ document.addEventListener('DOMContentLoaded', function () {
       var linksWrap = document.getElementById('planejeModalLinks');
       if (linksEl) {
         linksEl.innerHTML = '';
-        if (site) {
+        // Só http(s): bloqueia javascript:/data: digitados no CMS.
+        if (site && /^https?:\/\//i.test(site)) {
           var a = document.createElement('a');
           a.href = site; a.target = '_blank'; a.rel = 'noopener';
           a.textContent = site.replace(/^https?:\/\//, '');
           linksEl.appendChild(a);
         }
         if (insta) {
-          if (site) linksEl.appendChild(document.createTextNode(' · '));
+          if (site && linksEl.childNodes.length) linksEl.appendChild(document.createTextNode(' · '));
           var href = insta.indexOf('http') === 0 ? insta : 'https://instagram.com/' + insta.replace(/^@/, '');
-          var b = document.createElement('a');
-          b.href = href; b.target = '_blank'; b.rel = 'noopener';
-          b.textContent = insta;
-          linksEl.appendChild(b);
+          if (!/^https?:\/\//i.test(href)) href = '';
+          if (href) {
+            var b = document.createElement('a');
+            b.href = href; b.target = '_blank'; b.rel = 'noopener';
+            b.textContent = insta;
+            linksEl.appendChild(b);
+          }
         }
       }
       if (linksWrap) linksWrap.classList.toggle('show', !!(site || insta));
@@ -1345,6 +1357,4 @@ document.addEventListener('DOMContentLoaded', function () {
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
-
-  console.log('🎬 Descubra Estância — portal dinâmico carregado');
 });

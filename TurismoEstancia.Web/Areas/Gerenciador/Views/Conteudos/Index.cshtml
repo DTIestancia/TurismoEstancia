@@ -20,6 +20,12 @@
             </div>
         </div>
         <div class="painel-table-wrap">
+            @if (secao.Itens.Count == 0)
+            {
+                <div class="painel-empty">Nenhum campo nesta seção.</div>
+            }
+            else
+            {
             <table class="painel-table">
                 <thead>
                     <tr>
@@ -77,6 +83,7 @@
                     }
                 </tbody>
             </table>
+            }
         </div>
     </div>
 }

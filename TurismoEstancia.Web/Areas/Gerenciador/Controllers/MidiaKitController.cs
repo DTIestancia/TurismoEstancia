@@ -1,48 +1,38 @@
 using Microsoft.AspNetCore.Mvc;
-using TurismoEstancia.Web.Infrastructure;
 using TurismoEstancia.Domain.DTOs;
-using TurismoEstancia.Services.ConhecaEstancia.Interfaces;
+using TurismoEstancia.Services.MidiaKit.Interfaces;
 
 namespace TurismoEstancia.Web.Areas.Gerenciador.Controllers;
 
-public class ConhecaEstanciaController : PainelController
+/// <summary>CMS do Mídia kit (/midia-kit): materiais para imprensa e parceiros.</summary>
+public class MidiaKitController : PainelController
 {
-    private readonly IConhecaEstanciaService _conheca;
+    private readonly IMidiaKitService _midiaKit;
 
-    public ConhecaEstanciaController(IServiceProvider services, IConhecaEstanciaService conheca)
-        : base(services) => _conheca = conheca;
+    public MidiaKitController(IServiceProvider services, IMidiaKitService midiaKit)
+        : base(services) => _midiaKit = midiaKit;
 
-    public async Task<IActionResult> Index(CancellationToken ct, int pagina = 1)
+    public async Task<IActionResult> Index(CancellationToken ct)
     {
-        ViewData["Title"] = "Conheça Estância";
-
-        var todos = await _conheca.ListarAsync(ct);
-        var totalPaginas = Math.Max(1, (int)Math.Ceiling(todos.Count / (double)PaginaService.TamanhoPainel));
-        var paginaAtual = Math.Clamp(pagina, 1, totalPaginas);
-        ViewData["PaginaAtual"] = paginaAtual;
-        ViewData["PaginasTotal"] = totalPaginas;
-
-        return View(todos
-            .Skip((paginaAtual - 1) * PaginaService.TamanhoPainel)
-            .Take(PaginaService.TamanhoPainel)
-            .ToList());
+        ViewData["Title"] = "Mídia kit";
+        return View(await _midiaKit.ListarAsync(ct));
     }
 
     public IActionResult Criar()
     {
-        ViewData["Title"] = "Novo item do Conheça Estância";
-        return View(new ConhecaEstanciaItemDto());
+        ViewData["Title"] = "Novo item do mídia kit";
+        return View(new MidiaKitItemDto());
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Criar(ConhecaEstanciaItemDto dto, IFormFile? imagem, CancellationToken ct)
+    public async Task<IActionResult> Criar(MidiaKitItemDto dto, IFormFile? arquivo, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
         try
         {
-            await _conheca.SalvarAsync(dto, imagem, ct);
-            TempData["PainelOk"] = "Item salvo no Conheça Estância.";
+            await _midiaKit.SalvarAsync(dto, arquivo, ct);
+            TempData["PainelOk"] = "Item salvo no mídia kit.";
             return RedirecionarParaIndex();
         }
         catch (InvalidOperationException ex)
@@ -54,19 +44,19 @@ public class ConhecaEstanciaController : PainelController
 
     public async Task<IActionResult> Editar(int id, CancellationToken ct)
     {
-        ViewData["Title"] = "Editar item do Conheça Estância";
-        var dto = await _conheca.ObterPorIdAsync(id, ct);
+        ViewData["Title"] = "Editar item do mídia kit";
+        var dto = await _midiaKit.ObterPorIdAsync(id, ct);
         return dto is null ? NotFound() : View(dto);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Editar(ConhecaEstanciaItemDto dto, IFormFile? imagem, CancellationToken ct)
+    public async Task<IActionResult> Editar(MidiaKitItemDto dto, IFormFile? arquivo, CancellationToken ct)
     {
         if (!ModelState.IsValid) return View(dto);
         try
         {
-            await _conheca.SalvarAsync(dto, imagem, ct);
+            await _midiaKit.SalvarAsync(dto, arquivo, ct);
             TempData["PainelOk"] = "Item atualizado.";
             return RedirecionarParaIndex();
         }
@@ -83,7 +73,7 @@ public class ConhecaEstanciaController : PainelController
     {
         try
         {
-            await _conheca.OcultarAsync(id, ct);
+            await _midiaKit.OcultarAsync(id, ct);
             TempData["PainelOk"] = "Item ocultado.";
         }
         catch (InvalidOperationException ex)
@@ -99,7 +89,7 @@ public class ConhecaEstanciaController : PainelController
     {
         try
         {
-            await _conheca.ReativarAsync(id, ct);
+            await _midiaKit.ReativarAsync(id, ct);
             TempData["PainelOk"] = "Item reativado.";
         }
         catch (InvalidOperationException ex)
@@ -115,8 +105,8 @@ public class ConhecaEstanciaController : PainelController
     {
         try
         {
-            await _conheca.ExcluirAsync(id, ct);
-            TempData["PainelOk"] = "Item excluído do Conheça Estância.";
+            await _midiaKit.ExcluirAsync(id, ct);
+            TempData["PainelOk"] = "Item excluído do mídia kit.";
         }
         catch (InvalidOperationException ex)
         {

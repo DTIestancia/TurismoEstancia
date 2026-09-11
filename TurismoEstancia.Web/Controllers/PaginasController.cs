@@ -55,6 +55,7 @@ public class PaginasController : Controller
     }
 
     /// <summary>GET /cidade — história completa da cidade.</summary>
+    [HttpGet]
     [Route("cidade")]
     public async Task<IActionResult> Cidade(CancellationToken ct)
     {
@@ -70,6 +71,7 @@ public class PaginasController : Controller
     }
 
     /// <summary>GET /cultura — textos + tags culturais.</summary>
+    [HttpGet]
     [Route("cultura")]
     public async Task<IActionResult> Cultura(CancellationToken ct)
     {
@@ -85,6 +87,7 @@ public class PaginasController : Controller
     }
 
     /// <summary>GET /grupos-populares — grupos culturais.</summary>
+    [HttpGet]
     [Route("grupos-populares")]
     public async Task<IActionResult> GruposPopulares(CancellationToken ct)
     {
@@ -99,6 +102,7 @@ public class PaginasController : Controller
     }
 
     /// <summary>GET /gastronomia — pratos turísticos.</summary>
+    [HttpGet]
     [Route("gastronomia")]
     public async Task<IActionResult> Gastronomia(CancellationToken ct)
     {
@@ -113,6 +117,7 @@ public class PaginasController : Controller
     }
 
     /// <summary>GET /lugares — baralho das 7 maravilhas.</summary>
+    [HttpGet]
     [Route("lugares")]
     public async Task<IActionResult> Lugares(CancellationToken ct)
     {
@@ -139,6 +144,7 @@ public class PaginasController : Controller
     }
 
     /// <summary>GET /lugares/{id}/{slug?} — detalhe do ponto turístico.</summary>
+    [HttpGet]
     [Route("lugares/{id:int}/{slug?}")]
     public async Task<IActionResult> DetalheLugar(int id, string? slug, CancellationToken ct)
     {
@@ -168,6 +174,7 @@ public class PaginasController : Controller
     }
 
     /// <summary>GET /grupos-populares/{id}/{slug?} — detalhe do grupo cultural.</summary>
+    [HttpGet]
     [Route("grupos-populares/{id:int}/{slug?}")]
     public async Task<IActionResult> DetalheGrupo(int id, string? slug, CancellationToken ct)
     {
@@ -185,6 +192,7 @@ public class PaginasController : Controller
     }
 
     /// <summary>GET /gastronomia/{id}/{slug?} — detalhe do prato.</summary>
+    [HttpGet]
     [Route("gastronomia/{id:int}/{slug?}")]
     public async Task<IActionResult> DetalhePrato(int id, string? slug, CancellationToken ct)
     {
@@ -202,6 +210,7 @@ public class PaginasController : Controller
     }
 
     /// <summary>GET /cultura/{id}/{slug?} — detalhe da tag cultural.</summary>
+    [HttpGet]
     [Route("cultura/{id:int}/{slug?}")]
     public async Task<IActionResult> DetalheTag(int id, string? slug, CancellationToken ct)
     {
@@ -219,6 +228,7 @@ public class PaginasController : Controller
     }
 
     /// <summary>GET /conheca-estancia/{id}/{slug?} — detalhe do Conheça Estância (estilo blog).</summary>
+    [HttpGet]
     [Route("conheca-estancia/{id:int}/{slug?}")]
     public async Task<IActionResult> DetalheConhecaEstancia(int id, string? slug, CancellationToken ct)
     {

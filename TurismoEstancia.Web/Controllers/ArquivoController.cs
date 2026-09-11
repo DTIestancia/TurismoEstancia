@@ -11,6 +11,7 @@ public class ArquivoController : Controller
     public ArquivoController(IArquivoService arquivos) => _arquivos = arquivos;
 
     /// <summary>GET /arquivo/{id} — devolve o binário com o Content-Type correto.</summary>
+    [HttpGet]
     [Route("arquivo/{id:long}")]
     public async Task<IActionResult> Index(long id, CancellationToken ct)
     {

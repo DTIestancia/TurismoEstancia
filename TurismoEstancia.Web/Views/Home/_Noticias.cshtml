@@ -36,14 +36,14 @@
                     <div class="noticias-item noticias-item-@(i + 1)">
                         <a href="~/Noticias/Detalhe/@noticia.Slug" class="noticias-card"
                            data-track="noticia" data-track-id="@noticia.Id" data-track-nome="@noticia.Titulo">
-                            <div class="noticias-thumb" style="@(string.IsNullOrEmpty(thumbUrl) ? "background:#f3f4f6;" : $"background-image: url('{thumbUrl}'); background-position: {noticia.ImagemPosicaoX}% {noticia.ImagemPosicaoY}%;")">
+                            <div class="noticias-thumb" role="img" aria-label="Foto: @noticia.Titulo" style="@(string.IsNullOrEmpty(thumbUrl) ? "background:#f3f4f6;" : $"background-image: url('{thumbUrl}'); background-position: {noticia.ImagemPosicaoX}% {noticia.ImagemPosicaoY}%;")">
                                 @if (!string.IsNullOrEmpty(thumbUrl))
                                 {
                                     <span class="noticias-badge">@dataBadge</span>
                                 }
                             </div>
                             <article>
-                                <h1>@noticia.Titulo</h1>
+                                <h3>@noticia.Titulo</h3>
                                 @if (!string.IsNullOrWhiteSpace(noticia.Resumo))
                                 {
                                     <p>@noticia.Resumo</p>

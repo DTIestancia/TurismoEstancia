@@ -113,14 +113,14 @@ public class DashboardController : PainelController
             new() { Rotulo = "Avaliações", Icone = "star", Valor = avaliacoesTodas.Count + planejeTodas.Count, Url = Url.Action("Index", "Avaliacoes") }
         };
 
-        // Contagem real de rotas públicas no sitemap (8 estáticas + detalhes do banco).
+        // Contagem real de rotas públicas no sitemap (11 estáticas + detalhes do banco).
         var maravilhas = pontosTodos.Count(p => p.Ativo && p.CategoriaApresentarEmMaravilhas);
         var noticiasPublicadas = noticiasTodas.Count(n => n.Publicada && n.Ativo);
         var roteirosAtivos = roteirosTodos.Count(r => r.Ativo);
         var gruposAtivos = gruposTodos.Count(g => g.Ativo);
         var pratosAtivos = pratosTodos.Count(p => p.Ativo);
         var tagsAtivas = (await _tags.ListarAsync(ct)).Count(t => t.Ativo);
-        var rotasIndexaveis = 8 + maravilhas + noticiasPublicadas + roteirosAtivos + gruposAtivos + pratosAtivos + tagsAtivas;
+        var rotasIndexaveis = 11 + maravilhas + noticiasPublicadas + roteirosAtivos + gruposAtivos + pratosAtivos + tagsAtivas;
 
         var vm = new DashboardAnalyticsViewModel
         {

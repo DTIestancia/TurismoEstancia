@@ -6015,7 +6015,7 @@ img[loading=lazy].loaded {
   justify-content: space-between;
   gap: 8px;
 }
-.noticias-card h1 {
+.noticias-card h1, .noticias-card h3 {
   font-family: "Fraunces", serif;
   font-size: 18px;
   margin: 0;
@@ -6074,7 +6074,7 @@ img[loading=lazy].loaded {
   .noticias-item-1 {
     grid-column: 1/span 2;
   }
-  .noticias-item-1 h1 {
+  .noticias-item-1 h1, .noticias-item-1 h3 {
     font-size: 22px;
   }
 }
@@ -7661,6 +7661,32 @@ img[loading=lazy].loaded {
   justify-content: center;
   gap: 12px;
   padding: 18px 28px 26px;
+}
+
+.vitrine-foto--vazia {
+  aspect-ratio: 16/10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+.vitrine-foto--vazia svg {
+  width: 44px;
+  height: 44px;
+}
+
+.paginas-card-img--vazia {
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+.paginas-card-img--vazia svg {
+  width: 40px;
+  height: 40px;
 }
 
 .vitrine-cat {
@@ -9751,6 +9777,18 @@ img.paginas-galeria-card-img.is-carregada {
 
 .error-page .error-message {
   color: #4b5563;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /*# sourceMappingURL=main.css.map */

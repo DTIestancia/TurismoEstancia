@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using System.Xml;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
 using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
@@ -22,6 +23,7 @@ public class SeoController : Controller
     private readonly IPratoTuristicoService _pratos;
     private readonly ITagCulturalService _tags;
     private readonly IGaleriaService _galeria;
+    private readonly IMemoryCache _cache;
 
     public SeoController(
         IPontoTuristicoService pontos,
@@ -30,7 +32,8 @@ public class SeoController : Controller
         IGrupoCulturalService grupos,
         IPratoTuristicoService pratos,
         ITagCulturalService tags,
-        IGaleriaService galeria)
+        IGaleriaService galeria,
+        IMemoryCache cache)
     {
         _pontos = pontos;
         _noticias = noticias;
@@ -39,9 +42,11 @@ public class SeoController : Controller
         _pratos = pratos;
         _tags = tags;
         _galeria = galeria;
+        _cache = cache;
     }
 
     /// <summary>GET /sitemap.xml — todas as rotas públicas + detalhes do banco.</summary>
+    [HttpGet]
     [Route("sitemap.xml")]
     [Produces("application/xml")]
     public async Task<IActionResult> Sitemap(CancellationToken ct)
@@ -49,6 +54,11 @@ public class SeoController : Controller
         // PathBase: sob sub-aplicação IIS (ex.: /turismo), o sitemap precisa
         // do caminho completo — senão as URLs apontam para a raiz do site.
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+
+        // Sitemap muda só quando o conteúdo muda: cache de 30 min por host.
+        var cacheKey = $"sitemap:{baseUrl}";
+        if (_cache.TryGetValue(cacheKey, out byte[]? xmlBytes) && xmlBytes is { Length: > 0 })
+            return File(xmlBytes, "application/xml");
 
         var urls = new List<(string Loc, double Prioridade, DateTime? LastMod)>
         {
@@ -60,7 +70,9 @@ public class SeoController : Controller
             ($"{baseUrl}/lugares", 0.9, null),
             ($"{baseUrl}/noticias", 0.7, null),
             ($"{baseUrl}/roteiros", 0.7, null),
-            ($"{baseUrl}/galeria", 0.7, null)
+            ($"{baseUrl}/galeria", 0.7, null),
+            ($"{baseUrl}/agenda", 0.7, null),
+            ($"{baseUrl}/midia-kit", 0.6, null)
         };
 
         // Páginas de detalhe (conteúdo do banco)
@@ -129,10 +141,14 @@ public class SeoController : Controller
             await writer.WriteEndDocumentAsync();
         }
 
-        return File(ms.ToArray(), "application/xml");
+        xmlBytes = ms.ToArray();
+        _cache.Set(cacheKey, xmlBytes, TimeSpan.FromMinutes(30));
+
+        return File(xmlBytes, "application/xml");
     }
 
     /// <summary>GET /robots.txt — libera o portal e aponta o sitemap.</summary>
+    [HttpGet]
     [Route("robots.txt")]
     public IActionResult Robots()
     {

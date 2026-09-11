@@ -16,6 +16,7 @@ public static class InfrastructureExtensions
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();
         builder.Services.AddHttpContextAccessor();
+        builder.Services.AddMemoryCache();
 
         // Metadados SEO do portal (defaults das configurações + override por página).
         builder.Services.AddScoped<SeoService>();
