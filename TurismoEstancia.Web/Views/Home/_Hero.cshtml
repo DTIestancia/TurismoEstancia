@@ -95,9 +95,6 @@
                 </select>
             </label>
 
-            <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema claro/escuro" title="Alternar tema">
-                <i data-lucide="moon" class="icon-lg" id="themeToggleIcon"></i>
-            </button>
             @if (Model.GuiaDisponivel)
             {
                 <a asp-controller="Arquivo" asp-action="Index" asp-route-id="@Model.Guia!.ArquivoId" class="navbar-cta-mobile">

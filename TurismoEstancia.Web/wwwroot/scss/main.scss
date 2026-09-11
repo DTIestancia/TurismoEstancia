@@ -948,7 +948,7 @@
 
 // --- Seção Roteiros ---
 .section-roteiros {
-  background: var(--secao-roteiros-bg, var(--color-azure-7));
+  background: var(--secao-roteiros-bg, #658746);
   padding: 96px 0;
 }
 
@@ -1986,7 +1986,7 @@
     radial-gradient(circle at 20% 15%, rgba(247, 100, 0, 0.14) 0%, transparent 45%),
     radial-gradient(circle at 85% 80%, rgba(0, 150, 98, 0.12) 0%, transparent 42%),
     radial-gradient(circle at 60% 30%, rgba(0, 156, 207, 0.08) 0%, transparent 38%),
-    var(--secao-maravilhas-bg, var(--color-azure-5));
+    var(--secao-maravilhas-bg, #F97E31);
   color: var(--color-white-solid);
 }
 
@@ -2004,7 +2004,7 @@
 .section-wonders .vitrine-section-desc { color: var(--color-white--65); }
 
 .section-wonders.section-divider::after {
-  background: var(--secao-agenda-bg, #320100);
+  background: var(--secao-agenda-bg, #FCBB0F);
   height: 58px;
 }
 
@@ -2672,7 +2672,7 @@
 // As seções referenciam os TOKENS da paleta (--color-*): o tema editável
 // do Gerenciador sobrescreve esses tokens em :root e a identidade de cada
 // seção acompanha sem recompilar o SCSS.
-.hero { --secao-cor: var(--color-red-54); }
+.hero { --secao-cor: var(--color-yellow-50); }
 .section-history { --secao-cor: var(--color-red-54); }
 .section-culture { --secao-cor: var(--color-rose-46); }
 .section-gastronomy { --secao-cor: var(--color-yellow-50); }
@@ -2695,6 +2695,18 @@
 
 // Destaque que acompanha a cor da seção (palavras-acento dos títulos)
 .secao-destaque { color: var(--secao-cor, #FCBB0F); }
+// Destaques por seção (legíveis sobre cada fundo vibrante; o verde oficial
+// não lê sobre o vermelho, então a História usa amarelo-claro festivo).
+.section-history .secao-destaque { color: #FFE08A; }
+.section-agenda .secao-destaque { color: #7A1F00; }
+.section-roteiros .secao-destaque,
+.section-noticias .secao-destaque,
+.section-map .secao-destaque { color: #ffffff; }
+// Páginas internas claras: destaques escuros da identidade de cada página.
+.paginas-page--lugares .secao-destaque { color: #C2570B; }
+.paginas-page--roteiros .secao-destaque,
+.paginas-page--noticias .secao-destaque { color: #0072BD; }
+.paginas-page--gastronomia .secao-destaque { color: #B45309; }
 
 // --- Nossa Cidade (vermelho) ---
 .section-history .cursive { color: var(--secao-cor); }
@@ -2726,7 +2738,8 @@
 
 // --- 7 Maravilhas (laranja; a cor da categoria vence via JS) ---
 // O "encantam" ja usa gradiente laranja->amarelo (identidade da secao).
-.section-wonders .vitrine-eyebrow-star { color: var(--secao-cor); }
+// O selo (✦ do eyebrow) é AMARELO pela identidade oficial.
+.section-wonders .vitrine-eyebrow-star { color: var(--color-yellow-50); }
 .section-wonders .vitrine-cat {
   color: var(--secao-cor);
   border-color: var(--secao-cor);
@@ -3330,3 +3343,292 @@ img.paginas-galeria-card-img {
     .galeria-lightbox-marca-texto small { font-size: 10px; }
   }
 }
+
+// ===== Padrão claro do portal =====
+// Fundos das seções vêm das vars --secao-*-bg (Tema, valores claros); Hero,
+// deck do Conheça e moldura do mapa continuam sobre foto/vídeo (texto branco
+// mantido). Heros fotográficos (.item-hero/.lugar-hero com foto) também
+// mantêm o texto branco — só o corpo das páginas internas clareia.
+// Neutros de texto: títulos --color-azure-7, corpo #41474f, suave #6b7280.
+.pill--light {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #e8e0d3;
+  color: var(--color-azure-7);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  i, svg, span { color: var(--color-azure-7); }
+}
+
+// --- Nossa Cidade (fundo vermelho): textos claros, acentos amarelos ---
+.section-history .history-text-content .headline { color: var(--color-white-solid); }
+.section-history .history-text-content .headline .serif-bold { color: var(--color-white-solid); }
+.section-history .history-text-content .headline .highlight-red { color: #FFD54D; }
+.section-history .history-text-content .cursive { color: #FFE08A; }
+.section-history .history-text-content .description { color: var(--color-white--85); }
+.section-history .stat-card { background: #ffffff; border: 1px solid #eee0cb; }
+
+// --- 7 Maravilhas (fundo laranja): cabeçalho branco, vitrine em card branco ---
+.section-wonders { color: var(--color-white-solid); }
+.section-wonders .section-title { color: var(--color-white-solid); }
+.section-wonders .vitrine-section-desc { color: var(--color-white--80); }
+.section-wonders .section-title .vitrine-accent {
+  background: none;
+  color: #ffffff;
+}
+.section-wonders .vitrine-eyebrow {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  color: #4b5563;
+}
+.section-wonders .vitrine-eyebrow-star { color: color-mix(in srgb, var(--color-yellow-50) 62%, #000); }
+.vitrine-painel {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+.vitrine-blob { opacity: 0.16; }
+.vitrine-titulo { color: var(--color-azure-7); }
+.vitrine-card {
+  background: #f8fafc;
+  border-color: #e5e7eb;
+
+  .vitrine-desc { color: #4b5563; }
+}
+.section-wonders .vitrine-cat {
+  color: color-mix(in srgb, var(--color-orange-48) 72%, #000);
+  background: color-mix(in srgb, var(--color-orange-48) 12%, #fff);
+  border-color: color-mix(in srgb, var(--color-orange-48) 40%, #fff);
+}
+.vitrine-card .vitrine-tag {
+  color: #0E7A55;
+  background: rgba(0, 150, 98, 0.10);
+  border-color: rgba(0, 150, 98, 0.30);
+}
+.vitrine-carta {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+.vitrine-seta {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  color: var(--color-azure-7);
+
+  &:hover { color: var(--color-white-solid); }
+}
+.vitrine-hint, .vitrine-empty { color: #6b7280; }
+
+// --- Agenda: títulos escuros, cards brancos ---
+.agenda-title { color: var(--color-azure-7); }
+.agenda-title .highlight-fire { color: color-mix(in srgb, var(--color-orange-48) 68%, #000); }
+.agenda-subtitle { color: #4b5563; }
+.section-agenda .agenda-pill span { color: #241C07; }
+.agenda-card {
+  background: #ffffff;
+  outline-color: #e5e7eb;
+
+  &:hover { outline-color: var(--color-orange-48-20); }
+}
+.agenda-card-title { color: var(--color-azure-7); }
+.agenda-card-desc { color: #4b5563; }
+.agenda-card-time, .agenda-card-location { color: #6b7280; }
+.agenda-card-btn {
+  background: #f3f4f6;
+  outline-color: #e5e7eb;
+  color: var(--color-azure-7);
+
+  &:hover { background: #e5e7eb; }
+}
+.agenda-ver-todas {
+  border-color: rgba(36, 28, 7, 0.4);
+  color: #241C07;
+
+  &:hover {
+    background: #241C07;
+    border-color: #241C07;
+    color: #FCBB0F;
+  }
+}
+
+// --- Planeje sua viagem (fundo verde): cabeçalho branco, cards brancos ---
+.section-roteiros .section-title { color: #ffffff; }
+.section-roteiros .section-desc { color: var(--color-white--80); }
+.roteiro-card {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+.roteiro-card-title { color: var(--color-azure-7); }
+.roteiro-card-desc { color: #4b5563; }
+.map-filter-btn {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  color: #4b5563;
+
+  &:hover { background: #f3f4f6; color: var(--color-azure-7); border-color: #d1d5db; }
+}
+.map-filter-count { background: #f3f4f6; }
+.modal {
+  background: #ffffff;
+  outline-color: #e5e7eb;
+}
+.modal-category { color: #6b7280; }
+.modal-title { color: var(--color-azure-7); }
+.modal-desc { color: #4b5563; }
+.modal-detail, .modal-address, .modal-directions {
+  background: #f8fafc;
+  border-color: #e5e7eb;
+  color: #4b5563;
+}
+.modal-address-title, .modal-directions-title { color: #6b7280; }
+.modal-tag { background: #f3f4f6; color: #4b5563; }
+.modal-avaliacoes, .avaliacao-form { border-top-color: #e5e7eb; }
+.modal-avaliacoes-title, .avaliacao-form-title { color: var(--color-azure-7); }
+.modal-avaliacao-item {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+.modal-avaliacao-head { color: var(--color-azure-7); }
+.modal-avaliacao-comentario { color: #4b5563; }
+.avaliacao-input, .avaliacao-textarea {
+  background: #ffffff;
+  border-color: #d1d5db;
+  color: var(--color-azure-7);
+
+  &::placeholder { color: #9ca3af; }
+}
+.avaliacao-nota { color: #d1d5db; }
+
+// --- Mapa (fundo rosa): cabeçalho e legenda brancos (moldura fotográfica, pins brancos) ---
+.section-map .section-title { color: #ffffff; }
+.section-map .section-desc { color: var(--color-white--85); }
+.map-legend-item { color: var(--color-white--80); }
+.map-legend-dot { border-color: rgba(255, 255, 255, 0.35); }
+
+// --- Rodapé escuro (#00051F): textos claros (as regras-base já são escuras;
+// aqui só o necessário para o fundo vir da variável + o texto novo) ---
+.paginas-footer { background: var(--secao-rodape-bg, #00051F); }
+.footer-newsletter-text { color: var(--color-white--70); }
+
+// --- Páginas internas: base clara, heros gráficos claros ---
+.page-public { background: #FFFBF4; color: var(--color-azure-7); }
+.paginas-hero, .news-hero {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(247, 100, 0, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 80% 30%, rgba(0, 150, 98, 0.06) 0%, transparent 40%),
+    #FFF4E6;
+}
+.paginas-hero-title, .news-hero-title { color: var(--color-azure-7); }
+.paginas-hero-subtitle, .news-hero-subtitle { color: #4b5563; }
+.page-public .btn-secondary, .error-page .btn-secondary {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: var(--color-azure-7);
+}
+.paginas-card, .news-card, .paginas-cidade-card, .roteiro-item,
+.lugar-info, .lugar-horario-item, .lugar-avaliacao, .lugar-roteiro,
+.paginas-galeria-card, .modal-avaliacao-item {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+.paginas-card-title, .news-card-title, .paginas-cidade-title,
+.lugar-bloco-title, .lugar-horario-dia, .lugar-avaliacao-head,
+.paginas-galeria-title, .paginas-galeria-secao-titulo, .news-galeria-titulo,
+.news-article-title, .paginas-galeria-card-body h3 {
+  color: var(--color-azure-7);
+}
+.paginas-card-desc, .news-card-resumo, .paginas-cidade-desc,
+.paginas-cultura-text p, .paginas-cultura-extra, .paginas-gastro-main,
+.paginas-cidade-card-text, .lugar-descricao, .lugar-detalhe, .lugar-info-text,
+.lugar-horario-valor, .lugar-avaliacao-comentario, .lugar-roteiro p,
+.paginas-galeria-card-body p, .news-article-body, .news-article-resumo,
+.roteiro-item-info p, .item-descricao, .paginas-galeria-total,
+.news-empty, .lugar-sem-avaliacoes, .item-corpo {
+  color: #4b5563;
+}
+.news-article-body strong,
+.news-article-body h2, .news-article-body h3, .news-article-body h4 {
+  color: var(--color-azure-7);
+}
+.news-article-body blockquote {
+  background: #f8fafc;
+  color: #4b5563;
+}
+.news-article-body a, .item-corpo a { color: #C2570B; }
+.news-galeria { border-top-color: #e5e7eb; }
+.paginas-cidade-card-header .cursive, .paginas-cidade-text .cursive,
+.paginas-cultura-text .cursive { color: color-mix(in srgb, var(--color-orange-48) 80%, #000); }
+.paginas-cidade-card-header .stars { color: #D97706; }
+.paginas-cidade-card-quote, .paginas-cultura-quote { color: #B45309; }
+.lugar-info-title { color: #6b7280; }
+.lugar-info-text { color: #4b5563; }
+.lugar-horario-item.is-fechado .lugar-horario-valor { color: #DC2626; }
+.pagina-agenda .agenda-secao-titulo { color: var(--color-azure-7); }
+.pagina-agenda .agenda-secao-titulo--passada { border-top-color: #e5e7eb; color: #6b7280; }
+.pagina-agenda .agenda-secao-pill { color: #241C07; }
+.pagina-agenda .agenda-secao-titulo--passada .agenda-secao-pill { background: #f3f4f6; color: #6b7280; }
+.pagina-agenda .agenda-card-selo { color: #241C07; }
+.roteiro-dia-title { color: #B45309; }
+.paginas-galeria-grid img, .lugar-galeria img,
+.paginas-galeria-grid--fotos .galeria-item {
+  border-color: #e5e7eb;
+}
+.paginas-galeria-card-img--placeholder { color: #9ca3af; background: linear-gradient(160deg, rgba(247, 100, 0, 0.06) 0%, rgba(3, 14, 25, 0) 60%); }
+.paginas-galeria-filtro {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  color: #4b5563;
+
+  &:hover { color: var(--color-azure-7); }
+}
+.paginas-galeria-count { background: rgba(0, 0, 0, 0.06); }
+.galeria-item-mais {
+  background: #ffffff;
+  color: var(--color-azure-7);
+  border: 1px solid #e5e7eb;
+
+  &:hover { background: #f8fafc; }
+}
+.galeria-item-mais-rotulo { color: #6b7280; }
+.paginacao-item, .paginacao-seta {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  color: #4b5563;
+}
+.paginacao-item:hover, .paginacao-seta:hover { color: var(--color-azure-7); }
+.paginacao-reticencias { color: #9ca3af; }
+// Heros fotográficos sem foto: fundo claro + título escuro (com foto, segue escuro)
+.item-hero:not(:has(.item-hero-bg)),
+.lugar-hero:not(:has(.lugar-hero-bg)) {
+  background: linear-gradient(180deg, #FFF4E6 0%, #FDEFE0 100%);
+}
+.item-hero:not(:has(.item-hero-bg)) .item-hero-title,
+.lugar-hero:not(:has(.lugar-hero-bg)) .lugar-hero-title {
+  color: var(--color-azure-7);
+}
+.item-hero:not(:has(.item-hero-bg)) .pill-white,
+.lugar-hero:not(:has(.lugar-hero-bg)) .pill-white {
+  background: #ffffff;
+  outline-color: #e8e0d3;
+
+  span { color: var(--color-azure-7); }
+}
+
+// --- Blog da home já era claro: pill laranja com texto escuro ---
+.section-noticias .section-tag .pill {
+  svg, span { color: #241C07 !important; }
+}
+
+// --- Erro claro ---
+.error-page { background: #FFFBF4; color: var(--color-azure-7); }
+.error-page .error-title { color: var(--color-azure-7); }
+.error-message { color: #4b5563; }
+
+// --- Estado vazio do deck (sem itens, sem foto de fundo) ---
+.conheca-empty { color: #4b5563; }

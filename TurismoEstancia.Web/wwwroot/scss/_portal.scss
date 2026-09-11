@@ -848,7 +848,7 @@
     /* ===== Seção "Onde a história acende a tradição" ===== */
     .section-history {
       padding: 128px 32px;
-      background: var(--secao-historia-bg, var(--color-orange-47));
+      background: var(--secao-historia-bg, #ED2027);
       position: relative;
       overflow: hidden;
     }
@@ -1795,7 +1795,7 @@
       padding: 112px 32px;
       position: relative;
       overflow: hidden;
-      background: var(--secao-agenda-bg, radial-gradient(ellipse 100% 100% at 50% 0%, rgba(163, 15, 0, 0.35) 0%, rgba(163, 15, 0, 0) 70%), linear-gradient(172deg, #320100 0%, #210102 60%, #3E0000 100%));
+      background: var(--secao-agenda-bg, #FCBB0F);
     }
 
     .section-agenda-bg {
@@ -2018,7 +2018,7 @@
     /* ===== Seção "Mapa Interativo" ===== */
     .section-map {
       padding: 128px 32px;
-      background: var(--secao-mapa-bg, var(--color-azure-5));
+      background: var(--secao-mapa-bg, #E9568A);
       position: relative;
     }
 
@@ -3514,7 +3514,7 @@
        "nasça" da seção seguinte e flua de forma discreta, como se fizesse
        parte dela. */
     .section-noticias.section-divider::after {
-      background: var(--secao-mapa-bg, var(--color-azure-5));
+      background: var(--secao-mapa-bg, #E9568A);
       height: 54px;
     }
 
@@ -3554,22 +3554,22 @@
     }
 
     .section-conheca.section-divider::after {
-      background: var(--secao-maravilhas-bg, var(--color-azure-5));
+      background: var(--secao-maravilhas-bg, #F97E31);
       height: 58px;
     }
 
     .section-wonders.section-divider::after {
-      background: var(--secao-agenda-bg, #320100);
+      background: var(--secao-agenda-bg, #FCBB0F);
       height: 58px;
     }
 
     .section-agenda.section-divider::after {
-      background: var(--secao-roteiros-bg, #0a1628);
+      background: var(--secao-roteiros-bg, #658746);
       height: 52px;
     }
 
     .section-map.section-divider::after {
-      background: var(--secao-rodape-bg, var(--color-azure-7));
+      background: var(--secao-rodape-bg, #00051F);
       height: 50px;
     }
 
@@ -3596,7 +3596,7 @@
 
     /* Hero → Nossa Cidade: ondulação com a cor da próxima seção (laranja) */
     .hero.section-divider::after {
-      background: var(--secao-historia-bg, var(--color-orange-47));
+      background: var(--secao-historia-bg, #ED2027);
       height: 60px;
     }
 
@@ -5114,7 +5114,7 @@
       min-height: 100vh;
       min-height: 100svh;
       display: flex;
-      background: var(--secao-conheca-bg, #060D1A);
+      background: var(--secao-conheca-bg, #FFFDF8);
     }
 
     .conheca-inner {

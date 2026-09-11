@@ -29,27 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   })();
 
-  // ===== Dark Mode Toggle =====
-  (function initTheme() {
-    var themeToggle = document.getElementById('themeToggle');
-    var html = document.documentElement;
-    if (!themeToggle) return;
-
-    var savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      html.setAttribute('data-theme', 'dark');
-    }
-
-    themeToggle.addEventListener('click', function () {
-      var isDark = html.getAttribute('data-theme') === 'dark';
-      if (isDark) { html.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
-      else { html.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
-      var liveIcon = document.getElementById('themeToggleIcon');
-      if (liveIcon) liveIcon.setAttribute('data-lucide', isDark ? 'moon' : 'sun');
-      if (typeof lucide !== 'undefined') lucide.createIcons();
-    });
-  })();
-
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
   // ===== Hero Background Video (autoplay mudo, em loop) =====

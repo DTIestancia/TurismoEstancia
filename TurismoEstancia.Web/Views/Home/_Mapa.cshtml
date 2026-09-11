@@ -9,15 +9,15 @@
 <section class="section-map section-3d section-divider" id="section-mapa" data-section="mapa">
     <div class="section-map-inner">
         <div class="section-tag">
-            <div class="pill pill-white" style="background:rgba(255,255,255,0.10);">
-                <i data-lucide="map" class="icon-lg" style="color:var(--color-white-solid);"></i>
-                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;line-height:16px;">Explore o Mapa</span>
+            <div class="pill pill--light">
+                <i data-lucide="map" class="icon-lg"></i>
+                <span>Explore o Mapa</span>
             </div>
         </div>
-        <h2 class="section-title reveal" style="color:var(--color-white-solid);">
+        <h2 class="section-title reveal">
             @Html.Raw(mapaTitulo)
         </h2>
-        <p class="section-desc reveal reveal-delay-1" style="color:var(--color-white--70);max-width:640px;">
+        <p class="section-desc reveal reveal-delay-1" style="max-width:640px;">
             @Html.Raw(mapaDesc.Replace("\n", "<br />"))
         </p>
 

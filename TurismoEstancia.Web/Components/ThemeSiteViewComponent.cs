@@ -42,14 +42,14 @@ public class ThemeSiteViewComponent : ViewComponent
     /// </summary>
     public static readonly IReadOnlyList<(string Chave, string Nome, string Variavel, string Padrao)> Secoes =
     [
-        ("tema-secao-historia", "Nossa Cidade", "--secao-historia-bg", "#C76527"),
-        ("tema-secao-conheca", "Conheça Estância", "--secao-conheca-bg", "#060D1A"),
-        ("tema-secao-maravilhas", "7 Maravilhas", "--secao-maravilhas-bg", "#030E19"),
-        ("tema-secao-agenda", "Agenda", "--secao-agenda-bg", "#320100"),
-        ("tema-secao-roteiros", "Planeje sua viagem", "--secao-roteiros-bg", "#001326"),
-        ("tema-secao-noticias", "Notícias e Blog", "--secao-noticias-bg", "#FFFFFF"),
-        ("tema-secao-mapa", "Mapa", "--secao-mapa-bg", "#030E19"),
-        ("tema-secao-rodape", "Rodapé", "--secao-rodape-bg", "#001326")
+        ("tema-secao-historia", "Nossa Cidade", "--secao-historia-bg", "#ED2027"),
+        ("tema-secao-conheca", "Conheça Estância", "--secao-conheca-bg", "#FFFDF8"),
+        ("tema-secao-maravilhas", "7 Maravilhas", "--secao-maravilhas-bg", "#F97E31"),
+        ("tema-secao-agenda", "Agenda", "--secao-agenda-bg", "#FCBB0F"),
+        ("tema-secao-roteiros", "Planeje sua viagem", "--secao-roteiros-bg", "#658746"),
+        ("tema-secao-noticias", "Notícias e Blog", "--secao-noticias-bg", "#0095F6"),
+        ("tema-secao-mapa", "Mapa", "--secao-mapa-bg", "#E9568A"),
+        ("tema-secao-rodape", "Rodapé", "--secao-rodape-bg", "#00051F")
     ];
 
     private readonly IConfiguracaoSiteService _configuracoes;

@@ -16,8 +16,8 @@
     {
         <article class="news-article">
             <header class="news-article-header">
-                <div class="pill pill-white" style="background:var(--color-white--15);">
-                    <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">@Model.Noticia.DataPublicacao.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"))</span>
+                <div class="pill pill--light">
+                    <span>@Model.Noticia.DataPublicacao.ToString("dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"))</span>
                 </div>
                 <h1 class="news-article-title">@Model.Noticia.Titulo</h1>
                 @if (!string.IsNullOrWhiteSpace(Model.Noticia.Resumo))

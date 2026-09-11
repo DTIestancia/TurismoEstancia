@@ -46,29 +46,32 @@ public class TemaViewModel
     [Display(Name = "Rosa")]
     public string? Rosa { get; set; } = "#E9568A";
 
+    // Seções vibrantes: cada faixa usa sua cor-identidade da paleta (textos e
+    // destaques ajustados no bloco "Padrão claro" do main.scss). O Conheça
+    // mantém o deck fotográfico; a cor é só o fundo de reserva.
     [Display(Name = "Nossa Cidade")]
-    public string? SecaoHistoria { get; set; } = "#C76527";
+    public string? SecaoHistoria { get; set; } = "#ED2027";
 
     [Display(Name = "Conheça Estância")]
-    public string? SecaoConheca { get; set; } = "#060D1A";
+    public string? SecaoConheca { get; set; } = "#FFFDF8";
 
     [Display(Name = "7 Maravilhas")]
-    public string? SecaoMaravilhas { get; set; } = "#030E19";
+    public string? SecaoMaravilhas { get; set; } = "#F97E31";
 
     [Display(Name = "Agenda")]
-    public string? SecaoAgenda { get; set; } = "#320100";
+    public string? SecaoAgenda { get; set; } = "#FCBB0F";
 
     [Display(Name = "Planeje sua viagem")]
-    public string? SecaoRoteiros { get; set; } = "#001326";
+    public string? SecaoRoteiros { get; set; } = "#658746";
 
     [Display(Name = "Notícias e Blog")]
-    public string? SecaoNoticias { get; set; } = "#FFFFFF";
+    public string? SecaoNoticias { get; set; } = "#0095F6";
 
     [Display(Name = "Mapa")]
-    public string? SecaoMapa { get; set; } = "#030E19";
+    public string? SecaoMapa { get; set; } = "#E9568A";
 
     [Display(Name = "Rodapé")]
-    public string? SecaoRodape { get; set; } = "#001326";
+    public string? SecaoRodape { get; set; } = "#00051F";
 
     /// <summary>True quando ao menos uma cor foi personalizada no banco.</summary>
     public bool Personalizado { get; set; }

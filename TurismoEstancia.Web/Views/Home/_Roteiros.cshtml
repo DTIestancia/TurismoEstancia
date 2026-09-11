@@ -11,15 +11,15 @@
     <section class="section-roteiros section-3d section-divider" id="section-roteiros" data-section="roteiros">
         <div class="section-roteiros-inner">
             <div class="section-tag">
-                <div class="pill pill-white">
-                    <i data-lucide="route" class="icon-lg" style="color:var(--color-white-solid);"></i>
-                    <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;line-height:16px;">Planeje sua viagem</span>
+                <div class="pill pill--light">
+                    <i data-lucide="route" class="icon-lg"></i>
+                    <span>Planeje sua viagem</span>
                 </div>
             </div>
-            <h2 class="section-title reveal" style="color:var(--color-white-solid);">
+            <h2 class="section-title reveal">
                 @Html.Raw(roteirosTitulo)
             </h2>
-            <p class="section-desc reveal reveal-delay-1" style="color:var(--color-white--70);max-width:640px;">
+            <p class="section-desc reveal reveal-delay-1" style="max-width:640px;">
                 @Html.Raw(roteirosDesc)
             </p>
             @if (TempData["AvaliacaoOk"] is not null)

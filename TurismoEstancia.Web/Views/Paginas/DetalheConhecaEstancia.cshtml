@@ -46,13 +46,13 @@
 
         @if (!string.IsNullOrWhiteSpace(Model.Corpo))
         {
-            <article class="item-corpo" style="margin-top:22px;font-size:15.5px;line-height:1.75;color:var(--color-white--85);">
+            <article class="item-corpo" style="margin-top:22px;font-size:15.5px;line-height:1.75;color:#41474f;">
                 @Html.Raw(Model.Corpo)
             </article>
         }
         else
         {
-            <p class="item-descricao" style="color:var(--color-white--55);">Em breve, mais informações sobre este item.</p>
+            <p class="item-descricao">Em breve, mais informações sobre este item.</p>
         }
 
         <div class="paginas-cta-row">

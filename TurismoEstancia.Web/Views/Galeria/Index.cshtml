@@ -14,9 +14,16 @@
     }
     <section class="paginas-hero" style="@estiloHero">
         <div class="paginas-hero-inner">
-            <div class="pill pill-white" style="background:var(--color-white--15);">
+            <div class="pill @(estiloHero is null ? "pill--light" : "pill-white")">
                 <span style="font-size:12px;">✦</span>
-                <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">Galeria de Estância</span>
+                @if (estiloHero is null)
+                {
+                    <span>Galeria de Estância</span>
+                }
+                else
+                {
+                    <span style="color:var(--color-white-solid);font-size:12px;font-weight:700;">Galeria de Estância</span>
+                }
             </div>
             <h1 class="paginas-hero-title">
                 @if (emCategoria)
