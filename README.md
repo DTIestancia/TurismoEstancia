@@ -83,10 +83,31 @@ dotnet run --project TurismoEstancia.Web
 | `TurismoEstanciaIdentityDb` | `TurismoEstanciaIdentity`              | ASP.NET Identity (usuários) |
 
 Mídias (imagens, vídeo, guia) ficam em **byte[] no banco**, servidas por `GET /arquivo/{id}`.
-A otimização de imagens usa **SixLabors.ImageSharp 3.1** (resize + re-encode JPEG + remoção
-EXIF) — aplicada nos uploads da Galeria (`IArquivoService.SalvarImagemOtimizadaAsync`), com
-**marca d'água** opcional (listras diagonais + logotipo do portal no canto) para proteção
+A otimização de imagens usa **SixLabors.ImageSharp 3.1** e mora num lugar só: a regra de
+`OtimizadorDeImagem` — 1600 px no maior lado, JPEG q82, rotação do EXIF aplicada aos pixels e
+metadados (EXIF/GPS) descartados; PNG com transparência continua PNG. Ela vale para **todo
+upload** do sistema (`IArquivoService.SalvarAsync`) e também para as miniaturas `?largura=N`,
+que são geradas sob demanda pela mesma regra (o original é servido quando já é menor que o
+pedido, e animação nunca é achatada); vídeo, PDF, SVG e GIF passam intactos.
+A Galeria acrescenta a **marca d'água** (listras diagonais + logotipo no canto) para proteção
 contra download.
+
+O acervo que já está no banco (gravado antes desta regra) é recompimido pelo comando de
+manutenção, que mostra o antes/depois em bytes:
+
+```bash
+# Mede o que faria, sem gravar nada
+dotnet run --project TurismoEstancia.Web -- recomprimir-imagens --simular
+
+# Aplica (de preferência com o portal parado)
+dotnet run --project TurismoEstancia.Web -- recomprimir-imagens
+```
+
+É **idempotente** — rodar de novo não encontra nada para fazer — e **nunca aumenta** um
+arquivo: se o re-encode ficar maior que o original, o original fica (por isso um PNG de
+ícone já pequeno pode continuar acima de 1600 px). Nenhum registro é apagado. No fim, o
+comando descarta as miniaturas derivadas (`?largura=N`) em `cache/arquivo`, que senão
+continuariam mostrando a versão antiga.
 A tabela `Arquivos` segue o padrão **`PrefeituraDigital.Arquivo`** (colunas `ArquId`,
 `ArquUID` ROWGUIDCOL, `ArquFileName`, `ArquContentType`, `ArquSize`, `ArquBytes`
 `varbinary(max)`, `ArquMomento`, `ArquAutor`, `ArquAtivo`, `ArquOrigem`) e está **pronta

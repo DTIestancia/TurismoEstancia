@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Mvc;
+using TurismoEstancia.Services.Infra.Imagens;
 using TurismoEstancia.Services.Infra.Interfaces;
 
 namespace TurismoEstancia.Web.Controllers;
@@ -51,7 +52,7 @@ public class ArquivoController : Controller
             // fora do wwwroot de propósito (StaticFiles não serve, sem bypass).
             if (largura is >= 200 and <= 2560)
             {
-                var pasta = Path.Combine(_env.ContentRootPath, "cache", "arquivo");
+                var pasta = CacheDeMiniaturas.Pasta(_env.ContentRootPath);
                 var baseNome = Path.Combine(pasta, $"{id}-{largura}");
                 var doCache = LocalizarMiniatura(baseNome);
 
@@ -96,18 +97,20 @@ public class ArquivoController : Controller
 
             var arquivo = await _arquivos.ObterAsync(id, ct);
 
-            // Arquivos da tabela são IMUTÁVEIS (upload sempre cria um novo registro;
-            // substituir = excluir o antigo + gravar outro), então o cache pode ser
-            // longo: imagens 1 ano + immutable (o navegador nem revalida), demais
-            // mídias 7 dias. O ETag cobre revalidação (304) em navegadores/proxies
-            // que ignoram o immutable. O 403 do hotlink não recebe Cache-Control,
-            // então nunca é cacheado.
+            // Arquivos da tabela são IMUTÁVEIS para o upload (sempre cria um novo
+            // registro; substituir = excluir o antigo + gravar outro), então o cache
+            // pode ser longo: imagens 1 ano + immutable (o navegador nem revalida),
+            // demais mídias 7 dias. O único caso que troca os bytes no lugar é o
+            // comando "recomprimir-imagens" (manutenção, com o portal parado): por
+            // isso o ETag leva também o tamanho — quem tem a versão antiga revalida
+            // e recebe a nova. O 403 do hotlink não recebe Cache-Control, então
+            // nunca é cacheado.
             var eImagem = arquivo.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase);
             Response.Headers.CacheControl = eImagem
                 ? "public, max-age=31536000, immutable"
                 : "public, max-age=604800";
 
-            var etag = $"\"{id}-{arquivo.CriadoEm.Ticks}\"";
+            var etag = $"\"{id}-{arquivo.CriadoEm.Ticks}-{arquivo.Size}\"";
             if (Request.Headers.IfNoneMatch.ToString() == etag)
                 return StatusCode(StatusCodes.Status304NotModified);
 

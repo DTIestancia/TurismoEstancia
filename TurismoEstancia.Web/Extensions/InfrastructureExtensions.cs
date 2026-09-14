@@ -39,6 +39,19 @@ public static class InfrastructureExtensions
             o.MultipartBodyLengthLimit = 60L * 1024 * 1024;
         });
 
+        // Cache de página do portal público (somente GET anônimo de página
+        // pública): a regra inteira vive em CachePortalPublicoPolicy — painel,
+        // Identity, APIs, mídias e POSTs ficam de fora por construção. Todas as
+        // entradas saem com a tag de conteúdo, descartada a cada escrita no CMS
+        // (InvalidaCacheConteudoMiddleware), então edição aparece na hora.
+        builder.Services.AddOutputCache(opcoes =>
+        {
+            opcoes.AddBasePolicy(new CachePortalPublicoPolicy());
+            // Página do portal é HTML puro; 1 MB é folga larga sobre a maior delas
+            // (a home, que leva o JSON do mapa) e evita guardar resposta gigante.
+            opcoes.MaximumBodySize = 1024 * 1024;
+        });
+
         // Paginação (ReflectionIT.Mvc.Paging): o pacote moderno dispensa registro
         // em DI (Razor Class Library) — os tipos PagedList/tag helpers bastam.
 

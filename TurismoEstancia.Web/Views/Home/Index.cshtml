@@ -4,13 +4,11 @@
     Layout = "_Layout";
 }
 @section Head {
-    @if (Model.VideoArquivoId is long _vidHead)
+    @* O poster do hero (1º slide) é o LCP: vale pré-carregá-lo. O vídeo do hero
+       NÃO é pré-carregado — ele só baixa depois do primeiro paint (portal.js). *@
+    @if (Model.HeroPosterArquivoId is long _posterHead)
     {
-        <link rel="preload" as="video" href="@Url.Content($"~/arquivo/{_vidHead}")" type="video/mp4" fetchpriority="high" />
-    }
-    @if (Model.VideoArquivoIdMobile is long _mvidHead)
-    {
-        <link rel="preload" as="video" href="@Url.Content($"~/arquivo/{_mvidHead}")" type="video/mp4" media="(max-width: 767px)" />
+        <link rel="preload" as="image" href="@Url.Content($"~/arquivo/{_posterHead}?largura=1280")" fetchpriority="high" />
     }
 }
 

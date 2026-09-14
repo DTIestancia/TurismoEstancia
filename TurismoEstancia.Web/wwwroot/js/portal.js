@@ -5,7 +5,11 @@
 // ============================================================
 document.addEventListener('DOMContentLoaded', function () {
 
-  // ===== Page Preloader — esconde cedo para o hero aparecer junto com a página
+  // ===== Page Preloader — sai quando o hero está pronto, sem atraso artificial
+  // Antes ele esperava 500 ms de propósito e ainda somava 400 ms + 800 ms de
+  // transição: tela coberta mesmo com tudo em cache. Agora sai no primeiro frame
+  // em que o poster do hero está pronto (para não revelar um hero vazio), e o
+  // timeout só cobre rede lenta demais.
   (function hidePageLoader() {
     var loader = document.getElementById('pageLoader');
     if (!loader) return;
@@ -13,32 +17,66 @@ document.addEventListener('DOMContentLoaded', function () {
     function completeBar() {
       if (loader.classList.contains('completing') || loader.classList.contains('hidden')) return;
       loader.classList.add('completing');
+      loader.classList.add('hidden');
       setTimeout(function () {
-        loader.classList.add('hidden');
-        setTimeout(function () {
-          if (loader.parentNode) loader.parentNode.removeChild(loader);
-        }, 800);
-      }, 400);
+        if (loader.parentNode) loader.parentNode.removeChild(loader);
+      }, 800);
+    }
+
+    function quandoHeroPronto() {
+      var video = document.getElementById('heroBgVideo');
+      var poster = video && video.getAttribute('poster');
+      if (!poster) { requestAnimationFrame(completeBar); return; }
+      // O poster já está em voo (preload no <head>): isto só espera ele terminar
+      // e reaproveita o mesmo download — nada é baixado duas vezes.
+      var img = new Image();
+      img.onload = img.onerror = function () { requestAnimationFrame(completeBar); };
+      img.src = poster;
     }
 
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      setTimeout(completeBar, 500);
+      quandoHeroPronto();
     } else {
-      document.addEventListener('DOMContentLoaded', function () { setTimeout(completeBar, 600); });
-      setTimeout(completeBar, 2500);
+      document.addEventListener('DOMContentLoaded', quandoHeroPronto, { once: true });
     }
+
+    // Rede muito lenta: não deixa o visitante preso no preloader.
+    setTimeout(completeBar, 2500);
   })();
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
+  // ===== Anti-forgery: renova o token de todos os formulários da página =====
+  // A página pode chegar do cache do servidor com o token de OUTRO visitante —
+  // o token é amarrado ao cookie de quem gerou o HTML, e o POST seria recusado.
+  // Aqui um token novo (com o cookie deste visitante) é buscado no carregamento
+  // e injetado em todos os campos; o token que veio no HTML fica como fallback
+  // de quem não executa JS.
+  (function renovarTokenAntiForgery() {
+    var campos = document.querySelectorAll('input[name="__RequestVerificationToken"]');
+    if (!campos.length) return;
+    fetch(appBase() + 'antiforgery/token', { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (dados) {
+        if (!dados || !dados.token) return;
+        campos.forEach(function (campo) { campo.value = dados.token; });
+      })
+      .catch(function () { /* sem token novo o campo do HTML continua valendo */ });
+  })();
+
   // ===== Hero Background Video (autoplay mudo, em loop) =====
-  // Vídeo do hero é configurado no Gerenciador (video-institucional) e deve
-  // iniciar junto com a página — sem esperar window.load/preloader.
+  // Vídeo do hero é configurado no Gerenciador (video-institucional). Ele NÃO
+  // entra no carregamento crítico: a tag vem com preload="none" + poster (o 1º
+  // slide), e o play só é disparado depois do primeiro paint — antes o MP4
+  // disputava banda com o CSS, as fontes e a imagem do LCP.
   (function initHeroVideo() {
     var video = document.getElementById('heroBgVideo');
     if (!video) return;
+    var iniciado = false;
 
     function tentarPlay() {
+      if (iniciado) return;
+      iniciado = true;
       if (video.readyState < 2) { try { video.load(); } catch (e) {} }
       var p = video.play();
       if (p && typeof p.catch === 'function') {
@@ -50,14 +88,22 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
-    // Tenta o mais cedo possível
-    if (video.readyState >= 2) tentarPlay();
-    else {
-      video.addEventListener('canplay', tentarPlay, { once: true });
-      video.addEventListener('loadeddata', tentarPlay, { once: true });
+    // Dois requestAnimationFrame depois do DOM pronto = primeiro paint concluído.
+    function agendar() {
+      requestAnimationFrame(function () { requestAnimationFrame(tentarPlay); });
     }
-    setTimeout(tentarPlay, 300);
-    document.addEventListener('DOMContentLoaded', tentarPlay);
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', agendar, { once: true });
+    } else {
+      agendar();
+    }
+
+    // Aba em segundo plano não roda requestAnimationFrame: o visibilitychange
+    // abaixo assume o play quando o visitante volta para a aba. E se o motor
+    // não disparar rAF nenhum, o vídeo entra mesmo assim (nunca fica sem hero).
+    setTimeout(function () { if (!document.hidden) tentarPlay(); }, 3000);
+
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) video.pause();
       else tentarPlay();

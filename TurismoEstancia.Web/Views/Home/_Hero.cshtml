@@ -111,7 +111,11 @@
     @if (Model.VideoArquivoId is long videoId)
     {
         var mobileId = Model.VideoArquivoIdMobile;
-        <video class="hero-bg" id="heroBgVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" fetchpriority="high">
+        // O vídeo fica FORA do carregamento crítico: preload="none" + poster (1º
+        // slide) e o portal.js só dispara o play depois do primeiro paint — antes
+        // o MP4 competia por banda com o CSS, as fontes e a imagem do LCP.
+        <video class="hero-bg" id="heroBgVideo" muted loop playsinline webkit-playsinline preload="none"
+               poster="@(Model.HeroPosterArquivoId is long posterId ? Url.Content($"~/arquivo/{posterId}?largura=1280") : null)">
             @if (mobileId is long mId)
             {
                 <source src="@Url.Content($"~/arquivo/{mId}")" type="video/mp4" media="(max-width: 767px)" />

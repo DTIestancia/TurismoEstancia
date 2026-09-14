@@ -1,5 +1,6 @@
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Services.Analytics.Interfaces;
+using TurismoEstancia.Web.Infrastructure;
 
 namespace TurismoEstancia.Web.Middleware;
 
@@ -11,16 +12,6 @@ namespace TurismoEstancia.Web.Middleware;
 /// </summary>
 public class AnalyticsVisitTrackingMiddleware
 {
-    private const string CookieSessao = "te_sessao";
-
-    /// <summary>Prefixos que não são páginas públicas (painel, mídias, API, SEO).</summary>
-    private static readonly string[] PrefixosIgnorados =
-    {
-        "/Gerenciador", "/Operador", "/arquivo/", "/api/", "/css/", "/js/", "/lib/",
-        "/img", "/images", "/favicon", "/sitemap.xml", "/robots.txt",
-        "/Account", "/Identity", "/Home/Error", "/Privacy", "/Evento/"
-    };
-
     private readonly RequestDelegate _next;
 
     public AnalyticsVisitTrackingMiddleware(RequestDelegate next)
@@ -33,18 +24,16 @@ public class AnalyticsVisitTrackingMiddleware
     public async Task InvokeAsync(HttpContext context, IAnalyticsService analytics)
     {
         // Garante a sessão anônima ANTES do response começar (cookie no primeiro acesso).
-        var sessaoId = context.Request.Cookies[CookieSessao];
+        // O id fica em Items porque o cache de página pode substituir este cookie
+        // pelo de outro visitante — CookiesDeVisitanteMiddleware reintroduz o id
+        // certo depois de limpar o que veio do cache.
+        var sessaoId = context.Request.Cookies[SessaoAnonima.NomeCookie];
         if (string.IsNullOrEmpty(sessaoId))
         {
             sessaoId = Guid.NewGuid().ToString("N");
-            context.Response.Cookies.Append(CookieSessao, sessaoId, new CookieOptions
-            {
-                HttpOnly = true,
-                SameSite = SameSiteMode.Lax,
-                IsEssential = true,
-                MaxAge = TimeSpan.FromDays(400)
-            });
+            context.Response.Cookies.Append(SessaoAnonima.NomeCookie, sessaoId, SessaoAnonima.OpcoesCookie());
         }
+        context.Items[SessaoAnonima.ItemSessaoId] = sessaoId;
 
         await _next(context);
 
@@ -52,8 +41,10 @@ public class AnalyticsVisitTrackingMiddleware
         if (context.Request.Method != HttpMethods.Get) return;
         if (context.Response.StatusCode < 200 || context.Response.StatusCode >= 400) return;
 
+        // A definição de "página pública" é compartilhada com o cache de página
+        // (RotasPortal): o que conta visita é exatamente o que pode ser cacheado.
         var rota = context.Request.Path.Value ?? "";
-        if (!EhPaginaPublica(rota)) return;
+        if (!RotasPortal.EhPaginaPublica(rota)) return;
 
         analytics.Registrar(new AnalyticsEventoDto
         {
@@ -63,17 +54,6 @@ public class AnalyticsVisitTrackingMiddleware
             SessaoId = sessaoId,
             Dispositivo = DetectarDispositivo(context.Request.Headers.UserAgent.ToString())
         });
-    }
-
-    private static bool EhPaginaPublica(string rota)
-    {
-        if (rota == "/") return true;
-        foreach (var prefixo in PrefixosIgnorados)
-        {
-            if (rota.StartsWith(prefixo, StringComparison.OrdinalIgnoreCase))
-                return false;
-        }
-        return true;
     }
 
     /// <summary>Título amigável da página, por convenção de rota.</summary>

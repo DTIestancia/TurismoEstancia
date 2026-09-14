@@ -5,10 +5,20 @@ namespace TurismoEstancia.Services.Infra.Interfaces;
 /// <summary>Serviço da tabela Arquivo (byte[] no banco, nunca no disco).</summary>
 public interface IArquivoService
 {
-    /// <summary>Grava um upload em byte[] e retorna o novo Id.</summary>
+    /// <summary>
+    /// Grava um upload e retorna o novo Id. Toda foto (JPEG, PNG, WebP, TIFF, BMP)
+    /// entra otimizada pela regra única do sistema (ver <c>OtimizadorDeImagem</c>):
+    /// 1600 px no maior lado, JPEG q82, rotação do EXIF aplicada aos pixels e
+    /// metadados (EXIF/GPS) descartados — PNG com transparência continua PNG.
+    /// Vídeo, PDF, SVG, .ico e GIF são guardados exatamente como vieram.
+    /// </summary>
     Task<long> SalvarAsync(IFormFile arquivo, CancellationToken ct = default);
 
-    /// <summary>Grava bytes já em memória e retorna o novo Id.</summary>
+    /// <summary>
+    /// Grava bytes já em memória e retorna o novo Id, <b>sem</b> passar pela
+    /// otimização. É o ponto de gravação cru: para upload de imagem use
+    /// <see cref="SalvarAsync"/>, que já aplica a regra de otimização.
+    /// </summary>
     Task<long> SalvarBytesAsync(string nome, string contentType, byte[] bytes, CancellationToken ct = default);
 
     /// <summary>
@@ -42,11 +52,12 @@ public interface IArquivoService
     Task<Arquivo> ObterAsync(long id, CancellationToken ct = default);
 
     /// <summary>
-    /// Gera uma versão reduzida da imagem (nunca amplia) com no máximo
-    /// <paramref name="larguraMaxima"/>px no maior lado, JPEG q82 (ou PNG quando
-    /// a origem tem alfa). Retorna <c>null</c> quando o arquivo não existe, já é
-    /// menor que o pedido ou não é uma imagem redimensionável (GIF animado, SVG,
-    /// WebP, vídeo etc.) — nesses casos o chamador serve o original.
+    /// Gera a versão reduzida servida em <c>?largura=N</c> com a <b>mesma regra de imagem
+    /// do upload</b> (ver <c>OtimizadorDeImagem</c>): nunca amplia, aplica a rotação do EXIF
+    /// e descarta metadados, JPEG q82 (ou PNG quando a origem tem alfa). Retorna <c>null</c>
+    /// quando o arquivo não existe, já é menor que o pedido — aí o original <i>é</i> a
+    /// melhor versão — ou não é uma imagem redimensionável (GIF/APNG/WebP animado, SVG,
+    /// vídeo etc.); nesses casos o chamador serve o original.
     /// </summary>
     Task<(byte[] Bytes, string ContentType, string Extensao)?> GerarRedimensionadoAsync(long arquivoId, int larguraMaxima, CancellationToken ct = default);
 

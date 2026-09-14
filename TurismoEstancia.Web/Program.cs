@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using Microsoft.AspNetCore.ResponseCompression;
+using TurismoEstancia.Web.Comandos;
 using TurismoEstancia.Web.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,12 +14,29 @@ builder.Services.AddResponseCompression(opcoes =>
 });
 builder.Services.Configure<BrotliCompressionProviderOptions>(opcoes => opcoes.Level = CompressionLevel.Fastest);
 
+// Comando de manutenção do acervo de imagens — não sobe o servidor web:
+//   dotnet run --project TurismoEstancia.Web -- recomprimir-imagens [--simular]
+var comandoDeManutencao = RecomprimirImagens.EhComando(args);
+if (comandoDeManutencao)
+{
+    // A saída do comando é o relatório. O log de comandos do EF (Information pelo
+    // Default de appsettings.json) enterraria o relatório no console de quem roda
+    // a manutenção — avisos e erros continuam aparecendo.
+    builder.Logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning);
+}
+
 builder.AddDatabase();
 builder.AddIdentityConfig();
 builder.AddBusinessServices();
 builder.AddInfrastructure();
 
 var app = builder.Build();
+
+if (comandoDeManutencao)
+{
+    Environment.ExitCode = await RecomprimirImagens.ExecutarAsync(app, args);
+    return;
+}
 
 app.UseStandardPipeline();
 app.MapAllRoutes();

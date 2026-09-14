@@ -1,11 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using TurismoEstancia.Domain.Data;
 using TurismoEstancia.Domain.Models;
+using TurismoEstancia.Services.Infra.Imagens;
 using TurismoEstancia.Services.Infra.Interfaces;
 
 namespace TurismoEstancia.Services.Infra.Services;
@@ -27,30 +26,69 @@ public class ArquivoService : IArquivoService
         if (arquivo is null || arquivo.Length == 0)
             throw new InvalidOperationException("O arquivo está vazio.");
 
-        using var ms = new MemoryStream();
-        await arquivo.CopyToAsync(ms, ct);
-        return await SalvarBytesAsync(arquivo.FileName, arquivo.ContentType, ms.ToArray(), ct);
+        var bytes = await LerBytesAsync(arquivo, ct);
+
+        // Toda foto enviada por qualquer tela do CMS entra otimizada — mesma regra
+        // da galeria (ver OtimizadorDeImagem). O que não for foto decodificável
+        // (vídeo, PDF, SVG, .ico, GIF animado) segue exatamente como veio.
+        var otimizada = await OtimizadorDeImagem.OtimizarAsync(bytes, arquivo.ContentType, ct: ct);
+
+        return otimizada is null
+            ? await SalvarBytesAsync(arquivo.FileName, arquivo.ContentType, bytes, ct)
+            : await SalvarBytesAsync(
+                OtimizadorDeImagem.NomeComExtensao(arquivo.FileName, otimizada.Extensao),
+                otimizada.ContentType, otimizada.Bytes, ct);
     }
 
-    public async Task<long> SalvarImagemOtimizadaAsync(IFormFile arquivo, int maxDimensao = 1600, int qualidade = 82, bool comMarcaDagua = false, CancellationToken ct = default)
+    public async Task<long> SalvarImagemOtimizadaAsync(IFormFile arquivo, int maxDimensao = OtimizadorDeImagem.MaxDimensaoPadrao, int qualidade = OtimizadorDeImagem.QualidadeJpegPadrao, bool comMarcaDagua = false, CancellationToken ct = default)
     {
-        using var imagem = await CarregarImagemAsync(arquivo, ct);
-        if (comMarcaDagua)
-            await AplicarMarcaDaguaAsync(imagem, ct);
-        return await SalvarImagemCoreAsync(imagem, arquivo.FileName, maxDimensao, qualidade, ct);
+        var bytes = await LerBytesAsync(arquivo, ct);
+        var logotipo = comMarcaDagua ? await ObterLogotipoMarcaDaguaAsync(ct) : null;
+
+        var otimizada = await OtimizadorDeImagem.OtimizarAsync(bytes, arquivo.ContentType, maxDimensao, qualidade, logotipo, ct)
+            ?? throw new InvalidOperationException("Formato não suportado: envie uma imagem JPG, PNG ou WebP.");
+
+        return await SalvarBytesAsync(
+            OtimizadorDeImagem.NomeComExtensao(arquivo.FileName, otimizada.Extensao),
+            otimizada.ContentType, otimizada.Bytes, ct);
     }
 
     public async Task<long> SalvarThumbnailAsync(IFormFile arquivo, int maxDimensao = 400, int qualidade = 75, CancellationToken ct = default)
     {
-        using var imagem = await CarregarImagemAsync(arquivo, ct);
-        return await SalvarImagemCoreAsync(imagem, arquivo.FileName, maxDimensao, qualidade, ct);
+        var bytes = await LerBytesAsync(arquivo, ct);
+        var otimizada = await OtimizadorDeImagem.OtimizarAsync(bytes, arquivo.ContentType, maxDimensao, qualidade, ct: ct)
+            ?? throw new InvalidOperationException("Formato não suportado: envie uma imagem JPG, PNG ou WebP.");
+
+        return await SalvarBytesAsync(
+            OtimizadorDeImagem.NomeComExtensao(arquivo.FileName, otimizada.Extensao),
+            otimizada.ContentType, otimizada.Bytes, ct);
     }
+
+    /// <summary>Lê o upload inteiro para memória — os bytes vão para o banco.</summary>
+    private static async Task<byte[]> LerBytesAsync(IFormFile arquivo, CancellationToken ct)
+    {
+        using var ms = new MemoryStream();
+        await arquivo.CopyToAsync(ms, ct);
+        return ms.ToArray();
+    }
+
+    /// <summary>
+    /// Logotipo do portal (configuração "logo-principal") usado na marca d'água da
+    /// galeria. Vem daqui, e não do otimizador, para a regra de imagem continuar
+    /// sem depender de banco.
+    /// </summary>
+    private async Task<byte[]?> ObterLogotipoMarcaDaguaAsync(CancellationToken ct) =>
+        await _db.ConfiguracoesSite.AsNoTracking()
+            .Where(c => c.Chave == "logo-principal" && c.ArquivoId != null)
+            .Select(c => c.Arquivo!.Bytes)
+            .FirstOrDefaultAsync(ct);
 
     public async Task<long> SalvarFaviconAsync(IFormFile arquivo, int dimensao = 64, CancellationToken ct = default)
     {
         try
         {
-            using var imagem = await CarregarImagemAsync(arquivo, ct);
+            await using var origem = arquivo.OpenReadStream();
+            using var imagem = await Image.LoadAsync(origem, ct);
 
             // Redimensiona só para reduzir (nunca amplia), encaixando em um
             // quadrado dimensao×dimensao — PNG quadrado de fonte vira 64×64.
@@ -74,100 +112,6 @@ public class ArquivoService : IArquivoService
             // favicon nunca deve travar por causa de um formato inesperado.
             return await SalvarAsync(arquivo, ct);
         }
-    }
-
-    /// <summary>
-    /// Marca d'água de proteção contra download: listras diagonais sutis por toda
-    /// a imagem + o logotipo do portal (configuração "logo-principal") no canto
-    /// inferior direito. Só usa o core do ImageSharp (sem dependência extra).
-    /// Se o logotipo não existir/falhar, aplica só as listras — nunca quebra o upload.
-    /// </summary>
-    private async Task AplicarMarcaDaguaAsync(Image imagem, CancellationToken ct)
-    {
-        try
-        {
-            // Listras diagonais: padrão em baixa resolução + resize bilinear
-            // (suaviza as bordas) + composição com alfa baixo.
-            var pw = Math.Max(64, imagem.Width / 8);
-            var ph = Math.Max(48, imagem.Height / 8);
-            using (var padrao = new Image<Rgba32>(pw, ph))
-            {
-                for (var y = 0; y < ph; y++)
-                {
-                    for (var x = 0; x < pw; x++)
-                    {
-                        padrao[x, y] = (x + y) % 32 < 16
-                            ? new Rgba32(255, 255, 255, 26)
-                            : new Rgba32(255, 255, 255, 0);
-                    }
-                }
-
-                padrao.Mutate(p => p.Resize(imagem.Width, imagem.Height));
-                imagem.Mutate(m => m.DrawImage(padrao, 1f));
-            }
-
-            // Logotipo do portal no canto inferior direito (marca real do município).
-            var logoBytes = await _db.ConfiguracoesSite.AsNoTracking()
-                .Where(c => c.Chave == "logo-principal" && c.ArquivoId != null)
-                .Select(c => c.Arquivo!.Bytes)
-                .FirstOrDefaultAsync(ct);
-
-            if (logoBytes is { Length: > 0 })
-            {
-                using var logo = await Image.LoadAsync(new MemoryStream(logoBytes), ct);
-                var larguraLogo = Math.Min(150, imagem.Width / 4);
-                var alturaLogo = Math.Max(24, (int)(logo.Height * (larguraLogo / (float)logo.Width)));
-                logo.Mutate(l => l.Resize(larguraLogo, alturaLogo));
-
-                var x = imagem.Width - larguraLogo - 16;
-                var y = imagem.Height - alturaLogo - 16;
-                imagem.Mutate(m => m.DrawImage(logo, new Point(x, y), 0.85f));
-            }
-        }
-        catch (Exception ex) when (ex is not OperationCanceledException)
-        {
-            // Marca d'água é cosmética — jamais deve derrubar o upload.
-        }
-    }
-
-    /// <summary>
-    /// Carrega e valida o upload como imagem (JPG, PNG ou WebP). A validação por
-    /// extensão é intencionalmente ignorada — só o decode real confirma o formato.
-    /// </summary>
-    private static async Task<Image> CarregarImagemAsync(IFormFile arquivo, CancellationToken ct)
-    {
-        if (arquivo is null || arquivo.Length == 0)
-            throw new InvalidOperationException("O arquivo está vazio.");
-
-        try
-        {
-            await using var stream = arquivo.OpenReadStream();
-            return await Image.LoadAsync(stream, ct);
-        }
-        catch (UnknownImageFormatException)
-        {
-            throw new InvalidOperationException("Formato não suportado: envie uma imagem JPG, PNG ou WebP.");
-        }
-    }
-
-    /// <summary>
-    /// Redimensiona (só reduz, nunca amplia), re-encoda como JPEG com SkipMetadata
-    /// (remove EXIF/GPS — privacidade LGPD) e grava na tabela Arquivo.
-    /// </summary>
-    private async Task<long> SalvarImagemCoreAsync(Image imagem, string nome, int maxDimensao, int qualidade, CancellationToken ct)
-    {
-        if (imagem.Width > maxDimensao || imagem.Height > maxDimensao)
-        {
-            imagem.Mutate(x => x.Resize(new ResizeOptions
-            {
-                Mode = ResizeMode.Max,
-                Size = new Size(maxDimensao, maxDimensao)
-            }));
-        }
-
-        using var ms = new MemoryStream();
-        await imagem.SaveAsync(ms, new JpegEncoder { Quality = qualidade, SkipMetadata = true }, ct);
-        return await SalvarBytesAsync(nome, "image/jpeg", ms.ToArray(), ct);
     }
 
     public async Task<long> SalvarBytesAsync(string nome, string contentType, byte[] bytes, CancellationToken ct = default)
@@ -227,49 +171,26 @@ public class ArquivoService : IArquivoService
 
     public async Task<(byte[] Bytes, string ContentType, string Extensao)?> GerarRedimensionadoAsync(long arquivoId, int larguraMaxima, CancellationToken ct = default)
     {
+        // Só os bytes importam: a projeção evita trazer o registro inteiro.
         var arquivo = await _db.Arquivos.AsNoTracking()
-            .FirstOrDefaultAsync(a => a.Id == arquivoId, ct);
+            .Where(a => a.Id == arquivoId)
+            .Select(a => new { a.Bytes, a.ContentType })
+            .FirstOrDefaultAsync(ct);
+
         if (arquivo?.Bytes is not { Length: > 0 })
             return null;
 
-        // Só fotos reduzem bem: GIF (animação), SVG/WebP (já eficientes) e
-        // não-imagens seguem no original.
-        var tipo = arquivo.ContentType ?? "";
-        var redimensionavel = tipo.StartsWith("image/jpeg", StringComparison.OrdinalIgnoreCase)
-            || tipo.StartsWith("image/png", StringComparison.OrdinalIgnoreCase)
-            || tipo.StartsWith("image/tiff", StringComparison.OrdinalIgnoreCase)
-            || tipo.StartsWith("image/bmp", StringComparison.OrdinalIgnoreCase);
-        if (!redimensionavel)
-            return null;
+        // Mesma regra de imagem do upload (ver OtimizadorDeImagem): aqui não existe mais
+        // resize/encode próprio. A versão antiga duplicava a regra e mantinha o EXIF no
+        // arquivo derivado — ou seja, o GPS da foto viajava em cada miniatura servida com
+        // cache de um ano, e os pixels saíam sem a rotação aplicada, deixando a orientação
+        // na mão de quem for consumir a imagem.
+        var reduzida = await OtimizadorDeImagem.ReduzirAsync(
+            arquivo.Bytes, arquivo.ContentType, larguraMaxima, ct: ct);
 
-        try
-        {
-            using var imagem = await Image.LoadAsync(new MemoryStream(arquivo.Bytes), ct);
-            if (imagem.Width <= larguraMaxima && imagem.Height <= larguraMaxima)
-                return null; // já é menor: o original é a melhor versão
-
-            imagem.Mutate(x => x.Resize(new ResizeOptions
-            {
-                Mode = ResizeMode.Max,
-                Size = new Size(larguraMaxima, larguraMaxima)
-            }));
-
-            using var ms = new MemoryStream();
-            if (tipo.StartsWith("image/png", StringComparison.OrdinalIgnoreCase))
-            {
-                await imagem.SaveAsync(ms, new PngEncoder { SkipMetadata = true }, ct);
-                return (ms.ToArray(), "image/png", ".png");
-            }
-
-            await imagem.SaveAsync(ms, new JpegEncoder { Quality = 82, SkipMetadata = true }, ct);
-            return (ms.ToArray(), "image/jpeg", ".jpg");
-        }
-        catch (OperationCanceledException) { throw; }
-        catch
-        {
-            // Decode falhou (TIFF exótico etc.): serve o original.
-            return null;
-        }
+        return reduzida is null
+            ? null
+            : (reduzida.Bytes, reduzida.ContentType, reduzida.Extensao);
     }
 
     public async Task ExcluirAsync(long id, CancellationToken ct = default)

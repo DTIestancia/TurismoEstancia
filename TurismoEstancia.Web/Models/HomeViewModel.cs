@@ -62,6 +62,13 @@ public class HomeViewModel
     public long? VideoArquivoId => VideoInstitucional?.ArquivoId;
     public long? VideoArquivoIdMobile => VideoInstitucionalMobile?.ArquivoId;
 
+    /// <summary>
+    /// Poster do vídeo do hero: o 1º slide cadastrado. O vídeo só começa a baixar
+    /// depois do primeiro paint, então é essa imagem que o visitante vê primeiro
+    /// (e que passa a ser o LCP, no lugar de vários MB de MP4).
+    /// </summary>
+    public long? HeroPosterArquivoId => Slides.Count > 0 ? Slides[0].ImagemArquivoId : null;
+
     /// <summary>Imagem de fundo do mapa (PNG do município) — desktop e mobile.</summary>
     public long? MapaImagemArquivoId { get; set; }
     public int MapaImagemZoom { get; set; } = 100;

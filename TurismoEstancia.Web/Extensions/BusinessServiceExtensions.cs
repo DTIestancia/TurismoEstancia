@@ -38,6 +38,9 @@ public static class BusinessServiceExtensions
         // Infra
         builder.Services.AddScoped<IArquivoService, ArquivoService>();
 
+        // Manutenção do acervo de imagens (comando "recomprimir-imagens").
+        builder.Services.AddScoped<IRecompressorImagensService, RecompressorImagensService>();
+
         // Módulo Turismo
         builder.Services.AddScoped<ICategoriaPontoTuristicoService, CategoriaPontoTuristicoService>();
         builder.Services.AddScoped<IPontoTuristicoService, PontoTuristicoService>();

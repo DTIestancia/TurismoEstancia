@@ -7,6 +7,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Backup local dos PNGs originais do rodapé (wwwroot/img/originais, ignorado
+         pelo git): serve só para permitir reverter a redução das imagens — não
+         deve ir para o pacote de publicação. -->
+    <Content Remove="wwwroot\img\originais\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TurismoEstancia.Domain\TurismoEstancia.Domain.csproj" />
     <ProjectReference Include="..\TurismoEstancia.Services\TurismoEstancia.Services.csproj" />
     <ProjectReference Include="..\TurismoEstancia.Authorization\TurismoEstancia.Authorization.csproj" />
