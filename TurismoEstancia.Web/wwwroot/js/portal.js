@@ -686,7 +686,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var verMaisBtn = document.getElementById('planejeVerMais');
     var verMaisTexto = document.getElementById('planejeVerMaisTexto');
     var LIMITE_PLANEJE = 6;
-    var POR_CATEGORIA_TODOS = 2;
+    var POR_CATEGORIA_TODOS = 3;
     var filtroAtual = 'all';
     var expandido = false;
     var ordemOriginal = Array.prototype.slice.call(grid.querySelectorAll('.planeje-card'));
@@ -701,7 +701,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return arr;
     }
 
-    // Monta a ordem do "Todos": 2 aleatórios de cada categoria, intercalados.
+    // Monta a ordem do "Todos": 3 aleatórios de cada categoria, intercalados.
     function construirMixTodos() {
       var grupos = {};
       ordemOriginal.forEach(function (c) {
