@@ -86,6 +86,9 @@
                     </a>
 
                     <div class="painel-nav-title">Sistema</div>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Conteudos") ? "active" : "")" asp-area="Gerenciador" asp-controller="Conteudos" asp-action="Index">
+                        <i data-lucide="type"></i> Textos do portal
+                    </a>
                     <a class="painel-nav-link @(IsAreaPage("Gerenciador","Tema") ? "active" : "")" asp-area="Gerenciador" asp-controller="Tema" asp-action="Index">
                         <i data-lucide="palette"></i> Tema e cores
                     </a>

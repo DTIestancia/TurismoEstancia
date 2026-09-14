@@ -9785,11 +9785,17 @@ img.paginas-galeria-card-img.is-carregada {
 }
 
 .paginas-hero--capa, .news-hero--capa {
-  background-size: cover;
-  background-position: center;
   min-height: 440px;
   display: flex;
   align-items: flex-end;
+}
+
+.paginas-hero-capa-img, .news-hero-capa-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .paginas-hero-overlay, .news-hero-overlay {

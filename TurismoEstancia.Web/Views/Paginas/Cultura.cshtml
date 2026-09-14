@@ -9,7 +9,7 @@
         "<strong>“Estância respira cultura.</strong> Cada festa é um encontro de gerações, cada tradição é um elo com o passado e um abraço no futuro.”");
     // Foto dedicada (Painel > Cultura); se não houver, usa a primeira imagem do hero.
     long.TryParse(Model.Conteudos.GetValueOrDefault("cultura-imagem"), out var culturaImagemId);
-    var temCapa = long.TryParse(Model.Conteudos.GetValueOrDefault("cultura-capa"), out var capaId) && capaId > 0;
+    var capaHero = CapaHero.Montar(Model.Conteudos, "cultura-capa", id => Url.Content($"~/arquivo/{id}?largura=1920"));
     var culturaImagem = culturaImagemId > 0
         ? culturaImagemId.ToString()
         : (Model.Slides.Count > 0 ? Model.Slides[0].ImagemArquivoId.ToString() : "");
@@ -17,9 +17,10 @@
 <main class="paginas-page page-public paginas-page--cultura">
     @await Html.PartialAsync("_PaginasHeader")
 
-    <section class="paginas-hero@(temCapa ? " paginas-hero--capa" : "")"@(temCapa ? $" style=\"background-image:url('{Url.Content($"~/arquivo/{capaId}?largura=1920")}')\"" : "")>
-        @if (temCapa)
+    <section class="paginas-hero@(capaHero.Tem ? " paginas-hero--capa" : "")">
+        @if (capaHero.Tem)
         {
+            <img class="paginas-hero-capa-img" src="@capaHero.Url" style="@capaHero.Estilo" alt="" aria-hidden="true" fetchpriority="high" decoding="async" />
             <div class="paginas-hero-overlay" aria-hidden="true"></div>
         }
         <div class="paginas-hero-inner">

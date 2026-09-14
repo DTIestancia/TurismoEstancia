@@ -22,6 +22,7 @@ public class ConteudosController : PainelController
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         ViewData["Title"] = "Textos do portal";
+        ViewData["ChavesImagem"] = ChavesImagem.ToArray();
 
         var cadastrados = (await _conteudos.ListarAsync(ct))
             .ToDictionary(c => c.Chave, c => c);
@@ -134,6 +135,8 @@ public class ConteudosController : PainelController
     {
         ViewData["Title"] = "Novo texto";
         await PreencherChavesAsync(ViewData, ct);
+        if (ChavesCapa.Contains(chave ?? string.Empty))
+            ViewData["AjusteCapa"] = new AjusteCapaViewModel();
         return View(new ConteudoSiteDto { Chave = chave ?? string.Empty, Nome = nome ?? string.Empty });
     }
 
@@ -144,12 +147,15 @@ public class ConteudosController : PainelController
         if (!ModelState.IsValid)
         {
             await PreencherChavesAsync(ViewData, ct);
+            if (ChavesCapa.Contains(dto.Chave))
+                ViewData["AjusteCapa"] = AjusteCapaDoForm(dto.Texto);
             return View(dto);
         }
         try
         {
             var antigoId = await AplicarImagemAsync(dto, imagem, ct);
             await _conteudos.SalvarAsync(dto, ct);
+            await SalvarAjusteCapaAsync(dto.Chave, dto.Nome);
             // Remove a imagem antiga só após o commit do novo valor.
             if (antigoId.HasValue)
                 await _arquivos.ExcluirAsync(antigoId.Value, ct);
@@ -160,6 +166,8 @@ public class ConteudosController : PainelController
         {
             TempData["PainelErro"] = ex.Message;
             await PreencherChavesAsync(ViewData, ct);
+            if (ChavesCapa.Contains(dto.Chave))
+                ViewData["AjusteCapa"] = AjusteCapaDoForm(dto.Texto);
             return View(dto);
         }
     }
@@ -170,6 +178,8 @@ public class ConteudosController : PainelController
         var dto = await _conteudos.ObterPorIdAsync(id, ct);
         if (dto is null) return NotFound();
         await PreencherChavesAsync(ViewData, ct, dto.Chave);
+        if (ChavesCapa.Contains(dto.Chave))
+            ViewData["AjusteCapa"] = await MontarAjusteCapaAsync(dto.Chave, dto.Texto, ct);
         return View(dto);
     }
 
@@ -180,12 +190,15 @@ public class ConteudosController : PainelController
         if (!ModelState.IsValid)
         {
             await PreencherChavesAsync(ViewData, ct, dto.Chave);
+            if (ChavesCapa.Contains(dto.Chave))
+                ViewData["AjusteCapa"] = AjusteCapaDoForm(dto.Texto);
             return View(dto);
         }
         try
         {
             var antigoId = await AplicarImagemAsync(dto, imagem, ct);
             await _conteudos.SalvarAsync(dto, ct);
+            await SalvarAjusteCapaAsync(dto.Chave, dto.Nome);
             // Remove a imagem antiga só após o commit do novo valor.
             if (antigoId.HasValue)
                 await _arquivos.ExcluirAsync(antigoId.Value, ct);
@@ -196,7 +209,80 @@ public class ConteudosController : PainelController
         {
             TempData["PainelErro"] = ex.Message;
             await PreencherChavesAsync(ViewData, ct, dto.Chave);
+            if (ChavesCapa.Contains(dto.Chave))
+                ViewData["AjusteCapa"] = AjusteCapaDoForm(dto.Texto);
             return View(dto);
+        }
+    }
+
+    /// <summary>
+    /// Monta o ajuste de recorte da capa a partir das chaves companheiras
+    /// (<c>{chave}-zoom</c>, <c>{chave}-pos-x</c>, <c>{chave}-pos-y</c>).
+    /// </summary>
+    private async Task<AjusteCapaViewModel> MontarAjusteCapaAsync(string chave, string? textoImagem, CancellationToken ct)
+    {
+        var todos = await _conteudos.ListarAsync(ct);
+        string? Buscar(string sufixo) =>
+            todos.FirstOrDefault(c => c.Chave.Equals($"{chave}{sufixo}", StringComparison.OrdinalIgnoreCase))?.Texto;
+
+        return new AjusteCapaViewModel
+        {
+            Zoom = LerAjuste(Buscar("-zoom"), 100, 100, 250),
+            PosX = LerAjuste(Buscar("-pos-x"), 50, 0, 100),
+            PosY = LerAjuste(Buscar("-pos-y"), 50, 0, 100),
+            Src = long.TryParse(textoImagem, out var id) && id > 0
+                ? Url.Content($"~/arquivo/{id}?largura=800")
+                : null
+        };
+    }
+
+    /// <summary>Reconstrói o ajuste a partir do form (quando a tela volta com erro).</summary>
+    private AjusteCapaViewModel AjusteCapaDoForm(string? textoImagem)
+    {
+        var form = HttpContext.Request.Form;
+        return new AjusteCapaViewModel
+        {
+            Zoom = LerAjuste(form["AjusteZoom"], 100, 100, 250),
+            PosX = LerAjuste(form["AjustePosX"], 50, 0, 100),
+            PosY = LerAjuste(form["AjustePosY"], 50, 0, 100),
+            Src = long.TryParse(textoImagem, out var id) && id > 0
+                ? Url.Content($"~/arquivo/{id}?largura=800")
+                : null
+        };
+    }
+
+    private static int LerAjuste(string? texto, int padrao, int min, int max) =>
+        int.TryParse(texto, out var v) ? Math.Clamp(v, min, max) : padrao;
+
+    /// <summary>
+    /// Salva o ajuste de recorte nas chaves companheiras da capa (cria ou
+    /// atualiza — mesmo padrão das chaves de zoom/posição do mapa).
+    /// </summary>
+    private async Task SalvarAjusteCapaAsync(string chave, string? nomeBase)
+    {
+        if (!ChavesCapa.Contains(chave))
+            return;
+
+        var form = HttpContext.Request.Form;
+        var valores = new (string Sufixo, string Rotulo, string Valor)[]
+        {
+            ("-zoom", "zoom", LerAjuste(form["AjusteZoom"], 100, 100, 250).ToString()),
+            ("-pos-x", "posição X", LerAjuste(form["AjustePosX"], 50, 0, 100).ToString()),
+            ("-pos-y", "posição Y", LerAjuste(form["AjustePosY"], 50, 0, 100).ToString())
+        };
+
+        var todos = await _conteudos.ListarAsync(HttpContext.RequestAborted);
+        foreach (var (sufixo, rotulo, valor) in valores)
+        {
+            var chaveCompanheira = $"{chave}{sufixo}";
+            var existente = todos.FirstOrDefault(c => c.Chave.Equals(chaveCompanheira, StringComparison.OrdinalIgnoreCase));
+            await _conteudos.SalvarAsync(new ConteudoSiteDto
+            {
+                Id = existente?.Id ?? 0,
+                Chave = chaveCompanheira,
+                Nome = $"{nomeBase} ({rotulo})",
+                Texto = valor
+            }, HttpContext.RequestAborted);
         }
     }
 
@@ -210,6 +296,17 @@ public class ConteudosController : PainelController
         "hero-titulo-imagem",
         "mapa-imagem",
         "mapa-imagem-mobile",
+        "cidade-capa",
+        "cultura-capa",
+        "lugares-capa",
+        "agenda-capa",
+        "roteiros-capa",
+        "noticias-capa"
+    };
+
+    /// <summary>Capas das páginas internas: além da foto, têm zoom e posição gerenciáveis.</summary>
+    private static readonly HashSet<string> ChavesCapa = new(StringComparer.OrdinalIgnoreCase)
+    {
         "cidade-capa",
         "cultura-capa",
         "lugares-capa",
@@ -291,7 +388,20 @@ public class ConteudosController : PainelController
     {
         try
         {
+            // Excluir a capa apaga junto o ajuste de recorte (zoom/posição).
+            var dto = await _conteudos.ObterPorIdAsync(id, ct);
             await _conteudos.ExcluirAsync(id, ct);
+            if (dto is not null && ChavesCapa.Contains(dto.Chave))
+            {
+                var todos = await _conteudos.ListarAsync(ct);
+                foreach (var sufixo in new[] { "-zoom", "-pos-x", "-pos-y" })
+                {
+                    var companheira = todos.FirstOrDefault(c =>
+                        c.Chave.Equals($"{dto.Chave}{sufixo}", StringComparison.OrdinalIgnoreCase));
+                    if (companheira is not null)
+                        await _conteudos.ExcluirAsync(companheira.Id, ct);
+                }
+            }
             TempData["PainelOk"] = "Texto excluído.";
         }
         catch (InvalidOperationException ex)

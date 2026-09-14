@@ -6,13 +6,14 @@
         "Planeje sua <span class=\"secao-destaque\">viagem</span>") ?? "";
     var roteirosDesc = Model.Conteudos.GetValueOrDefault("roteiros-descricao",
         "Onde ficar, onde comer e serviços para você viver o melhor de Estância.") ?? "";
-    var temCapa = long.TryParse(Model.Conteudos.GetValueOrDefault("roteiros-capa"), out var capaId) && capaId > 0;
+    var capaHero = CapaHero.Montar(Model.Conteudos, "roteiros-capa", id => Url.Content($"~/arquivo/{id}?largura=1920"));
 }
 @await Html.PartialAsync("_PaginasHeader")
 <main class="news-index page-public paginas-page--roteiros">
-    <section class="news-hero@(temCapa ? " news-hero--capa" : "")"@(temCapa ? $" style=\"background-image:url('{Url.Content($"~/arquivo/{capaId}?largura=1920")}')\"" : "")>
-        @if (temCapa)
+    <section class="news-hero@(capaHero.Tem ? " news-hero--capa" : "")">
+        @if (capaHero.Tem)
         {
+            <img class="news-hero-capa-img" src="@capaHero.Url" style="@capaHero.Estilo" alt="" aria-hidden="true" fetchpriority="high" decoding="async" />
             <div class="news-hero-overlay" aria-hidden="true"></div>
         }
         <div class="news-hero-inner">

@@ -7,14 +7,15 @@
     var historiaDescricao = Model.Conteudos.GetValueOrDefault("historia-descricao",
         "Sente o vento salgado da <strong>Praia do Saco</strong>, escuta o estalar dos Barcos de Fogo no céu. Aqui, cada esquina é uma descoberta, cada sorriso é um convite. <strong>Vem viver Estância.</strong>");
     var historiaImagem = Model.Conteudos.GetValueOrDefault("historia-imagem");
-    var temCapa = long.TryParse(Model.Conteudos.GetValueOrDefault("cidade-capa"), out var capaId) && capaId > 0;
+    var capaHero = CapaHero.Montar(Model.Conteudos, "cidade-capa", id => Url.Content($"~/arquivo/{id}?largura=1920"));
 }
 <main class="paginas-page page-public paginas-page--cidade">
     @await Html.PartialAsync("_PaginasHeader")
 
-    <section class="paginas-hero@(temCapa ? " paginas-hero--capa" : "")"@(temCapa ? $" style=\"background-image:url('{Url.Content($"~/arquivo/{capaId}?largura=1920")}')\"" : "")>
-        @if (temCapa)
+    <section class="paginas-hero@(capaHero.Tem ? " paginas-hero--capa" : "")">
+        @if (capaHero.Tem)
         {
+            <img class="paginas-hero-capa-img" src="@capaHero.Url" style="@capaHero.Estilo" alt="" aria-hidden="true" fetchpriority="high" decoding="async" />
             <div class="paginas-hero-overlay" aria-hidden="true"></div>
         }
         <div class="paginas-hero-inner">

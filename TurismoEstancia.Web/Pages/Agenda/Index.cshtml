@@ -8,12 +8,13 @@
 }
 @await Html.PartialAsync("_PaginasHeader")
 @{
-    var temCapaAgenda = long.TryParse(Model.Conteudos.GetValueOrDefault("agenda-capa"), out var agendaCapaId) && agendaCapaId > 0;
+    var capaHero = CapaHero.Montar(Model.Conteudos, "agenda-capa", id => Url.Content($"~/arquivo/{id}?largura=1920"));
 }
 <main class="news-index page-public pagina-agenda">
-    <section class="news-hero@(temCapaAgenda ? " news-hero--capa" : "")"@(temCapaAgenda ? $" style=\"background-image:url('{Url.Content($"~/arquivo/{agendaCapaId}?largura=1920")}')\"" : "")>
-        @if (temCapaAgenda)
+    <section class="news-hero@(capaHero.Tem ? " news-hero--capa" : "")">
+        @if (capaHero.Tem)
         {
+            <img class="news-hero-capa-img" src="@capaHero.Url" style="@capaHero.Estilo" alt="" aria-hidden="true" fetchpriority="high" decoding="async" />
             <div class="news-hero-overlay" aria-hidden="true"></div>
         }
         <div class="news-hero-inner">

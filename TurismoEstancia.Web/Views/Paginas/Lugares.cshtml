@@ -3,14 +3,15 @@
     ViewData["Title"] = "Lugares que Encantam";
     var maravilhasDesc = Model.Conteudos.GetValueOrDefault("maravilhas-descricao",
         "De filarmônicas centenárias a praias de tirar o fôlego — cada cantinho de Estância tem uma história esperando por você.");
-    var temCapa = long.TryParse(Model.Conteudos.GetValueOrDefault("lugares-capa"), out var capaId) && capaId > 0;
+    var capaHero = CapaHero.Montar(Model.Conteudos, "lugares-capa", id => Url.Content($"~/arquivo/{id}?largura=1920"));
 }
 <main class="paginas-page page-public paginas-page--lugares">
     @await Html.PartialAsync("_PaginasHeader")
 
-    <section class="paginas-hero@(temCapa ? " paginas-hero--capa" : "")"@(temCapa ? $" style=\"background-image:url('{Url.Content($"~/arquivo/{capaId}?largura=1920")}')\"" : "")>
-        @if (temCapa)
+    <section class="paginas-hero@(capaHero.Tem ? " paginas-hero--capa" : "")">
+        @if (capaHero.Tem)
         {
+            <img class="paginas-hero-capa-img" src="@capaHero.Url" style="@capaHero.Estilo" alt="" aria-hidden="true" fetchpriority="high" decoding="async" />
             <div class="paginas-hero-overlay" aria-hidden="true"></div>
         }
         <div class="paginas-hero-inner">

@@ -33,6 +33,10 @@
         <span class="painel-hint">Envie a foto — o portal exibe onde a chave é usada.</span>
     </div>
 
+    <div id="blocoAjusteCapa" style="display:none;">
+        @await Html.PartialAsync("_AjusteCapa", ViewData["AjusteCapa"] as AjusteCapaViewModel ?? new AjusteCapaViewModel())
+    </div>
+
     <div class="painel-form-actions">
         <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="check"></i> Salvar</button>
         <a class="btn-painel btn-painel--ghost" asp-action="Index"><i data-lucide="x"></i> Cancelar</a>
@@ -48,9 +52,11 @@
             var eImagem = chavesImagem.some(function (c) { return c.toLowerCase() === String(chave).toLowerCase(); });
             var campoTexto = document.getElementById('campoTexto');
             var campoImagem = document.getElementById('campoImagem');
+            var blocoAjuste = document.getElementById('blocoAjusteCapa');
             var previews = document.querySelectorAll('.painel-preview');
             if (campoTexto) campoTexto.style.display = eImagem ? 'none' : '';
             if (campoImagem) campoImagem.style.display = eImagem ? '' : 'none';
+            if (blocoAjuste) blocoAjuste.style.display = (eImagem && String(chave).toLowerCase().endsWith('-capa')) ? '' : 'none';
             previews.forEach(function (p) { p.style.display = eImagem ? 'none' : ''; });
         };
         // Estado inicial (a tela pode abrir com a chave pré-selecionada).
