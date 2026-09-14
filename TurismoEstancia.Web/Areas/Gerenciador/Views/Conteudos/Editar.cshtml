@@ -1,7 +1,9 @@
 @model ConteudoSiteDto
 @{
     ViewData["Title"] = "Editar texto";
-    var eImagem = Model.Chave == "historia-imagem";
+    var chavesImagem = (ViewData["ChavesImagem"] as IEnumerable<string>)?.ToHashSet(StringComparer.OrdinalIgnoreCase)
+        ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    var eImagem = chavesImagem.Contains(Model.Chave);
 }
 <div class="painel-page-header">
     <div>
@@ -32,16 +34,16 @@
     @await Html.PartialAsync("_PreviewTexto", "Texto")
 
     <div class="painel-field" id="campoImagem" style="@(eImagem ? "" : "display:none;")">
-        <label>Imagem (foto da cidade)</label>
+        <label>Imagem</label>
         @if (eImagem && Model.Texto is { Length: > 0 } textoId && textoId.All(char.IsDigit))
         {
             <div style="margin-bottom:10px;">
-                <img src="@Url.Content($"~/arquivo/{textoId}")" alt="Foto atual da cidade" style="max-width:280px;border-radius:12px;border:1px solid var(--color-white--15);" />
-                <div style="font-size:12px;color:var(--color-white--50);margin-top:4px;">Foto atual — enviar outra substitui.</div>
+                <img src="@Url.Content($"~/arquivo/{textoId}?largura=800")" alt="Imagem atual" style="max-width:280px;border-radius:12px;border:1px solid var(--color-white--15);" />
+                <div style="font-size:12px;color:var(--color-white--50);margin-top:4px;">Imagem atual — enviar outra substitui.</div>
             </div>
         }
         <input type="file" name="imagem" accept="image/*" class="painel-input" />
-        <span class="painel-hint">Envie a foto — o portal exibe no card da seção "Nossa Cidade".</span>
+        <span class="painel-hint">Envie a foto — o portal exibe onde a chave é usada.</span>
     </div>
 
     <div class="painel-form-actions">
@@ -52,10 +54,11 @@
 
 @section Scripts {
     <script>
-        // Alterna entre campo de texto (chave de texto) e upload de imagem
-        // (chave como historia-imagem), conforme a chave escolhida no select.
+        // Alterna entre campo de texto e upload de imagem conforme a chave
+        // escolhida no select (a lista vem do servidor).
+        var chavesImagem = @Json.Serialize(ViewData["ChavesImagem"] ?? Array.Empty<string>());
         window.OnChaveSelecionada = function (chave) {
-            var eImagem = chave === 'historia-imagem';
+            var eImagem = chavesImagem.some(function (c) { return c.toLowerCase() === String(chave).toLowerCase(); });
             var campoTexto = document.getElementById('campoTexto');
             var campoImagem = document.getElementById('campoImagem');
             var previews = document.querySelectorAll('.painel-preview');
@@ -63,5 +66,10 @@
             if (campoImagem) campoImagem.style.display = eImagem ? '' : 'none';
             previews.forEach(function (p) { p.style.display = eImagem ? 'none' : ''; });
         };
+        // Estado inicial (o script do seletor roda antes desta definição).
+        (function () {
+            var chaveAtual = document.querySelector('[name="Chave"]');
+            window.OnChaveSelecionada(chaveAtual ? chaveAtual.value : '');
+        })();
     </script>
 }

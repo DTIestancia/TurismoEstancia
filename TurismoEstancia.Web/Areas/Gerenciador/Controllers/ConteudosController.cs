@@ -244,6 +244,8 @@ public class ConteudosController : PainelController
     /// </summary>
     private async Task PreencherChavesAsync(ViewDataDictionary viewData, CancellationToken ct, string? selecionada = null)
     {
+        // Lista de chaves-imagem para as views alternarem texto <-> upload.
+        viewData["ChavesImagem"] = ChavesImagem.ToArray();
         var emUso = (await _conteudos.ListarAsync(ct))
             .Where(c => c.Chave != selecionada)
             .Select(c => c.Chave)

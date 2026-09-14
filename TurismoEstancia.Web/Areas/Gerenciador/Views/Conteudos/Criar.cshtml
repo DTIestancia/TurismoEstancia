@@ -28,9 +28,9 @@
     @await Html.PartialAsync("_PreviewTexto", "Texto")
 
     <div class="painel-field" id="campoImagem" style="display:none;">
-        <label>Imagem (foto da cidade)</label>
+        <label>Imagem</label>
         <input type="file" name="imagem" accept="image/*" class="painel-input" />
-        <span class="painel-hint">Envie a foto — o portal exibe no card da seção "Nossa Cidade".</span>
+        <span class="painel-hint">Envie a foto — o portal exibe onde a chave é usada.</span>
     </div>
 
     <div class="painel-form-actions">
@@ -41,10 +41,11 @@
 
 @section Scripts {
     <script>
-        // Alterna entre campo de texto (chave de texto) e upload de imagem
-        // (chave como historia-imagem), conforme a chave escolhida no select.
+        // Alterna entre campo de texto e upload de imagem conforme a chave
+        // escolhida no select (a lista vem do servidor).
+        var chavesImagem = @Json.Serialize(ViewData["ChavesImagem"] ?? Array.Empty<string>());
         window.OnChaveSelecionada = function (chave) {
-            var eImagem = chave === 'historia-imagem';
+            var eImagem = chavesImagem.some(function (c) { return c.toLowerCase() === String(chave).toLowerCase(); });
             var campoTexto = document.getElementById('campoTexto');
             var campoImagem = document.getElementById('campoImagem');
             var previews = document.querySelectorAll('.painel-preview');
@@ -52,5 +53,10 @@
             if (campoImagem) campoImagem.style.display = eImagem ? '' : 'none';
             previews.forEach(function (p) { p.style.display = eImagem ? 'none' : ''; });
         };
+        // Estado inicial (a tela pode abrir com a chave pré-selecionada).
+        (function () {
+            var chaveAtual = document.querySelector('[name="Chave"]');
+            window.OnChaveSelecionada(chaveAtual ? chaveAtual.value : '');
+        })();
     </script>
 }
