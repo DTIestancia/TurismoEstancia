@@ -3759,6 +3759,61 @@ img.paginas-galeria-card-img {
 .paginacao .paginacao-reticencias { color: #9ca3af; }
 .error-page .error-message { color: #4b5563; }
 
+// ===== Faixa de logotipos institucionais (rodapés escuro) =====
+// DTI e Capital Brasileira são artes claras (vão direto); o brasão da
+// Prefeitura tem azul-escuro e ganha selo branco para manter o contraste.
+.footer-logos { border-top: 1px solid var(--color-white--10); }
+.footer-logos-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 30px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+  flex-wrap: wrap;
+}
+.footer-logo { height: 58px; width: auto; max-width: 100%; object-fit: contain; }
+.footer-logo--selo {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 8px 16px;
+  height: 76px;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.45);
+}
+.footer-logo--dti { height: 30px; }
+.footer-dev {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.footer-dev-texto {
+  color: var(--color-white--55);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.paginas-footer-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 44px;
+  flex-wrap: wrap;
+  padding: 26px 24px;
+  border-top: 1px solid var(--color-white--8);
+
+  .footer-logo { height: 48px; }
+  .footer-logo--selo { height: 64px; }
+  .footer-logo--dti { height: 26px; }
+}
+@media (max-width: 640px) {
+  .footer-logos-inner { gap: 28px; padding: 24px 16px; }
+  .footer-logo { height: 44px; }
+  .footer-logo--selo { height: 60px; }
+}
+
 // ===== Utilit�rios de acessibilidade =====
 // Texto leg�vel por leitores de tela, invis�vel no layout.
 .visually-hidden {
