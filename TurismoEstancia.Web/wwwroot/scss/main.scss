@@ -3792,6 +3792,13 @@ img.paginas-galeria-card-img {
   box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.45);
 }
 .footer-logo--dti { height: 30px; }
+.footer-logo--cidade { height: 44px; }
+.footer-selos {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.footer-selo { height: 64px; width: auto; object-fit: contain; }
 .footer-dev {
   display: flex;
   flex-direction: column;
@@ -3820,6 +3827,8 @@ img.paginas-galeria-card-img {
   .footer-logo { height: 46px; }
   .footer-logo--selo { height: 60px; }
   .footer-logo--dti { height: 26px; }
+  .footer-logo--cidade { height: 38px; }
+  .footer-selo { height: 56px; }
 
   .footer-dev { align-items: flex-end; text-align: right; }
 }
@@ -3829,6 +3838,7 @@ img.paginas-galeria-card-img {
   .footer-dev { align-items: center; text-align: center; }
   .footer-logo { height: 44px; }
   .footer-logo--selo { height: 60px; }
+  .footer-selo { height: 52px; }
 }
 
 // ===== Utilit�rios de acessibilidade =====
