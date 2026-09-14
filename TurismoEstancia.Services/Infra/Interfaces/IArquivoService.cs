@@ -41,6 +41,15 @@ public interface IArquivoService
     /// <summary>Obtém o arquivo para servir com Content-Type correto. Lança se não existir.</summary>
     Task<Arquivo> ObterAsync(long id, CancellationToken ct = default);
 
+    /// <summary>
+    /// Gera uma versão reduzida da imagem (nunca amplia) com no máximo
+    /// <paramref name="larguraMaxima"/>px no maior lado, JPEG q82 (ou PNG quando
+    /// a origem tem alfa). Retorna <c>null</c> quando o arquivo não existe, já é
+    /// menor que o pedido ou não é uma imagem redimensionável (GIF animado, SVG,
+    /// WebP, vídeo etc.) — nesses casos o chamador serve o original.
+    /// </summary>
+    Task<(byte[] Bytes, string ContentType, string Extensao)?> GerarRedimensionadoAsync(long arquivoId, int larguraMaxima, CancellationToken ct = default);
+
     /// <summary>Exclui o registro de arquivo (usado para limpar órfãos).</summary>
     Task ExcluirAsync(long id, CancellationToken ct = default);
 

@@ -225,6 +225,53 @@ public class ArquivoService : IArquivoService
         }
     }
 
+    public async Task<(byte[] Bytes, string ContentType, string Extensao)?> GerarRedimensionadoAsync(long arquivoId, int larguraMaxima, CancellationToken ct = default)
+    {
+        var arquivo = await _db.Arquivos.AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Id == arquivoId, ct);
+        if (arquivo?.Bytes is not { Length: > 0 })
+            return null;
+
+        // Só fotos reduzem bem: GIF (animação), SVG/WebP (já eficientes) e
+        // não-imagens seguem no original.
+        var tipo = arquivo.ContentType ?? "";
+        var redimensionavel = tipo.StartsWith("image/jpeg", StringComparison.OrdinalIgnoreCase)
+            || tipo.StartsWith("image/png", StringComparison.OrdinalIgnoreCase)
+            || tipo.StartsWith("image/tiff", StringComparison.OrdinalIgnoreCase)
+            || tipo.StartsWith("image/bmp", StringComparison.OrdinalIgnoreCase);
+        if (!redimensionavel)
+            return null;
+
+        try
+        {
+            using var imagem = await Image.LoadAsync(new MemoryStream(arquivo.Bytes), ct);
+            if (imagem.Width <= larguraMaxima && imagem.Height <= larguraMaxima)
+                return null; // já é menor: o original é a melhor versão
+
+            imagem.Mutate(x => x.Resize(new ResizeOptions
+            {
+                Mode = ResizeMode.Max,
+                Size = new Size(larguraMaxima, larguraMaxima)
+            }));
+
+            using var ms = new MemoryStream();
+            if (tipo.StartsWith("image/png", StringComparison.OrdinalIgnoreCase))
+            {
+                await imagem.SaveAsync(ms, new PngEncoder { SkipMetadata = true }, ct);
+                return (ms.ToArray(), "image/png", ".png");
+            }
+
+            await imagem.SaveAsync(ms, new JpegEncoder { Quality = 82, SkipMetadata = true }, ct);
+            return (ms.ToArray(), "image/jpeg", ".jpg");
+        }
+        catch (OperationCanceledException) { throw; }
+        catch
+        {
+            // Decode falhou (TIFF exótico etc.): serve o original.
+            return null;
+        }
+    }
+
     public async Task ExcluirAsync(long id, CancellationToken ct = default)
     {
         if (await EstaReferenciadoAsync(id, ct))

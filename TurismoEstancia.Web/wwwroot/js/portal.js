@@ -108,10 +108,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function itensAtuais() { return (tabs[activeTabIdx] && tabs[activeTabIdx].itens) || []; }
 
-    function buildCard(item) {
+    // Fotos das cartas fora da vista só baixam quando estão prestes a aparecer
+    // (as 3 primeiras vão direto; o giro do deck traz as demais para perto e o
+    // observer carrega antes de entrarem — economiza MBs no carregamento).
+    var ioFotos = ('IntersectionObserver' in window) ? new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var el = en.target;
+        if (el.dataset.imagem) {
+          el.style.backgroundImage = "url('" + el.dataset.imagem + "')";
+          delete el.dataset.imagem;
+        }
+        ioFotos.unobserve(el);
+      });
+    }, { rootMargin: '300px' }) : null;
+
+    function buildCard(item, carregarAgora) {
       var el = document.createElement('div');
       el.className = 'conheca-card-item';
-      if (item.imagem) el.style.backgroundImage = "url('" + item.imagem + "')";
+      if (item.imagem) {
+        if (carregarAgora || !ioFotos) el.style.backgroundImage = "url('" + item.imagem + "')";
+        else el.dataset.imagem = item.imagem;
+      }
       else el.classList.add('no-photo');
       // posição/zoom do Gerenciador (mesmo da Notícia)
       var px = item.posX != null ? item.posX : 50;
@@ -143,8 +161,11 @@ document.addEventListener('DOMContentLoaded', function () {
       if (infoEl) infoEl.style.display = '';
       var fila = itens.slice();
       var ultima = fila.pop();
-      if (ultima) deck.appendChild(buildCard(ultima));
-      fila.forEach(function (it) { deck.appendChild(buildCard(it)); });
+      if (ultima) deck.appendChild(buildCard(ultima, true));
+      fila.forEach(function (it, i) { deck.appendChild(buildCard(it, i < 2)); });
+      if (ioFotos) {
+        deck.querySelectorAll('.conheca-card-item[data-imagem]').forEach(function (el) { ioFotos.observe(el); });
+      }
       atualizarInfo(false);
     }
 

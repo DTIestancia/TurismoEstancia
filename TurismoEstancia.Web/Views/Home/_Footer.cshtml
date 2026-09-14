@@ -26,7 +26,7 @@
                     {
                         <a class="footer-picto" href="@Url.Content($"~/lugares/{maravilha.Id}")" title="Ver detalhes: @maravilha.Nome">
                             <span class="footer-picto-tile">
-                                <img src="@Url.Content($"~/arquivo/{(maravilha.PictogramaArquivoId)}")" alt="" loading="lazy" />
+                                <img src="@Url.Content($"~/arquivo/{(maravilha.PictogramaArquivoId)}?largura=200")" alt="" loading="lazy" decoding="async" />
                             </span>
                             <span class="footer-picto-nome">@maravilha.Nome</span>
                         </a>

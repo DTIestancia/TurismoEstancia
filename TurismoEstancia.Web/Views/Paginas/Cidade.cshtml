@@ -32,11 +32,11 @@
                 </div>
                 @if (historiaImagem is not null && !historiaImagem.StartsWith("{{"))
                 {
-                    <img class="paginas-cidade-card-img" src="@Url.Content($"~/arquivo/{historiaImagem}")" alt="Vista de Estância" loading="lazy" />
+                    <img class="paginas-cidade-card-img" src="@Url.Content($"~/arquivo/{historiaImagem}?largura=800")" alt="Vista de Estância" loading="lazy" decoding="async" />
                 }
                 else if (Model.Slides.Count > 0)
                 {
-                    <img class="paginas-cidade-card-img" src="@Url.Content($"~/arquivo/{Model.Slides[0].ImagemArquivoId}")" alt="Vista de Estância" loading="lazy" />
+                    <img class="paginas-cidade-card-img" src="@Url.Content($"~/arquivo/{Model.Slides[0].ImagemArquivoId}?largura=800")" alt="Vista de Estância" loading="lazy" decoding="async" />
                 }
                 <div class="paginas-cidade-card-text">
                     @Html.Raw(historiaTexto)
@@ -86,7 +86,7 @@
                 <div class="paginas-galeria-grid">
                     @foreach (var slide in Model.Slides)
                     {
-                        <img src="@Url.Content($"~/arquivo/{slide.ImagemArquivoId}")" alt="@(slide.Titulo ?? "Estância")" loading="lazy" />
+                        <img src="@Url.Content($"~/arquivo/{slide.ImagemArquivoId}?largura=1024")" alt="@(slide.Titulo ?? "Estância")" loading="lazy" decoding="async" />
                     }
                 </div>
             </div>

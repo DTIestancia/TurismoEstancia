@@ -35,7 +35,7 @@
                         <figure class="paginas-card-figure">
                             @if (ponto.CapaArquivoId is long capa)
                             {
-                                <img class="paginas-card-img" src="@Url.Content($"~/arquivo/{capa}")" alt="@ponto.Nome" loading="lazy" />
+                                <img class="paginas-card-img" src="@Url.Content($"~/arquivo/{capa}?largura=800")" alt="@ponto.Nome" loading="lazy" decoding="async" />
                             }
                             else
                             {

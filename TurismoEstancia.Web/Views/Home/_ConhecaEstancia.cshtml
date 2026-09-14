@@ -18,7 +18,7 @@
                 id = i.Id,
                 nome = i.Nome,
                 descricao = i.Descricao ?? "",
-                imagem = i.ImagemArquivoId is long img ? Url.Content($"~/arquivo/{img}") : "",
+                imagem = i.ImagemArquivoId is long img ? Url.Content($"~/arquivo/{img}?largura=1600") : "",
                 url = i.Url ?? "",
                 zoom = i.ImagemZoom,
                 posX = i.ImagemPosicaoX,

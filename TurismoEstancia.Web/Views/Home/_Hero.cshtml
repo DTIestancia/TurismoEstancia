@@ -43,7 +43,7 @@
         <div class="loader-picto-row">
             @for (var i = 0; i < pictogramas.Count; i++)
             {
-                <img src="@Url.Content($"~/arquivo/{pictogramas[i]}")" alt="" class="loader-picto" aria-hidden="true" />
+                <img src="@Url.Content($"~/arquivo/{pictogramas[i]}?largura=160")" alt="" class="loader-picto" aria-hidden="true" decoding="async" />
             }
         </div>
         <div class="page-loader-bar-track">
@@ -126,7 +126,7 @@
         <div class="hero-text">
             @if (heroTituloImagemId is long htId)
             {
-                <img src="@Url.Content($"~/arquivo/{htId}")" alt="@heroTitulo" class="hero-title-image" loading="eager" fetchpriority="high" />
+                <img src="@Url.Content($"~/arquivo/{htId}?largura=1200")" alt="@heroTitulo" class="hero-title-image" loading="eager" fetchpriority="high" decoding="async" />
                 <h1 class="visually-hidden">@System.Text.RegularExpressions.Regex.Replace(heroTitulo ?? "Estância", "<.*?>", "")</h1>
             }
             else

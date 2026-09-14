@@ -34,6 +34,7 @@ public static class PipelineExtensions
         // Favicon dinâmico (usa a logo de logo-principal quando configurada).
         app.UseMiddleware<FaviconMiddleware>();
 
+        app.UseResponseCompression();
         app.UseStaticFiles();
         app.UseRouting();
         app.UseAuthentication();

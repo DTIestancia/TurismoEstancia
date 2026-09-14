@@ -25,7 +25,7 @@
     <section class="item-hero">
         @if (Model.ImagemArquivoId is long img)
         {
-            <img class="item-hero-bg" src="@Url.Content($"~/arquivo/{img}")" alt="@Model.Nome"
+            <img class="item-hero-bg" src="@Url.Content($"~/arquivo/{img}?largura=1920")" alt="@Model.Nome" decoding="async"
                  style="object-position:@(Model.ImagemPosicaoX)% @(Model.ImagemPosicaoY)%;transform-origin:@(Model.ImagemPosicaoX)% @(Model.ImagemPosicaoY)%;transform:scale(@((Model.ImagemZoom/100.0).ToString(System.Globalization.CultureInfo.InvariantCulture)));" />
             <div class="item-hero-overlay"></div>
         }

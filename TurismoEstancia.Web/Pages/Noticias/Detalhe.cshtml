@@ -28,7 +28,7 @@
             @if (Model.Noticia.ImagemArquivoId is long imgId)
             {
                 <div class="news-article-img-wrap">
-                    <img class="news-article-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@Model.Noticia.Titulo"
+                    <img class="news-article-img" src="@Url.Content($"~/arquivo/{imgId}?largura=1600")" alt="@Model.Noticia.Titulo" decoding="async"
                          style="--noticia-zoom:@(Model.Noticia.ImagemZoom)%;object-position:@(Model.Noticia.ImagemPosicaoX)% @(Model.Noticia.ImagemPosicaoY)%;transform-origin:@(Model.Noticia.ImagemPosicaoX)% @(Model.Noticia.ImagemPosicaoY)%;" />
                 </div>
             }
@@ -58,15 +58,15 @@
                                 var midia = Model.GaleriaFotos[i];
                                 var thumb = midia.ArquivoThumbId ?? midia.ArquivoId;
                                 <a class="galeria-item @(i >= fotosVisiveis ? "galeria-item--extra" : "")"
-                                   href="@Url.Content($"~/arquivo/{midia.ArquivoId}")"
-                                   data-full="@Url.Content($"~/arquivo/{midia.ArquivoId}")"
+                                   href="@Url.Content($"~/arquivo/{midia.ArquivoId}?largura=1920")"
+                                   data-full="@Url.Content($"~/arquivo/{midia.ArquivoId}?largura=1920")"
                                    data-titulo="@(midia.Titulo ?? Model.Galeria.Nome)"
                                    data-id="@midia.Id"
                                    data-like="@midia.Curtidas"
                                    data-views="@midia.Visualizacoes"
                                    data-track="galeria-foto" data-track-id="@midia.Id"
                                    aria-label="Ampliar foto: @(midia.Titulo ?? Model.Galeria.Nome)" title="@(midia.Titulo ?? Model.Galeria.Nome)">
-                                    <img src="@Url.Content($"~/arquivo/{thumb}")" alt="@(midia.Titulo ?? Model.Galeria.Nome)" loading="lazy" decoding="async" />
+                                    <img src="@Url.Content($"~/arquivo/{thumb}?largura=600")" alt="@(midia.Titulo ?? Model.Galeria.Nome)" loading="lazy" decoding="async" />
                                     @if (i == fotosVisiveis - 1 && totalFotos > fotosVisiveis)
                                     {
                                         <span class="galeria-item-mais" data-abrir-em="@fotosVisiveis"

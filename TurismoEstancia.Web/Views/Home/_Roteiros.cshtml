@@ -52,13 +52,13 @@
                     var imgId = item.ImagemArquivoId ?? item.CategoriaImagemPadraoArquivoId;
                     <article class="roteiro-card reveal planeje-card" tabindex="0" role="button"
                              data-cat="@item.CategoriaId" data-id="@item.Id" data-title="@item.Titulo"
-                             data-desc="@item.Descricao" data-img="@(imgId is long id ? Url.Content($"~/arquivo/{id}") : "")"
+                             data-desc="@item.Descricao" data-img="@(imgId is long id ? Url.Content($"~/arquivo/{id}?largura=1600") : "")"
                              data-category="@item.CategoriaNome" data-location="@item.Localizacao"
                              data-contact="@item.Contato" data-site="@item.Site" data-instagram="@item.Instagram"
                              aria-label="Ver detalhes: @item.Titulo">
                         @if (imgId is long fotoId)
                         {
-                            <img class="roteiro-card-img" src="@Url.Content($"~/arquivo/{fotoId}")" alt="@item.Titulo" loading="lazy" />
+                            <img class="roteiro-card-img" src="@Url.Content($"~/arquivo/{fotoId}?largura=800")" alt="@item.Titulo" loading="lazy" decoding="async" />
                         }
                         <div class="roteiro-card-body">
                             @if (!string.IsNullOrWhiteSpace(item.CategoriaNome))

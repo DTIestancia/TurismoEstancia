@@ -31,7 +31,7 @@
                         @if (noticia.ImagemArquivoId is long imgId)
                         {
                             <span class="news-card-img-wrap">
-                                <img class="news-card-img" src="@Url.Content($"~/arquivo/{imgId}")" alt="@noticia.Titulo" loading="lazy"
+                                <img class="news-card-img" src="@Url.Content($"~/arquivo/{imgId}?largura=800")" alt="@noticia.Titulo" loading="lazy" decoding="async"
                                      style="--noticia-zoom:@(noticia.ImagemZoom)%;object-position:@(noticia.ImagemPosicaoX)% @(noticia.ImagemPosicaoY)%;transform-origin:@(noticia.ImagemPosicaoX)% @(noticia.ImagemPosicaoY)%;" />
                             </span>
                         }

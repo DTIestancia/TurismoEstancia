@@ -21,7 +21,7 @@ else
                         <figure class="vitrine-foto">
                             @if (ponto.CapaArquivoId is long capa)
                             {
-                                <img src="@Url.Content($"~/arquivo/{capa}")" alt="@ponto.Nome" loading="lazy" />
+                                <img src="@Url.Content($"~/arquivo/{capa}?largura=1024")" alt="@ponto.Nome" loading="lazy" decoding="async" />
                             }
                             else
                             {

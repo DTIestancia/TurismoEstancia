@@ -32,7 +32,7 @@
                 {
                     var noticia = Model.Noticias[i];
                     var dataBadge = noticia.DataPublicacao.ToString("dd MMM", new System.Globalization.CultureInfo("pt-BR")).ToUpperInvariant();
-                    var thumbUrl = noticia.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}") : "";
+                    var thumbUrl = noticia.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}?largura=800") : "";
                     <div class="noticias-item noticias-item-@(i + 1)">
                         <a href="~/Noticias/Detalhe/@noticia.Slug" class="noticias-card"
                            data-track="noticia" data-track-id="@noticia.Id" data-track-nome="@noticia.Titulo">

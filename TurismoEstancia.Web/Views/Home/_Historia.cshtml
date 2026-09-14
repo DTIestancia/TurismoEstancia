@@ -29,7 +29,7 @@
                     </div>
                     @if (historiaImagem is not null && !historiaImagem.StartsWith("{{"))
                     {
-                        <img src="@Url.Content($"~/arquivo/{historiaImagem}")" alt="Vista da Catedral de Estância" loading="lazy" />
+                        <img src="@Url.Content($"~/arquivo/{historiaImagem}?largura=800")" alt="Vista da Catedral de Estância" loading="lazy" decoding="async" />
                     }
                     else
                     {
@@ -55,10 +55,10 @@
                     @if (Model.Slides.Count >= 3)
                     {
                         <div class="history-photo">
-                            <img src="@Url.Content($"~/arquivo/{Model.Slides[1].ImagemArquivoId}")" alt="Estância" loading="lazy" />
+                            <img src="@Url.Content($"~/arquivo/{Model.Slides[1].ImagemArquivoId}?largura=800")" alt="Estância" loading="lazy" decoding="async" />
                         </div>
                         <div class="history-photo">
-                            <img src="@Url.Content($"~/arquivo/{Model.Slides[2].ImagemArquivoId}")" alt="Estância" loading="lazy" />
+                            <img src="@Url.Content($"~/arquivo/{Model.Slides[2].ImagemArquivoId}?largura=800")" alt="Estância" loading="lazy" decoding="async" />
                         </div>
                     }
                 </div>
