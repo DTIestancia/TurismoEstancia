@@ -9,54 +9,16 @@ public class ArquivoController : Controller
 {
     private readonly IArquivoService _arquivos;
     private readonly IWebHostEnvironment _env;
-    private readonly IConfiguration _config;
-    private readonly ILogger<ArquivoController> _log;
 
     // Um semáforo por miniatura: imagens diferentes geram em paralelo (a
     // geração é CPU-bound e o .NET paraleliza entre núcleos); a mesma
     // miniatura nunca gera duas vezes ao mesmo tempo.
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaforos = new();
 
-    public ArquivoController(
-        IArquivoService arquivos,
-        IWebHostEnvironment env,
-        IConfiguration config,
-        ILogger<ArquivoController> log)
+    public ArquivoController(IArquivoService arquivos, IWebHostEnvironment env)
     {
         _arquivos = arquivos;
         _env = env;
-        _config = config;
-        _log = log;
-    }
-
-    /// <summary>
-    /// Pasta do cache de miniaturas: <c>CacheMiniaturas:Diretorio</c> quando
-    /// configurado (sobrevive ao deploy — é o recomendado no servidor);
-    /// senão, pasta de dados comum do SO; em último caso, dentro do app.
-    /// </summary>
-    private string DiretorioCache()
-    {
-        var configurado = _config["CacheMiniaturas:Diretorio"];
-        if (!string.IsNullOrWhiteSpace(configurado))
-            return configurado;
-
-        var pasta = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-            "TurismoEstancia", "cache", "arquivo");
-        try
-        {
-            Directory.CreateDirectory(pasta);
-            // Prova de escrita: sem ela, o primeiro 200 engana e o cache nunca grava.
-            var prova = Path.Combine(pasta, ".escrita");
-            System.IO.File.WriteAllText(prova, "ok");
-            System.IO.File.Delete(prova);
-            return pasta;
-        }
-        catch (Exception ex)
-        {
-            _log.LogWarning(ex, "Sem escrita em {Pasta}; miniaturas em cache local do app.", pasta);
-            return Path.Combine(_env.ContentRootPath, "cache", "arquivo");
-        }
     }
 
     /// <summary>
@@ -89,7 +51,7 @@ public class ArquivoController : Controller
             // fora do wwwroot de propósito (StaticFiles não serve, sem bypass).
             if (largura is >= 200 and <= 2560)
             {
-                var pasta = DiretorioCache();
+                var pasta = Path.Combine(_env.ContentRootPath, "cache", "arquivo");
                 var baseNome = Path.Combine(pasta, $"{id}-{largura}");
                 var doCache = LocalizarMiniatura(baseNome);
 
