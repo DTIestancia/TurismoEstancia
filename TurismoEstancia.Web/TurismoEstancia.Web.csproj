@@ -11,6 +11,8 @@
          pelo git): serve só para permitir reverter a redução das imagens — não
          deve ir para o pacote de publicação. -->
     <Content Remove="wwwroot\img\originais\**" />
+    <!-- O .map do CSS (40 KB) é artefato de desenvolvimento: não vai para o servidor. -->
+    <Content Remove="wwwroot\css\*.map" />
   </ItemGroup>
 
   <ItemGroup>

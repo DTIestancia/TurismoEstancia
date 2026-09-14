@@ -116,6 +116,15 @@ para FILESTREAM**: quando o filegroup for criado no servidor, basta executar
 `ArquBytes` em `varbinary(max) FILESTREAM` — sem nenhuma mudança de código (o EF já
 lê/grava o binário da mesma forma).
 
+Os **ícones** também são locais: `wwwroot/img/icones.svg` é um sprite com os ícones Lucide que o
+sistema usa (37 KB, servido em 7,7 KB brotli) e `wwwroot/js/lucide-local.js` substitui a biblioteca
+da CDN (**414 KB por página**) mantendo a mesma chamada `lucide.createIcons()` — inclusive o
+comportamento que o seletor de ícones do painel depende (nome desconhecido não é substituído).
+Para adicionar um ícone: use o nome no markup (`<i data-lucide="nome">`) ou nas listas do
+`painel.js` e rode `python tools/gerar-sprite-icones.py` — o sprite e a lista de nomes do JS
+se atualizam no mesmo passo (os aliases deprecados do Lucide, como `home` e `plus-circle`,
+também entram).
+
 ## 🏗️ Arquitetura
 
 ```

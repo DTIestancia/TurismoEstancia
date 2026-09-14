@@ -104,10 +104,13 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Caveat:wght@400..700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Inter:wght@300;400;700&display=swap" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/lucide@1.27.0/dist/umd/lucide.min.js" defer></script>
+    @* Fontes: pedido por FAIXA de peso (variável) em vez de peso a peso — 4 famílias em
+       5 arquivos em vez de 12, e cobrindo os pesos que o CSS realmente usa
+       (Inter 500/600 e Fraunces 800, que antes o navegador aproximava). *@
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600..800&family=Caveat:wght@400..700&family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=Inter:wght@300..700&display=swap" rel="stylesheet" />
+    @* Ícones: sprite local (wwwroot/img/icones.svg, gerado por tools/gerar-sprite-icones.py)
+       no lugar dos 414 KB da lib do jsdelivr. Mesma chamada lucide.createIcons(). *@
+    <script src="~/js/lucide-local.js" asp-append-version="true" defer></script>
     <link rel="stylesheet" href="~/css/main.css" asp-append-version="true" />
     @await RenderSectionAsync("Head", required: false)
     @await Component.InvokeAsync("ThemeSite")

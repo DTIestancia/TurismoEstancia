@@ -12,7 +12,9 @@ builder.Services.AddResponseCompression(opcoes =>
     opcoes.Providers.Add<BrotliCompressionProvider>();
     opcoes.Providers.Add<GzipCompressionProvider>();
 });
-builder.Services.Configure<BrotliCompressionProviderOptions>(opcoes => opcoes.Level = CompressionLevel.Fastest);
+// Optimal (e não Fastest): HTML/CSS/JS são o que passa por aqui (mídia fica fora por MIME) e
+// a CPU extra é desprezível diante do ganho de bytes no primeiro acesso.
+builder.Services.Configure<BrotliCompressionProviderOptions>(opcoes => opcoes.Level = CompressionLevel.Optimal);
 
 // Comando de manutenção do acervo de imagens — não sobe o servidor web:
 //   dotnet run --project TurismoEstancia.Web -- recomprimir-imagens [--simular]

@@ -320,22 +320,53 @@ Sem baseline, não há como provar ganho. Tudo abaixo é barato e reversível.
 
 ## 6. Fase 3 — Rede, assets e percepção
 
+- [ ] 3.8 **Fontes: pedido por faixa de peso** — **parcialmente feito (2026-09-14)**: a URL do
+      Google Fonts passou a pedir **faixas** (`Inter:wght@300..700`, `Fraunces:ital,opsz,wght@0,9..144,400..900;1,...`,
+      `Baloo+2:wght@600..800`) em vez de peso a peso. Medido com a API real: **52 @font-face com
+      12 arquivos do subset latin (668 KB) → 21 @font-face com 5 arquivos (298 KB)** — e agora
+      cobre os pesos que o CSS usa e que antes **não** eram pedidos (Inter 500/600 e Fraunces 800,
+      que o navegador aproximava do vizinho). Confirmado no navegador: 21 faces definidas e 4
+      arquivos baixados na home.
+      **Pendente**: self-hostar os `woff2` (subset pt-BR + latin-ext) em `wwwroot/fonts` — remove
+      as duas origens terceiras do caminho crítico antes do primeiro texto.
 - [x] 3.1 **`Cache-Control` nos estáticos** — **feito (2026-09-14)**: `UseStaticFiles` com
       `OnPrepareResponse` → `public, max-age=31536000, immutable` quando há `?v=` e
       `public, max-age=86400` no resto. Verificado com `curl -D-`: `/css/main.css` responde
       `86400`, `/css/main.css?v=abc123` e `/js/portal.js?v=1` respondem `immutable`.
-- [ ] 3.2 **Self-host de fontes e ícones**: servir os `woff2` (subset pt-BR) em `wwwroot/fonts`
-      e o lucide local — ou melhor, **substituir o lucide por um sprite SVG** com os ~40 ícones
-      realmente usados (414 KB → poucos KB). Remove 2 domínios terceiros do caminho crítico.
-- [ ] 3.3 Remover o `preconnect` para `cdnjs.cloudflare.com` (não é usado).
-- [ ] 3.4 **Minificar `portal.js` e `painel.js`** no publish (esbuild/terser via target MSBuild) e
-      garantir `--style=compressed` em Release. **Conflito confirmado em 2026-09-14**: o
-      `main.css` publicado em Release tem **exatamente 211.938 bytes** — igual ao build de
-      desenvolvimento — e o `main.css.map` (40.644 bytes) vai no pacote. `appsettings.json` tem
-      `SassCompiler:Arguments = "--style=expanded --no-source-map"`, que está vencendo o
-      `Release → --style=compressed` do `sasscompiler.json`. Ação: remover a seção
-      `SassCompiler` do `appsettings.json` (o pacote lê o `sasscompiler.json`) e
-      **excluir os `.map` do publish** (`<Content Remove="wwwroot/css/*.map" />`).
+- [x] 3.2 **Ícones: sprite SVG local no lugar da biblioteca** — **feito (2026-09-14)**. O que
+      saiu não foi só peso de rede, foi **parse e execução**: a lib do jsdelivr tem
+      **414.141 bytes** (medidos) para desenhar ~150 ícones. Agora `wwwroot/img/icones.svg`
+      (37,6 KB; **7,7 KB brotli** no pacote) é gerado por `tools/gerar-sprite-icones.py`, que
+      colhe os nomes direto do markup, das listas do `painel.js` e dos `Icone = "..."` do C#.
+      `wwwroot/js/lucide-local.js` (7,1 KB) mantém a mesma superfície (`lucide.createIcons()`)
+      e o contrato que o painel depende: copia os atributos do `<i>` (o CSS `[data-lucide]`
+      continua valendo), aceita escopo no 2º argumento e **não** substitui nome desconhecido
+      (é assim que o seletor de ícones detecta e esconde o que não existe).
+      Verificado no navegador com o app rodando: **0 ícones não resolvidos**, `getBBox` de 18x18
+      e 14x14 provando que o sprite desenhou, pintura nos 4 que apareceram vazios por estarem em
+      blocos `display:none` (modais/menu), e **nenhuma requisição ao jsdelivr**.
+      Descoberta no caminho: 10 nomes usados pelo sistema (`home`, `alert-circle`, `plus-circle`,
+      `bar-chart-3`, `check-circle`, `help-circle`, `alert-triangle`, `train`, `waves`, `history`)
+      são **aliases deprecados** — o Lucide v1 renomeou (`home` → `house` etc.). Continuam
+      funcionando porque o pacote publica um arquivo por alias, e o gerador inclui os 10.
+      **Pendente**: self-host dos `woff2` (ver 3.8).
+- [x] 3.3 **`preconnect` desnecessário** — **feito (2026-09-14)**: o do `cdnjs` saiu (nunca foi
+      usado) e o do `jsdelivr` saiu do layout do portal, que não carrega mais nada de lá
+      (o `chart.js` do dashboard do painel continua vindo da CDN — self-host é o próximo passo).
+- [x] 3.4 **`.map` fora do pacote e diagnóstico corrigido** — **feito (2026-09-14)**:
+      `<Content Remove="wwwroot\css\*.map" />`; verificado com publish Release de verdade — o
+      `main.css.map` (40.644 bytes) e seus `.br`/`.gz` sumiram do pacote.
+      **A hipótese do conflito de configuração estava errada.** Medido: o `main.css` publicado
+      continua com **211.938 bytes** e o mesmo timestamp do build de desenvolvimento, e o `.map`
+      publicado também é o do desenvolvimento — ou seja, o `Compile Sass` **pula a recompilação**
+      quando o CSS já existe (o pacote leva um *snapshot*), e o Release nunca recompila para
+      `--style=compressed`. O `appsettings.json` não é o vilão: o build de desenvolvimento usa o
+      perfil `Debug` do `sasscompiler.json` (expandido **com** mapa), como se espera.
+      **E o peso na rede nunca foi o problema**: o publish gera `main.css.br` (26.959 bytes) e o
+      `AddResponseCompression` do app comprime na resposta — a minificação do CSS vale poucos KB.
+      Fica como higiene (não publicar artefato de desenvolvimento), não como prioridade.
+      **Pendente**: minificar `portal.js` (60 KB; `.br` de 13,8 KB) e `painel.js` (23 KB; `.br` de
+      6,2 KB) — ganho pequeno, exige ferramenta no build.
 - [x] 3.5 **Hero** — **feito (2026-09-14)**: `preload="none"` + `poster` (1º slide, via
       `HomeViewModel.HeroPosterArquivoId`), `<link rel=preload as=image fetchpriority=high>` no
       lugar do preload de vídeo, e `portal.js` disparando o `play()` dois `requestAnimationFrame`
@@ -347,9 +378,9 @@ Sem baseline, não há como provar ganho. Tudo abaixo é barato e reversível.
       evita o efeito colateral de revelar um hero vazio.
       Pendente: `defer` no `portal.js` (mover para o `<head>` exige conferir a ordem com os
       scripts inline da seção `Scripts`, que dependem de `window.turismoEstancia`).
-- [ ] 3.7 Revisar `BrotliCompressionProviderOptions.Level = Fastest`
-      (`Program.cs:16`): subir para `Optimal` (a CPU extra é desprezível para HTML/CSS/JS e o
-      ganho de bytes é real), e confirmar que as mídias estão fora da compressão.
+- [x] 3.7 **Brotli em `Optimal`** — **feito (2026-09-14)**: `BrotliCompressionProviderOptions.Level`
+      subiu de `Fastest` para `Optimal` em `Program.cs` (a CPU extra é desprezível para HTML/CSS/JS,
+      que são os tipos que o `AddResponseCompression` toca — mídias ficam fora por MIME).
 
 ## 7. Fase 4 — Painel (CMS)
 
