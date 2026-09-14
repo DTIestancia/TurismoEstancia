@@ -63,4 +63,4 @@ design/
 /TurismoEstancia.Web/Properties/PublishProfiles
 \
 # Miniaturas geradas sob demanda (derivadas, se regeneram sozinhas)
-TurismoEstancia.Web/cache/\
+TurismoEstancia.Web/cache/

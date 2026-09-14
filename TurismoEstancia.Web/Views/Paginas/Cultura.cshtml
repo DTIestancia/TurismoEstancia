@@ -9,6 +9,7 @@
         "<strong>“Estância respira cultura.</strong> Cada festa é um encontro de gerações, cada tradição é um elo com o passado e um abraço no futuro.”");
     // Foto dedicada (Painel > Cultura); se não houver, usa a primeira imagem do hero.
     long.TryParse(Model.Conteudos.GetValueOrDefault("cultura-imagem"), out var culturaImagemId);
+    var temCapa = long.TryParse(Model.Conteudos.GetValueOrDefault("cultura-capa"), out var capaId) && capaId > 0;
     var culturaImagem = culturaImagemId > 0
         ? culturaImagemId.ToString()
         : (Model.Slides.Count > 0 ? Model.Slides[0].ImagemArquivoId.ToString() : "");
@@ -16,7 +17,11 @@
 <main class="paginas-page page-public paginas-page--cultura">
     @await Html.PartialAsync("_PaginasHeader")
 
-    <section class="paginas-hero">
+    <section class="paginas-hero@(temCapa ? " paginas-hero--capa" : "")"@(temCapa ? $" style=\"background-image:url('{Url.Content($"~/arquivo/{capaId}?largura=1920")}')\"" : "")>
+        @if (temCapa)
+        {
+            <div class="paginas-hero-overlay" aria-hidden="true"></div>
+        }
         <div class="paginas-hero-inner">
             <div class="pill pill--light">
                 <i data-lucide="flame" class="icon-lg"></i>

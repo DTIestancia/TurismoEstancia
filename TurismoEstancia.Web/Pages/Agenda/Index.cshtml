@@ -7,8 +7,15 @@
     var urlPassados = Url.Page("Index") + (Model.PaginaAtual > 1 ? "?pagina=" + Model.PaginaAtual : "");
 }
 @await Html.PartialAsync("_PaginasHeader")
+@{
+    var temCapaAgenda = long.TryParse(Model.Conteudos.GetValueOrDefault("agenda-capa"), out var agendaCapaId) && agendaCapaId > 0;
+}
 <main class="news-index page-public pagina-agenda">
-    <section class="news-hero">
+    <section class="news-hero@(temCapaAgenda ? " news-hero--capa" : "")"@(temCapaAgenda ? $" style=\"background-image:url('{Url.Content($"~/arquivo/{agendaCapaId}?largura=1920")}')\"" : "")>
+        @if (temCapaAgenda)
+        {
+            <div class="news-hero-overlay" aria-hidden="true"></div>
+        }
         <div class="news-hero-inner">
             <div class="pill pill-white" style="background:var(--color-orange-48);">
                 <i data-lucide="calendar" class="icon-lg"></i>

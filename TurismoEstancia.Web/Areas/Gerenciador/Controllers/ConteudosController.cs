@@ -91,6 +91,18 @@ public class ConteudosController : PainelController
                 },
                 new ConteudosCatalogViewModel.SecaoTextos
                 {
+                    Titulo = "Capas das páginas",
+                    Descricao = "Foto de fundo do topo de cada página interna (ver-mais da home).",
+                    Itens = Itens(cadastrados,
+                        ("cidade-capa", "Capa — Nossa Cidade", "Fundo do topo de /cidade"),
+                        ("cultura-capa", "Capa — Nossa Cultura", "Fundo do topo de /cultura"),
+                        ("lugares-capa", "Capa — 7 Maravilhas", "Fundo do topo de /lugares"),
+                        ("agenda-capa", "Capa — Agenda", "Fundo do topo de /agenda"),
+                        ("roteiros-capa", "Capa — Planeje sua viagem", "Fundo do topo de /roteiros"),
+                        ("noticias-capa", "Capa — Blog", "Fundo do topo de /noticias"))
+                },
+                new ConteudosCatalogViewModel.SecaoTextos
+                {
                     Titulo = "Newsletter (rodapé)",
                     Descricao = "Chamada do formulário de e-mail.",
                     Itens = Itens(cadastrados,
@@ -197,7 +209,13 @@ public class ConteudosController : PainelController
         "historia-imagem",
         "hero-titulo-imagem",
         "mapa-imagem",
-        "mapa-imagem-mobile"
+        "mapa-imagem-mobile",
+        "cidade-capa",
+        "cultura-capa",
+        "lugares-capa",
+        "agenda-capa",
+        "roteiros-capa",
+        "noticias-capa"
     };
 
     /// <summary>
@@ -253,6 +271,12 @@ public class ConteudosController : PainelController
             new() { Chave = "roteiros-descricao", Nome = "Roteiros — descrição", EmUso = emUso.Contains("roteiros-descricao") },
             new() { Chave = "mapa-imagem", Nome = "Mapa — imagem desktop (PNG)", EmUso = emUso.Contains("mapa-imagem"), EhImagem = true },
             new() { Chave = "mapa-imagem-mobile", Nome = "Mapa — imagem mobile (PNG vertical)", EmUso = emUso.Contains("mapa-imagem-mobile"), EhImagem = true },
+            new() { Chave = "cidade-capa", Nome = "Capa — Nossa Cidade (/cidade)", EmUso = emUso.Contains("cidade-capa"), EhImagem = true },
+            new() { Chave = "cultura-capa", Nome = "Capa — Nossa Cultura (/cultura)", EmUso = emUso.Contains("cultura-capa"), EhImagem = true },
+            new() { Chave = "lugares-capa", Nome = "Capa — 7 Maravilhas (/lugares)", EmUso = emUso.Contains("lugares-capa"), EhImagem = true },
+            new() { Chave = "agenda-capa", Nome = "Capa — Agenda (/agenda)", EmUso = emUso.Contains("agenda-capa"), EhImagem = true },
+            new() { Chave = "roteiros-capa", Nome = "Capa — Planeje sua viagem (/roteiros)", EmUso = emUso.Contains("roteiros-capa"), EhImagem = true },
+            new() { Chave = "noticias-capa", Nome = "Capa — Blog (/noticias)", EmUso = emUso.Contains("noticias-capa"), EhImagem = true },
             new() { Chave = "mapa-titulo", Nome = "Mapa — título", EmUso = emUso.Contains("mapa-titulo") },
             new() { Chave = "mapa-descricao", Nome = "Mapa — descrição", EmUso = emUso.Contains("mapa-descricao") },
             new() { Chave = "newsletter-titulo", Nome = "Newsletter — título", EmUso = emUso.Contains("newsletter-titulo") }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using TurismoEstancia.Domain.DTOs;
+using TurismoEstancia.Services.Conteudo.Interfaces;
 using TurismoEstancia.Services.Turismo.Interfaces;
 using TurismoEstancia.Web.Infrastructure;
 using TurismoEstancia.Web.Models;
@@ -9,8 +10,16 @@ namespace TurismoEstancia.Web.Pages.Agenda;
 public class IndexModel : PageModel
 {
     private readonly IEventoService _eventos;
+    private readonly IConteudoSiteService _conteudos;
 
-    public IndexModel(IEventoService eventos) => _eventos = eventos;
+    public IndexModel(IEventoService eventos, IConteudoSiteService conteudos)
+    {
+        _eventos = eventos;
+        _conteudos = conteudos;
+    }
+
+    /// <summary>Textos do portal (inclui a capa gerenciável agenda-capa).</summary>
+    public Dictionary<string, string?> Conteudos { get; private set; } = new();
 
     /// <summary>Eventos futuros da página atual (12 por página).</summary>
     public IReadOnlyList<EventoDto> Eventos { get; private set; } = Array.Empty<EventoDto>();
@@ -32,6 +41,7 @@ public class IndexModel : PageModel
 
     public async Task OnGetAsync(CancellationToken ct, int pagina = 1, int paginaPassados = 1)
     {
+        Conteudos = await _conteudos.ObterDicionarioAsync(ct);
         var todos = await _eventos.ListarAsync(apenasProximos: false, ct);
         var hoje = DateTime.Today;
 

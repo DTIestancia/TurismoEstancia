@@ -3759,6 +3759,36 @@ img.paginas-galeria-card-img {
 .paginacao .paginacao-reticencias { color: #9ca3af; }
 .error-page .error-message { color: #4b5563; }
 
+// ===== Hero das páginas internas com capa (foto gerenciável) =====
+// Sem capa, o hero gráfico claro continua valendo; com capa, a foto cobre o
+// fundo e os textos ficam brancos sobre overlay escuro (como o item-hero).
+.paginas-hero, .news-hero { position: relative; overflow: hidden; }
+.paginas-hero--capa, .news-hero--capa {
+  background-size: cover;
+  background-position: center;
+  min-height: 440px;
+  display: flex;
+  align-items: flex-end;
+}
+.paginas-hero-overlay, .news-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(4, 20, 33, 0.30) 0%, rgba(4, 20, 33, 0.62) 100%);
+}
+.paginas-hero--capa .paginas-hero-inner,
+.news-hero--capa .news-hero-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding-bottom: 56px;
+}
+.paginas-hero--capa .paginas-hero-title,
+.news-hero--capa .news-hero-title { color: #ffffff; }
+.paginas-hero--capa .paginas-hero-subtitle,
+.news-hero--capa .news-hero-subtitle { color: rgba(255, 255, 255, 0.85); }
+.paginas-hero--capa .secao-destaque,
+.news-hero--capa .secao-destaque { color: var(--color-yellow-50); }
+
 // ===== Faixa de logotipos institucionais (rodapés escuro) =====
 // DTI e Capital Brasileira são artes claras (vão direto); o brasão da
 // Prefeitura tem azul-escuro e ganha selo branco para manter o contraste.
