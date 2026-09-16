@@ -15,11 +15,10 @@ public class SecaoCidadeViewModel : SecaoViewModel
     public IReadOnlyList<SlideDto> Slides { get; set; } = Array.Empty<SlideDto>();
 }
 
-/// <summary>Página "Nossa Cultura" — textos + tags culturais.</summary>
-public class SecaoCulturaViewModel : SecaoViewModel
+/// <summary>Página "Conheça Estância" (/cultura) — as 4 abas com seus itens.</summary>
+public class SecaoConhecaViewModel : SecaoViewModel
 {
-    public IReadOnlyList<TagCulturalDto> Tags { get; set; } = Array.Empty<TagCulturalDto>();
-    public IReadOnlyList<SlideDto> Slides { get; set; } = Array.Empty<SlideDto>();
+    public IReadOnlyList<ConhecaEstanciaTab> Abas { get; set; } = Array.Empty<ConhecaEstanciaTab>();
 }
 
 /// <summary>Página "Grupos Populares".</summary>

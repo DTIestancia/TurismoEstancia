@@ -40,7 +40,7 @@ public static class MenuPortal
     [
         new() { Rotulo = "Home", Url = "~/" },
         new() { Rotulo = "Nossa Cidade", Url = "~/cidade" },
-        new() { Rotulo = "Nossa Cultura", Url = "~/cultura" },
+        new() { Rotulo = "Conheça Estância", Url = "~/cultura" },
         new() { Rotulo = "7 Maravilhas", Url = "~/lugares" },
         new() { Rotulo = "Agenda", Url = "~/agenda" },
         new() { Rotulo = "Planeje sua viagem", Url = "~/roteiros" },

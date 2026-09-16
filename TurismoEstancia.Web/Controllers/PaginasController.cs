@@ -6,6 +6,7 @@ using TurismoEstancia.Services.CulturaGastronomia.Interfaces;
 using TurismoEstancia.Services.Roteiro.Interfaces;
 using TurismoEstancia.Services.Turismo.Interfaces;
 using TurismoEstancia.Web.Models;
+using CategoriaConhecaEstancia = TurismoEstancia.Domain.Models.CategoriaConhecaEstancia;
 
 namespace TurismoEstancia.Web.Controllers;
 
@@ -70,18 +71,46 @@ public class PaginasController : Controller
         return View(vm);
     }
 
-    /// <summary>GET /cultura — textos + tags culturais.</summary>
+    /// <summary>GET /cultura — página "Conheça Estância" (4 abas com itens).</summary>
     [HttpGet]
     [Route("cultura")]
     public async Task<IActionResult> Cultura(CancellationToken ct)
     {
-        DefinirSeo("Nossa Cultura",
-            "Filarmônicas, Barco de Fogo, São João e as tradições que fazem de Estância a Capital Sergipana da Cultura.");
-        var vm = new SecaoCulturaViewModel
+        DefinirSeo("Conheça Estância",
+            "História, cultura, gastronomia e experiências: conheça Estância, a Capital Sergipana da Cultura.");
+        var itens = await _conheca.ListarAtivosAsync(ct);
+
+        ConhecaEstanciaTab Aba(CategoriaConhecaEstancia categoria, string rotulo, string icone) => new()
+        {
+            Chave = categoria.ToString().ToLowerInvariant(),
+            Rotulo = rotulo,
+            Icone = icone,
+            Itens = itens
+                .Where(i => i.Categoria == categoria)
+                .Select(i => new ConhecaEstanciaItem
+                {
+                    Id = i.Id,
+                    Nome = i.Nome,
+                    Descricao = i.Descricao,
+                    ImagemArquivoId = i.ImagemArquivoId,
+                    ImagemZoom = i.ImagemZoom,
+                    ImagemPosicaoX = i.ImagemPosicaoX,
+                    ImagemPosicaoY = i.ImagemPosicaoY,
+                    Url = Url.Content($"~/conheca-estancia/{i.Id}/{Slug.De(i.Nome)}")
+                })
+                .ToList()
+        };
+
+        var vm = new SecaoConhecaViewModel
         {
             Conteudos = await _conteudos.ObterDicionarioAsync(ct),
-            Tags = await _tags.ListarAsync(ct),
-            Slides = await _slides.ListarAsync(ct)
+            Abas =
+            [
+                Aba(CategoriaConhecaEstancia.Historia, "História", "landmark"),
+                Aba(CategoriaConhecaEstancia.Cultura, "Cultura", "music"),
+                Aba(CategoriaConhecaEstancia.Gastronomia, "Gastronomia", "utensils"),
+                Aba(CategoriaConhecaEstancia.Experiencias, "Experiências", "sun")
+            ]
         };
         return View(vm);
     }

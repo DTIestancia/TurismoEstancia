@@ -966,53 +966,53 @@
 }
 
 .roteiro-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  border-radius: 20px;
-  overflow: hidden;
-  background: var(--color-white--5);
-  border: 1px solid var(--color-white--10);
-  text-decoration: none;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    border-color: var(--color-orange-48-20);
-    box-shadow: $shadow-card;
-  }
-
-  .roteiro-card-img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-  }
-
-  .roteiro-card-body {
-    padding: 18px 20px 22px;
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-  }
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--color-white--5);
+    border: 1px solid var(--color-white--10);
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 
-  .roteiro-card-title {
-    font-family: 'Fraunces', serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--color-white-solid);
-  }
+    &:hover {
+        transform: translateY(-4px);
+        border-color: var(--color-orange-48-20);
+        box-shadow: $shadow-card;
+    }
 
-  .roteiro-card-desc {
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--color-white--60);
-  }
+    .roteiro-card-img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
 
-  .roteiro-card-dias {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--color-orange-48);
-  }
+    .roteiro-card-body {
+        padding: 18px 20px 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .roteiro-card-title {
+        font-family: 'Fraunces', serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--color-black-solid);
+    }
+
+    .roteiro-card-desc {
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--color-black--70);
+    }
+
+    .roteiro-card-dias {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--color-orange-48);
+    }
 }
 
 // --- Páginas públicas (Notícias e Roteiros) ---
@@ -1657,35 +1657,6 @@
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
   img { width: 100%; height: 200px; object-fit: cover; border-radius: 14px; border: 1px solid var(--color-white--10); }
-}
-
-// --- Cultura ---
-.paginas-cultura-intro {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 40px;
-  align-items: start;
-
-  .paginas-cultura-text {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    .cursive { font-size: 28px; color: var(--color-orange-48); }
-    .paginas-cidade-title { font-family: 'Fraunces', serif; font-size: clamp(26px, 3.4vw, 38px); line-height: 1.2; color: var(--color-white-solid); }
-    p { font-size: 15px; line-height: 1.7; color: var(--color-white--70); }
-    .paginas-cultura-extra { color: var(--color-white--55); font-style: italic; }
-    .paginas-cultura-img { width: 100%; max-height: 300px; object-fit: cover; border-radius: 16px; margin-top: 8px; }
-  }
-
-  .paginas-cultura-quote {
-    font-family: 'Fraunces', serif;
-    font-size: 20px;
-    line-height: 1.6;
-    color: #FCBB0F;
-    border-left: 3px solid var(--color-orange-48);
-    padding: 16px 0 16px 22px;
-    margin: 0;
-  }
 }
 
 // --- Gastronomia ---
@@ -2350,7 +2321,6 @@
 // --- Responsivo das páginas internas ---
 @media (max-width: 860px) {
   .paginas-cidade-layout,
-  .paginas-cultura-intro,
   .lugar-layout { grid-template-columns: 1fr; }
 
   // ===== Menu mobile do header das páginas internas =====
@@ -2620,14 +2590,12 @@
 
   // Layouts em grid: mais respiro vertical entre os blocos
   .paginas-cidade-layout,
-  .paginas-cultura-intro,
   .lugar-layout { gap: 28px; }
 
   // Card da cidade: cabeçalho quebra linha e textos respiram
   .paginas-cidade-card-header { flex-wrap: wrap; gap: 8px; }
   .paginas-cidade-card-text,
   .paginas-cidade-card-quote { padding-left: 18px; padding-right: 18px; }
-  .paginas-cultura-quote { padding-left: 14px; }
 
   // Galeria: fotos mais baixas em telas pequenas
   .paginas-galeria-grid img { height: 160px; }
@@ -2754,12 +2722,6 @@
 .section-gastronomy .gastronomy-side-icon--red {
   background: var(--color-spring-green-29);
 }
-[data-theme="dark"] .section-gastronomy .gastronomy-side-card--red {
-  background: color-mix(in srgb, var(--color-spring-green-29) 14%, transparent);
-  outline: 1px solid color-mix(in srgb, var(--color-spring-green-29) 26%, transparent);
-  outline-offset: -1px;
-}
-
 // --- 7 Maravilhas (laranja; a cor da categoria vence via JS) ---
 // O "encantam" ja usa gradiente laranja->amarelo (identidade da secao).
 // O selo (✦ do eyebrow) é AMARELO pela identidade oficial.
@@ -2793,19 +2755,6 @@
 .section-history .history-text-content .headline .highlight-red {
   color: #7A0C00; // vermelho profundo — ~3.3:1 (texto grande) sobre o laranja
 }
-[data-theme="dark"] .section-history .history-text-content .cursive {
-  color: var(--color-white--90);
-}
-[data-theme="dark"] .section-history .history-text-content .headline .highlight-red {
-  color: #FF8A5C; // ~5:1 sobre o marrom escuro (mesmo tom das citações)
-}
-
-// Cultura (fundo azul): fundo mais profundo para o texto branco passar AA
-// e os acentos em amarelo claro (o rosa ficava invisível sobre o azul, 1.1:1).
-.section-culture { background: #0072BD; }
-.section-culture .cursive { color: var(--color-white-solid); }
-.section-culture .headline-yellow { color: #FFD633; }
-
 // Agenda: pill "Programação Oficial" e data dos cards usavam branco sobre o
 // laranja oficial (~2.6:1). Texto escuro sobre o laranja passa com folga.
 .agenda-pill,
@@ -3595,7 +3544,7 @@ img.paginas-galeria-card-img {
   color: var(--color-azure-7);
 }
 .paginas-card-desc, .news-card-resumo, .paginas-cidade-desc,
-.paginas-cultura-text p, .paginas-cultura-extra, .paginas-gastro-main,
+.paginas-gastro-main,
 .paginas-cidade-card-text, .lugar-descricao, .lugar-detalhe, .lugar-info-text,
 .lugar-horario-valor, .lugar-avaliacao-comentario, .lugar-roteiro p,
 .paginas-galeria-card-body p, .news-article-body, .news-article-resumo,
@@ -3613,10 +3562,9 @@ img.paginas-galeria-card-img {
 }
 .news-article-body a, .item-corpo a { color: #C2570B; }
 .news-galeria { border-top-color: #e5e7eb; }
-.paginas-cidade-card-header .cursive, .paginas-cidade-text .cursive,
-.paginas-cultura-text .cursive { color: color-mix(in srgb, var(--color-orange-48) 80%, #000); }
+.paginas-cidade-card-header .cursive, .paginas-cidade-text .cursive { color: color-mix(in srgb, var(--color-orange-48) 80%, #000); }
 .paginas-cidade-card-header .stars { color: #D97706; }
-.paginas-cidade-card-quote, .paginas-cultura-quote { color: #B45309; }
+.paginas-cidade-card-quote { color: #B45309; }
 .lugar-info-title { color: #6b7280; }
 .lugar-info-text { color: #4b5563; }
 .lugar-horario-item.is-fechado .lugar-horario-valor { color: #DC2626; }
@@ -3730,11 +3678,6 @@ img.paginas-galeria-card-img {
 .page-public .paginas-cidade-text .paginas-cidade-title { color: var(--color-azure-7); }
 .page-public .paginas-cidade-text .paginas-cidade-desc { color: #4b5563; }
 .page-public .paginas-cidade-text .cursive { color: color-mix(in srgb, var(--color-orange-48) 80%, #000); }
-.page-public .paginas-cultura-intro .paginas-cultura-text .cursive { color: color-mix(in srgb, var(--color-orange-48) 80%, #000); }
-.page-public .paginas-cultura-intro .paginas-cultura-text p { color: #4b5563; }
-.page-public .paginas-cultura-intro .paginas-cultura-text .paginas-cidade-title { color: var(--color-azure-7); }
-.page-public .paginas-cultura-intro .paginas-cultura-text .paginas-cultura-extra { color: #6b7280; }
-.page-public .paginas-cultura-intro .paginas-cultura-quote { color: #B45309; }
 .page-public .paginas-gastro-main { color: #4b5563; }
 .page-public .paginas-galeria-cards .paginas-galeria-card-body h3 { color: var(--color-azure-7); }
 .page-public .paginas-galeria-cards .paginas-galeria-card-body p { color: #4b5563; }
@@ -3793,6 +3736,10 @@ img.paginas-galeria-card-img {
 .news-hero--capa .news-hero-subtitle { color: rgba(255, 255, 255, 0.85); }
 .paginas-hero--capa .secao-destaque,
 .news-hero--capa .secao-destaque { color: var(--color-yellow-50); }
+
+// ===== Página Conheça Estância (/cultura): uma seção por aba =====
+.paginas-conheca-aba + .paginas-conheca-aba { margin-top: 60px; }
+.paginas-conheca-aba .section-tag { margin-bottom: 20px; }
 
 // ===== Faixa de logotipos institucionais (rodapés escuro) =====
 // DTI e Capital Brasileira são artes claras (vão direto); o brasão da

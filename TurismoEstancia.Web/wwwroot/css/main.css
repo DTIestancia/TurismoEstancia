@@ -2850,210 +2850,6 @@ a.culture-tag:active {
     transform: translateY(0);
   }
 }
-/* ============================================= */
-/* ===== DARK MODE THEME ===== */
-/* ============================================= */
-[data-theme=dark] body {
-  background: #08080e;
-}
-
-/* Smooth theme transition */
-body, .section-history, .section-culture, .section-gastronomy,
-.history-card, .culture-card, .gastronomy-card,
-.gastronomy-side-card, .stat-card, .section-title,
-.section-desc, .history-card-text, .history-card-quote,
-.history-text-content .headline, .history-text-content .description,
-.culture-card-quote p, .gastronomy-side-text, .gastronomy-dish-item,
-.gastronomy-side-title, .stat-label, .stat-value, .wonder-tag {
-  transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
-}
-
-/* ===== History Section (Dark) ===== */
-[data-theme=dark] .section-history {
-  background: #5C2E00;
-}
-
-[data-theme=dark] .history-card {
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  outline: 1px solid rgba(255, 255, 255, 0.08);
-  outline-offset: -1px;
-}
-
-[data-theme=dark] .history-card-text {
-  color: var(--color-white--85);
-}
-
-[data-theme=dark] .history-card-quote {
-  color: #FF8A5C;
-}
-
-[data-theme=dark] .history-text-content .headline {
-  color: var(--color-white--95);
-}
-
-[data-theme=dark] .history-text-content .headline .serif-bold {
-  color: var(--color-white--95);
-}
-
-[data-theme=dark] .history-text-content .description {
-  color: var(--color-white--85);
-}
-
-[data-theme=dark] .history-photo {
-  background: rgba(0, 0, 0, 0.3);
-  box-shadow: 0 4px 6px -4px rgba(0, 0, 0, 0.3), 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-}
-
-/* ===== Stats (Dark) ===== */
-[data-theme=dark] .stat-card {
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  outline: 1px solid rgba(255, 255, 255, 0.08);
-  outline-offset: -1px;
-}
-
-[data-theme=dark] .stat-label {
-  color: var(--color-white--70);
-}
-
-[data-theme=dark] .stat-value {
-  color: #FF8A5C;
-}
-
-/* ===== Culture Section (Dark) ===== */
-[data-theme=dark] .section-culture {
-  background: #002B44;
-}
-
-[data-theme=dark] .culture-card {
-  background: rgba(255, 194, 0, 0.1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  outline: 1px solid rgba(255, 194, 0, 0.12);
-  outline-offset: -1px;
-}
-
-[data-theme=dark] .culture-card-quote p {
-  color: var(--color-white--90);
-}
-
-[data-theme=dark] .culture-card-quote strong {
-  color: #FF8A5C;
-}
-
-/* ===== Gastronomy Section (Dark) ===== */
-[data-theme=dark] .section-gastronomy {
-  background: #3D0020;
-}
-
-[data-theme=dark] .gastronomy-card {
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  outline: 1px solid rgba(255, 255, 255, 0.08);
-  outline-offset: -1px;
-}
-
-[data-theme=dark] .gastronomy-side-card--red {
-  background: rgba(255, 194, 0, 0.1);
-  outline: 1px solid rgba(255, 194, 0, 0.12);
-  outline-offset: -1px;
-}
-
-[data-theme=dark] .gastronomy-side-card--light {
-  background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  outline: 1px solid rgba(255, 255, 255, 0.06);
-  outline-offset: -1px;
-}
-
-[data-theme=dark] .gastronomy-side-text {
-  color: var(--color-white--80);
-}
-
-[data-theme=dark] .gastronomy-dish-item {
-  color: var(--color-white--80);
-}
-
-[data-theme=dark] .gastronomy-side-title {
-  color: #FFDC62;
-}
-
-/* ===== Section Headers & Descriptions (Dark) ===== */
-[data-theme=dark] .section-title {
-  color: var(--color-white--95);
-}
-
-[data-theme=dark] .section-desc {
-  color: var(--color-white--65);
-}
-
-/* ===== Wonders (Dark) — enhance existing dark theme ===== */
-[data-theme=dark] .wonder-tag {
-  background: rgba(0, 0, 0, 0.35);
-}
-
-[data-theme=dark] .wonder-card {
-  outline-color: rgba(255, 255, 255, 0.12);
-}
-
-/* ===== Agenda (Dark) — enhance existing dark theme ===== */
-[data-theme=dark] .agenda-card {
-  background: rgba(0, 0, 0, 0.2);
-  outline-color: rgba(255, 255, 255, 0.08);
-}
-
-/* ===== Theme Toggle Button ===== */
-.theme-toggle {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--color-white--10);
-  border: 1px solid var(--color-white--20);
-  color: var(--color-white--80);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
-  font-size: 16px;
-  margin-left: 8px;
-  flex-shrink: 0;
-}
-
-.theme-toggle:hover {
-  background: var(--color-white--20);
-  color: var(--color-white-solid);
-  transform: scale(1.08);
-  border-color: var(--color-white--40);
-}
-
-.theme-toggle:active {
-  transform: scale(0.95);
-}
-
-[data-theme=dark] .theme-toggle {
-  background: rgba(255, 194, 0, 0.12);
-  border-color: rgba(255, 194, 0, 0.25);
-  color: #FCBB0F;
-}
-
-[data-theme=dark] .theme-toggle:hover {
-  background: rgba(255, 194, 0, 0.22);
-  color: #FFD633;
-  border-color: rgba(255, 194, 0, 0.4);
-}
-
-@media (max-width: 768px) {
-  .theme-toggle {
-    margin-left: 0;
-    margin-top: 12px;
-  }
-}
 /* ===== Page Preloader ===== */
 .page-loader {
   position: fixed;
@@ -3692,24 +3488,6 @@ body, .section-history, .section-culture, .section-gastronomy,
     background: var(--color-orange-48-10);
     border-color: var(--color-orange-48-20);
     color: var(--color-white-solid);
-  }
-  /* Theme toggle vira um item de menu no overlay mobile */
-  .navbar-links.open .theme-toggle {
-    width: auto;
-    height: auto;
-    margin-top: 8px;
-    padding: 14px 20px;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(255, 255, 255, 0.03);
-    justify-content: flex-start;
-    gap: 10px;
-    font-size: 16px;
-    color: var(--color-white--85);
-  }
-  .navbar-links.open .theme-toggle:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.12);
   }
   /* Mobile CTA inside the menu */
   .navbar-links.open .navbar-cta-mobile {
@@ -6420,12 +6198,12 @@ img[loading=lazy].loaded {
   font-family: "Fraunces", serif;
   font-size: 20px;
   font-weight: 700;
-  color: var(--color-white-solid);
+  color: var(--color-black-solid);
 }
 .roteiro-card .roteiro-card-desc {
   font-size: 14px;
   line-height: 1.5;
-  color: var(--color-white--60);
+  color: var(--color-black--70);
 }
 .roteiro-card .roteiro-card-dias {
   font-size: 12px;
@@ -7115,53 +6893,6 @@ img[loading=lazy].loaded {
   object-fit: cover;
   border-radius: 14px;
   border: 1px solid var(--color-white--10);
-}
-
-.paginas-cultura-intro {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 40px;
-  align-items: start;
-}
-.paginas-cultura-intro .paginas-cultura-text {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.paginas-cultura-intro .paginas-cultura-text .cursive {
-  font-size: 28px;
-  color: var(--color-orange-48);
-}
-.paginas-cultura-intro .paginas-cultura-text .paginas-cidade-title {
-  font-family: "Fraunces", serif;
-  font-size: clamp(26px, 3.4vw, 38px);
-  line-height: 1.2;
-  color: var(--color-white-solid);
-}
-.paginas-cultura-intro .paginas-cultura-text p {
-  font-size: 15px;
-  line-height: 1.7;
-  color: var(--color-white--70);
-}
-.paginas-cultura-intro .paginas-cultura-text .paginas-cultura-extra {
-  color: var(--color-white--55);
-  font-style: italic;
-}
-.paginas-cultura-intro .paginas-cultura-text .paginas-cultura-img {
-  width: 100%;
-  max-height: 300px;
-  object-fit: cover;
-  border-radius: 16px;
-  margin-top: 8px;
-}
-.paginas-cultura-intro .paginas-cultura-quote {
-  font-family: "Fraunces", serif;
-  font-size: 20px;
-  line-height: 1.6;
-  color: #FCBB0F;
-  border-left: 3px solid var(--color-orange-48);
-  padding: 16px 0 16px 22px;
-  margin: 0;
 }
 
 .paginas-gastro-main {
@@ -7920,7 +7651,6 @@ img[loading=lazy].loaded {
 }
 @media (max-width: 860px) {
   .paginas-cidade-layout,
-  .paginas-cultura-intro,
   .lugar-layout {
     grid-template-columns: 1fr;
   }
@@ -8190,7 +7920,6 @@ img[loading=lazy].loaded {
     padding: 0 16px;
   }
   .paginas-cidade-layout,
-  .paginas-cultura-intro,
   .lugar-layout {
     gap: 28px;
   }
@@ -8202,9 +7931,6 @@ img[loading=lazy].loaded {
   .paginas-cidade-card-quote {
     padding-left: 18px;
     padding-right: 18px;
-  }
-  .paginas-cultura-quote {
-    padding-left: 14px;
   }
   .paginas-galeria-grid img {
     height: 160px;
@@ -8416,12 +8142,6 @@ img[loading=lazy].loaded {
   background: var(--color-spring-green-29);
 }
 
-[data-theme=dark] .section-gastronomy .gastronomy-side-card--red {
-  background: color-mix(in srgb, var(--color-spring-green-29) 14%, transparent);
-  outline: 1px solid color-mix(in srgb, var(--color-spring-green-29) 26%, transparent);
-  outline-offset: -1px;
-}
-
 .section-wonders .vitrine-eyebrow-star {
   color: var(--color-yellow-50);
 }
@@ -8442,26 +8162,6 @@ img[loading=lazy].loaded {
 
 .section-history .history-text-content .headline .highlight-red {
   color: #7A0C00;
-}
-
-[data-theme=dark] .section-history .history-text-content .cursive {
-  color: var(--color-white--90);
-}
-
-[data-theme=dark] .section-history .history-text-content .headline .highlight-red {
-  color: #FF8A5C;
-}
-
-.section-culture {
-  background: #0072BD;
-}
-
-.section-culture .cursive {
-  color: var(--color-white-solid);
-}
-
-.section-culture .headline-yellow {
-  color: #FFD633;
 }
 
 .agenda-pill,
@@ -9376,7 +9076,7 @@ img.paginas-galeria-card-img.is-carregada {
 }
 
 .paginas-card-desc, .news-card-resumo, .paginas-cidade-desc,
-.paginas-cultura-text p, .paginas-cultura-extra, .paginas-gastro-main,
+.paginas-gastro-main,
 .paginas-cidade-card-text, .lugar-descricao, .lugar-detalhe, .lugar-info-text,
 .lugar-horario-valor, .lugar-avaliacao-comentario, .lugar-roteiro p,
 .paginas-galeria-card-body p, .news-article-body, .news-article-resumo,
@@ -9403,8 +9103,7 @@ img.paginas-galeria-card-img.is-carregada {
   border-top-color: #e5e7eb;
 }
 
-.paginas-cidade-card-header .cursive, .paginas-cidade-text .cursive,
-.paginas-cultura-text .cursive {
+.paginas-cidade-card-header .cursive, .paginas-cidade-text .cursive {
   color: color-mix(in srgb, var(--color-orange-48) 80%, #000);
 }
 
@@ -9412,7 +9111,7 @@ img.paginas-galeria-card-img.is-carregada {
   color: #D97706;
 }
 
-.paginas-cidade-card-quote, .paginas-cultura-quote {
+.paginas-cidade-card-quote {
   color: #B45309;
 }
 
@@ -9698,26 +9397,6 @@ img.paginas-galeria-card-img.is-carregada {
   color: color-mix(in srgb, var(--color-orange-48) 80%, #000);
 }
 
-.page-public .paginas-cultura-intro .paginas-cultura-text .cursive {
-  color: color-mix(in srgb, var(--color-orange-48) 80%, #000);
-}
-
-.page-public .paginas-cultura-intro .paginas-cultura-text p {
-  color: #4b5563;
-}
-
-.page-public .paginas-cultura-intro .paginas-cultura-text .paginas-cidade-title {
-  color: var(--color-azure-7);
-}
-
-.page-public .paginas-cultura-intro .paginas-cultura-text .paginas-cultura-extra {
-  color: #6b7280;
-}
-
-.page-public .paginas-cultura-intro .paginas-cultura-quote {
-  color: #B45309;
-}
-
 .page-public .paginas-gastro-main {
   color: #4b5563;
 }
@@ -9825,6 +9504,14 @@ img.paginas-galeria-card-img.is-carregada {
 .paginas-hero--capa .secao-destaque,
 .news-hero--capa .secao-destaque {
   color: var(--color-yellow-50);
+}
+
+.paginas-conheca-aba + .paginas-conheca-aba {
+  margin-top: 60px;
+}
+
+.paginas-conheca-aba .section-tag {
+  margin-bottom: 20px;
 }
 
 .footer-logos {

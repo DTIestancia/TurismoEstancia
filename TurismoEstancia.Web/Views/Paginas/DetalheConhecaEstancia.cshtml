@@ -56,7 +56,7 @@
         }
 
         <div class="paginas-cta-row">
-            <a href="@Url.Content("~/")#section-conheca" class="btn-primary"><i data-lucide="arrow-left" class="icon-lg"></i> Voltar ao Conheça Estância</a>
+            <a href="@Url.Content($"~/cultura#conheca-{Model.Categoria.ToString().ToLowerInvariant()}")" class="btn-primary"><i data-lucide="arrow-left" class="icon-lg"></i> Voltar ao Conheça Estância</a>
             <a href="@Url.Content("~/")" class="btn-secondary"><i data-lucide="home" class="icon-lg"></i> Voltar ao início</a>
         </div>
     </div>
