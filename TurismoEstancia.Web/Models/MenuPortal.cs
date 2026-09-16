@@ -52,8 +52,7 @@ public static class MenuPortal
     public static IReadOnlyList<LinkMenuPortal> Rodape { get; } =
     [
         new() { Rotulo = "Nossa Cidade", Url = "~/cidade" },
-        new() { Rotulo = "Nossa Cultura", Url = "~/cultura" },
-        new() { Rotulo = "Grupos Populares", Url = "~/grupos-populares" },
+        new() { Rotulo = "Conheça Estância", Url = "~/cultura" },
         new() { Rotulo = "Gastronomia", Url = "~/gastronomia" },
         new() { Rotulo = "Lugares que Encantam", Url = "~/lugares" },
         new() { Rotulo = "Galeria", Url = "~/galeria" },

@@ -19,6 +19,29 @@
         _ => "compass"
     };
 }
+@section Head {
+    @{
+        var ldBase = $"{Context.Request.Scheme}://{Context.Request.Host}";
+        var ldImagem = Model.ImagemArquivoId is long ldImg ? ldBase + Url.Content($"~/arquivo/{ldImg}?largura=1200") : null;
+        var ldJson = System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, object?>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "TouristAttraction",
+            ["name"] = Model.Nome,
+            ["description"] = System.Text.RegularExpressions.Regex.Replace(Model.Descricao ?? "", "<.*?>", ""),
+            ["image"] = ldImagem,
+            ["url"] = ldBase + Context.Request.Path,
+            ["address"] = new Dictionary<string, object?>
+            {
+                ["@type"] = "PostalAddress",
+                ["addressLocality"] = "Estância",
+                ["addressRegion"] = "SE",
+                ["addressCountry"] = "BR"
+            }
+        }).Replace("</", "<\\/");
+    }
+    <script type="application/ld+json">@Html.Raw(ldJson)</script>
+}
 <main class="paginas-page page-public">
     @await Html.PartialAsync("_PaginasHeader")
 

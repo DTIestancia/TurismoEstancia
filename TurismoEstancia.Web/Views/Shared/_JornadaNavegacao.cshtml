@@ -1,0 +1,18 @@
+@model JornadaNavModel
+@* Navegação em jornada: voltar à área anterior + continuar para a próxima (ordem da home). *@
+<nav class="jornada-nav" aria-label="Continuar explorando o portal">
+    <a class="jornada-btn jornada-btn--prev" href="@Url.Content(Model.AnteriorUrl)">
+        <i data-lucide="arrow-left" class="icon-lg"></i>
+        <span class="jornada-btn-texto">
+            <small>Voltar para</small>
+            <strong>@Model.AnteriorRotulo</strong>
+        </span>
+    </a>
+    <a class="jornada-btn jornada-btn--next" href="@Url.Content(Model.ProximoUrl)">
+        <span class="jornada-btn-texto">
+            <small>Continue explorando</small>
+            <strong>@Model.ProximoRotulo</strong>
+        </span>
+        <i data-lucide="arrow-right" class="icon-lg"></i>
+    </a>
+</nav>

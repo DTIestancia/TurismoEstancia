@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Services.Avaliacao.Interfaces;
 
@@ -19,6 +20,7 @@ public class AvaliacaoController : Controller
     /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting("formularios")]
     public async Task<IActionResult> Submeter(AvaliacaoDto dto, string? retorno = null)
     {
         var ct = HttpContext.RequestAborted;

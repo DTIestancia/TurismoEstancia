@@ -3,6 +3,8 @@ using TurismoEstancia.Domain.Models;
 using TurismoEstancia.Services.Analytics.Interfaces;
 using TurismoEstancia.Services.Analytics.Services;
 using TurismoEstancia.Services.Avaliacao.Interfaces;
+using TurismoEstancia.Services.Busca.Interfaces;
+using TurismoEstancia.Services.Busca.Services;
 using TurismoEstancia.Services.Avaliacao.Services;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
 using TurismoEstancia.Services.Comunicacao.Services;
@@ -74,6 +76,9 @@ public static class BusinessServiceExtensions
 
         // Módulo Planeje sua viagem
         builder.Services.AddScoped<IPlanejeService, PlanejeService>();
+
+        // Busca pública do portal
+        builder.Services.AddScoped<IBuscaService, BuscaService>();
 
         // Módulo Avaliacao
         builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();

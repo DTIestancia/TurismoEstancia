@@ -41,6 +41,9 @@
             <input type="hidden" name="galeriaCategoria" value="@Model.GaleriaCategoriaId" />
             <button type="submit" class="btn-painel btn-painel--sm">Aplicar</button>
         </form>
+        <a class="btn-painel btn-painel--sm" style="margin-left:8px;" asp-action="Exportar" asp-route-de="@Model.De.ToString("yyyy-MM-dd")" asp-route-ate="@Model.Ate.ToString("yyyy-MM-dd")" asp-route-galeriaCategoria="@Model.GaleriaCategoriaId" title="Baixar os dados da tela em CSV">
+            <i data-lucide="download"></i> CSV
+        </a>
     </div>
 </div>
 
@@ -157,6 +160,30 @@
                             <td>@(i + 1)</td>
                             <td><strong>@(string.IsNullOrWhiteSpace(p.Rotulo) ? "/" : p.Rotulo)</strong></td>
                             <td>@p.Quantidade</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="painel-card">
+        <div class="painel-card-title"><i data-lucide="search"></i> Termos mais buscados</div>
+        <div class="painel-table-wrap">
+            <table class="painel-table">
+                <thead><tr><th>#</th><th>Termo</th><th>Buscas</th></tr></thead>
+                <tbody>
+                    @if (Model.Resumo.TermosBuscados.Count == 0)
+                    {
+                        <tr><td colspan="3" class="painel-empty">Nenhuma busca no período — use os termos para pautar conteúdos.</td></tr>
+                    }
+                    @for (var i = 0; i < Model.Resumo.TermosBuscados.Count; i++)
+                    {
+                        var t = Model.Resumo.TermosBuscados[i];
+                        <tr>
+                            <td>@(i + 1)</td>
+                            <td><strong>@t.Rotulo</strong></td>
+                            <td>@t.Quantidade</td>
                         </tr>
                     }
                 </tbody>

@@ -114,7 +114,14 @@ public class AnalyticsService : IAnalyticsService
                 .Take(8)
                 .ToListAsync(ct),
             TopFotosVistas = await FotosMaisEngajadasAsync("visualizacao-foto", de, fim, galeriaCategoriaId, ct),
-            TopFotosCurtidas = await FotosMaisEngajadasAsync("like-foto", de, fim, galeriaCategoriaId, ct)
+            TopFotosCurtidas = await FotosMaisEngajadasAsync("like-foto", de, fim, galeriaCategoriaId, ct),
+            TermosBuscados = await _db.AnalyticsEventos.AsNoTracking()
+                .Where(e => e.Tipo == "Clique" && e.Evento == "busca" && e.EntidadeNome != null && e.EntidadeNome != "" && e.Data >= de && e.Data < fim)
+                .GroupBy(e => e.EntidadeNome!)
+                .Select(g => new AnalyticsContagemDto { Rotulo = g.Key, Quantidade = g.Count() })
+                .OrderByDescending(x => x.Quantidade)
+                .Take(10)
+                .ToListAsync(ct)
         };
 
         await ClassificarFontesAsync(resumo, visitas, ct);

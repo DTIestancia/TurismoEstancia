@@ -19,7 +19,6 @@ public class SeoController : Controller
     private readonly IPontoTuristicoService _pontos;
     private readonly INoticiaService _noticias;
     private readonly IRoteiroService _roteiros;
-    private readonly IGrupoCulturalService _grupos;
     private readonly IPratoTuristicoService _pratos;
     private readonly ITagCulturalService _tags;
     private readonly IGaleriaService _galeria;
@@ -29,7 +28,6 @@ public class SeoController : Controller
         IPontoTuristicoService pontos,
         INoticiaService noticias,
         IRoteiroService roteiros,
-        IGrupoCulturalService grupos,
         IPratoTuristicoService pratos,
         ITagCulturalService tags,
         IGaleriaService galeria,
@@ -38,7 +36,6 @@ public class SeoController : Controller
         _pontos = pontos;
         _noticias = noticias;
         _roteiros = roteiros;
-        _grupos = grupos;
         _pratos = pratos;
         _tags = tags;
         _galeria = galeria;
@@ -65,7 +62,6 @@ public class SeoController : Controller
             ($"{baseUrl}/", 1.0, null),
             ($"{baseUrl}/cidade", 0.8, null),
             ($"{baseUrl}/cultura", 0.8, null),
-            ($"{baseUrl}/grupos-populares", 0.8, null),
             ($"{baseUrl}/gastronomia", 0.8, null),
             ($"{baseUrl}/lugares", 0.9, null),
             ($"{baseUrl}/noticias", 0.7, null),
@@ -85,19 +81,13 @@ public class SeoController : Controller
         var noticias = await _noticias.ListarAsync(apenasPublicadas: true, ct);
         foreach (var noticia in noticias)
         {
-            urls.Add(($"{baseUrl}/noticias/{noticia.Slug}", 0.7, noticia.DataPublicacao));
+            urls.Add(($"{baseUrl}/Noticias/Detalhe/{noticia.Slug}", 0.7, noticia.DataPublicacao));
         }
 
         var roteiros = await _roteiros.ListarAsync(ct);
         foreach (var roteiro in roteiros.Where(r => r.Ativo))
         {
-            urls.Add(($"{baseUrl}/roteiros/{roteiro.Id}", 0.7, null));
-        }
-
-        var grupos = await _grupos.ListarAsync(ct);
-        foreach (var grupo in grupos.Where(g => g.Ativo))
-        {
-            urls.Add(($"{baseUrl}/grupos-populares/{grupo.Id}", 0.6, null));
+            urls.Add(($"{baseUrl}/Roteiros/Detalhe/{roteiro.Id}", 0.7, null));
         }
 
         var pratos = await _pratos.ListarAsync(ct);

@@ -124,6 +124,115 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   })();
 
+  // ===== Acessibilidade: alvo do "pular para o conteúdo" =====
+  (function initAcessibilidade() {
+    var principal = document.querySelector('main');
+    if (principal && !principal.id) {
+      principal.id = 'conteudo';
+      principal.setAttribute('tabindex', '-1');
+    }
+  })();
+
+  // ===== Página Conheça Estância: acordeão de áreas com "ver mais" =====
+  // Cada área mostra 3 cards; expandir uma recolhe as outras. Sem JS, tudo
+  // aparece (melhoria progressiva). Âncora (#conheca-*) expande a área alvo.
+  (function initConhecaPagina() {
+    var secoes = document.querySelectorAll('.paginas-conheca-aba');
+    if (!secoes.length) return;
+    var VISIVEIS = 3;
+
+    function textoBotao(btn, total) {
+      var rotulo = btn.querySelector('span');
+      if (rotulo) rotulo.textContent = 'Ver mais (' + (total - VISIVEIS) + ')';
+    }
+
+    function colapsar(secao) {
+      var cards = secao.querySelectorAll('.paginas-card');
+      cards.forEach(function (c, i) { c.classList.toggle('is-oculto', i >= VISIVEIS); });
+      secao.classList.remove('is-expandida');
+      var btn = secao.querySelector('[data-conheca-mais]');
+      if (btn) { btn.classList.remove('is-expandido'); textoBotao(btn, cards.length); }
+    }
+
+    function expandir(secao) {
+      secao.querySelectorAll('.paginas-card').forEach(function (c) { c.classList.remove('is-oculto'); });
+      secao.classList.add('is-expandida');
+      var btn = secao.querySelector('[data-conheca-mais]');
+      if (btn) {
+        btn.classList.add('is-expandido');
+        var rotulo = btn.querySelector('span');
+        if (rotulo) rotulo.textContent = 'Ver menos';
+      }
+    }
+
+    secoes.forEach(function (secao) {
+      var cards = secao.querySelectorAll('.paginas-card');
+      if (cards.length <= VISIVEIS) return;
+
+      var wrap = document.createElement('div');
+      wrap.className = 'planeje-ver-mais-wrap';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'planeje-ver-mais planeje-ver-mais--claro';
+      btn.setAttribute('data-conheca-mais', '');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.innerHTML = '<span></span> <i data-lucide="chevron-down" class="icon-lg"></i>';
+      wrap.appendChild(btn);
+      secao.appendChild(wrap);
+
+      colapsar(secao);
+      btn.addEventListener('click', function () {
+        var aberta = secao.classList.contains('is-expandida');
+        secoes.forEach(function (outra) { if (outra !== secao) colapsar(outra); });
+        if (aberta) { colapsar(secao); btn.setAttribute('aria-expanded', 'false'); }
+        else { expandir(secao); btn.setAttribute('aria-expanded', 'true'); }
+      });
+    });
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // Chegada por âncora (ex.: botão do detalhe): expande a área antes do salto.
+    if (location.hash) {
+      var alvo = document.querySelector(location.hash);
+      if (alvo && alvo.classList && alvo.classList.contains('paginas-conheca-aba')) {
+        secoes.forEach(function (outra) { if (outra !== alvo) colapsar(outra); });
+        expandir(alvo);
+      }
+    }
+  })();
+
+  // ===== Overlay de busca pública (lupa das navbars) =====
+  (function initBuscaOverlay() {
+    var overlay = document.getElementById('buscaOverlay');
+    if (!overlay) return;
+    var input = document.getElementById('buscaOverlayInput');
+    var fechar = document.getElementById('buscaFechar');
+
+    function abrir() {
+      overlay.hidden = false;
+      requestAnimationFrame(function () { overlay.classList.add('aberto'); });
+      if (input) setTimeout(function () { input.focus(); }, 60);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function fecharFn() {
+      overlay.classList.remove('aberto');
+      document.body.style.overflow = '';
+      setTimeout(function () {
+        if (!overlay.classList.contains('aberto')) overlay.hidden = true;
+      }, 260);
+    }
+
+    document.querySelectorAll('[data-busca-abrir]').forEach(function (b) {
+      b.addEventListener('click', abrir);
+    });
+    if (fechar) fechar.addEventListener('click', fecharFn);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) fecharFn(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !overlay.hidden) fecharFn();
+    });
+  })();
+
   // ===== "Conheça Estância" — deck em tela cheia com texto por cima =====
   // A imagem ativa ocupa a sessão toda; pill/nome/descrição/Ver mais ficam
   // no overlay (.conheca-info) por cima com sombreamento. Cartas 3+ espreitam

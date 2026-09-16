@@ -37,6 +37,9 @@ public class AnalyticsResumoDto
 
     /// <summary>Fotos da galeria mais curtidas no período (evento like-foto).</summary>
     public List<AnalyticsContagemDto> TopFotosCurtidas { get; set; } = new();
+
+    /// <summary>Termos mais buscados no portal no período (evento busca).</summary>
+    public List<AnalyticsContagemDto> TermosBuscados { get; set; } = new();
 }
 
 /// <summary>Ponto de uma série temporal.</summary>

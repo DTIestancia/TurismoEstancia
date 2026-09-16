@@ -12,6 +12,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ED2027" />
+    <link rel="manifest" href="@Url.Content("~/manifest.webmanifest")" />
     @if (faviconConfig?.ArquivoId is long faviconId)
     {
         <link rel="icon" type="image/png" href="@Url.Content($"~/arquivo/{faviconId}")" />
@@ -116,7 +118,33 @@
     @await Component.InvokeAsync("ThemeSite")
 </head>
 <body data-app-base="@Url.Content("~/")">
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
     @RenderBody()
+
+    <!-- VLibras: acessibilidade em Libras (padrão gov.br para órgãos públicos) -->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper><div class="vw-plugin-top-wrapper"></div></div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>try { new window.VLibras.Widget('https://vlibras.gov.br/app'); } catch (e) {}</script>
+
+    <!-- Overlay de busca pública (lupa das navbars) -->
+    <div class="busca-overlay" id="buscaOverlay" role="dialog" aria-modal="true" aria-label="Buscar no portal" hidden>
+        <button type="button" class="busca-overlay-fechar" id="buscaFechar" aria-label="Fechar busca">
+            <i data-lucide="x" class="icon-lg"></i>
+        </button>
+        <div style="width:min(640px,100%);">
+            <form method="get" action="@Url.Content("~/buscar")" class="busca-overlay-form" role="search">
+                <i data-lucide="search" class="icon-lg" style="color:#9ca3af;flex:none;"></i>
+                <input type="search" name="q" id="buscaOverlayInput" class="busca-overlay-input"
+                       placeholder="Buscar maravilhas, notícias, eventos..." aria-label="Buscar no portal"
+                       minlength="2" maxlength="100" autocomplete="off" />
+                <button type="submit" class="btn-primary busca-form-btn">Buscar</button>
+            </form>
+            <p class="busca-overlay-dica">Digite e tecle Enter — Esc fecha.</p>
+        </div>
+    </div>
 
     <!-- Botão voltar ao topo (aparece após rolar a página) -->
     <button type="button" class="scroll-top" id="scrollTop" aria-label="Voltar ao topo" title="Voltar ao topo">
@@ -125,6 +153,14 @@
     </button>
 
     <script src="~/js/portal.js" asp-append-version="true"></script>
+    <script>
+        // PWA: shell offline (só no portal público, nunca no Gerenciador).
+        if ('serviceWorker' in navigator && !location.pathname.startsWith('/Gerenciador') && !location.pathname.startsWith('/Operador')) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js').catch(function () {});
+            });
+        }
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

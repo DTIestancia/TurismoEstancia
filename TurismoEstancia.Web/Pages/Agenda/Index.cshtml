@@ -112,6 +112,13 @@
                 Parametro = "paginaPassados"
             })
         }
+        @await Html.PartialAsync("_JornadaNavegacao", new JornadaNavModel
+        {
+            AnteriorRotulo = "7 Maravilhas",
+            AnteriorUrl = "~/lugares",
+            ProximoRotulo = "Planeje sua viagem",
+            ProximoUrl = "~/roteiros"
+        })
     </div>
 </main>
 @await Html.PartialAsync("_PaginasFooter")

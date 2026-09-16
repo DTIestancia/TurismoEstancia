@@ -97,6 +97,9 @@
                 </a>
             }
         </div>
+        <button type="button" class="navbar-busca-btn" data-busca-abrir aria-label="Buscar no portal" title="Buscar">
+            <i data-lucide="search" class="icon-lg"></i>
+        </button>
         @if (Model.GuiaDisponivel)
         {
             <a asp-controller="Arquivo" asp-action="Index" asp-route-id="@Model.Guia!.ArquivoId" class="navbar-cta">

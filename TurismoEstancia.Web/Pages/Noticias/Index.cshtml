@@ -62,6 +62,14 @@
                 UrlBase = Url.Content("~/Noticias")
             })
         }
+
+        @await Html.PartialAsync("_JornadaNavegacao", new JornadaNavModel
+        {
+            AnteriorRotulo = "Planeje sua viagem",
+            AnteriorUrl = "~/roteiros",
+            ProximoRotulo = "Mapa",
+            ProximoUrl = "~/#section-mapa"
+        })
     </div>
 </main>
 @await Html.PartialAsync("_PaginasFooter")

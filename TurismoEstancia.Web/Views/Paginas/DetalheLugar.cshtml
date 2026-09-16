@@ -16,6 +16,30 @@
         [DiaSemana.Sabado] = "Sábado"
     };
 }
+@section Head {
+    @{
+        var ldBase = $"{Context.Request.Scheme}://{Context.Request.Host}";
+        var ldImagem = lugar.CapaArquivoId is long ldCapa ? ldBase + Url.Content($"~/arquivo/{ldCapa}?largura=1200") : null;
+        var ldJson = System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, object?>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "TouristAttraction",
+            ["name"] = lugar.Nome,
+            ["description"] = System.Text.RegularExpressions.Regex.Replace(lugar.Descricao ?? "", "<.*?>", ""),
+            ["image"] = ldImagem,
+            ["url"] = ldBase + Context.Request.Path,
+            ["address"] = new Dictionary<string, object?>
+            {
+                ["@type"] = "PostalAddress",
+                ["streetAddress"] = lugar.Endereco,
+                ["addressLocality"] = "Estância",
+                ["addressRegion"] = "SE",
+                ["addressCountry"] = "BR"
+            }
+        }).Replace("</", "<\\/");
+    }
+    <script type="application/ld+json">@Html.Raw(ldJson)</script>
+}
 <main class="paginas-page page-public">
     @await Html.PartialAsync("_PaginasHeader")
 

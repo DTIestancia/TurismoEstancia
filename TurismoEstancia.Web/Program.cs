@@ -1,9 +1,25 @@
 using System.IO.Compression;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
 using TurismoEstancia.Web.Comandos;
 using TurismoEstancia.Web.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Antispam dos formulários públicos (10 envios/min por IP em cada endpoint).
+builder.Services.AddRateLimiter(opcoes =>
+{
+    opcoes.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    opcoes.AddPolicy("formularios", http => RateLimitPartition.GetFixedWindowLimiter(
+        http.Connection.RemoteIpAddress?.ToString() ?? "desconhecido",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            Window = TimeSpan.FromMinutes(1),
+            PermitLimit = 10,
+            QueueLimit = 0
+        }));
+});
 
 // Compressão Brotli/Gzip do HTML/CSS/JS (mídias já são comprimidas e ficam de fora).
 builder.Services.AddResponseCompression(opcoes =>

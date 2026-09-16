@@ -21,12 +21,6 @@ public class SecaoConhecaViewModel : SecaoViewModel
     public IReadOnlyList<ConhecaEstanciaTab> Abas { get; set; } = Array.Empty<ConhecaEstanciaTab>();
 }
 
-/// <summary>Página "Grupos Populares".</summary>
-public class SecaoGruposViewModel : SecaoViewModel
-{
-    public IReadOnlyList<GrupoCulturalDto> Grupos { get; set; } = Array.Empty<GrupoCulturalDto>();
-}
-
 /// <summary>Página "Gastronomia".</summary>
 public class SecaoGastronomiaViewModel : SecaoViewModel
 {

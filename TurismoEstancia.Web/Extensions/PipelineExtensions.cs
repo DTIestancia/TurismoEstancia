@@ -53,6 +53,7 @@ public static class PipelineExtensions
         });
 
         app.UseRouting();
+        app.UseRateLimiter();
         app.UseAuthentication();
 
         // Escrita no CMS (POST em /Gerenciador ou /Operador) descarta o cache do

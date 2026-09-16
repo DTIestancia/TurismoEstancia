@@ -1,0 +1,26 @@
+{
+  "name": "Descubra Estância — Turismo",
+  "short_name": "Estância",
+  "description": "Portal oficial de turismo de Estância/SE: maravilhas, agenda, notícias e planeje sua viagem.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF9F1",
+  "theme_color": "#ED2027",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

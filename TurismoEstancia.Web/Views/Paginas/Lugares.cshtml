@@ -71,6 +71,14 @@
         <div class="paginas-cta-row paginas-cta-row--center">
             <a href="@Url.Content("~/")" class="btn-secondary"><i data-lucide="map" class="icon-lg"></i> Ver tudo no mapa da home</a>
         </div>
+
+        @await Html.PartialAsync("_JornadaNavegacao", new JornadaNavModel
+        {
+            AnteriorRotulo = "Conheça Estância",
+            AnteriorUrl = "~/cultura",
+            ProximoRotulo = "Agenda",
+            ProximoUrl = "~/agenda"
+        })
     </div>
 
     @await Html.PartialAsync("_PaginasFooter")

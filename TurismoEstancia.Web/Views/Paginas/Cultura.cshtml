@@ -66,6 +66,14 @@
                 </div>
             </section>
         }
+
+        @await Html.PartialAsync("_JornadaNavegacao", new JornadaNavModel
+        {
+            AnteriorRotulo = "Nossa Cidade",
+            AnteriorUrl = "~/cidade",
+            ProximoRotulo = "7 Maravilhas",
+            ProximoUrl = "~/lugares"
+        })
     </div>
 
     @await Html.PartialAsync("_PaginasFooter")

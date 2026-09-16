@@ -20,7 +20,6 @@ public class PaginasController : Controller
     private readonly IConteudoSiteService _conteudos;
     private readonly IEstatisticaService _estatisticas;
     private readonly ISlideService _slides;
-    private readonly IGrupoCulturalService _grupos;
     private readonly IPratoTuristicoService _pratos;
     private readonly ITagCulturalService _tags;
     private readonly IPontoTuristicoService _pontos;
@@ -33,7 +32,6 @@ public class PaginasController : Controller
         IConteudoSiteService conteudos,
         IEstatisticaService estatisticas,
         ISlideService slides,
-        IGrupoCulturalService grupos,
         IPratoTuristicoService pratos,
         ITagCulturalService tags,
         IPontoTuristicoService pontos,
@@ -45,7 +43,6 @@ public class PaginasController : Controller
         _conteudos = conteudos;
         _estatisticas = estatisticas;
         _slides = slides;
-        _grupos = grupos;
         _pratos = pratos;
         _tags = tags;
         _pontos = pontos;
@@ -115,21 +112,6 @@ public class PaginasController : Controller
         return View(vm);
     }
 
-    /// <summary>GET /grupos-populares — grupos culturais.</summary>
-    [HttpGet]
-    [Route("grupos-populares")]
-    public async Task<IActionResult> GruposPopulares(CancellationToken ct)
-    {
-        DefinirSeo("Grupos Populares",
-            "Reisado, Cacumbi, Batucada e quadrilhas: os grupos populares que animam as festas de Estância.");
-        var vm = new SecaoGruposViewModel
-        {
-            Conteudos = await _conteudos.ObterDicionarioAsync(ct),
-            Grupos = await _grupos.ListarAsync(ct)
-        };
-        return View(vm);
-    }
-
     /// <summary>GET /gastronomia — pratos turísticos.</summary>
     [HttpGet]
     [Route("gastronomia")]
@@ -189,7 +171,7 @@ public class PaginasController : Controller
         var roteiros = await _roteiros.ListarAsync(ct);
 
         DefinirSeo(lugar.Nome, lugar.Descricao,
-            lugar.CapaArquivoId is long capaId ? Url.Content($"~/arquivo/{capaId}") : null);
+            lugar.CapaArquivoId is long capaId ? Url.Content($"~/arquivo/{capaId}?largura=1200") : null);
 
         var vm = new DetalheLugarViewModel
         {
@@ -200,24 +182,6 @@ public class PaginasController : Controller
                 .ToList()
         };
         return View(vm);
-    }
-
-    /// <summary>GET /grupos-populares/{id}/{slug?} — detalhe do grupo cultural.</summary>
-    [HttpGet]
-    [Route("grupos-populares/{id:int}/{slug?}")]
-    public async Task<IActionResult> DetalheGrupo(int id, string? slug, CancellationToken ct)
-    {
-        var grupo = await _grupos.ObterPorIdAsync(id, ct);
-        if (grupo is null || !grupo.Ativo)
-            return NotFound();
-
-        var slugCorreto = Slug.De(grupo.Nome);
-        if (!string.Equals(slug, slugCorreto, StringComparison.OrdinalIgnoreCase))
-            return RedirectToAction(nameof(DetalheGrupo), "Paginas", new { id, slug = slugCorreto });
-
-        DefinirSeo(grupo.Nome, grupo.Descricao,
-            grupo.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}") : null);
-        return View(grupo);
     }
 
     /// <summary>GET /gastronomia/{id}/{slug?} — detalhe do prato.</summary>
@@ -234,7 +198,7 @@ public class PaginasController : Controller
             return RedirectToAction(nameof(DetalhePrato), "Paginas", new { id, slug = slugCorreto });
 
         DefinirSeo(prato.Nome, prato.Descricao,
-            prato.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}") : null);
+            prato.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}?largura=1200") : null);
         return View(prato);
     }
 
@@ -252,7 +216,7 @@ public class PaginasController : Controller
             return RedirectToAction(nameof(DetalheTag), "Paginas", new { id, slug = slugCorreto });
 
         DefinirSeo(tag.Nome, tag.Descricao,
-            tag.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}") : null);
+            tag.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}?largura=1200") : null);
         return View(tag);
     }
 
@@ -270,7 +234,7 @@ public class PaginasController : Controller
             return RedirectToAction(nameof(DetalheConhecaEstancia), "Paginas", new { id, slug = slugCorreto });
 
         DefinirSeo(item.Nome, item.Descricao,
-            item.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}") : null);
+            item.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}?largura=1200") : null);
         return View(item);
     }
 

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Text.RegularExpressions;
 using TurismoEstancia.Services.Comunicacao.Interfaces;
 
@@ -14,6 +15,7 @@ public class NewsletterController : Controller
     /// <summary>POST /Newsletter/Inscrever — salva o e-mail com consentimento LGPD.</summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting("formularios")]
     public async Task<IActionResult> Inscrever(string email, bool consentimentoLgpd, CancellationToken ct)
     {
         try

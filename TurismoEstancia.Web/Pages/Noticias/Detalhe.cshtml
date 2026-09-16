@@ -3,6 +3,25 @@
 @{
     ViewData["Title"] = Model.Noticia?.Titulo ?? "Notícia não encontrada";
 }
+@section Head {
+    @if (Model.Noticia is not null)
+    {
+        var ldBase = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
+        var ldImagem = Model.Noticia.ImagemArquivoId is long ldImg ? ldBase + Url.Content($"~/arquivo/{ldImg}?largura=1200") : null;
+        var ldJson = System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, object?>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "NewsArticle",
+            ["headline"] = Model.Noticia.Titulo,
+            ["description"] = Model.Noticia.Resumo ?? "",
+            ["image"] = ldImagem,
+            ["url"] = ldBase + HttpContext.Request.Path,
+            ["datePublished"] = Model.Noticia.DataPublicacao.ToString("o"),
+            ["author"] = new Dictionary<string, object?> { ["@type"] = "Organization", ["name"] = "Prefeitura Municipal de Estância" }
+        }).Replace("</", "<\\/");
+        <script type="application/ld+json">@Html.Raw(ldJson)</script>
+    }
+}
 @await Html.PartialAsync("_PaginasHeader")
 <main class="news-detail page-public">
     @if (Model.Noticia is null)

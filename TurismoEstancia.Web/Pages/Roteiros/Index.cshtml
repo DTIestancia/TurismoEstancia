@@ -84,6 +84,14 @@
                 <span id="planejeVerMaisTexto">Ver mais</span> <i data-lucide="chevron-down" class="icon-lg"></i>
             </button>
         </div>
+
+        @await Html.PartialAsync("_JornadaNavegacao", new JornadaNavModel
+        {
+            AnteriorRotulo = "Agenda",
+            AnteriorUrl = "~/agenda",
+            ProximoRotulo = "Blog",
+            ProximoUrl = "~/noticias"
+        })
     </div>
 
     <!-- ===== Modal do Planeje (detalhes + avaliações) ===== -->

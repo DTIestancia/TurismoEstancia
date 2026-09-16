@@ -67,12 +67,11 @@ public class AnalyticsVisitTrackingMiddleware
         return partes[0].ToLowerInvariant() switch
         {
             "cidade" => "Nossa Cidade",
-            "cultura" => partes.Length > 1 ? "Nossa Cultura — Detalhe" : "Nossa Cultura",
-            "grupos-populares" => partes.Length > 1 ? "Grupos Populares — Detalhe" : "Grupos Populares",
+            "cultura" => partes.Length > 1 ? "Tradição cultural" : "Conheça Estância",
             "gastronomia" => partes.Length > 1 ? "Gastronomia — Detalhe" : "Gastronomia",
             "lugares" => partes.Length > 1 ? "Lugares que Encantam — Detalhe" : "Lugares que Encantam",
             "noticias" => partes.Length > 1 ? "Notícia" : "Notícias",
-            "roteiros" => partes.Length > 1 ? "Roteiro" : "Roteiros",
+            "roteiros" => partes.Length > 1 ? "Roteiro" : "Planeje sua viagem",
             "agenda" => "Agenda",
             "contato" => "Contato",
             "evento" => "Evento",

@@ -1,0 +1,77 @@
+@model BuscaResultadoDto
+@{
+    ViewData["Title"] = string.IsNullOrWhiteSpace(Model.Termo) ? "Buscar" : $"Busca: {Model.Termo}";
+}
+<main class="paginas-page page-public">
+    @await Html.PartialAsync("_PaginasHeader")
+
+    <section class="news-hero">
+        <div class="news-hero-inner">
+            <div class="pill pill--light">
+                <i data-lucide="search" class="icon-lg"></i>
+                <span>Busca no portal</span>
+            </div>
+            <h1 class="news-hero-title">O que você <span class="secao-destaque">procura?</span></h1>
+            <form method="get" asp-controller="Buscar" asp-action="Index" class="busca-form" role="search">
+                <i data-lucide="search" class="icon-lg busca-form-icon"></i>
+                <input type="search" name="q" value="@Model.Termo" class="busca-form-input"
+                       placeholder="Ex.: barco de fogo, praia do saco, hotel..." aria-label="Buscar no portal"
+                       minlength="2" maxlength="100" required />
+                <button type="submit" class="btn-primary busca-form-btn">Buscar</button>
+            </form>
+        </div>
+    </section>
+
+    <div class="news-container">
+        @if (string.IsNullOrWhiteSpace(Model.Termo))
+        {
+            <div class="news-empty">Digite acima para pesquisar maravilhas, notícias, eventos, hospedagem e cultura.</div>
+        }
+        else if (Model.Total == 0)
+        {
+            <div class="news-empty">Nenhum resultado para "<strong>@Model.Termo</strong>". Tente com menos palavras ou sem acento.</div>
+            <div class="busca-sugestoes">
+                <span>Sugestões:</span>
+                <a href="@Url.Content("~/lugares")">7 Maravilhas</a>
+                <a href="@Url.Content("~/agenda")">Agenda</a>
+                <a href="@Url.Content("~/roteiros")">Planeje sua viagem</a>
+                <a href="@Url.Content("~/noticias")">Notícias</a>
+            </div>
+        }
+        else
+        {
+            <p class="busca-total">@Model.Total resultado@(Model.Total == 1 ? "" : "s") para "<strong>@Model.Termo</strong>"</p>
+            @foreach (var grupo in Model.Grupos)
+            {
+                <section class="busca-grupo">
+                    <h2 class="busca-grupo-titulo"><i data-lucide="@grupo.Icone" class="icon-lg"></i> @grupo.Titulo</h2>
+                    <div class="busca-lista">
+                        @foreach (var item in grupo.Itens)
+                        {
+                            <a class="busca-item" href="@Url.Content(item.Url)">
+                                @if (item.ImagemArquivoId is long thumb)
+                                {
+                                    <img class="busca-item-img" src="@Url.Content($"~/arquivo/{thumb}?largura=400")" alt="" loading="lazy" decoding="async" />
+                                }
+                                <span class="busca-item-corpo">
+                                    <span class="busca-item-titulo">@item.Titulo</span>
+                                    @if (!string.IsNullOrWhiteSpace(item.Rotulo))
+                                    {
+                                        <span class="busca-item-rotulo">@item.Rotulo</span>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(item.Resumo))
+                                    {
+                                        <span class="busca-item-resumo">@item.Resumo</span>
+                                    }
+                                </span>
+                                <i data-lucide="arrow-right" class="icon-lg busca-item-seta"></i>
+                            </a>
+                        }
+                    </div>
+                </section>
+            }
+        }
+    </div>
+
+    @await Html.PartialAsync("_PaginasFooter")
+</main>

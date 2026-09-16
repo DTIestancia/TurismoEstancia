@@ -3702,6 +3702,199 @@ img.paginas-galeria-card-img {
 .paginacao .paginacao-reticencias { color: #9ca3af; }
 .error-page .error-message { color: #4b5563; }
 
+// ===== Acessibilidade =====
+// Link "pular para o conteúdo" (visível só no foco por teclado).
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -70px;
+  z-index: 10001;
+  background: #ffffff;
+  color: var(--color-azure-7);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: top 0.2s ease;
+
+  &:focus-visible { top: 12px; }
+}
+// Foco visível padronizado (só teclado — o mouse não dispara).
+:focus-visible { outline: 2px solid var(--color-orange-48); outline-offset: 2px; }
+// Respeita quem desativa animações no SO (reveal, deck, partículas, transições).
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// ===== Busca pública (/buscar) =====
+.busca-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 560px;
+  margin: 26px auto 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 6px 6px 6px 18px;
+  box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.18);
+}
+.busca-form-icon { color: #9ca3af; flex: none; }
+.busca-form-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 15px;
+  color: var(--color-azure-7);
+}
+.busca-form-btn { border-radius: 999px; white-space: nowrap; }
+.busca-total { color: #4b5563; margin-bottom: 26px; }
+.busca-grupo + .busca-grupo { margin-top: 42px; }
+.busca-grupo-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-azure-7);
+  margin: 0 0 16px;
+
+  svg { color: var(--color-orange-48); }
+}
+.busca-lista { display: flex; flex-direction: column; gap: 12px; }
+.busca-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 12px 16px 12px 12px;
+  text-decoration: none;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+
+  &:hover { border-color: var(--color-orange-48-20); box-shadow: 0 10px 26px -14px rgba(0, 0, 0, 0.25); transform: translateY(-1px); }
+}
+.busca-item-img { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; flex: none; }
+.busca-item-corpo { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.busca-item-titulo { font-weight: 700; font-size: 15px; color: var(--color-azure-7); }
+.busca-item-rotulo { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #C2570B; }
+.busca-item-resumo {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #6b7280;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.busca-item-seta { color: #9ca3af; flex: none; }
+.busca-sugestoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  color: #4b5563;
+  font-size: 14px;
+
+  a {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-azure-7);
+    text-decoration: none;
+
+    &:hover { border-color: var(--color-orange-48); color: #C2570B; }
+  }
+}
+
+// Botões-lupa das navbars (home e páginas internas).
+.navbar-busca-btn, .paginas-busca-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--color-white-solid);
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover { background: rgba(255, 255, 255, 0.16); }
+}
+
+// Overlay de busca (aberto pela lupa das navbars).
+.busca-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  background: rgba(3, 14, 25, 0.93);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 16vh 20px 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+
+  &.aberto { opacity: 1; visibility: visible; }
+}
+.busca-overlay-form {
+  width: min(640px, 100%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 10px 10px 10px 20px;
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.5);
+}
+.busca-overlay-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  font-size: 17px;
+  color: var(--color-azure-7);
+  background: transparent;
+}
+.busca-overlay-fechar {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--color-white-solid);
+  cursor: pointer;
+
+  &:hover { background: rgba(255, 255, 255, 0.16); }
+}
+.busca-overlay-dica { color: var(--color-white--55); font-size: 13px; margin-top: 14px; text-align: center; }
+
 // ===== Hero das páginas internas com capa (foto gerenciável) =====
 // Sem capa, o hero gráfico claro continua valendo; com capa, a foto cobre o
 // fundo e os textos ficam brancos sobre overlay escuro (como o item-hero).
@@ -3737,9 +3930,82 @@ img.paginas-galeria-card-img {
 .paginas-hero--capa .secao-destaque,
 .news-hero--capa .secao-destaque { color: var(--color-yellow-50); }
 
+// ===== Jornada entre seções (voltar + continuar no fim das páginas) =====
+.jornada-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 56px;
+}
+.jornada-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 18px 22px;
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    border-color: var(--color-orange-48-20);
+    box-shadow: 0 14px 30px -16px rgba(0, 0, 0, 0.22);
+    transform: translateY(-2px);
+  }
+
+  svg {
+    flex: none;
+    width: 38px;
+    height: 38px;
+    padding: 9px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-orange-48) 12%, #fff);
+    color: color-mix(in srgb, var(--color-orange-48) 80%, #000);
+  }
+}
+.jornada-btn--next { justify-content: flex-end; text-align: right; }
+.jornada-btn-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  small {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+  }
+
+  strong {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--color-azure-7);
+    line-height: 1.25;
+  }
+}
+@media (max-width: 640px) {
+  .jornada-nav { grid-template-columns: 1fr; margin-top: 44px; }
+}
+
 // ===== Página Conheça Estância (/cultura): uma seção por aba =====
 .paginas-conheca-aba + .paginas-conheca-aba { margin-top: 60px; }
 .paginas-conheca-aba .section-tag { margin-bottom: 20px; }
+.paginas-conheca-aba .paginas-card.is-oculto { display: none; }
+// Variante clara do botão (a base é para fundo escuro).
+.planeje-ver-mais--claro {
+  border-color: #d1d5db;
+  color: var(--color-azure-7);
+
+  &:hover {
+    background: var(--color-azure-7);
+    border-color: var(--color-azure-7);
+    color: #ffffff;
+  }
+}
 
 // ===== Faixa de logotipos institucionais (rodapés escuro) =====
 // DTI e Capital Brasileira são artes claras (vão direto); o brasão da
