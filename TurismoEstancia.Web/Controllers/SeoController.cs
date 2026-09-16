@@ -71,17 +71,33 @@ public class SeoController : Controller
             ($"{baseUrl}/midia-kit", 0.6, null)
         };
 
+        // Imagens por URL (extensão image:image do sitemap): capas das
+        // maravilhas + fotos das notícias, com legenda — descoberta visual.
+        var imagens = new Dictionary<string, List<(string Url, string Titulo)>>();
+        void ComImagem(string loc, long? arquivoId, string titulo)
+        {
+            if (arquivoId is not long id || id <= 0 || string.IsNullOrWhiteSpace(titulo))
+                return;
+            if (!imagens.TryGetValue(loc, out var lista))
+                imagens[loc] = lista = new List<(string, string)>();
+            lista.Add(($"{baseUrl}/arquivo/{id}?largura=1200", titulo));
+        }
+
         // Páginas de detalhe (conteúdo do banco)
         var maravilhas = await _pontos.ListarAsync(apenasAtivos: true, ct);
         foreach (var ponto in maravilhas.Where(p => p.CategoriaApresentarEmMaravilhas))
         {
-            urls.Add(($"{baseUrl}/lugares/{ponto.Id}/{Slug.De(ponto.Nome)}", 0.9, null));
+            var loc = $"{baseUrl}/lugares/{ponto.Id}/{Slug.De(ponto.Nome)}";
+            urls.Add((loc, 0.9, null));
+            ComImagem(loc, ponto.CapaArquivoId, ponto.Nome);
         }
 
         var noticias = await _noticias.ListarAsync(apenasPublicadas: true, ct);
         foreach (var noticia in noticias)
         {
-            urls.Add(($"{baseUrl}/Noticias/Detalhe/{noticia.Slug}", 0.7, noticia.DataPublicacao));
+            var loc = $"{baseUrl}/Noticias/Detalhe/{noticia.Slug}";
+            urls.Add((loc, 0.7, noticia.DataPublicacao));
+            ComImagem(loc, noticia.ImagemArquivoId, noticia.Titulo);
         }
 
         var roteiros = await _roteiros.ListarAsync(ct);
@@ -118,6 +134,7 @@ public class SeoController : Controller
         {
             await writer.WriteStartDocumentAsync();
             await writer.WriteStartElementAsync(null, "urlset", "http://www.sitemaps.org/schemas/sitemap/0.9");
+            await writer.WriteAttributeStringAsync("xmlns", "image", null, "http://www.google.com/schemas/sitemap-image/1.1");
             foreach (var (loc, prioridade, lastMod) in urls)
             {
                 await writer.WriteStartElementAsync(null, "url", null);
@@ -125,6 +142,16 @@ public class SeoController : Controller
                 if (lastMod is DateTime lm)
                     await writer.WriteElementStringAsync(null, "lastmod", null, lm.ToString("yyyy-MM-dd"));
                 await writer.WriteElementStringAsync(null, "priority", null, prioridade.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture));
+                if (imagens.TryGetValue(loc, out var imgs))
+                {
+                    foreach (var (urlImagem, tituloImagem) in imgs)
+                    {
+                        await writer.WriteStartElementAsync("image", "image", "http://www.google.com/schemas/sitemap-image/1.1");
+                        await writer.WriteElementStringAsync("image", "loc", "http://www.google.com/schemas/sitemap-image/1.1", urlImagem);
+                        await writer.WriteElementStringAsync("image", "title", "http://www.google.com/schemas/sitemap-image/1.1", tituloImagem);
+                        await writer.WriteEndElementAsync();
+                    }
+                }
                 await writer.WriteEndElementAsync();
             }
             await writer.WriteEndElementAsync();

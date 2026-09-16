@@ -33,16 +33,22 @@ public class ArquivoController : Controller
     {
         // Proteção contra hotlink: bloqueia quem carrega a imagem a partir de
         // OUTRO site (Referer de host diferente). Acesso direto (sem Referer —
-        // nova aba, OG/redes sociais, bot de busca) continua permitido, e o
-        // portal/painel sempre enviam o próprio host.
-        var referer = Request.Headers.Referer.ToString();
-        if (!string.IsNullOrEmpty(referer))
+        // nova aba, OG/redes sociais) continua permitido, e o portal/painel
+        // sempre enviam o próprio host. Robôs de busca e redes sociais passam
+        // pelo User-Agent — sem isso, Google Imagens e a inspeção do Search
+        // Console recebem 403 e as fotos somem dos resultados.
+        var userAgent = Request.Headers.UserAgent.ToString();
+        if (!EhRoboConhecido(userAgent))
         {
-            var host = Request.Host.Host;
-            if (!Uri.TryCreate(referer, UriKind.Absolute, out var uri)
-                || !string.Equals(uri.Host, host, StringComparison.OrdinalIgnoreCase))
+            var referer = Request.Headers.Referer.ToString();
+            if (!string.IsNullOrEmpty(referer))
             {
-                return StatusCode(StatusCodes.Status403Forbidden);
+                var host = Request.Host.Host;
+                if (!Uri.TryCreate(referer, UriKind.Absolute, out var uri)
+                    || !string.Equals(uri.Host, host, StringComparison.OrdinalIgnoreCase))
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden);
+                }
             }
         }
 
@@ -121,6 +127,27 @@ public class ArquivoController : Controller
         {
             return NotFound();
         }
+    }
+
+    /// <summary>
+    /// Robôs de busca e pré-visualizadores (User-Agent): passam pelo hotlink
+    /// para imagens e vídeos serem indexados e inspecionados normalmente.
+    /// </summary>
+    private static bool EhRoboConhecido(string userAgent)
+    {
+        if (string.IsNullOrWhiteSpace(userAgent))
+            return false;
+        return userAgent.Contains("bot", StringComparison.OrdinalIgnoreCase)
+            || userAgent.Contains("crawl", StringComparison.OrdinalIgnoreCase)
+            || userAgent.Contains("spider", StringComparison.OrdinalIgnoreCase)
+            || userAgent.Contains("mediapartners-google", StringComparison.OrdinalIgnoreCase)
+            || userAgent.Contains("facebookexternalhit", StringComparison.OrdinalIgnoreCase)
+            || userAgent.Contains("twitterbot", StringComparison.OrdinalIgnoreCase)
+            || userAgent.Contains("linkedinbot", StringComparison.OrdinalIgnoreCase)
+            || userAgent.Contains("whatsapp", StringComparison.OrdinalIgnoreCase)
+            || userAgent.Contains("telegrambot", StringComparison.OrdinalIgnoreCase)
+            || userAgent.Contains("slackbot", StringComparison.OrdinalIgnoreCase)
+            || userAgent.Contains("discordbot", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>Localiza a miniatura em disco (.jpg ou .png) sem varrer o diretório.</summary>
