@@ -1140,6 +1140,38 @@ a.painel-stat--link {
   }
 }
 
+// Filtro de período personalizado do dashboard (inputs de data + aplicar).
+.painel-periodo-custom {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+  padding-left: 12px;
+  border-left: 1px solid $color-white--12;
+  color: $color-white--55;
+  font-size: 12.5px;
+  font-weight: 600;
+
+  input[type="date"] {
+    background: $color-white--5;
+    border: 1px solid $color-white--12;
+    border-radius: 9px;
+    color: $color-white-solid;
+    font-size: 12.5px;
+    padding: 6px 10px;
+    color-scheme: dark;
+
+    &:focus { outline: none; border-color: var(--color-orange-48); }
+  }
+}
+
+// Legenda auxiliar sob o título do gráfico principal.
+.painel-chart-sub {
+  font-size: 12px;
+  color: $color-white--55;
+  margin: -2px 0 10px;
+}
+
 .painel-kpis {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

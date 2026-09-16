@@ -67,23 +67,46 @@ public class DashboardController : PainelController
         _planeje = planeje;
     }
 
-    public async Task<IActionResult> Index(int dias, int? galeriaCategoria, CancellationToken ct)
+    public async Task<IActionResult> Index(int dias, DateTime? de, DateTime? ate, int? galeriaCategoria, CancellationToken ct)
     {
         ViewData["Title"] = "Dashboard";
-        if (dias is not (7 or 30 or 90)) dias = 30;
 
-        var de = DateTime.Today.AddDays(-(dias - 1));
-        var ate = DateTime.Today;
+        // Presets (hoje, 7, 30, 90 dias) ou intervalo personalizado via de/ate.
+        var hoje = DateTime.Today;
+        DateTime inicio, fim;
+        int? preset = null;
+        if (de.HasValue || ate.HasValue)
+        {
+            fim = (ate ?? hoje).Date;
+            inicio = (de ?? fim).Date;
+            if (inicio > fim)
+                (inicio, fim) = (fim, inicio);
+            if (fim > hoje)
+                fim = hoje;
+            if ((fim - inicio).TotalDays > 365)
+                inicio = fim.AddDays(-365);
+            var tamanhoPersonalizado = (fim - inicio).Days + 1;
+            if (fim == hoje && tamanhoPersonalizado is 1 or 7 or 30 or 90)
+                preset = tamanhoPersonalizado;
+        }
+        else
+        {
+            if (dias is not (1 or 7 or 30 or 90)) dias = 30;
+            preset = dias;
+            fim = hoje;
+            inicio = fim.AddDays(-(dias - 1));
+        }
 
-        var resumo = await _analytics.ObterResumoAsync(de, ate, galeriaCategoria, ct);
-        var anterior = await _analytics.ObterResumoAsync(de.AddDays(-dias), de.AddDays(-1), null, ct);
+        var tamanho = (fim - inicio).Days + 1;
+        var resumo = await _analytics.ObterResumoAsync(inicio, fim, galeriaCategoria, ct);
+        var anterior = await _analytics.ObterResumoAsync(inicio.AddDays(-tamanho), inicio.AddDays(-1), null, ct);
 
         // Categorias da galeria para o filtro do ranking de fotos (inclui inativas,
         // para o ranking de uma categoria desativada continuar consultável).
         var galeriaCategorias = await _galeria.ListarCategoriasAsync(incluirInativas: true, ct);
 
         var inscricoes = await _newsletter.ListarAsync(incluirInativos: true, ct);
-        var novasNoPeriodo = inscricoes.Count(i => i.DataInscricao.Date >= de.Date && i.DataInscricao.Date <= ate.Date);
+        var novasNoPeriodo = inscricoes.Count(i => i.DataInscricao.Date >= inicio.Date && i.DataInscricao.Date <= fim.Date);
         var ativas = inscricoes.Count(i => i.Ativo);
 
         var configs = await _configs.ListarAsync(ct);
@@ -122,14 +145,21 @@ public class DashboardController : PainelController
         var tagsAtivas = (await _tags.ListarAsync(ct)).Count(t => t.Ativo);
         var rotasIndexaveis = 11 + maravilhas + noticiasPublicadas + roteirosAtivos + gruposAtivos + pratosAtivos + tagsAtivas;
 
+        static bool NoPeriodo(DateTime data, DateTime ini, DateTime f) => data.Date >= ini.Date && data.Date <= f.Date;
+
         var vm = new DashboardAnalyticsViewModel
         {
-            PeriodoDias = dias,
-            De = de,
-            Ate = ate,
+            PeriodoDias = tamanho,
+            PresetDias = preset,
+            De = inicio,
+            Ate = fim,
             Resumo = resumo,
             VisitasAnteriores = anterior.Visitas,
             CliquesAnteriores = anterior.Cliques,
+            AvaliacoesNoPeriodo = avaliacoesTodas.Count(a => NoPeriodo(a.Data, inicio, fim))
+                + planejeTodas.Count(a => NoPeriodo(a.Data, inicio, fim)),
+            PublicacoesNoPeriodo = noticiasTodas.Count(n => n.Publicada && NoPeriodo(n.DataPublicacao, inicio, fim))
+                + eventosTodos.Count(e => NoPeriodo(e.DataInicio, inicio, fim)),
             AvaliacoesPendentes = avaliacoesTodas.Count(a => !a.Aprovada) + planejeTodas.Count(a => !a.Aprovada),
             ItensInativos = pontosTodos.Count(p => !p.Ativo) + categoriasTodas.Count(c => !c.Ativo)
                 + eventosTodos.Count(e => !e.Ativo) + noticiasTodas.Count(n => !n.Ativo)

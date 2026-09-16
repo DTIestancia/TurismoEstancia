@@ -12,19 +12,35 @@
     var dadosFontes = Model.Resumo.Fontes.Select(f => f.Quantidade).ToList();
     var labelsMaravilhas = Model.Resumo.TopMaravilhas.Select(m => m.Rotulo).ToList();
     var dadosMaravilhas = Model.Resumo.TopMaravilhas.Select(m => m.Quantidade).ToList();
+    var dadosCliques = Model.Resumo.CliquesPorDia.ToDictionary(s => s.Data.ToString("dd/MM"), s => s.Quantidade);
+    var dadosCliquesAlinhados = labelsLinha.Select(l => dadosCliques.GetValueOrDefault(l)).ToList();
+    var totalVisitasSerie = serie.Sum(s => s.Quantidade);
+    var mediaDiaria = Model.PeriodoDias > 0 ? totalVisitasSerie / (double)Model.PeriodoDias : 0;
+    var pico = serie.OrderByDescending(s => s.Quantidade).FirstOrDefault();
+    var rotuloPeriodo = Model.PresetDias == 1 ? "hoje"
+        : Model.PresetDias.HasValue ? $"últimos {Model.PeriodoDias} dias"
+        : $"{Model.De:dd/MM/yyyy} a {Model.Ate:dd/MM/yyyy} ({Model.PeriodoDias} dias)";
 }
 <div class="painel-page-header">
     <div>
         <h1 class="painel-page-title">Dashboard de análises</h1>
         <p class="painel-page-desc">
-            Audiência do portal nos últimos @Model.PeriodoDias dias — dados anônimos (LGPD-safe, sem IP),
+            Audiência do portal (@rotuloPeriodo) — dados anônimos (LGPD-safe, sem IP),
             coletados de visitas e cliques nas páginas públicas.
         </p>
     </div>
     <div class="painel-periodo" role="group" aria-label="Período">
-        <a class="@(Model.PeriodoDias == 7 ? "active" : "")" asp-action="Index" asp-route-dias="7" asp-route-galeriaCategoria="@Model.GaleriaCategoriaId">7 dias</a>
-        <a class="@(Model.PeriodoDias == 30 ? "active" : "")" asp-action="Index" asp-route-dias="30" asp-route-galeriaCategoria="@Model.GaleriaCategoriaId">30 dias</a>
-        <a class="@(Model.PeriodoDias == 90 ? "active" : "")" asp-action="Index" asp-route-dias="90" asp-route-galeriaCategoria="@Model.GaleriaCategoriaId">90 dias</a>
+        <a class="@(Model.PresetDias == 1 ? "active" : "")" asp-action="Index" asp-route-dias="1" asp-route-galeriaCategoria="@Model.GaleriaCategoriaId">Hoje</a>
+        <a class="@(Model.PresetDias == 7 ? "active" : "")" asp-action="Index" asp-route-dias="7" asp-route-galeriaCategoria="@Model.GaleriaCategoriaId">7 dias</a>
+        <a class="@(Model.PresetDias == 30 ? "active" : "")" asp-action="Index" asp-route-dias="30" asp-route-galeriaCategoria="@Model.GaleriaCategoriaId">30 dias</a>
+        <a class="@(Model.PresetDias == 90 ? "active" : "")" asp-action="Index" asp-route-dias="90" asp-route-galeriaCategoria="@Model.GaleriaCategoriaId">90 dias</a>
+        <form method="get" asp-action="Index" class="painel-periodo-custom">
+            <input type="date" name="de" value="@Model.De.ToString("yyyy-MM-dd")" max="@DateTime.Today.ToString("yyyy-MM-dd")" aria-label="Data inicial" />
+            <span>até</span>
+            <input type="date" name="ate" value="@Model.Ate.ToString("yyyy-MM-dd")" max="@DateTime.Today.ToString("yyyy-MM-dd")" aria-label="Data final" />
+            <input type="hidden" name="galeriaCategoria" value="@Model.GaleriaCategoriaId" />
+            <button type="submit" class="btn-painel btn-painel--sm">Aplicar</button>
+        </form>
     </div>
 </div>
 
@@ -74,6 +90,14 @@
             <div class="painel-newsletter-value">@Model.ItensInativos</div>
             <div class="painel-newsletter-label">itens ocultos no portal</div>
         </div>
+        <div class="painel-newsletter-stat">
+            <div class="painel-newsletter-value">@Model.AvaliacoesNoPeriodo</div>
+            <div class="painel-newsletter-label">avaliações recebidas no período</div>
+        </div>
+        <div class="painel-newsletter-stat">
+            <div class="painel-newsletter-value">@Model.PublicacoesNoPeriodo</div>
+            <div class="painel-newsletter-label">conteúdos publicados no período</div>
+        </div>
     </div>
     <div class="painel-actions" style="margin-top:14px;">
         <a class="btn-painel btn-painel--ghost btn-painel--sm" asp-controller="Avaliacoes" asp-action="Index">
@@ -85,7 +109,9 @@
 <!-- ===== Gráficos ===== -->
 <div class="painel-charts-grid">
     <div class="painel-card painel-chart painel-chart--wide">
-        <div class="painel-card-title"><i data-lucide="trending-up"></i> Visitas por dia</div>
+        <div class="painel-card-title"><i data-lucide="trending-up"></i> Visitas e cliques por dia</div>
+        <div class="painel-chart-sub">Média de @mediaDiaria.ToString("0") visitas/dia no período@if (pico is not null && pico.Quantidade > 0)
+        {<text> · pico de @pico.Quantidade em @pico.Data.ToString("dd/MM")</text>}</div>
         <div class="painel-chart-canvas"><canvas id="chartVisitas" height="120"></canvas></div>
     </div>
     <div class="painel-card painel-chart">
@@ -173,7 +199,8 @@
             <option value="@c.Id" selected="@(Model.GaleriaCategoriaId == c.Id)">@c.Nome</option>
         }
     </select>
-    <input type="hidden" name="dias" value="@Model.PeriodoDias" />
+    <input type="hidden" name="de" value="@Model.De.ToString("yyyy-MM-dd")" />
+    <input type="hidden" name="ate" value="@Model.Ate.ToString("yyyy-MM-dd")" />
 </form>
 
 <div class="painel-charts-grid">
@@ -340,11 +367,21 @@
                             pointRadius: 2,
                             pointHoverRadius: 5,
                             borderWidth: 2
+                        }, {
+                            label: 'Cliques',
+                            data: @System.Text.Json.JsonSerializer.Serialize(dadosCliquesAlinhados),
+                            borderColor: vermelho,
+                            backgroundColor: 'rgba(237,32,39,0.08)',
+                            fill: true,
+                            tension: 0.35,
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                            borderWidth: 2
                         }]
                     },
                     options: {
                         responsive: true,
-                        plugins: { legend: { display: false } },
+                        plugins: { legend: { display: true, position: 'top', align: 'end', labels: { boxWidth: 12, usePointStyle: true, pointStyle: 'circle' } } },
                         scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
                     }
                 });

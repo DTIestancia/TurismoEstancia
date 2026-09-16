@@ -11,6 +11,9 @@ public class AnalyticsResumoDto
     /// <summary>Série visitas por dia (para o gráfico de linha).</summary>
     public List<AnalyticsSerieDiaDto> VisitasPorDia { get; set; } = new();
 
+    /// <summary>Série cliques por dia (mesmos baldes da série de visitas).</summary>
+    public List<AnalyticsSerieDiaDto> CliquesPorDia { get; set; } = new();
+
     /// <summary>Top 10 páginas mais visitadas (rota).</summary>
     public List<AnalyticsContagemDto> TopPaginas { get; set; } = new();
 

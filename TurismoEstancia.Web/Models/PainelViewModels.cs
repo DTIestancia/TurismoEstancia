@@ -41,8 +41,11 @@ public class AvaliacaoGerenciadorViewModel
 /// </summary>
 public class DashboardAnalyticsViewModel
 {
-    /// <summary>Período selecionado em dias (7, 30 ou 90).</summary>
+    /// <summary>Tamanho do período em dias (para o rótulo e o comparativo).</summary>
     public int PeriodoDias { get; set; } = 30;
+
+    /// <summary>Preset ativo (1 = hoje, 7, 30, 90) ou null quando personalizado.</summary>
+    public int? PresetDias { get; set; } = 30;
 
     public DateTime De { get; set; }
     public DateTime Ate { get; set; }
@@ -79,6 +82,12 @@ public class DashboardAnalyticsViewModel
 
     /// <summary>Avaliações aguardando moderação (pontos + planeje).</summary>
     public int AvaliacoesPendentes { get; set; }
+
+    /// <summary>Avaliações recebidas no período (pontos + planeje).</summary>
+    public int AvaliacoesNoPeriodo { get; set; }
+
+    /// <summary>Conteúdos publicados no período (notícias + eventos).</summary>
+    public int PublicacoesNoPeriodo { get; set; }
 
     /// <summary>Itens ocultos (Ativo = false) somando os módulos de conteúdo.</summary>
     public int ItensInativos { get; set; }

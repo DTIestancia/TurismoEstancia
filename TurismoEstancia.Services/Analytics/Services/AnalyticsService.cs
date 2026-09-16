@@ -49,22 +49,45 @@ public class AnalyticsService : IAnalyticsService
     public async Task<AnalyticsResumoDto> ObterResumoAsync(DateTime de, DateTime ate, int? galeriaCategoriaId = null, CancellationToken ct = default)
     {
         var fim = ate.Date.AddDays(1);
+        // Períodos longos agregam por semana (segunda-feira) para o gráfico não virar ruído.
+        var porSemana = (fim - de.Date).TotalDays > 120;
         var visitas = _db.AnalyticsEventos.AsNoTracking()
             .Where(e => e.Data >= de && e.Data < fim && e.Tipo == "Visita");
+        var cliques = _db.AnalyticsEventos.AsNoTracking()
+            .Where(e => e.Tipo == "Clique" && e.Data >= de && e.Data < fim);
+
+        List<AnalyticsSerieDiaDto> serieVisitas, serieCliques;
+        if (!porSemana)
+        {
+            serieVisitas = await visitas
+                .GroupBy(e => e.Data.Date)
+                .Select(g => new AnalyticsSerieDiaDto { Data = g.Key, Quantidade = g.Count() })
+                .OrderBy(x => x.Data)
+                .ToListAsync(ct);
+            serieCliques = await cliques
+                .GroupBy(e => e.Data.Date)
+                .Select(g => new AnalyticsSerieDiaDto { Data = g.Key, Quantidade = g.Count() })
+                .OrderBy(x => x.Data)
+                .ToListAsync(ct);
+        }
+        else
+        {
+            // Semana começa na segunda (agrupamento em memória: DayOfWeek não traduz para SQL).
+            var datasVisitas = await visitas.Select(e => e.Data).ToListAsync(ct);
+            var datasCliques = await cliques.Select(e => e.Data).ToListAsync(ct);
+            serieVisitas = AgruparPorSemana(datasVisitas);
+            serieCliques = AgruparPorSemana(datasCliques);
+        }
 
         var resumo = new AnalyticsResumoDto
         {
             Visitas = await visitas.CountAsync(ct),
             VisitantesUnicos = await visitas.Select(e => e.SessaoId).Distinct().CountAsync(ct),
-            Cliques = await _db.AnalyticsEventos.AsNoTracking()
-                .CountAsync(e => e.Tipo == "Clique" && e.Data >= de && e.Data < fim, ct),
+            Cliques = await cliques.CountAsync(ct),
             VisitasHoje = await _db.AnalyticsEventos.AsNoTracking()
                 .CountAsync(e => e.Tipo == "Visita" && e.Data >= DateTime.Today, ct),
-            VisitasPorDia = await visitas
-                .GroupBy(e => e.Data.Date)
-                .Select(g => new AnalyticsSerieDiaDto { Data = g.Key, Quantidade = g.Count() })
-                .OrderBy(x => x.Data)
-                .ToListAsync(ct),
+            VisitasPorDia = serieVisitas,
+            CliquesPorDia = serieCliques,
             TopPaginas = await visitas
                 .GroupBy(e => e.Rota)
                 .Select(g => new AnalyticsContagemDto { Rotulo = g.Key, Quantidade = g.Count() })
@@ -97,6 +120,14 @@ public class AnalyticsService : IAnalyticsService
         await ClassificarFontesAsync(resumo, visitas, ct);
         return resumo;
     }
+
+    /// <summary>Agrupa datas por semana (o ponto leva a segunda-feira).</summary>
+    private static List<AnalyticsSerieDiaDto> AgruparPorSemana(List<DateTime> datas) =>
+        datas
+            .GroupBy(d => d.Date.AddDays(-(((int)d.Date.DayOfWeek + 6) % 7)))
+            .Select(g => new AnalyticsSerieDiaDto { Data = g.Key, Quantidade = g.Count() })
+            .OrderBy(x => x.Data)
+            .ToList();
 
     /// <summary>Ranking de fotos da galeria por um evento de engajamento (visualização ou curtida).</summary>
     private async Task<List<AnalyticsContagemDto>> FotosMaisEngajadasAsync(string evento, DateTime de, DateTime fim, int? categoriaId, CancellationToken ct)
