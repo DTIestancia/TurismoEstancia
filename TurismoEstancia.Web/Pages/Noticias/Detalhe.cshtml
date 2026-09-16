@@ -20,6 +20,18 @@
             ["author"] = new Dictionary<string, object?> { ["@type"] = "Organization", ["name"] = "Prefeitura Municipal de Estância" }
         }).Replace("</", "<\\/");
         <script type="application/ld+json">@Html.Raw(ldJson)</script>
+        var bcJson = System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, object?>
+        {
+            ["@context"] = "https://schema.org",
+            ["@type"] = "BreadcrumbList",
+            ["itemListElement"] = new List<Dictionary<string, object?>>
+            {
+                new() { ["@type"] = "ListItem", ["position"] = 1, ["name"] = "Início", ["item"] = ldBase + "/" },
+                new() { ["@type"] = "ListItem", ["position"] = 2, ["name"] = "Blog", ["item"] = ldBase + "/noticias" },
+                new() { ["@type"] = "ListItem", ["position"] = 3, ["name"] = Model.Noticia.Titulo }
+            }
+        }).Replace("</", "<\\/");
+        <script type="application/ld+json">@Html.Raw(bcJson)</script>
     }
 }
 @await Html.PartialAsync("_PaginasHeader")

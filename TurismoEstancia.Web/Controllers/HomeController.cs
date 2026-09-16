@@ -69,6 +69,13 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index(CancellationToken ct)
     {
+        // Título com as buscas que importam ("turismo em estância", "viajar para estância").
+        ViewData["Seo"] = new SeoMeta
+        {
+            Titulo = "Turismo em Estância/SE",
+            Descricao = "Viaje para Estância, Sergipe, Capital Brasileira do Barco de Fogo: 7 Maravilhas, Praia do Saco, agenda cultural, hospedagem, gastronomia e roteiros."
+        };
+
         var eventosProximos = await _eventos.ListarAsync(apenasProximos: true, ct);
 
         var vm = new HomeViewModel

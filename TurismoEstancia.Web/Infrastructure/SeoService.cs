@@ -52,7 +52,7 @@ public class SeoService
             _padrao.SiteDescricao = configs.FirstOrDefault(c => c.Chave == "meta-descricao")?.ValorTexto;
             var basePath = _http.HttpContext?.Request.PathBase.Value ?? "";
             _padrao.ImagemUrl = configs.FirstOrDefault(c => c.Chave == "logo")?.ArquivoId is long id
-                ? basePath + $"/arquivo/{id}"
+                ? basePath + $"/arquivo/{id}?largura=1200"
                 : null;
         }
         catch (Exception ex)
