@@ -39,7 +39,7 @@
             <span>até</span>
             <input type="date" name="ate" value="@Model.Ate.ToString("yyyy-MM-dd")" max="@DateTime.Today.ToString("yyyy-MM-dd")" aria-label="Data final" />
             <input type="hidden" name="galeriaCategoria" value="@Model.GaleriaCategoriaId" />
-            <button type="submit" class="btn-painel btn-painel--sm">Aplicar</button>
+            <button type="submit" class="btn-painel btn-painel--primary btn-painel--sm">Aplicar</button>
         </form>
         <a class="btn-painel btn-painel--sm" style="margin-left:8px;" asp-action="Exportar" asp-route-de="@Model.De.ToString("yyyy-MM-dd")" asp-route-ate="@Model.Ate.ToString("yyyy-MM-dd")" asp-route-galeriaCategoria="@Model.GaleriaCategoriaId" title="Baixar os dados da tela em CSV">
             <i data-lucide="download"></i> CSV

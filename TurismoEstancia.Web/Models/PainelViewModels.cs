@@ -42,10 +42,10 @@ public class AvaliacaoGerenciadorViewModel
 public class DashboardAnalyticsViewModel
 {
     /// <summary>Tamanho do período em dias (para o rótulo e o comparativo).</summary>
-    public int PeriodoDias { get; set; } = 30;
+    public int PeriodoDias { get; set; } = 1;
 
     /// <summary>Preset ativo (1 = hoje, 7, 30, 90) ou null quando personalizado.</summary>
-    public int? PresetDias { get; set; } = 30;
+    public int? PresetDias { get; set; } = 1;
 
     public DateTime De { get; set; }
     public DateTime Ate { get; set; }

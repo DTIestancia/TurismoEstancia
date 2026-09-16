@@ -227,7 +227,8 @@ public class DashboardController : PainelController
         }
         else
         {
-            if (dias is not (1 or 7 or 30 or 90)) dias = 30;
+            // Dashboard abre no dia de hoje por padrão.
+            if (dias is not (1 or 7 or 30 or 90)) dias = 1;
             preset = dias;
             fim = hoje;
             inicio = fim.AddDays(-(dias - 1));
