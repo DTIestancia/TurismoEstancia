@@ -106,8 +106,54 @@ dotnet run --project TurismoEstancia.Web -- recomprimir-imagens
 É **idempotente** — rodar de novo não encontra nada para fazer — e **nunca aumenta** um
 arquivo: se o re-encode ficar maior que o original, o original fica (por isso um PNG de
 ícone já pequeno pode continuar acima de 1600 px). Nenhum registro é apagado. No fim, o
-comando descarta as miniaturas derivadas (`?largura=N`) em `cache/arquivo`, que senão
-continuariam mostrando a versão antiga.
+comando descarta tudo que é **derivado** (miniaturas de `?largura=N` e cópias locais de
+vídeo), que senão continuariam mostrando a versão antiga.
+
+O outro comando de manutenção é o que mostra o que está **sobrando** no acervo (arquivo
+que nenhuma parte do sistema usa — nem por coluna de id, nem citado como texto numa seção):
+
+```bash
+# Só relata (nada é apagado)
+dotnet run --project TurismoEstancia.Web -- arquivos-orfaos
+
+# Relata e remove, junto com os derivados em disco
+dotnet run --project TurismoEstancia.Web -- arquivos-orfaos --excluir
+```
+A regra de "quem usa esse arquivo" é a mesma que protege a exclusão feita pelo painel
+(`ArquivoService.EstaReferenciadoAsync`, com a lista única de vínculos em `FontesDeId`), e a
+remoção revalida cada arquivo antes de apagar: na dúvida, não apaga.
+
+### Limites de upload e mídia
+
+O limite é **por arquivo** (imagem 5 MB, vídeo 10 MB, outros 10 MB — `LimitesDeUpload`),
+aplicado no ponto único de gravação e com mensagem no painel; há também um teto de
+**transporte** de 60 MB por requisição (Kestrel/IIS/multipart), generoso porque um
+formulário pode trazer várias fotos de uma vez — passar dele devolve o operador para a tela
+com aviso, não uma página de erro.
+
+**A mídia não passa por disco.** Toda leitura de `/arquivo/{id}` sai direto de
+`Arquivos.ArquBytes`, em janelas de 1 MB (`FluxoDoArquivoNoBanco`): nada é gravado no
+servidor — nem na pasta do deploy, nem no perfil do serviço —, o arquivo nunca é
+materializado inteiro em memória e o `Range` funciona de verdade (a barra do player
+arrasta), porque o fluxo é pesquisável. A janela vem alugada de um pool de buffers, e é o
+que mantém o consumo baixo: medido com **20 downloads simultâneos de um vídeo de 15,4 MB**, o
+processo subiu 33 MB (contra ~294 MB se cada requisição materializasse o blob).
+
+As versões reduzidas de `?largura=N` (fotos, 200–2560 px) são derivadas com a mesma regra do
+upload e ficam no **cache de memória do processo** (30 min, teto de 96 MB compartilhado com o
+sitemap), então o acerto não consulta o banco. Duas consequências práticas: os comandos de
+manutenção (`recomprimir-imagens`, `arquivos-orfaos`) devem rodar **com o portal parado** —
+é o que descarta esse cache — e não há nada em disco para limpar ao publicar uma versão nova
+(se existir `TurismoEstancia.Web/cache/` de instalações antigas, pode ser apagado: o código
+atual não lê essa pasta).
+
+O **vídeo do hero** é servido por esse mesmo streaming direto do banco: o blob não passa
+inteiro pela memória a cada requisição, o `Range` funciona de verdade (a barra do player
+permite arrastar) e o acerto não materializa nada. O **poster** (a
+imagem que aparece antes de o vídeo começar) é extraído do próprio MP4 **no navegador do
+operador**, no momento do envio — não depende de ffmpeg nem de qualquer passo no deploy — e
+gravado como configuração `video-institucional-poster`; sem poster, o hero usa o 1º slide.
+
 A tabela `Arquivos` segue o padrão **`PrefeituraDigital.Arquivo`** (colunas `ArquId`,
 `ArquUID` ROWGUIDCOL, `ArquFileName`, `ArquContentType`, `ArquSize`, `ArquBytes`
 `varbinary(max)`, `ArquMomento`, `ArquAutor`, `ArquAtivo`, `ArquOrigem`) e está **pronta

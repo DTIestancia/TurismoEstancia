@@ -60,14 +60,12 @@ public static class RecomprimirImagens
         Console.WriteLine();
         Console.WriteLine($"Bytes das fotos: {Bytes(r.BytesAntes)} -> {Bytes(r.BytesDepois)}  ({Porcentagem(r)})");
 
-        if (r.Simulado)
-        {
-            Console.WriteLine("Miniaturas derivadas: preservadas (simulação).");
-        }
-        else
-        {
-            Console.WriteLine($"Miniaturas derivadas descartadas: {r.MiniaturasRemovidas:N0} ({Bytes(r.MiniaturasBytesRemovidos)})");
-        }
+        // As versões reduzidas de ?largura=N são derivadas na memória de cada
+        // processo do portal (nada em disco): rodar o comando com o portal parado é
+        // o que garante que a próxima visita derive da foto nova.
+        Console.WriteLine(r.Simulado
+            ? "Nada foi gravado (simulação)."
+            : "Nada em disco: as versões reduzidas são geradas na memória do portal.");
 
         if (r.MaioresGanhos.Count > 0)
         {

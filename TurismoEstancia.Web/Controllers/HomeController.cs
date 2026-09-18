@@ -84,6 +84,10 @@ public class HomeController : Controller
             Guia = await _configuracoes.ObterPorChaveAsync("guia-pdf", ct),
             VideoInstitucional = await _configuracoes.ObterPorChaveAsync("video-institucional", ct),
             VideoInstitucionalMobile = await _configuracoes.ObterPorChaveAsync("video-institucional-mobile", ct),
+            // Poster extraído do próprio vídeo no upload (o cache de configurações é
+            // por request: estas duas leituras não custam consulta extra).
+            VideoPoster = await _configuracoes.ObterPorChaveAsync("video-institucional-poster", ct),
+            VideoPosterMobile = await _configuracoes.ObterPorChaveAsync("video-institucional-poster-mobile", ct),
             TituloSite = await _configuracoes.ObterPorChaveAsync("site-titulo", ct),
             Slides = await _slides.ListarAsync(ct),
             Estatisticas = await _estatisticas.ListarAsync(ct),

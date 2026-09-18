@@ -32,9 +32,10 @@ builder.Services.AddResponseCompression(opcoes =>
 // a CPU extra é desprezível diante do ganho de bytes no primeiro acesso.
 builder.Services.Configure<BrotliCompressionProviderOptions>(opcoes => opcoes.Level = CompressionLevel.Optimal);
 
-// Comando de manutenção do acervo de imagens — não sobe o servidor web:
+// Comandos de manutenção do acervo — não sobem o servidor web:
 //   dotnet run --project TurismoEstancia.Web -- recomprimir-imagens [--simular]
-var comandoDeManutencao = RecomprimirImagens.EhComando(args);
+//   dotnet run --project TurismoEstancia.Web -- arquivos-orfaos [--excluir]
+var comandoDeManutencao = RecomprimirImagens.EhComando(args) || ArquivosOrfaos.EhComando(args);
 if (comandoDeManutencao)
 {
     // A saída do comando é o relatório. O log de comandos do EF (Information pelo
@@ -52,7 +53,9 @@ var app = builder.Build();
 
 if (comandoDeManutencao)
 {
-    Environment.ExitCode = await RecomprimirImagens.ExecutarAsync(app, args);
+    Environment.ExitCode = RecomprimirImagens.EhComando(args)
+        ? await RecomprimirImagens.ExecutarAsync(app, args)
+        : await ArquivosOrfaos.ExecutarAsync(app, args);
     return;
 }
 

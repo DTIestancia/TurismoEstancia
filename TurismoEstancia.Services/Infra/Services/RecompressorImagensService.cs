@@ -1,10 +1,10 @@
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TurismoEstancia.Domain.Data;
 using TurismoEstancia.Domain.DTOs;
 using TurismoEstancia.Domain.Models;
+using TurismoEstancia.Services.Infra.Arquivos;
 using TurismoEstancia.Services.Infra.Imagens;
 using TurismoEstancia.Services.Infra.Interfaces;
 
@@ -22,9 +22,11 @@ namespace TurismoEstancia.Services.Infra.Services;
 /// execução não muda nada;</item>
 /// <item><b>nunca cresce</b> — se o resultado não for menor que o original, o
 /// original fica;</item>
-/// <item><b>não deixa o cache mentindo</b> — os bytes da tabela são imutáveis por
-/// contrato (o endpoint serve com <c>immutable</c>), então o comando descarta as
-/// miniaturas derivadas em disco, que passariam a mostrar a versão antiga.</item>
+/// <item><b>roda com o portal parado</b> — os bytes da tabela são imutáveis por
+/// contrato (o endpoint serve com <c>immutable</c>) e as versões reduzidas de
+/// <c>?largura=N</c> vivem no cache de memória de cada processo que atende o portal
+/// (ver <c>ArquivoController</c>): parar o portal descarta esse cache e a próxima
+/// visita deriva da foto nova.</item>
 /// </list>
 ///
 /// A gravação é feita com <c>ExecuteUpdate</c> (sem carregar entidade rastreada):
@@ -39,13 +41,11 @@ public class RecompressorImagensService : IRecompressorImagensService
     private const int GanhosNoRelatorio = 12;
 
     private readonly AppDbContext _db;
-    private readonly IWebHostEnvironment _env;
     private readonly ILogger<RecompressorImagensService> _logger;
 
-    public RecompressorImagensService(AppDbContext db, IWebHostEnvironment env, ILogger<RecompressorImagensService> logger)
+    public RecompressorImagensService(AppDbContext db, ILogger<RecompressorImagensService> logger)
     {
         _db = db;
-        _env = env;
         _logger = logger;
     }
 
@@ -99,12 +99,9 @@ public class RecompressorImagensService : IRecompressorImagensService
             progresso?.Invoke(resultado);
         }
 
-        if (!simular)
-        {
-            var (miniaturas, bytes) = CacheDeMiniaturas.Limpar(_env.ContentRootPath);
-            resultado.MiniaturasRemovidas = miniaturas;
-            resultado.MiniaturasBytesRemovidos = bytes;
-        }
+        // Não há cache em disco para limpar: as versões reduzidas de ?largura=N são
+        // derivadas na memória de cada processo do portal (ver ArquivoController), e
+        // é para isso que o comando deve rodar com o portal parado.
 
         progresso?.Invoke(resultado);
         return resultado;

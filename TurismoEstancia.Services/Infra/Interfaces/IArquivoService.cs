@@ -1,4 +1,5 @@
 using TurismoEstancia.Domain.Models;
+using TurismoEstancia.Services.Infra.Arquivos;
 
 namespace TurismoEstancia.Services.Infra.Interfaces;
 
@@ -11,6 +12,11 @@ public interface IArquivoService
     /// 1600 px no maior lado, JPEG q82, rotação do EXIF aplicada aos pixels e
     /// metadados (EXIF/GPS) descartados — PNG com transparência continua PNG.
     /// Vídeo, PDF, SVG, .ico e GIF são guardados exatamente como vieram.
+    ///
+    /// É aqui que o limite por arquivo é aplicado (imagem 5 MB, vídeo 10 MB — ver
+    /// <see cref="LimitesDeUpload"/>): acima do teto lança
+    /// <see cref="InvalidOperationException"/> com o texto que o painel mostra ao
+    /// operador. O limite vale na leitura dos bytes, antes de qualquer gravação.
     /// </summary>
     Task<long> SalvarAsync(IFormFile arquivo, CancellationToken ct = default);
 
@@ -48,8 +54,18 @@ public interface IArquivoService
     /// </summary>
     Task<byte[]?> GerarPngRedimensionadoAsync(long arquivoId, int maxDimensao, CancellationToken ct = default);
 
-    /// <summary>Obtém o arquivo para servir com Content-Type correto. Lança se não existir.</summary>
+    /// <summary>Obtém o arquivo (com os bytes) para servir. Lança se não existir.</summary>
     Task<Arquivo> ObterAsync(long id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Abre o binário para leitura direto do banco, com o tipo e o tamanho real do
+    /// blob — <b>sem materializar o arquivo inteiro em memória e sem gravar nada em
+    /// disco</b>: o fluxo devolvido busca o conteúdo em janelas conforme a leitura
+    /// avança (leitura sequencial do <c>varbinary(max)</c>). É o caminho de toda
+    /// mídia servida, vídeo inclusive, e o fluxo é pesquisável para o ASP.NET
+    /// atender <c>Range</c>. Devolve <c>null</c> quando o arquivo não existe.
+    /// </summary>
+    Task<(Stream Fluxo, MetadadosDeArquivo Metadados)?> AbrirAsync(long id, CancellationToken ct = default);
 
     /// <summary>
     /// Gera a versão reduzida servida em <c>?largura=N</c> com a <b>mesma regra de imagem
@@ -61,9 +77,22 @@ public interface IArquivoService
     /// </summary>
     Task<(byte[] Bytes, string ContentType, string Extensao)?> GerarRedimensionadoAsync(long arquivoId, int larguraMaxima, CancellationToken ct = default);
 
-    /// <summary>Exclui o registro de arquivo (usado para limpar órfãos).</summary>
+    /// <summary>Exclui o registro de arquivo — não faz nada se ainda estiver referenciado.</summary>
     Task ExcluirAsync(long id, CancellationToken ct = default);
 
-    /// <summary>True quando o arquivo é referenciado por alguma entidade.</summary>
+    /// <summary>
+    /// True quando o arquivo é referenciado por <b>qualquer</b> entidade do sistema:
+    /// todas as colunas que guardam id de arquivo, mais as seções que citam o id como
+    /// texto (<c>historia-imagem</c> = "42", <c>/arquivo/42?largura=800</c>).
+    /// </summary>
     Task<bool> EstaReferenciadoAsync(long id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Todos os ids de arquivo citados em algum lugar do sistema, em uma consulta por
+    /// fonte (e não uma por arquivo) — a base do relatório de órfãos.
+    /// </summary>
+    Task<IReadOnlySet<long>> IdsReferenciadosAsync(CancellationToken ct = default);
+
+    /// <summary>Resumo de todo o acervo (sem os bytes), ordenado por id.</summary>
+    Task<IReadOnlyList<ResumoDeArquivo>> ListarResumoAsync(CancellationToken ct = default);
 }

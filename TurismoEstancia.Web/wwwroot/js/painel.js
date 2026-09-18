@@ -7,6 +7,69 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
+// ===== Limite de upload por arquivo (imagem 5 MB, vídeo 10 MB) =====
+// Os números vêm do <body> (renderizados a partir de LimitesDeUpload), então o JS
+// não tem cópia própria da regra. Isto é conveniência — evita a viagem de ida e
+// volta e o 413 do servidor; quem barra de verdade é o ArquivoService.
+(function () {
+  function iniciar() {
+    var corpo = document.body;
+    if (!corpo) return;
+
+    var limites = {
+      imagem: parseInt(corpo.getAttribute('data-limite-imagem') || '0', 10),
+      video: parseInt(corpo.getAttribute('data-limite-video') || '0', 10),
+      outros: parseInt(corpo.getAttribute('data-limite-outros') || '0', 10)
+    };
+
+    function limiteDoArquivo(input, arquivo) {
+      var tipo = (arquivo.type || input.getAttribute('accept') || '').toLowerCase();
+      if (tipo.indexOf('video/') !== -1) return { bytes: limites.video, nome: 'vídeo' };
+      if (tipo.indexOf('image/') !== -1) return { bytes: limites.imagem, nome: 'imagem' };
+      return { bytes: limites.outros, nome: 'arquivo' };
+    }
+
+    function mb(bytes) {
+      return (bytes / 1024 / 1024).toFixed(1).replace('.', ',') + ' MB';
+    }
+
+    // Avisa e limpa o campo: melhor recusar aqui do que depois do upload inteiro.
+    function conferir(input) {
+      var arquivos = input.files || [];
+      for (var i = 0; i < arquivos.length; i++) {
+        var limite = limiteDoArquivo(input, arquivos[i]);
+        if (!limite.bytes || arquivos[i].size <= limite.bytes) continue;
+        window.alert('O ' + limite.nome + ' "' + arquivos[i].name + '" tem ' + mb(arquivos[i].size) +
+          ' e o limite é ' + mb(limite.bytes) + '. Reduza o arquivo e envie de novo.');
+        input.value = '';
+        return false;
+      }
+      return true;
+    }
+
+    document.querySelectorAll('input[type="file"]').forEach(function (input) {
+      input.setAttribute('title', 'Imagem até ' + mb(limites.imagem) + ' · vídeo até ' + mb(limites.video));
+      input.addEventListener('change', function () { conferir(input); });
+    });
+
+    // Fase de captura: roda antes do js-confirm e antes de o navegador enviar.
+    document.addEventListener('submit', function (e) {
+      var form = e.target;
+      var campos = form.querySelectorAll ? form.querySelectorAll('input[type="file"]') : [];
+      for (var i = 0; i < campos.length; i++) {
+        if (!conferir(campos[i])) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+      }
+    }, true);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+  else iniciar();
+})();
+
 // Confirmação de exclusão: qualquer form .js-confirm pede confirmação.
 document.addEventListener('submit', function (e) {
   var form = e.target.closest && e.target.closest('form.js-confirm');

@@ -31,6 +31,12 @@ public static class PipelineExtensions
 
         app.UseHttpsRedirection();
 
+        // Envolve tudo o que lê o corpo da requisição: o upload que passa do teto
+        // de transporte morre em 413 lá dentro, e é aqui que ele vira um aviso no
+        // painel em vez de uma página de erro crua. Fica antes das rotas para
+        // pegar a exceção o mais perto possível de onde ela nasce.
+        app.UseMiddleware<ErroDeUploadMiddleware>();
+
         // Favicon dinâmico (usa a logo de logo-principal quando configurada).
         app.UseMiddleware<FaviconMiddleware>();
 

@@ -26,7 +26,12 @@
     <script src="~/js/lucide-local.js" asp-append-version="true" defer></script>
     <link rel="stylesheet" href="~/css/painel.css" asp-append-version="true" />                @await Component.InvokeAsync("ThemeSite")
 </head>
-<body class="painel-body">
+@* Limites de upload por arquivo: renderizados aqui para o painel.js não guardar
+   uma cópia própria da regra (a fonte é LimitesDeUpload, no serviço). *@
+<body class="painel-body"
+      data-limite-imagem="@LimitesDeUpload.ImagemBytes"
+      data-limite-video="@LimitesDeUpload.VideoBytes"
+      data-limite-outros="@LimitesDeUpload.OutrosBytes">
     <div class="painel @(embutido ? "painel--embutido" : "")">
         <!-- ===== Sidebar ===== -->
         <aside class="painel-sidebar">

@@ -72,7 +72,7 @@
 {
     <div class="painel-card" style="margin-bottom:18px;">
         <div class="painel-card-title"><i data-lucide="video"></i> Vídeo do hero (fundo em tela cheia)</div>
-        <p style="font-size:13px;color:var(--color-white--55);margin:4px 0 14px;">O vídeo inicia junto com a página em loop e ocupa o fundo do hero. Envie um MP4 leve (720p, &lt;12 MB, H.264) otimizado para carregamento instantâneo.</p>
+        <p style="font-size:13px;color:var(--color-white--55);margin:4px 0 14px;">O vídeo inicia junto com a página em loop e ocupa o fundo do hero. Envie um MP4 leve (720p, H.264, até @LimitesDeUpload.Rotulo(LimitesDeUpload.VideoBytes)) otimizado para carregamento instantâneo. O <strong>poster</strong> (a imagem que aparece antes de o vídeo começar) é gerado automaticamente do próprio MP4 ao salvar.</p>
 
         @if (Model.VideoArquivoId is long videoId)
         {
@@ -92,10 +92,13 @@
 
         <form asp-action="SalvarVideoHero" method="post" enctype="multipart/form-data" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
             @Html.AntiForgeryToken()
+            @* Preenchido pelo JS abaixo com o 1º quadro do MP4 escolhido. *@
+            <input type="file" name="poster" data-poster-do-video hidden />
             <div class="painel-field" style="flex:1;min-width:220px;margin:0;">
                 <label>Vídeo desktop (MP4 — telas ≥768px)</label>
                 <input type="file" name="arquivo" accept="video/mp4,video/*" class="painel-input" required />
-                <span class="painel-hint">Recomendado: 1920×1080, H.264, &lt;12 MB. Inicia junto com a página.</span>
+                <span class="painel-hint">Recomendado: 1920×1080, H.264, até @LimitesDeUpload.Rotulo(LimitesDeUpload.VideoBytes). Inicia junto com a página.</span>
+                <span class="painel-hint" data-poster-status style="color:var(--color-orange-48);"></span>
             </div>
             <button type="submit" class="btn-painel btn-painel--primary"><i data-lucide="upload"></i> Enviar desktop</button>
         </form>
@@ -121,13 +124,165 @@
                 @Html.AntiForgeryToken()
                 <div class="painel-field" style="flex:1;min-width:220px;margin:0;">
                     <label>Vídeo mobile (MP4 vertical, opcional)</label>
+                    <input type="file" name="posterMobile" data-poster-do-video hidden />
                     <input type="file" name="arquivo" accept="video/mp4,video/*" class="painel-input" />
-                    <span class="painel-hint">Sugestão: 720×1280 (9:16), &lt;8 MB. Se vazio, usa o desktop.</span>
+                    <span class="painel-hint">Sugestão: 720×1280 (9:16), até @LimitesDeUpload.Rotulo(LimitesDeUpload.VideoBytes). Se vazio, usa o desktop.</span>
+                    <span class="painel-hint" data-poster-status style="color:var(--color-orange-48);"></span>
                 </div>
                 <button type="submit" class="btn-painel btn-painel--ghost"><i data-lucide="upload"></i> Enviar mobile</button>
             </form>
         </div>
     </div>
+
+    <script>
+        // O poster do vídeo é extraído AQUI, no navegador do operador, do próprio MP4
+        // escolhido: um quadro vira JPEG e entra no formulário como se fosse mais um
+        // arquivo — o servidor otimiza e grava com a mesma regra das fotos (ver
+        // SecoesController.SalvarPosterAsync). Assim o sistema não depende de ffmpeg
+        // instalado no servidor nem de qualquer passo extra no deploy.
+        //
+        // Dois cuidados que a primeira versão não tinha (medidos no navegador):
+        //  - desenhar no canvas logo depois do 'seeked' pode pegar o quadro AINDA NÃO
+        //    pintado, e o poster sai preto — por isso esperamos dois quadros de
+        //    animação (e, no pior caso, o resultado é conferido depois);
+        //  - vídeo institucional costuma começar preto, então o quadro é medido e, se
+        //    estiver escuro, tentamos outro instante — sempre guardando o mais claro.
+        window.capturarPosterDoVideo = (function () {
+            var INSTANTES = [0.15, 0.5, 0.35, 0.75, 0.05];   // frações da duração, em ordem de tentativa
+            var LARGURA_MAXIMA = 1280;
+            var BRILHO_MINIMO = 12;                          // 0–255: abaixo disso o quadro é escuro
+
+            function temSuporte() {
+                return !!(window.DataTransfer && window.File && window.URL && URL.createObjectURL);
+            }
+
+            // Dois quadros de animação + uma folga: é quando o quadro buscado está
+            // efetivamente pintado. requestVideoFrameCallback NÃO serve aqui — ele
+            // não dispara com o vídeo pausado (medido). E rAF não roda com a aba em
+            // segundo plano (medido), então há sempre o caminho por tempo: a captura
+            // atrasa, mas nunca fica pendurada.
+            function esperarPintura(callback) {
+                var seguiu = false;
+                function seguir() {
+                    if (seguiu) return;
+                    seguiu = true;
+                    callback();
+                }
+                requestAnimationFrame(function () {
+                    requestAnimationFrame(function () { setTimeout(seguir, 40); });
+                });
+                setTimeout(seguir, 400);
+            }
+
+            function irPara(video, tempo, aoChegar) {
+                var chegou = false;
+                function finalizar() {
+                    if (chegou) return;
+                    chegou = true;
+                    esperarPintura(aoChegar);
+                }
+                video.addEventListener('seeked', finalizar, { once: true });
+                try { video.currentTime = tempo; } catch (e) { finalizar(); return; }
+                setTimeout(finalizar, 900);   // nunca deixa o operador esperando indefinidamente
+            }
+
+            // Brilho médio do JPEG já gerado (decodificado em 16x16). Sem createImageBitmap
+            // não há como medir: o quadro é aceito como veio.
+            function brilhoDe(blob, aoMedir) {
+                if (!window.createImageBitmap) { aoMedir(255); return; }
+
+                createImageBitmap(blob).then(function (mapa) {
+                    var c = document.createElement('canvas');
+                    c.width = 16;
+                    c.height = 16;
+                    var ctx = c.getContext('2d');
+                    ctx.drawImage(mapa, 0, 0, 16, 16);
+                    if (mapa.close) mapa.close();
+                    var d = ctx.getImageData(0, 0, 16, 16).data;
+                    var soma = 0;
+                    for (var i = 0; i < d.length; i += 4) soma += (d[i] + d[i + 1] + d[i + 2]) / 3;
+                    aoMedir(Math.round(soma / (d.length / 4)));
+                }).catch(function () { aoMedir(255); });
+            }
+
+            return function capturar(inputVideo, inputPoster, aoAtualizarEstado) {
+                var avisar = aoAtualizarEstado || function () { };
+                var arquivo = inputVideo.files && inputVideo.files[0];
+
+                if (!arquivo) { avisar(''); return; }
+                if (!temSuporte()) { avisar('sem poster (navegador sem suporte)'); return; }
+
+                var url = URL.createObjectURL(arquivo);
+                var video = document.createElement('video');
+                video.muted = true;
+                video.playsInline = true;
+                video.preload = 'auto';
+                video.src = url;
+                avisar('gerando poster do vídeo…');
+
+                var melhor = null;
+
+                function concluir() {
+                    try { URL.revokeObjectURL(url); } catch (e) { }
+                    if (!melhor) { avisar('sem poster — o hero vai usar o 1º slide'); return; }
+                    var dados = new DataTransfer();
+                    dados.items.add(new File([melhor.blob], 'poster.jpg', { type: 'image/jpeg' }));
+                    inputPoster.files = dados.files;
+                    avisar('poster pronto (' + melhor.largura + '×' + melhor.altura + ')');
+                }
+
+                video.addEventListener('loadedmetadata', function () {
+                    var duracao = video.duration && isFinite(video.duration) ? video.duration : 3;
+                    var tentativas = INSTANTES.slice();
+
+                    (function proxima() {
+                        if (tentativas.length === 0) { concluir(); return; }
+
+                        var fracao = tentativas.shift();
+                        irPara(video, Math.max(0.05, duracao * fracao), function () {
+                            var larguraVideo = video.videoWidth || LARGURA_MAXIMA;
+                            var largura = Math.min(LARGURA_MAXIMA, larguraVideo);
+                            var altura = Math.max(1, Math.round(largura * (video.videoHeight || 720) / larguraVideo));
+                            var canvas = document.createElement('canvas');
+                            canvas.width = largura;
+                            canvas.height = altura;
+                            canvas.getContext('2d').drawImage(video, 0, 0, largura, altura);
+                            if (!canvas.toBlob) { concluir(); return; }
+
+                            canvas.toBlob(function (blob) {
+                                if (!blob) { proxima(); return; }
+                                brilhoDe(blob, function (brilho) {
+                                    if (!melhor || brilho > melhor.brilho) {
+                                        melhor = { blob: blob, brilho: brilho, largura: largura, altura: altura };
+                                    }
+                                    if (brilho >= BRILHO_MINIMO) { concluir(); return; }
+                                    proxima();
+                                });
+                            }, 'image/jpeg', 0.85);
+                        });
+                    })();
+                });
+
+                video.addEventListener('error', function () {
+                    try { URL.revokeObjectURL(url); } catch (e) { }
+                    avisar('sem poster — o navegador não decodificou este vídeo');
+                });
+            };
+        })();
+
+        document.querySelectorAll('[data-poster-do-video]').forEach(function (inputPoster) {
+            var form = inputPoster.closest('form');
+            var inputVideo = form && form.querySelector('input[type="file"][name="arquivo"]');
+            var aviso = form && form.querySelector('[data-poster-status]');
+            if (!inputVideo) return;
+
+            inputVideo.addEventListener('change', function () {
+                capturarPosterDoVideo(inputVideo, inputPoster, function (texto) {
+                    if (aviso) aviso.textContent = texto;
+                });
+            });
+        });
+    </script>
 }
 
 <form class="painel-form" asp-action="Salvar@(char.ToUpperInvariant(Model.Area[0]) + Model.Area[1..])" method="post" enctype="multipart/form-data">

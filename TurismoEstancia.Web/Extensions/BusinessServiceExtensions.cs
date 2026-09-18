@@ -42,6 +42,9 @@ public static class BusinessServiceExtensions
 
         // Manutenção do acervo de imagens (comando "recomprimir-imagens").
         builder.Services.AddScoped<IRecompressorImagensService, RecompressorImagensService>();
+        // Auditoria do acervo (comando "arquivos-orfaos"): usa a mesma regra de
+        // referência que protege a exclusão feita pelo painel.
+        builder.Services.AddScoped<IAuditoriaDeArquivosService, AuditoriaDeArquivosService>();
 
         // Módulo Turismo
         builder.Services.AddScoped<ICategoriaPontoTuristicoService, CategoriaPontoTuristicoService>();

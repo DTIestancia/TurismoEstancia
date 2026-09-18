@@ -15,6 +15,9 @@ public class HomeViewModel
     public ConfiguracaoSiteDto? Guia { get; set; }
     public ConfiguracaoSiteDto? VideoInstitucional { get; set; }
     public ConfiguracaoSiteDto? VideoInstitucionalMobile { get; set; }
+    /// <summary>Quadro extraído do próprio MP4 no upload (gerado no navegador do operador).</summary>
+    public ConfiguracaoSiteDto? VideoPoster { get; set; }
+    public ConfiguracaoSiteDto? VideoPosterMobile { get; set; }
     public ConfiguracaoSiteDto? TituloSite { get; set; }
 
     // Hero
@@ -62,12 +65,21 @@ public class HomeViewModel
     public long? VideoArquivoId => VideoInstitucional?.ArquivoId;
     public long? VideoArquivoIdMobile => VideoInstitucionalMobile?.ArquivoId;
 
+    /// <summary>Poster do vídeo, quando o upload gerou um (ver VideoPoster).</summary>
+    public long? VideoPosterArquivoId => VideoPoster?.ArquivoId;
+
     /// <summary>
-    /// Poster do vídeo do hero: o 1º slide cadastrado. O vídeo só começa a baixar
-    /// depois do primeiro paint, então é essa imagem que o visitante vê primeiro
-    /// (e que passa a ser o LCP, no lugar de vários MB de MP4).
+    /// Poster do vídeo do hero. O vídeo só começa a baixar depois do primeiro paint,
+    /// então é essa imagem que o visitante vê primeiro (e que passa a ser o LCP, no
+    /// lugar de vários MB de MP4).
+    ///
+    /// A preferência é o quadro extraído do <b>próprio</b> vídeo no upload, que casa
+    /// com o primeiro instante da reprodução; sem ele, cai no 1º slide cadastrado
+    /// (comportamento antigo) e, sem slide, o hero fica sem imagem de fundo até o
+    /// vídeo entrar.
     /// </summary>
-    public long? HeroPosterArquivoId => Slides.Count > 0 ? Slides[0].ImagemArquivoId : null;
+    public long? HeroPosterArquivoId =>
+        VideoPosterArquivoId ?? (Slides.Count > 0 ? Slides[0].ImagemArquivoId : null);
 
     /// <summary>Imagem de fundo do mapa (PNG do município) — desktop e mobile.</summary>
     public long? MapaImagemArquivoId { get; set; }

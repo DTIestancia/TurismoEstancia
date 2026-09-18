@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using TurismoEstancia.Mail;
+using TurismoEstancia.Services.Infra.Arquivos;
 using TurismoEstancia.Web.Infrastructure;
 
 namespace TurismoEstancia.Web.Extensions;
@@ -16,7 +17,12 @@ public static class InfrastructureExtensions
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();
         builder.Services.AddHttpContextAccessor();
-        builder.Services.AddMemoryCache();
+
+        // Cache de memória do processo — usado pelo sitemap e pelas versões reduzidas
+        // das mídias (ver ArquivoController). O limite é o que impede o cache de
+        // crescer sem teto com o acervo: ao ser alcançado, o próprio MemoryCache
+        // descarta as entradas menos usadas para abrir espaço (nada vai para disco).
+        builder.Services.AddMemoryCache(opcoes => opcoes.SizeLimit = 96L * 1024 * 1024);
 
         // Metadados SEO do portal (defaults das configurações + override por página).
         builder.Services.AddScoped<SeoService>();
@@ -28,15 +34,21 @@ public static class InfrastructureExtensions
         builder.Services.AddSingleton<IEmailQueue, EmailQueue>();
         builder.Services.AddHostedService<EmailBackgroundService>();
 
-        // Upload limit: ~60 MB no Kestrel e IIS
+        // Duas camadas de limite no upload (ver LimitesDeUpload):
+        //  - aqui, o TETO DE TRANSPORTE da requisição (Kestrel + IIS + multipart),
+        //    generoso porque um formulário pode trazer várias fotos de uma vez;
+        //  - no ponto único de gravação (ArquivoService), o limite POR ARQUIVO:
+        //    5 MB para imagem e 10 MB para vídeo — é a regra que o operador vê.
+        // Passar do teto de transporte morre em 413; o ErroDeUploadMiddleware
+        // transforma isso em aviso no painel em vez de página de erro crua.
         builder.Services.Configure<KestrelServerOptions>(o =>
-            o.Limits.MaxRequestBodySize = 60L * 1024 * 1024);
+            o.Limits.MaxRequestBodySize = LimitesDeUpload.TetoDeTransporteBytes);
         builder.Services.Configure<IISServerOptions>(o =>
-            o.MaxRequestBodySize = 60L * 1024 * 1024);
+            o.MaxRequestBodySize = LimitesDeUpload.TetoDeTransporteBytes);
         builder.Services.Configure<FormOptions>(o =>
         {
             o.ValueLengthLimit = int.MaxValue;
-            o.MultipartBodyLengthLimit = 60L * 1024 * 1024;
+            o.MultipartBodyLengthLimit = LimitesDeUpload.TetoDeTransporteBytes;
         });
 
         // Cache de página do portal público (somente GET anônimo de página

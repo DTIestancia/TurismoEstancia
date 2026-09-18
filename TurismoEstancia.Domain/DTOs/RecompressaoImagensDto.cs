@@ -34,12 +34,6 @@ public class RecompressaoImagensDto
     /// <summary>Soma em bytes depois (a foto que não mudou entra com o mesmo tamanho).</summary>
     public long BytesDepois { get; set; }
 
-    /// <summary>Miniaturas derivadas apagadas do disco (serão geradas de novo).</summary>
-    public int MiniaturasRemovidas { get; set; }
-
-    /// <summary>Bytes de miniaturas derivadas apagadas do disco.</summary>
-    public long MiniaturasBytesRemovidos { get; set; }
-
     /// <summary>True quando foi uma simulação (nada foi gravado).</summary>
     public bool Simulado { get; set; }
 

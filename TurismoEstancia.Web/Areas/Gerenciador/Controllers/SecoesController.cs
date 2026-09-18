@@ -90,7 +90,7 @@ public class SecoesController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SalvarVideoHero(IFormFile? arquivo, CancellationToken ct)
+    public async Task<IActionResult> SalvarVideoHero(IFormFile? arquivo, IFormFile? poster, CancellationToken ct)
     {
         if (arquivo is null || arquivo.Length == 0)
         {
@@ -108,7 +108,10 @@ public class SecoesController : PainelController
         try
         {
             await _configuracoes.SalvarAsync(dto, arquivo, ct);
-            TempData["PainelOk"] = "Vídeo institucional atualizado.";
+            var comPoster = await SalvarPosterAsync("video-institucional", poster, ct);
+            TempData["PainelOk"] = comPoster
+                ? "Vídeo institucional atualizado (poster gerado do próprio vídeo)."
+                : "Vídeo institucional atualizado.";
         }
         catch (InvalidOperationException ex)
         {
@@ -119,7 +122,7 @@ public class SecoesController : PainelController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SalvarVideoHeroMobile(IFormFile? arquivo, CancellationToken ct)
+    public async Task<IActionResult> SalvarVideoHeroMobile(IFormFile? arquivo, IFormFile? posterMobile, CancellationToken ct)
     {
         if (arquivo is null || arquivo.Length == 0)
         {
@@ -137,6 +140,7 @@ public class SecoesController : PainelController
         try
         {
             await _configuracoes.SalvarAsync(dto, arquivo, ct);
+            await SalvarPosterAsync("video-institucional-mobile", posterMobile, ct);
             TempData["PainelOk"] = "Vídeo mobile atualizado.";
         }
         catch (InvalidOperationException ex)
@@ -156,6 +160,7 @@ public class SecoesController : PainelController
             try
             {
                 await _configuracoes.ExcluirAsync(atual.Id, ct);
+                await ExcluirConfiguracaoAsync("video-institucional-poster-mobile", ct);
                 TempData["PainelOk"] = "Vídeo mobile removido — o hero usará o vídeo desktop no celular.";
             }
             catch (InvalidOperationException ex)
@@ -176,6 +181,7 @@ public class SecoesController : PainelController
             try
             {
                 await _configuracoes.ExcluirAsync(atual.Id, ct);
+                await ExcluirConfiguracaoAsync("video-institucional-poster", ct);
                 TempData["PainelOk"] = "Vídeo do hero removido.";
             }
             catch (InvalidOperationException ex)
@@ -184,6 +190,43 @@ public class SecoesController : PainelController
             }
         }
         return RedirectToAction(nameof(Hero));
+    }
+
+    /// <summary>
+    /// Grava o poster do vídeo — o quadro extraído do <b>próprio MP4</b> no navegador do
+    /// operador (ver a captura em <c>Secoes/Editar.cshtml</c>) — como a configuração
+    /// <c>{chaveDoVideo}-poster</c>. Entra pelo mesmo funil de imagem do upload
+    /// (1600 px, JPEG, sem EXIF) e o <c>ConfiguracaoSiteService</c> já descarta o
+    /// arquivo anterior ao substituir.
+    ///
+    /// Sem poster o hero continua funcionando: cai no 1º slide (ver
+    /// <c>HomeViewModel.HeroPosterArquivoId</c>).
+    /// </summary>
+    private async Task<bool> SalvarPosterAsync(string chaveDoVideo, IFormFile? poster, CancellationToken ct)
+    {
+        if (poster is not { Length: > 0 })
+            return false;
+
+        var chave = chaveDoVideo + "-poster";
+        var atual = await _configuracoes.ObterPorChaveAsync(chave, ct) ?? new ConfiguracaoSiteDto
+        {
+            Chave = chave,
+            Nome = chaveDoVideo.EndsWith("-mobile", StringComparison.Ordinal)
+                ? "Poster do vídeo do hero — mobile"
+                : "Poster do vídeo do hero",
+            Tipo = TipoConfiguracao.Arquivo
+        };
+
+        await _configuracoes.SalvarAsync(atual, poster, ct);
+        return true;
+    }
+
+    /// <summary>Descarta uma configuração de arquivo (o arquivo vai junto).</summary>
+    private async Task ExcluirConfiguracaoAsync(string chave, CancellationToken ct)
+    {
+        var atual = await _configuracoes.ObterPorChaveAsync(chave, ct);
+        if (atual is not null)
+            await _configuracoes.ExcluirAsync(atual.Id, ct);
     }
 
     // ===== Nossa Cidade =====

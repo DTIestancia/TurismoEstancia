@@ -159,7 +159,14 @@ public class SeoController : Controller
         }
 
         xmlBytes = ms.ToArray();
-        _cache.Set(cacheKey, xmlBytes, TimeSpan.FromMinutes(30));
+
+        // O cache tem SizeLimit (ver InfrastructureExtensions), então TODA entrada
+        // precisa declarar quanto ocupa — senão o Set falha.
+        _cache.Set(cacheKey, xmlBytes, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30),
+            Size = xmlBytes.LongLength
+        });
 
         return File(xmlBytes, "application/xml");
     }

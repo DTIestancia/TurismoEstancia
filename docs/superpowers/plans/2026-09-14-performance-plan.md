@@ -4,7 +4,9 @@
 > **Origem:** análise do carregamento do portal e do painel (queixa: "está bem lento,
 > talvez pela quantidade de imagens, mas pode ser outra coisa").
 > **Escopo:** análise + planejamento. Os ganhos rápidos de cliente (itens 2.6, 3.1, 3.5 e 3.6)
-> já foram implementados em 2026-09-14 — ver *Progresso* no §1; os demais itens seguem pendentes.
+> foram implementados em 2026-09-14 e a segunda leva — limites de upload, poster do hero e
+> caminho da mídia (streaming do vídeo, cache fora do deploy, guarda de exclusão e relatório
+> de órfãos) — em 2026-09-18: ver *Progresso* no §1. Os demais itens seguem pendentes.
 
 ---
 
@@ -61,6 +63,49 @@ Dois achados novos durante a execução:
    idêntico ao build de desenvolvimento, e o `main.css.map` (40 KB) vai junto — confirmando o
    conflito de configuração apontado no item 3.4. O publish já gera `.br`/`.gz` (main.css.br =
    26.959 bytes), então há ~185 KB de CSS cru em cada publicação à toa.
+
+### Segunda leva — mídia (2026-09-18)
+
+Ataque ao caminho da mídia (upload → banco → tela), que era o "suspeito" original da queixa.
+Todas as medições em banco descartável (LocalDB), produção intocada.
+
+| Item | Antes | Depois | Verificação |
+| --- | --- | --- | --- |
+| Limite de upload | nenhum limite por arquivo; 413 cru do servidor acima de 60 MB | **imagem 5 MB / vídeo 10 MB / outros 10 MB**, com aviso no painel | harness: 6 MB e 12 MB recusados com mensagem; 4 MB e 9 MB gravam; POST de 70 MB → 302 para a tela de origem + log |
+| Vídeo servido | `File(byte[], …)` — o blob **inteiro** materializado por requisição | streaming **direto do banco**, em janelas de 1 MB com buffer do pool, **sem cópia em disco** (`FluxoDoArquivoNoBanco`) | 20 downloads simultâneos de 15,4 MB: **20/20 em 1,1 s** (pior 0,48 s), pico do processo **+33 MB** (baseline 133 MB); hash do arquivo servido **idêntico** ao blob, com 3 fatias de `Range` conferidas byte a byte (inclusive uma de 3 bytes na fronteira exata da janela) |
+| Cache de derivadas | `{ContentRoot}/cache/arquivo` — **apagado a cada deploy**, sem cota | **nenhum arquivo**: versões reduzidas no cache de memória do processo (30 min, teto de 96 MB) | `diff` do sistema de arquivos antes/depois da bateria inteira: **nenhum arquivo criado**; `?largura=400` na 2ª chamada = **0 consultas** em 2,5 ms (a 1ª: 1 consulta em 150 ms); 54,5 KB contra 469 KB do master |
+| `Range` no vídeo | funcionava, mas com o blob em memória | `206` com `Content-Range` exato (fatia conferida byte a byte) | `curl -H "Range: bytes=1000000-1000999"` |
+| Guarda de exclusão | 7 tabelas; ficavam de fora Conheça, Pratos, Grupos, Tags, Planeje, Mídia Kit, ícones de ponto/categoria e **as seções que gravam o id como texto** | todas as colunas + citação em texto (`42` e `/arquivo/42?largura=800`) | imagem usada só por texto em seção **não** entrou no relatório de órfãos e continuou servindo 200 depois do `--excluir` |
+| Órfãos | sem visibilidade | comando `arquivos-orfaos [--excluir]` com bytes e derivados em disco | relatório: 10 arquivos, 3 em uso, 7 órfãos (28,1 MB); 2ª execução: 0 órfãos |
+| Poster do hero | 1º slide cadastrado (nada a ver com o vídeo) | quadro extraído do **próprio MP4 no navegador** do operador, ao enviar | 3 rodadas idênticas: JPEG 478×850, brilho 91 (preto = 0, limite 12) |
+
+**Decisão de 2026-09-18 — nada em disco.** A primeira versão desta leva guardava derivadas em
+disco (miniaturas em `cache/arquivo`, cópia do vídeo em `%ProgramData%\TurismoEstancia\midia`),
+fora do pacote de deploy. O requisito do sistema é o oposto: **o binário só existe no banco**, e
+servir não pode depender de arquivo nenhum na máquina. Materializar o blob em memória não
+serviria (20 leituras simultâneas de 15 MB custariam ~294 MB), então a solução ficou no meio:
+`FluxoDoArquivoNoBanco` busca o blob **em janelas de 1 MB** com `SUBSTRING` (o servidor manda só
+o trecho pedido, o resto não trafega) e escreve direto num buffer **alugado do `ArrayPool`** — a
+janela é reaproveitada entre as leituras, em vez de virar um array novo a cada 1 MB. Essa
+troca foi ela mesma medida: a versão que alocava um array por janela jogava ~300 MB no
+*large object heap* por rodada e levava o processo de 127 MB a **265 MB**; com o pool, o mesmo
+teste para em **166 MB**. O fluxo é pesquisável, que é o que o ASP.NET precisa para atender
+`Range` sem tocar em disco.
+
+Três achados que só apareceram por medir:
+
+1. **Poster saía preto de vez em quando.** Desenhar no canvas logo após o `seeked` pega o
+   quadro ainda não pintado. `requestVideoFrameCallback` **não** resolve: ele não dispara com
+   o vídeo pausado (medido). A captura passou a esperar dois quadros de animação, **com
+   caminho alternativo por tempo** — `requestAnimationFrame` não roda com a aba em segundo
+   plano, e sem esse caminho a captura ficaria pendurada — e a validar o quadro gerado por
+   brilho médio, tentando outro instante do vídeo quando ele vier escuro (começo preto é o
+   que mais existe em vídeo institucional).
+2. **Excluir um órfão deixava a cópia em disco sendo servida**: o acerto do cache não
+   consulta o banco. O comando agora descarta os derivados do arquivo removido.
+3. **O teto de transporte (60 MB) não é o limite que o operador enxerga** — e 60 MB é o
+   valor que uma galeria de 12 fotos no limite alcança. Por isso as duas camadas ficaram
+   explícitas, com a mensagem de erro citando o limite por arquivo.
 
 ---
 
@@ -290,17 +335,15 @@ Sem baseline, não há como provar ganho. Tudo abaixo é barato e reversível.
       carrega na largura original) — descartar o EXIF sem mais nada deixaria a foto de celular
       deitada, então `AutoOrient()` roda antes do descarte (verificado: 900x650 com
       `Orientation=6` → gravado 650x900, sem EXIF).
-- [ ] 2.3 **Pré-aquecer o cache de miniaturas** no startup (ou por comando) para as larguras
-      realmente usadas na home e na galeria. Hoje a primeira visita de cada imagem paga
-      decode+resize+encode.
-- [ ] 2.4 **Higiene do cache em disco**: limite de tamanho/LRU, limpeza ao excluir o arquivo e
-      diretório estável fora da pasta de deploy (ex.: `App_Data`/path em `appsettings`) para não
-      zerar no re-deploy nem conflitar entre os dois nós IIS.
-      **Atenção no deploy da unificação das miniaturas**: `LocalizarMiniatura` procura `.jpg` e
-      depois `.png`, então as miniaturas geradas pela implementação anterior (que guardavam
-      EXIF/GPS dentro do arquivo e já foram baixadas com `immutable` de um ano pelos visitantes)
-      continuariam sendo servidas. Apagar `cache/arquivo` ao publicar — o comando
-      `recomprimir-imagens` já faz isso — força a regeneração pela regra nova.
+- [ ] 2.3 **Avaliar um aquecimento das larguras usadas** na home e na galeria. Com o cache em
+      memória, a primeira visita de cada (imagem, largura) depois de um restart paga
+      decode+resize+encode — uma vez por nó. Como o cache é do processo, só vale a pena se
+      aparecer fila perceptível em produção.
+- [x] 2.4 **Cache em disco** — **resolvido por decisão (2026-09-18)**: não existe mais cache em
+      disco para higienizar. Nada de LRU, cota, caminho em `appsettings` ou limpeza no deploy: o
+      que resta é o TTL (30 min) e o teto (96 MB) do cache de memória. As pastas deixadas pelas
+      versões anteriores (`TurismoEstancia.Web/cache/` e `%ProgramData%\TurismoEstancia\midia`)
+      são lixo inerte: o código atual não lê nenhuma das duas e podem ser apagadas.
 - [ ] 2.5 **`srcset`/`sizes` + `width`/`height`** em todos os `<img>` do portal, servindo
       400/800/1200/1920 conforme o viewport. É o ganho de bytes mais direto no celular e
       elimina o CLS.
@@ -461,7 +504,8 @@ Sem baseline, não há como provar ganho. Tudo abaixo é barato e reversível.
   é "arquivo imutável, troca = novo registro + reaponta". Um `UPDATE` direto em `ArquBytes`
   pode invalidar o cache de miniaturas (o nome do arquivo de cache é `{id}-{largura}`, e o ETag
   usa `CriadoEm.Ticks`, que **não muda** em update) → servir miniatura velha indefinidamente.
-  Se 2.2 for in-place, **limpar o cache em disco** e versionar o ETag por hash do conteúdo.
+  Se 2.2 for in-place, rodar **com o portal parado** (o cache de derivadas é em memória, por
+  processo) e manter o `Size` no ETag — é ele que faz quem tem a versão antiga revalidar.
 - **Não aumentar o TTL de cache sem invalidação.** Conteúdo editado no CMS deve aparecer na
   hora; cache sem eviction é bug de conteúdo, não ganho de performance.
 - **Medir antes e depois de cada fase.** Sem o baseline da Fase 0, o ganho vira opinião.
