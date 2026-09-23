@@ -3233,54 +3233,6 @@ a.culture-tag:active {
     right: 12px;
   }
 }
-/* ===== Background Decorations ===== */
-.bg-deco {
-  position: absolute;
-  pointer-events: none;
-  opacity: 0.9;
-}
-
-.bg-deco-1 {
-  width: 420px;
-  height: 420px;
-  right: -60px;
-  top: -80px;
-}
-
-.bg-deco-2 {
-  width: 360px;
-  height: 360px;
-  left: -96px;
-  bottom: 48px;
-  opacity: 0.7;
-}
-
-.bg-deco-3 {
-  width: 260px;
-  height: 280px;
-  right: -40px;
-  bottom: 80px;
-  transform: rotate(-12deg);
-  transform-origin: top left;
-  opacity: 0.8;
-  background: linear-gradient(303deg, var(--color-rose-42) 0%, var(--color-rose-42) 1%, var(--color-rose-42-0) 1%, var(--color-rose-42-0) 4%);
-}
-
-.bg-deco-4 {
-  width: 360px;
-  height: 360px;
-  left: -64px;
-  top: -96px;
-  opacity: 0.95;
-}
-
-.bg-dot {
-  position: absolute;
-  border-radius: 9999px;
-  background: var(--color-white-solid);
-  pointer-events: none;
-}
-
 /* ===== Smooth Section Transitions (Wavy Dividers) ===== */
 .section-divider {
   position: relative;
@@ -9770,6 +9722,90 @@ img.paginas-galeria-card-img.is-carregada {
   color: var(--color-yellow-50);
 }
 
+.section-roteiros, .section-noticias {
+  position: relative;
+  overflow: hidden;
+}
+
+.section-roteiros-inner, .section-noticias-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.deco {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.deco-cidade-direita {
+  top: 0;
+  right: 0;
+  width: min(330px, 30vw);
+}
+
+.deco-cidade-esquerda-baixo {
+  bottom: 0;
+  left: 0;
+  width: min(230px, 22vw);
+}
+
+.deco-maravilha-esquerda-cima {
+  top: 0;
+  left: 0;
+  width: min(210px, 20vw);
+}
+
+.deco-maravilha-direita {
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: auto;
+}
+
+.deco-maravilha-esquerda-baixo {
+  bottom: 0;
+  left: 0;
+  width: min(250px, 24vw);
+}
+
+.deco-programacao-esquerda-cima {
+  top: 0;
+  left: 0;
+  width: min(200px, 19vw);
+}
+
+.deco-programacao-direita-cima {
+  top: 0;
+  right: 0;
+  width: min(300px, 28vw);
+}
+
+.deco-planeje-esquerda {
+  bottom: 48px;
+  left: 0;
+  width: min(300px, 28vw);
+}
+
+.deco-planeje-direita-cima {
+  top: 0;
+  right: 0;
+  height: 70%;
+  width: auto;
+}
+
+.deco-noticias-direita {
+  top: 0;
+  right: 0;
+  width: min(270px, 26vw);
+}
+
+@media (max-width: 900px) {
+  .deco {
+    display: none;
+  }
+}
 .jornada-nav {
   display: grid;
   grid-template-columns: 1fr 1fr;

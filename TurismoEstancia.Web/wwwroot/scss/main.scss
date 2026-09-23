@@ -3930,6 +3930,31 @@ img.paginas-galeria-card-img {
 .paginas-hero--capa .secao-destaque,
 .news-hero--capa .secao-destaque { color: var(--color-yellow-50); }
 
+// ===== Elementos decorativos das seções (img/elementos, cantos) =====
+// PNGs com foto + transparência: ficam atrás do conteúdo (ondas ::after,
+// z-index 5, passam por cima) e somem no mobile para não poluir.
+.section-roteiros, .section-noticias { position: relative; overflow: hidden; }
+.section-roteiros-inner, .section-noticias-inner { position: relative; z-index: 1; }
+.deco {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+.deco-cidade-direita { top: 0; right: 0; width: min(330px, 30vw); }
+.deco-cidade-esquerda-baixo { bottom: 0; left: 0; width: min(230px, 22vw); }
+.deco-maravilha-esquerda-cima { top: 0; left: 0; width: min(210px, 20vw); }
+.deco-maravilha-direita { top: 0; right: 0; height: 100%; width: auto; }
+.deco-maravilha-esquerda-baixo { bottom: 0; left: 0; width: min(250px, 24vw); }
+.deco-programacao-esquerda-cima { top: 0; left: 0; width: min(200px, 19vw); }
+.deco-programacao-direita-cima { top: 0; right: 0; width: min(300px, 28vw); }
+.deco-planeje-esquerda { bottom: 48px; left: 0; width: min(300px, 28vw); }
+.deco-planeje-direita-cima { top: 0; right: 0; height: 70%; width: auto; }
+.deco-noticias-direita { top: 0; right: 0; width: min(270px, 26vw); }
+@media (max-width: 900px) {
+  .deco { display: none; }
+}
+
 // ===== Jornada entre seções (voltar + continuar no fim das páginas) =====
 .jornada-nav {
   display: grid;

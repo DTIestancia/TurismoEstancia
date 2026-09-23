@@ -3212,59 +3212,6 @@
       }
     }
 
-    /* ===== Background Decorations ===== */
-    .bg-deco {
-      position: absolute;
-      pointer-events: none;
-      opacity: 0.90;
-    }
-
-    .bg-deco-1 {
-      width: 420px;
-      height: 420px;
-      right: -60px;
-      top: -80px;
-    }
-
-    .bg-deco-2 {
-      width: 360px;
-      height: 360px;
-      left: -96px;
-      bottom: 48px;
-      opacity: 0.70;
-    }
-
-    .bg-deco-3 {
-      width: 260px;
-      height: 280px;
-      right: -40px;
-      bottom: 80px;
-      transform: rotate(-12deg);
-      transform-origin: top left;
-      opacity: 0.80;
-      background: linear-gradient(303deg,
-        var(--color-rose-42) 0%,
-        var(--color-rose-42) 1%,
-        var(--color-rose-42-0) 1%,
-        var(--color-rose-42-0) 4%
-      );
-    }
-
-    .bg-deco-4 {
-      width: 360px;
-      height: 360px;
-      left: -64px;
-      top: -96px;
-      opacity: 0.95;
-    }
-
-    .bg-dot {
-      position: absolute;
-      border-radius: 9999px;
-      background: var(--color-white-solid);
-      pointer-events: none;
-    }
-
     /* ===== Smooth Section Transitions (Wavy Dividers) ===== */
     .section-divider {
       position: relative;
