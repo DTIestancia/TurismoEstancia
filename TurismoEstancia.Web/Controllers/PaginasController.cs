@@ -166,7 +166,7 @@ public class PaginasController : Controller
         // Slug apenas estético (SEO): se vier errado, redireciona para o correto.
         var slugCorreto = Slug.De(lugar.Nome);
         if (!string.Equals(slug, slugCorreto, StringComparison.OrdinalIgnoreCase))
-            return RedirectToAction(nameof(DetalheLugar), "Paginas", new { id, slug = slugCorreto });
+            return RedirectToActionPermanent(nameof(DetalheLugar), "Paginas", new { id, slug = slugCorreto });
 
         var roteiros = await _roteiros.ListarAsync(ct);
 
@@ -195,7 +195,7 @@ public class PaginasController : Controller
 
         var slugCorreto = Slug.De(prato.Nome);
         if (!string.Equals(slug, slugCorreto, StringComparison.OrdinalIgnoreCase))
-            return RedirectToAction(nameof(DetalhePrato), "Paginas", new { id, slug = slugCorreto });
+            return RedirectToActionPermanent(nameof(DetalhePrato), "Paginas", new { id, slug = slugCorreto });
 
         DefinirSeo(prato.Nome, prato.Descricao,
             prato.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}?largura=1200") : null);
@@ -213,7 +213,7 @@ public class PaginasController : Controller
 
         var slugCorreto = Slug.De(tag.Nome);
         if (!string.Equals(slug, slugCorreto, StringComparison.OrdinalIgnoreCase))
-            return RedirectToAction(nameof(DetalheTag), "Paginas", new { id, slug = slugCorreto });
+            return RedirectToActionPermanent(nameof(DetalheTag), "Paginas", new { id, slug = slugCorreto });
 
         DefinirSeo(tag.Nome, tag.Descricao,
             tag.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}?largura=1200") : null);
@@ -231,7 +231,7 @@ public class PaginasController : Controller
 
         var slugCorreto = Slug.De(item.Nome);
         if (!string.Equals(slug, slugCorreto, StringComparison.OrdinalIgnoreCase))
-            return RedirectToAction(nameof(DetalheConhecaEstancia), "Paginas", new { id, slug = slugCorreto });
+            return RedirectToActionPermanent(nameof(DetalheConhecaEstancia), "Paginas", new { id, slug = slugCorreto });
 
         DefinirSeo(item.Nome, item.Descricao,
             item.ImagemArquivoId is long imgId ? Url.Content($"~/arquivo/{imgId}?largura=1200") : null);

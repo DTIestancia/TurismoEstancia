@@ -49,7 +49,11 @@
     @{
         var seo = await SeoService.ObterMetaAsync(ViewData["Seo"] as SeoMeta);
         var baseUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
-        var canonical = baseUrl + Context.Request.PathBase + Context.Request.Path;
+        // Canônico sem barra final (/cidade/ declara /cidade) — evita duplicatas.
+        var caminhoCanonico = Context.Request.Path.Value is { Length: > 1 } p && p.EndsWith('/')
+            ? p.TrimEnd('/')
+            : Context.Request.Path.ToString();
+        var canonical = baseUrl + Context.Request.PathBase + caminhoCanonico;
         var tituloPagina = !string.IsNullOrWhiteSpace(seo.Titulo) ? seo.Titulo : ViewData["Title"]?.ToString();
         var tituloFinal = string.IsNullOrWhiteSpace(tituloPagina) ? seo.NomeSite : $"{tituloPagina} — {seo.NomeSite}";
         // og:title/twitter:title curtos (sem o sufixo do site) — recomendado até ~70 caracteres.

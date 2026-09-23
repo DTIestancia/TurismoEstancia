@@ -31,6 +31,22 @@ public static class PipelineExtensions
 
         app.UseHttpsRedirection();
 
+        // Áreas administrativas fora do índice: o login do Identity (pacote, sem
+        // layout próprio) gera variantes ?ReturnUrl= idênticas e sem canonical —
+        // o Google sinaliza como "cópia sem canônica". O header tira todas do
+        // índice; de propósito SEM Disallow no robots (bloqueado, ele nunca veria).
+        app.Use(async (contexto, proximo) =>
+        {
+            var caminho = contexto.Request.Path;
+            if (caminho.StartsWithSegments("/Identity", StringComparison.OrdinalIgnoreCase)
+                || caminho.StartsWithSegments("/Gerenciador", StringComparison.OrdinalIgnoreCase)
+                || caminho.StartsWithSegments("/Operador", StringComparison.OrdinalIgnoreCase))
+            {
+                contexto.Response.Headers["X-Robots-Tag"] = "noindex, nofollow";
+            }
+            await proximo(contexto);
+        });
+
         // Envolve tudo o que lê o corpo da requisição: o upload que passa do teto
         // de transporte morre em 413 lá dentro, e é aqui que ele vira um aviso no
         // painel em vez de uma página de erro crua. Fica antes das rotas para

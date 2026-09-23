@@ -69,6 +69,10 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index(CancellationToken ct)
     {
+        // /Home e /Home/Index mostram a mesma home: 301 para o canônico (/).
+        if (!string.Equals(HttpContext.Request.Path.Value, "/", StringComparison.Ordinal))
+            return RedirectPermanent(Url.Content("~/"));
+
         // Título com as buscas que importam ("turismo em estância", "viajar para estância").
         ViewData["Seo"] = new SeoMeta
         {
