@@ -78,6 +78,8 @@ public static class PipelineExtensions
         app.UseRateLimiter();
         app.UseAuthentication();
 
+        app.UseMiddleware<AuditoriaMiddleware>();
+
         // Escrita no CMS (POST em /Gerenciador ou /Operador) descarta o cache do
         // portal assim que a resposta termina — a edição aparece no próximo acesso.
         // Fica antes da autorização para enxergar TODA tentativa de escrita: o

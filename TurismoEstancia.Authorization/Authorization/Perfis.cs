@@ -14,5 +14,8 @@ namespace TurismoEstancia.Authorization.Services
 
         /// <summary>Acesso apenas a Evento e InscricaoNewsletter.</summary>
         public const string Operador = "Operador";
+
+        /// <summary>Acesso exclusivo à consulta de auditoria administrativa.</summary>
+        public const string DTI = "DTI";
     }
 }

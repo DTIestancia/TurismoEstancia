@@ -5,8 +5,11 @@
 @inject UserManager<Usuario> UserManager
 @{
     var usuario = await UserManager.GetUserAsync(User);
+    var nomeExibicao = usuario?.Nome ?? User.Identity?.Name ?? "Usuário";
+    var iniciais = string.Concat(nomeExibicao.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(parte => parte[0])).ToUpperInvariant();
     // Com múltiplas claims (Gerenciador + Operador), o maior privilégio vence.
     var gerenciador = User.FindAll(Perfis.TipoClaim).Any(c => c.Value == Perfis.Gerenciador);
+    var dti = User.FindAll(Perfis.TipoClaim).Any(c => c.Value == Perfis.DTI);
     // Modo embutido (?embutido=1): o formulário de Criar abre dentro do modal
     // das telas de lista — esconde sidebar/topbar/subnav para o iframe mostrar
     // só o formulário, sem duplicar views.
@@ -46,9 +49,9 @@
             </div>
 
             <nav class="painel-nav">
-                <a class="painel-nav-link @(IsAreaPage("Gerenciador","Dashboard") || IsAreaPage("Operador","Dashboard") ? "active" : "")"
-                   asp-area="@(gerenciador ? "Gerenciador" : "Operador")"
-                   asp-controller="Dashboard" asp-action="Index">
+                <a class="painel-nav-link @(IsAreaPage("Gerenciador","Dashboard") || IsAreaPage("Operador","Dashboard") || IsAreaPage("Gerenciador","Auditoria") ? "active" : "")"
+                   asp-area="@(gerenciador || dti ? "Gerenciador" : "Operador")"
+                   asp-controller="@(dti && !gerenciador ? "Auditoria" : "Dashboard")" asp-action="Index">
                     <i data-lucide="layout-dashboard"></i> Dashboard
                 </a>
                 @if (gerenciador)
@@ -122,6 +125,13 @@
                         <i data-lucide="mail"></i> Newsletter
                     </a>
                 }
+                @if (dti)
+                {
+                    <div class="painel-nav-title">Segurança</div>
+                    <a class="painel-nav-link @(IsAreaPage("Gerenciador","Auditoria") ? "active" : "")" asp-area="Gerenciador" asp-controller="Auditoria" asp-action="Index">
+                        <i data-lucide="shield-check"></i> Auditoria
+                    </a>
+                }
             </nav>
 
             <div class="painel-sidebar-footer">
@@ -140,9 +150,16 @@
                             <i data-lucide="help-circle"></i> Ajuda textos
                         </button>
                     }
+                    <div class="painel-user-context">
+                        <span class="painel-avatar" aria-hidden="true">@iniciais</span>
+                        <span class="painel-user-copy">
+                            <strong>@nomeExibicao</strong>
+                            <small>@(dti ? "DTI" : gerenciador ? "Gerenciador" : "Operador")</small>
+                        </span>
+                    </div>
                     <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="painel-actions">
                         <button type="submit" class="btn-painel btn-painel--ghost btn-painel--sm" title="Sair">
-                            <i data-lucide="log-out"></i> Sair
+                            <i data-lucide="log-out"></i><span class="painel-logout-label">Sair</span>
                         </button>
                     </form>
                 </div>

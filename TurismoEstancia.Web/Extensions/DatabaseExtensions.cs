@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TurismoEstancia.Domain.Data;
 using TurismoEstancia.IdentityClass.Data;
+using TurismoEstancia.Web.Infrastructure;
 
 namespace TurismoEstancia.Web.Extensions;
 
@@ -13,8 +14,10 @@ public static class DatabaseExtensions
     {
         var appCs = builder.Configuration.GetConnectionString("TurismoEstancia")
             ?? throw new InvalidOperationException("Connection string 'TurismoEstancia' não configurada.");
-        builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(appCs, o => o.UseCompatibilityLevel(120)));
+        builder.Services.AddSingleton<AuditoriaSaveChangesInterceptor>();
+        builder.Services.AddDbContext<AppDbContext>((services, options) =>
+            options.UseSqlServer(appCs, o => o.UseCompatibilityLevel(120))
+                   .AddInterceptors(services.GetRequiredService<AuditoriaSaveChangesInterceptor>()));
 
         var identityCs = builder.Configuration.GetConnectionString("TurismoEstanciaIdentity")
             ?? throw new InvalidOperationException("Connection string 'TurismoEstanciaIdentity' não configurada.");

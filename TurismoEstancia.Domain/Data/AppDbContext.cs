@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
 
     public DbSet<Arquivo> Arquivos => Set<Arquivo>();
     public DbSet<AnalyticsEvento> AnalyticsEventos => Set<AnalyticsEvento>();
+    public DbSet<AuditoriaAcao> Auditorias => Set<AuditoriaAcao>();
     public DbSet<CategoriaPontoTuristico> CategoriasPontosTuristicos => Set<CategoriaPontoTuristico>();
     public DbSet<PontoTuristico> PontosTuristicos => Set<PontoTuristico>();
     public DbSet<PontoTuristicoMidia> PontoTuristicoMidias => Set<PontoTuristicoMidia>();
@@ -47,6 +48,7 @@ public class AppDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         ConfigureAnalyticsEvento(modelBuilder);
+        ConfigureAuditoriaAcao(modelBuilder);
         ConfigureArquivo(modelBuilder);
         ConfigureCategoriaPontoTuristico(modelBuilder);
         ConfigurePontoTuristico(modelBuilder);
@@ -97,6 +99,33 @@ public class AppDbContext : DbContext
             // Consultas do dashboard: por período e por tipo/evento.
             entity.HasIndex(e => e.Data);
             entity.HasIndex(e => new { e.Tipo, e.Evento });
+        });
+    }
+
+    private static void ConfigureAuditoriaAcao(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<AuditoriaAcao>(entity =>
+        {
+            entity.Property(e => e.DataHoraUtc).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.Tipo).HasMaxLength(30).IsRequired();
+            entity.Property(e => e.Area).HasMaxLength(30).IsRequired();
+            entity.Property(e => e.UsuarioId).HasMaxLength(450);
+            entity.Property(e => e.UsuarioNome).HasMaxLength(256);
+            entity.Property(e => e.Perfis).HasMaxLength(500);
+            entity.Property(e => e.Rota).HasMaxLength(500);
+            entity.Property(e => e.MetodoHttp).HasMaxLength(10);
+            entity.Property(e => e.EnderecoIp).HasMaxLength(64);
+            entity.Property(e => e.Navegador).HasMaxLength(500);
+            entity.Property(e => e.Correlacao).HasMaxLength(100);
+            entity.Property(e => e.Entidade).HasMaxLength(200);
+            entity.Property(e => e.EntidadeId).HasMaxLength(100);
+            entity.Property(e => e.ValoresAnterioresJson).HasColumnType("nvarchar(max)");
+            entity.Property(e => e.ValoresNovosJson).HasColumnType("nvarchar(max)");
+            entity.Property(e => e.Mensagem).HasMaxLength(1000);
+            entity.HasIndex(e => e.DataHoraUtc);
+            entity.HasIndex(e => new { e.UsuarioId, e.DataHoraUtc });
+            entity.HasIndex(e => new { e.Tipo, e.DataHoraUtc });
+            entity.HasIndex(e => new { e.Area, e.DataHoraUtc });
         });
     }
 

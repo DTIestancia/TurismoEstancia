@@ -58,6 +58,9 @@ public static class IdentityExtensions
 
             options.AddPolicy(Perfis.Operador, policy =>
                 policy.AddRequirements(new ClaimObrigatoria(Perfis.Operador)));
+
+            options.AddPolicy(Perfis.DTI, policy =>
+                policy.AddRequirements(new ClaimObrigatoria(Perfis.DTI)));
         });
     }
 }

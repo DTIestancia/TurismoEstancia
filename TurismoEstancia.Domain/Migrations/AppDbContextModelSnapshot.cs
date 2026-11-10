@@ -146,6 +146,101 @@ namespace TurismoEstancia.Domain.Migrations
                     b.ToTable("Arquivos");
                 });
 
+            modelBuilder.Entity("TurismoEstancia.Domain.Models.AuditoriaAcao", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Area")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Correlacao")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("DataHoraUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<long?>("DuracaoMs")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("EnderecoIp")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Entidade")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("EntidadeId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Mensagem")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("MetodoHttp")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Navegador")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Perfis")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Rota")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("StatusHttp")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Sucesso")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("UsuarioId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UsuarioNome")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ValoresAnterioresJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ValoresNovosJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataHoraUtc");
+
+                    b.HasIndex("Area", "DataHoraUtc");
+
+                    b.HasIndex("Tipo", "DataHoraUtc");
+
+                    b.HasIndex("UsuarioId", "DataHoraUtc");
+
+                    b.ToTable("Auditorias");
+                });
+
             modelBuilder.Entity("TurismoEstancia.Domain.Models.Avaliacao", b =>
                 {
                     b.Property<int>("Id")

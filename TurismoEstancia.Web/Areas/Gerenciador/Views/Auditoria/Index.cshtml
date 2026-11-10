@@ -1,0 +1,95 @@
+@model TurismoEstancia.Web.Models.AuditoriaListaViewModel
+@{
+    ViewData["Title"] = "Auditoria";
+    Layout = "~/Views/Shared/_PainelLayout.cshtml";
+    string RotuloEvento(string tipo) => tipo switch
+    {
+        "EntradaPainel" => "Entrada no painel",
+        "AcessoTela" => "Acesso à tela",
+        "LoginSucesso" => "Login aprovado",
+        "LoginFalha" => "Login recusado",
+        "AcessoNegado" => "Acesso negado",
+        "Criacao" => "Criação",
+        "Alteracao" => "Alteração",
+        "Exclusao" => "Exclusão",
+        "Upload" => "Upload",
+        "Exportacao" => "Exportação",
+        "Logout" => "Logout",
+        _ => tipo
+    };
+    string ClasseEvento(string tipo) => tipo switch
+    {
+        "Criacao" or "LoginSucesso" => "success",
+        "Alteracao" or "EntradaPainel" or "AcessoTela" => "accent",
+        "Exclusao" or "LoginFalha" or "AcessoNegado" => "danger",
+        _ => "muted"
+    };
+}
+
+<section class="auditoria-page">
+    <header class="auditoria-hero">
+        <div>
+            <div class="auditoria-eyebrow"><i data-lucide="shield-check"></i> Controle administrativo <span>DTI</span></div>
+            <h1>Auditoria do painel</h1>
+            <p>Uma visão rastreável de quem entrou, o que acessou e quais alterações foram feitas.</p>
+        </div>
+        <div class="auditoria-hero-mark" aria-hidden="true"><i data-lucide="activity"></i></div>
+    </header>
+
+    <div class="auditoria-stats" aria-label="Resumo da auditoria">
+        <article class="auditoria-stat"><span class="auditoria-stat-icon"><i data-lucide="list-filter"></i></span><strong>@Model.TotalRegistros</strong><span>eventos encontrados</span></article>
+        <article class="auditoria-stat"><span class="auditoria-stat-icon"><i data-lucide="log-in"></i></span><strong>@Model.TotalAcessos</strong><span>acessos e entradas</span></article>
+        <article class="auditoria-stat"><span class="auditoria-stat-icon"><i data-lucide="pencil-line"></i></span><strong>@Model.TotalAlteracoes</strong><span>alterações de dados</span></article>
+        <article class="auditoria-stat auditoria-stat--warning"><span class="auditoria-stat-icon"><i data-lucide="triangle-alert"></i></span><strong>@Model.TotalFalhas</strong><span>falhas ou recusas</span></article>
+    </div>
+
+    <form method="get" class="auditoria-filters">
+        <div class="auditoria-filter-heading"><div><i data-lucide="sliders-horizontal"></i><strong>Filtrar eventos</strong></div><span>Refine por período, área ou ação.</span></div>
+        <div class="auditoria-filter-fields">
+            <label>Evento<select asp-for="Tipo"><option value="">Todos os eventos</option><option value="EntradaPainel">Entrada no painel</option><option value="AcessoTela">Acesso à tela</option><option value="LoginFalha">Login recusado</option><option value="AcessoNegado">Acesso negado</option><option value="Criacao">Criação</option><option value="Alteracao">Alteração</option><option value="Exclusao">Exclusão</option></select></label>
+            <label>Área<select asp-for="Area"><option value="">Todas as áreas</option><option value="Gerenciador">Gerenciador</option><option value="Operador">Operador</option><option value="Identity">Login</option></select></label>
+            <label>Usuário<input name="usuario" value="@Model.Usuario" placeholder="Nome ou e-mail" /></label>
+            <label>De<input type="date" name="inicio" value="@(Model.Inicio?.ToString("yyyy-MM-dd"))" /></label>
+            <label>Até<input type="date" name="fim" value="@(Model.Fim?.ToString("yyyy-MM-dd"))" /></label>
+            <button class="btn-painel btn-painel--primary auditoria-filter-submit" type="submit"><i data-lucide="search"></i> Aplicar filtros</button>
+        </div>
+    </form>
+
+    <div class="auditoria-table-card">
+        <div class="auditoria-table-heading"><div><h2>Atividade recente</h2><span>Ordenada da mais nova para a mais antiga</span></div><span class="auditoria-count"><i data-lucide="database"></i> @Model.TotalRegistros registros</span></div>
+        <div class="painel-table-wrap">
+        <table class="painel-table auditoria-table">
+            <thead><tr><th>Quando</th><th>Usuário</th><th>Evento</th><th>Área</th><th>Recurso</th><th>Resultado</th><th>IP</th></tr></thead>
+            <tbody>
+            @foreach (var item in Model.Registros)
+            {
+                <tr>
+                    <td class="auditoria-date"><strong>@item.DataHoraUtc.ToLocalTime().ToString("dd/MM/yyyy")</strong><span>@item.DataHoraUtc.ToLocalTime().ToString("HH:mm:ss")</span></td>
+                    <td><strong>@(item.UsuarioNome ?? "Anônimo")</strong><span class="auditoria-subline">@(item.Perfis ?? "sem perfil")</span></td>
+                    <td><span class="auditoria-evento auditoria-evento--@ClasseEvento(item.Tipo)"><i data-lucide="@(item.Tipo is "Criacao" or "Alteracao" ? "pencil" : item.Tipo is "Exclusao" ? "trash-2" : item.Tipo.Contains("Login") ? "key-round" : item.Tipo == "AcessoNegado" ? "lock-keyhole" : "scan-eye")"></i>@RotuloEvento(item.Tipo)</span></td>
+                    <td><span class="auditoria-area">@item.Area</span></td>
+                    <td><strong>@(item.Entidade ?? "Acesso")</strong><span class="auditoria-subline">@item.Rota</span></td>
+                    <td><span class="auditoria-status @(item.Sucesso ? "is-success" : "is-danger")"><i data-lucide="@(item.Sucesso ? "check" : "x")"></i>@(item.Sucesso ? "Sucesso" : "Falha")</span><span class="auditoria-subline">HTTP @item.StatusHttp</span></td>
+                    <td class="auditoria-ip">@item.EnderecoIp</td>
+                </tr>
+                @if (item.ValoresAnterioresJson is not null || item.ValoresNovosJson is not null)
+                {
+                    <tr class="auditoria-detail-row"><td colspan="7"><details><summary><i data-lucide="file-diff"></i> Ver detalhes da alteração <span>@item.Entidade @item.EntidadeId</span></summary><div class="auditoria-json-grid"><div><small>Antes</small><pre>@item.ValoresAnterioresJson</pre></div><div><small>Depois</small><pre>@item.ValoresNovosJson</pre></div></div></details></td></tr>
+                }
+            }
+            @if (Model.Registros.Count == 0) { <tr><td colspan="7"><div class="auditoria-empty"><i data-lucide="search-x"></i><strong>Nenhum evento encontrado</strong><span>Tente remover algum filtro ou ampliar o período da busca.</span></div></td></tr> }
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    @if (Model.TotalPaginas > 1)
+    {
+        <nav class="painel-pagination" aria-label="Paginação">
+            @for (var pagina = 1; pagina <= Model.TotalPaginas; pagina++)
+            {
+                <a class="@(pagina == Model.Pagina ? "current" : "")" asp-action="Index" asp-route-pagina="@pagina" asp-route-tipo="@Model.Tipo" asp-route-area="@Model.Area" asp-route-usuario="@Model.Usuario" asp-route-inicio="@Model.Inicio?.ToString("yyyy-MM-dd")" asp-route-fim="@Model.Fim?.ToString("yyyy-MM-dd")">@pagina</a>
+            }
+        </nav>
+    }
+</section>
